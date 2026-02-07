@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Details | Matias</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .blog-details-content p {
+            margin-bottom: 20px;
+            color: #bbb;
+            line-height: 1.8;
+        }
+
+        .blog-details-content h2,
+        .blog-details-content h3 {
+            color: #fff;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .blog-details-content ul,
+        .blog-details-content ol {
+            margin-bottom: 20px;
+            padding-left: 20px;
+            color: #bbb;
+        }
+
+        .blog-details-content img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .blog-details-content blockquote {
+            border-left: 4px solid var(--clr-base);
+            padding-left: 20px;
+            font-style: italic;
+            color: #ddd;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <img src="img/logo/logo-new.png" alt="TK Design Logo">
+            </a>
+            <nav class="nav-desktop">
+                <ul>
+                    <li><a href="index.html#home" data-i18n="nav.home">Home</a></li>
+                    <li><a href="index.html#about" data-i18n="nav.about">About</a></li>
+                    <li><a href="index.html#services" data-i18n="nav.services">Services</a></li>
+                    <li><a href="index.html#projects" data-i18n="nav.portfolio">Portfolio</a></li>
+                    <li><a href="index.html#blog" data-i18n="nav.blog">Blog</a></li>
+                    <li><a href="index.html#contact" data-i18n="nav.contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="lang-switch-desktop">
+                <button onclick="switchLanguage('en')" class="lang-btn active">EN</button>
+                <span>|</span>
+                <button onclick="switchLanguage('no')" class="lang-btn">NO</button>
+            </div>
+            <button class="menu-trigger"><i class="fas fa-bars"></i></button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay">
+        <button class="menu-close"><i class="fas fa-times"></i></button>
+        <nav class="mobile-nav">
+            <ul>
+                <li><a href="index.html#home" data-i18n="nav.home">Home</a></li>
+                <li><a href="index.html#about" data-i18n="nav.about">About</a></li>
+                <li><a href="index.html#services" data-i18n="nav.services">Services</a></li>
+                <li><a href="index.html#projects" data-i18n="nav.portfolio">Portfolio</a></li>
+                <li><a href="index.html#blog" data-i18n="nav.blog">Blog</a></li>
+                <li><a href="index.html#contact" data-i18n="nav.contact">Contact</a></li>
+            </ul>
+            <div class="lang-switch-mobile">
+                <button onclick="switchLanguage('en')" class="lang-btn active">EN</button>
+                <button onclick="switchLanguage('no')" class="lang-btn">NO</button>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Video Modal -->
+    <div class="video-modal" id="videoModal">
+        <div class="modal-content">
+            <button class="modal-close"><i class="fas fa-times"></i></button>
+            <iframe width="100%" height="100%" src="" title="YouTube video player" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <main>
+        <!-- Page Banner -->
+        <section class="page-banner pt_120 pb_120">
+            <div class="container">
+                <div class="page-banner-content text-center">
+                    <h1 class="section-title" style="font-size: 60px;" data-i18n="blog_details.banner_title">Brand
+                        design that helps the company grow</h1>
+                    <ul class="breadcrumb justify-center">
+                        <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+                        <li><a href="index.html#blog" data-i18n="nav.blog">Blog</a></li>
+                        <li data-i18n="blog_details.breadcrumb">Blog Details</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Blog Details Content -->
+        <section class="blog-details-area pt_120 pb_120">
+            <div class="container">
+                <div class="blog-details-grid">
+                    <!-- Main Content (Left Column) -->
+                    <div class="blog-main-content">
+                        <div class="blog-details-thumb mb-50">
+                            <img src="img/blog/blog-detailsb2.png" alt="Blog Details"
+                                style="width: 100%; border-radius: 20px;">
+                        </div>
+
+                        <div class="blog-details-wrapper">
+                            <div class="blog-meta-top"
+                                style="border-bottom: 1px solid #333; padding-bottom: 30px; margin-bottom: 40px; margin-top: 30px;">
+                                <span style="color: #fff; font-weight: 500;">By: Admin / Design / Posted on October 19,
+                                    2025 / <span data-i18n="blog_details.comments">Comments</span>: 05</span>
+                            </div>
+
+                            <div class="blog-details-content" id="blog-content-container">
+                                <!-- Content will be loaded dynamically -->
+                                <p>Loading...</p>
+                            </div>
+
+                            <!-- Tags & Share Box -->
+                            <div class="blog-share-box">
+                                <div class="flex items-center gap-4">
+                                    <span style="font-size: 20px; font-weight: 500; color: #fff;">Posted in :</span>
+                                    <a href="#" class="tag-btn">Business</a>
+                                    <a href="#" class="tag-btn">Digital</a>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <span style="font-size: 20px; font-weight: 500; color: #fff;">Share :</span>
+                                    <div class="share-links">
+                                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                                        <a href="#"><i class="fab fa-twitter"></i></a>
+                                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                                        <a href="#"><i class="fab fa-youtube"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Leave a Reply Form -->
+                            <div class="reply-form-box">
+                                <h3 style="font-size: 32px; color: #fff; margin-bottom: 20px;">Leave a Reply</h3>
+                                <p style="color: #999; margin-bottom: 30px;">Your email address will not be published.
+                                    Required fields are marked *</p>
+                                <form action="#">
+                                    <div class="form-row">
+                                        <input type="text" placeholder="Name">
+                                        <input type="email" placeholder="Email">
+                                    </div>
+                                    <textarea placeholder="Write Comments" rows="5"></textarea>
+                                    <button type="submit" class="submit-btn">
+                                        <span>Submit Comment</span>
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Sidebar (Right Column) -->
+                    <aside class="blog-sidebar">
+                        <!-- Search Widget -->
+                        <div class="widget search-widget">
+                            <h4 class="widget-title">Search</h4>
+                            <form action="#" class="search-form">
+                                <input type="text" placeholder="Search">
+                                <button type="submit"><i class="fas fa-search"></i></button>
+                            </form>
+                        </div>
+
+                        <!-- Categories Widget -->
+                        <div class="widget categories-widget">
+                            <h4 class="widget-title">Categories</h4>
+                            <ul>
+                                <li><a href="#"><span>Creative</span> <span class="arrow"><i
+                                                class="fas fa-chevron-right"></i></span></a></li>
+                                <li><a href="#"><span>Business</span> <span class="arrow"><i
+                                                class="fas fa-chevron-right"></i></span></a></li>
+                                <li><a href="#"><span>Design</span> <span class="arrow"><i
+                                                class="fas fa-chevron-right"></i></span></a></li>
+                                <li><a href="#"><span>Marketing</span> <span class="arrow"><i
+                                                class="fas fa-chevron-right"></i></span></a></li>
+                                <li><a href="#"><span>Lifestyle</span> <span class="arrow"><i
+                                                class="fas fa-chevron-right"></i></span></a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Recent Post Widget -->
+                        <div class="widget recent-post-widget">
+                            <h4 class="widget-title">Recent Post</h4>
+                            <ul>
+                                <li>
+                                    <a href="#">
+                                        <img src="img/blog/bsmall1.png" alt="Post">
+                                        <div class="post-info">
+                                            <span class="post-title">The Main Thing For The Designer</span>
+                                            <span class="post-date"><i class="far fa-clock"></i> October 19, 2025</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <img src="img/blog/bsmall2.png" alt="Post">
+                                        <div class="post-info">
+                                            <span class="post-title">The services provide for design</span>
+                                            <span class="post-date"><i class="far fa-clock"></i> October 19, 2025</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <img src="img/blog/bsmall3.png" alt="Post">
+                                        <div class="post-info">
+                                            <span class="post-title">The Main Thing For The Designer</span>
+                                            <span class="post-date"><i class="far fa-clock"></i> October 19, 2025</span>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Tags Widget -->
+                        <div class="widget tags-widget">
+                            <h4 class="widget-title">Tag</h4>
+                            <div class="tag-cloud">
+                                <a href="#">Business</a>
+                                <a href="#">Digital</a>
+                                <a href="#">Audio Post</a>
+                                <a href="#">Gallery Post</a>
+                                <a href="#">Marketing</a>
+                                <a href="#">Agency</a>
+                                <a href="#">Graphic</a>
+                                <a href="#">Web Development</a>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="pt_120 pb_120" style="border-top: 1px solid #262525;">
+        <div class="container">
+            <div class="footer-cta">
+                <h2 data-i18n="footer.cta">Get In Touch</h2>
+            </div>
+
+            <div class="footer-content">
+                <div class="footer-info">
+                    <p style="font-size: 20px; color: #fff; margin-bottom: 20px;" data-i18n="footer.intro">Hello, I’m
+                        David Matias, Website &
+                        User Interface Designer based in London.</p>
+                    <a href="mailto:thomas@tk-design.no"
+                        style="font-size: 30px; text-decoration: underline; color: #fff;"
+                        data-i18n="contact.email_val">thomas@tk-design.no</a>
+                </div>
+
+                <div class="footer-links" style="grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                    <a href="#" class="social-link">Facebook <i class="fas fa-arrow-right"></i></a>
+                    <a href="#" class="social-link">Instagram <i class="fas fa-arrow-right"></i></a>
+                    <a href="#" class="social-link">Dribbble <i class="fas fa-arrow-right"></i></a>
+                    <a href="#" class="social-link">Webflow <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-between items-center"
+                style="border-top: 1px solid #333; padding-top: 30px;">
+                <p><span data-i18n="footer.copyright">Copyright © 2026</span> <a href="#"
+                        style="color: var(--clr-base);">TK-design</a> <span data-i18n="footer.rights">All rights
+                        reserved.</span></p>
+                <div class="flex gap-4">
+                    <a href="#" style="color: #fff;" data-i18n="footer.terms">Terms & Condition</a>
+                    <a href="#" style="color: #fff;" data-i18n="footer.privacy">Privacy Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="translations.js"></script>
+    <script>
+        async function loadPostDetails() {
+            const params = new URLSearchParams(window.location.search);
+            const postId = params.get('id');
+
+            if (!postId) {
+                // If no ID, maybe redirect or show default (fallback behavior)
+                // For now, let's just leave it or show an error
+                document.getElementById('blog-content-container').innerHTML = '<p>Post not found.</p>';
+                return;
+            }
+
+            try {
+                // Fetch all posts - optimization: endpoints should support /api/posts/:id but we'll filter client-side for now
+                const response = await fetch('http://localhost:3000/api/posts');
+                const posts = await response.json();
+
+                // Find post by ID (handle both string/number types just in case)
+                const post = posts.find(p => p.id == postId);
+
+                if (post) {
+                    // Update Page Title
+                    document.querySelector('.section-title').innerText = post.title;
+                    document.title = `${post.seoTitle || post.title} | TK Design`;
+
+                    // Update Meta Info
+                    const metaSpan = document.querySelector('.blog-meta-top span');
+                    if (metaSpan) {
+                        metaSpan.innerHTML = `By: ${post.author || 'Admin'} / ${post.category || 'General'} / Posted on ${post.date}`;
+                    }
+
+                    // Update Image
+                    const img = document.querySelector('.blog-details-thumb img');
+                    if (img) {
+                        img.src = post.image;
+                        img.alt = post.title;
+                    }
+
+                    // Update Content
+                    const contentContainer = document.getElementById('blog-content-container');
+                    contentContainer.innerHTML = post.content || '<p>No content available.</p>';
+
+                } else {
+                    document.getElementById('blog-content-container').innerHTML = '<p>Post not found.</p>';
+                }
+
+            } catch (error) {
+                console.error('Error loading post:', error);
+                document.getElementById('blog-content-container').innerHTML = '<p>Error loading post.</p>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadPostDetails);
+    </script>
+    <script src="script.js"></script>
+</body>
+
+</html>

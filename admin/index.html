@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="no">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TK Design CMS</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="panel.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-config.js"></script>
+    <!-- Quill CSS -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.bubble.css" rel="stylesheet">
+    <!-- Quill JS -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+</head>
+
+<body>
+
+    <!-- Modern Admin Header -->
+    <header class="admin-header">
+        <div class="header-left">
+            <button class="back-btn" onclick="navigateBack()" style="display: none;">
+                <i class="fas fa-arrow-left"></i> Tilbake
+            </button>
+            <nav class="breadcrumb" id="breadcrumb">
+                <span class="breadcrumb-item active">Dashboard</span>
+            </nav>
+        </div>
+
+        <div class="header-right">
+            <div class="header-actions" id="header-actions">
+                <!-- Context-aware buttons will be inserted here -->
+            </div>
+
+            <div class="language-switcher-header">
+                <button class="lang-btn-header active" data-lang="en">EN</button>
+                <button class="lang-btn-header" data-lang="no">NO</button>
+            </div>
+
+            <div class="user-menu">
+                <button class="user-btn" id="user-menu-btn">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=random" alt="User"
+                        class="user-avatar-small" id="header-avatar">
+                    <span class="user-name-display" id="header-username">Admin</span>
+                    <i class="fas fa-chevron-down" style="font-size: 12px; color: #888;"></i>
+                </button>
+                <div class="user-dropdown" id="user-dropdown">
+                    <div class="dropdown-header">
+                        <span class="dropdown-user-name" id="dropdown-name">Admin User</span>
+                        <span class="dropdown-user-email" id="dropdown-email">admin@example.com</span>
+                    </div>
+                    <button class="dropdown-item" id="profile-settings-btn" data-i18n="profile_title">
+                        <i class="fas fa-cog"></i> Profile Settings
+                    </button>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item" id="logout-btn-dropdown" data-i18n="nav_logout"
+                        style="color: #ef4444;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div id="dashboard-container" class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h2><i class="fas fa-layer-group" style="color: #f97316;"></i> TK Studio</h2>
+            </div>
+            <nav>
+                <button class="nav-btn active" data-tab="home" data-i18n="nav_home"><i class="fas fa-home"></i>
+                    Hjem</button>
+                <button class="nav-btn" data-tab="blog" data-i18n="nav_blog"><i class="fas fa-pen-nib"></i>
+                    Blogg</button>
+                <button class="nav-btn" data-tab="content" data-i18n="nav_content"><i class="fas fa-columns"></i>
+                    Sideinnhold</button>
+                <button class="nav-btn" data-tab="style" data-i18n="nav_style"><i class="fas fa-palette"></i>
+                    Design</button>
+                <button class="nav-btn" data-tab="seo" data-i18n="nav_seo"><i class="fas fa-search"></i> SEO</button>
+                <button class="nav-btn" data-tab="media" data-i18n="nav_media"><i class="fas fa-image"></i>
+                    Media</button>
+                <div style="flex-grow: 1;"></div>
+                <button class="nav-btn" onclick="window.open('/', '_blank')" data-i18n="nav_view_site"><i
+                        class="fas fa-external-link-alt"></i>
+                    Se Nettside</button>
+                <button id="logout-btn" class="nav-btn" style="color: #ef4444;" data-i18n="nav_logout"><i
+                        class="fas fa-sign-out-alt"></i>
+                    Logg ut</button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Home / Overview Tab -->
+            <div id="home-tab" class="tab-content active">
+                <header>
+                    <h1 data-i18n="welcome">Velkommen tilbake, Thomas</h1>
+                    <button class="save-btn" onclick="document.querySelector('[data-tab=\'blog\']').click()"
+                        data-i18n="new_post">+ Nytt
+                        Innlegg</button>
+                </header>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3 data-i18n="stats_visits">Besøk (30d)</h3>
+                        <div class="value">1,204 <span class="trend">+12%</span></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3 data-i18n="stats_read">Innlegg Lest</h3>
+                        <div class="value">843 <span class="trend">+5%</span></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3 data-i18n="stats_active">Aktive Brukere</h3>
+                        <div class="value">42</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3 data-i18n="stats_time">Gj.snitt Tid</h3>
+                        <div class="value">2m 14s</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 style="margin-bottom: 20px; font-size: 18px;" data-i18n="quick_actions">Hurtigvalg</h2>
+                    <div style="display: flex; gap: 15px;">
+                        <button class="save-btn" style="background: #fff; color: #333; border: 1px solid #ddd;"
+                            onclick="document.querySelector('[data-tab=\'content\']').click()"
+                            data-i18n="edit_hero">Rediger
+                            Forsidetekst</button>
+                        <button class="save-btn" style="background: #fff; color: #333; border: 1px solid #ddd;"
+                            onclick="document.querySelector('[data-tab=\'media\']').click()"
+                            data-i18n="upload_images">Last opp Bilder</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Editor -->
+            <div id="content-tab" class="tab-content">
+                <header>
+                    <h1 data-i18n="nav_content">Sideinnhold</h1>
+                    <button id="save-btn" class="save-btn" data-i18n="save_changes">Lagre Endringer</button>
+                </header>
+
+                <div class="card">
+                    <div class="language-switcher">
+                        <button class="lang-btn active" data-lang="en">Engelsk</button>
+                        <button class="lang-btn" data-lang="no">Norsk</button>
+                    </div>
+                    <div id="content-editor"></div>
+                </div>
+            </div>
+
+            <!-- Blog Editor -->
+            <div id="blog-tab" class="tab-content">
+                <header>
+                    <h1 data-i18n="blog_overview">Bloggoversikt</h1>
+                    <button class="save-btn" onclick="openModal()" data-i18n="new_post"><i class="fas fa-plus"></i> Nytt
+                        Innlegg</button>
+                </header>
+
+                <div class="card" style="padding: 0; overflow: hidden;">
+                    <div class="blog-list-header">
+                        <div data-i18n="blog_title">Tittel</div>
+                        <div data-i18n="blog_date">Dato</div>
+                        <div data-i18n="blog_author">Forfatter</div>
+                        <div style="text-align: right;" data-i18n="blog_actions">Handlinger</div>
+                    </div>
+                    <div id="blog-list"></div>
+                </div>
+            </div>
+
+            <!-- Style Tab -->
+            <div id="style-tab" class="tab-content">
+                <header>
+                    <h1 data-i18n="design_colors">Design & Farger</h1>
+                    <button class="save-btn" id="save-style-btn" data-i18n="save_design">Lagre Design</button>
+                </header>
+
+                <div class="card">
+                    <div class="style-editor">
+                        <!-- Colors -->
+                        <div class="form-group color-group">
+                            <label data-i18n="color_base">Hovedfarge</label>
+                            <div class="color-wrapper">
+                                <input type="color" id="clr-base" name="--clr-base">
+                                <span class="color-value">#6366f1</span>
+                            </div>
+                        </div>
+                        <div class="form-group color-group">
+                            <label data-i18n="color_bg">Bakgrunnsfarge</label>
+                            <div class="color-wrapper">
+                                <input type="color" id="theme-bg" name="--theme-bg">
+                                <span class="color-value">#f8fafc</span>
+                            </div>
+                        </div>
+                        <div class="form-group color-group">
+                            <label data-i18n="color_text">Tekstfarge</label>
+                            <div class="color-wrapper">
+                                <input type="color" id="clr-common-text" name="--clr-common-text">
+                                <span class="color-value">#0f172a</span>
+                            </div>
+                        </div>
+
+                        <!-- Typography -->
+                        <div class="form-group"
+                            style="grid-column: 1 / -1; margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                            <label data-i18n="typography">Skrifttype (Google Fonts)</label>
+                            <select id="font-family-select" class="form-control"
+                                style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                                <option value="'Kanit', sans-serif"
+                                    data-url="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap">
+                                    Kanit (Standard)</option>
+                                <option value="'Inter', sans-serif"
+                                    data-url="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+                                    Inter</option>
+                                <option value="'Roboto', sans-serif"
+                                    data-url="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+                                    Roboto</option>
+                                <option value="'Open Sans', sans-serif"
+                                    data-url="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap">
+                                    Open Sans</option>
+                                <option value="'Lato', sans-serif"
+                                    data-url="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap">
+                                    Lato</option>
+                                <option value="'Montserrat', sans-serif"
+                                    data-url="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap">
+                                    Montserrat</option>
+                                <option value="'Playfair Display', serif"
+                                    data-url="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap">
+                                    Playfair Display</option>
+                                <option value="'Merriweather', serif"
+                                    data-url="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap">
+                                    Merriweather</option>
+                            </select>
+
+                            <div id="font-preview"
+                                style="margin-top: 15px; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc;">
+                                <h3 style="margin: 0 0 10px 0;" data-i18n="font_example_header">Overskrift Eksempel</h3>
+                                <p style="margin: 0; line-height: 1.6;" data-i18n="font_example_text">Dette er en tekst
+                                    for å vise hvordan valgt
+                                    skrifttype ser ut på nettsiden din. Det er viktig med god lesbarhet.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEO Tab -->
+            <div id="seo-tab" class="tab-content">
+                <header>
+                    <h1 data-i18n="seo_title">Søkemotoroptimalisering (SEO)</h1>
+                    <button class="save-btn" id="save-seo-btn" data-i18n="save_seo">Lagre SEO</button>
+                </header>
+
+                <div class="card">
+                    <div class="section-header" style="margin-bottom: 20px;">
+                        <h3><i class="fas fa-globe"></i> <span data-i18n="global_settings">Globale Innstillinger</span>
+                        </h3>
+                        <p style="color: var(--text-muted); font-size: 13px;" data-i18n="global_desc">Gjelder for hele
+                            nettstedet</p>
+                    </div>
+                    <div class="style-editor" style="grid-template-columns: 1fr 1fr;">
+                        <div class="form-group">
+                            <label data-i18n="site_name">Nettstedsnavn</label>
+                            <input type="text" id="seo-site-title" class="form-control"
+                                style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="title_separator">Tittel-separator (f.eks | eller -)</label>
+                            <input type="text" id="seo-separator" class="form-control"
+                                style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="ga_id">Google Analytics ID (G-XXXXXXX)</label>
+                            <input type="text" id="seo-ga-id" class="form-control" placeholder="G-..."
+                                style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label data-i18n="default_keywords">Standard Søkeord (skilt med komma)</label>
+                            <input type="text" id="seo-default-keywords" class="form-control"
+                                style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 24px;">
+                    <div class="section-header" style="margin-bottom: 20px;">
+                        <h3><i class="fas fa-file-alt"></i> <span data-i18n="page_seo">Side-spesifikk SEO</span></h3>
+                        <p style="color: var(--text-muted); font-size: 13px;" data-i18n="page_seo_desc">Tilpass tittel
+                            og beskrivelse for hver
+                            enkelt side</p>
+                    </div>
+                    <div id="seo-pages-list">
+                        <!-- Dynamic page list will be rendered here -->
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 24px;">
+                    <div class="section-header" style="margin-bottom: 20px;">
+                        <h3><i class="fas fa-sitemap"></i> <span data-i18n="tech_seo">Teknisk SEO</span></h3>
+                    </div>
+                    <div style="display: flex; gap: 15px; align-items: center;">
+                        <a href="/sitemap.xml" target="_blank" class="action-btn"
+                            style="text-decoration: none; padding: 10px 20px; height: auto;">
+                            <i class="fas fa-external-link-alt"></i> <span data-i18n="view_sitemap">Se Sitemap
+                                (sitemap.xml)</span>
+                        </a>
+                        <p style="font-size: 13px; color: var(--text-muted);" data-i18n="sitemap_desc">Sitemap genereres
+                            automatisk basert på
+                            dine sider og blogginnlegg.</p>
+                    </div>
+                </div>
+            </div>
+            <div id="media-tab" class="tab-content">
+                <h2 data-i18n="media_lib">Mediebibliotek</h2>
+                <div class="upload-area">
+                    <input type="file" id="image-upload" accept="image/*">
+                    <button onclick="uploadImage()" data-i18n="upload_img">Last opp Bilde</button>
+                </div>
+                <div class="media-grid">
+                    <!-- Images listed here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Blog Editor "Studio" Modal (Now separated) -->
+    <div id="editor-container-wrapper" class="studio-modal" style="display: none;">
+
+        <!-- Studio Header -->
+        <header class="studio-header">
+            <div class="header-left">
+                <button class="back-btn" onclick="closeEditor()">
+                    <i class="fas fa-arrow-left"></i> Tilbake
+                </button>
+                <nav class="breadcrumb" id="studio-breadcrumb">
+                    <span class="breadcrumb-item">Dashboard</span>
+                    <span class="breadcrumb-item">Blogg</span>
+                    <span class="breadcrumb-item active">Nytt Innlegg</span>
+                </nav>
+            </div>
+
+            <div class="header-right">
+                <div class="header-actions">
+                    <button class="header-action-btn" onclick="closeEditor()">
+                        <i class="fas fa-times"></i> Avbryt
+                    </button>
+                    <button class="header-action-btn" onclick="savePost()">
+                        <i class="fas fa-save"></i> Lagre utkast
+                    </button>
+                    <button class="header-action-btn primary" onclick="publishPost()">
+                        <i class="fas fa-paper-plane"></i> Publiser
+                    </button>
+                </div>
+
+                <div class="language-switcher-header">
+                    <button class="lang-btn-header active" data-lang="en">EN</button>
+                    <button class="lang-btn-header" data-lang="no">NO</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="studio-container">
+
+            <!-- Left Sidebar: Slim Icon Navigation (Wix Style) -->
+            <aside class="studio-sidebar-left">
+                <button class="sidebar-icon-btn" onclick="switchPanel(this, 'add')" title="Legg til">
+                    <div class="icon-circle"><i class="fas fa-plus"></i></div>
+                    <span>Legg til</span>
+                </button>
+
+                <button class="sidebar-icon-btn active" onclick="switchPanel(this, 'settings')" title="Innstillinger">
+                    <div class="icon-circle"><i class="fas fa-cog"></i></div>
+                    <span>Innstillinger</span>
+                </button>
+
+                <button class="sidebar-icon-btn" onclick="switchPanel(this, 'seo')" title="SEO">
+                    <div class="icon-circle"><i class="fas fa-search"></i></div>
+                    <span>SEO</span>
+                </button>
+
+                <button class="sidebar-icon-btn" onclick="switchPanel(this, 'monetize')" title="Generer inntekter">
+                    <div class="icon-circle"><i class="fas fa-dollar-sign"></i></div>
+                    <span>Generer<br>inntekter</span>
+                </button>
+
+                <button class="sidebar-icon-btn" onclick="switchPanel(this, 'translate')" title="Oversett">
+                    <div class="icon-circle"><i class="fas fa-globe"></i></div>
+                    <span>Oversett</span>
+                </button>
+
+                <button class="sidebar-icon-btn" onclick="switchPanel(this, 'apps')" title="Apper">
+                    <div class="icon-circle"><i class="fas fa-th-large"></i></div>
+                    <span>Apper</span>
+                </button>
+            </aside>
+
+            <!-- Center: Writing Area -->
+            <main class="studio-main">
+                <!-- Horizontal Toolbar -->
+                <div class="editor-toolbar">
+                    <button class="toolbar-btn" title="Legg til element">
+                        <i class="fas fa-plus"></i>
+                    </button>
+
+                    <div class="toolbar-divider"></div>
+
+                    <button class="toolbar-btn" title="Fet">
+                        <i class="fas fa-bold"></i>
+                    </button>
+                    <button class="toolbar-btn" title="Kursiv">
+                        <i class="fas fa-italic"></i>
+                    </button>
+                    <button class="toolbar-btn" title="Understreking">
+                        <i class="fas fa-underline"></i>
+                    </button>
+
+                    <div class="toolbar-divider"></div>
+
+                    <button class="toolbar-btn" title="Punktliste">
+                        <i class="fas fa-list-ul"></i>
+                    </button>
+                    <button class="toolbar-btn" title="Nummerert liste">
+                        <i class="fas fa-list-ol"></i>
+                    </button>
+
+                    <div class="toolbar-divider"></div>
+
+                    <button class="toolbar-btn" title="Venstrejuster">
+                        <i class="fas fa-align-left"></i>
+                    </button>
+                    <button class="toolbar-btn" title="Midtstill">
+                        <i class="fas fa-align-center"></i>
+                    </button>
+                    <button class="toolbar-btn" title="Høyrejuster">
+                        <i class="fas fa-align-right"></i>
+                    </button>
+
+                    <div class="toolbar-divider"></div>
+
+                    <button class="toolbar-btn" title="Lenke">
+                        <i class="fas fa-link"></i>
+                    </button>
+                    <button class="toolbar-btn" title="Kode">
+                        <i class="fas fa-code"></i>
+                    </button>
+                </div>
+
+                <div class="editor-content-wrapper">
+                    <input type="text" id="post-title" placeholder="Innleggstittel" class="studio-title-input">
+                    <div id="editor-container" class="studio-editor"></div>
+                </div>
+            </main>
+
+            <!-- Right Sidebar: Settings -->
+            <!-- Right Sidebar: Advanced Settings Panel -->
+            <aside class="studio-settings-panel" id="settings-panel">
+                <div class="settings-header">
+                    <h2>Innleggsinnstillinger</h2>
+                    <button class="close-panel-btn" onclick="toggleSettingsPanel()"><i
+                            class="fas fa-times"></i></button>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <div class="settings-tabs">
+                    <button class="tab-btn active" onclick="switchSettingsTab('generelt')">Generelt</button>
+                    <button class="tab-btn" onclick="switchSettingsTab('kategorier')">Kategorier <span
+                            class="counter">0</span></button>
+                    <button class="tab-btn" onclick="switchSettingsTab('tagger')">Tagger <span
+                            class="counter">0</span></button>
+                </div>
+
+                <!-- Tab: Generelt -->
+                <div id="tab-generelt" class="settings-content tab-pane active">
+                    <div class="setting-group">
+                        <div class="toggle-row">
+                            <label>Vis forsidebilde <i class="far fa-question-circle info-icon"
+                                    title="Vis bildet øverst i innlegget"></i></label>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="image-upload-area" style="margin-top: 10px;">
+                            <div class="upload-placeholder">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <label>Publiseringsdato <i class="far fa-question-circle info-icon"></i></label>
+                        <div class="input-with-icon">
+                            <i class="far fa-calendar"></i>
+                            <input type="text" id="post-date" placeholder="Publiser nå">
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <label>Manus <i class="far fa-question-circle info-icon"></i></label>
+                        <div class="author-select">
+                            <img src="" class="author-avatar" id="post-author-avatar" alt="Author">
+                            <select id="post-author">
+                                <!-- Dynamic options -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <div class="label-row">
+                            <label>Utdrag <i class="far fa-question-circle info-icon"></i></label>
+                            <span class="char-count">0/500</span>
+                        </div>
+                        <textarea
+                            placeholder="f.eks. Denne raske og enkle pastaretten er perfekt for travle familiemåltider midt i uken..."
+                            rows="4"></textarea>
+                    </div>
+
+                    <div class="setting-group">
+                        <div class="label-row">
+                            <label>Relaterte innlegg <i class="far fa-question-circle info-icon"></i></label>
+                            <span class="char-count">0/3</span>
+                        </div>
+                        <button class="add-related-btn"><i class="fas fa-plus"></i> Velg innlegg</button>
+                    </div>
+
+                    <hr class="divider">
+
+                    <div class="setting-group">
+                        <div class="toggle-row">
+                            <label>Angi som fremhevet innlegg <i class="far fa-question-circle info-icon"></i></label>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <div class="toggle-row">
+                            <label>Tillat å kommentere dette innlegget <i
+                                    class="far fa-question-circle info-icon"></i></label>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Hidden inputs for compatibility with existing save logic -->
+                    <input type="hidden" id="post-image" value="img/blog/bblog1.png">
+                    <input type="hidden" id="post-category" value="Generelt">
+                    <input type="hidden" id="post-seo-title">
+                    <input type="hidden" id="post-seo-desc">
+                    <input type="hidden" id="post-seo-keywords">
+                </div>
+
+                <!-- Tab: Kategorier -->
+                <div id="tab-kategorier" class="settings-content tab-pane">
+                    <p class="empty-state">Ingen kategorier ennå.</p>
+                </div>
+
+                <!-- Tab: Tagger -->
+                <div id="tab-tagger" class="settings-content tab-pane">
+                    <p class="empty-state">Ingen tagger ennå.</p>
+                </div>
+
+                <!-- ADD TOOLS PANEL -->
+                <div id="panel-add" class="settings-content main-panel-view" style="display: none;">
+                    <div class="add-tools-grid">
+                        <div class="add-tool-item" onclick="insertImage()">
+                            <i class="far fa-image"></i>
+                            <span>Bilde</span>
+                        </div>
+                        <div class="add-tool-item" onclick="insertVideo()">
+                            <i class="fas fa-video"></i>
+                            <span>Video</span>
+                        </div>
+                        <div class="add-tool-item" onclick="insertDivider()">
+                            <i class="fas fa-minus"></i>
+                            <span>Skillelinje</span>
+                        </div>
+                        <div class="add-tool-item" onclick="insertDetail('quote')">
+                            <i class="fas fa-quote-right"></i>
+                            <span>Sitat</span>
+                        </div>
+                        <div class="add-tool-item" onclick="insertDetail('code')">
+                            <i class="fas fa-code"></i>
+                            <span>Kodeblokk</span>
+                        </div>
+                        <div class="add-tool-item" onclick="insertButton()">
+                            <i class="fas fa-mouse-pointer"></i>
+                            <span>Knapp</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEO PANEL -->
+                <div id="panel-seo" class="settings-content main-panel-view" style="display: none;">
+                    <div class="setting-group">
+                        <label>SEO Tittel</label>
+                        <input type="text"
+                            style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"
+                            placeholder="Tittel for søkemotorer">
+                    </div>
+                    <div class="setting-group">
+                        <label>Beskrivelse</label>
+                        <textarea rows="4" placeholder="Beskrivelse..."
+                            style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"></textarea>
+                    </div>
+                </div>
+
+                <!-- Other Panels (Monetize, Apps, Translate) -->
+                <div id="panel-monetize" class="settings-content main-panel-view" style="display: none;">
+                    <div class="empty-state">
+                        <i class="fas fa-dollar-sign"></i>
+                        <p>Tjen penger på bloggen din med abonnementer.</p>
+                        <button class="setup-btn">Kom i gang</button>
+                    </div>
+                </div>
+
+                <div id="panel-apps" class="settings-content main-panel-view" style="display: none;">
+                    <div class="empty-state">
+                        <i class="fas fa-th-large"></i>
+                        <p>Legg til funksjonalitet med apper.</p>
+                        <button class="setup-btn">Se App Market</button>
+                    </div>
+                </div>
+
+                <div id="panel-translate" class="settings-content main-panel-view" style="display: none;">
+                    <div class="empty-state">
+                        <i class="fas fa-globe"></i>
+                        <p>Oversett blogginnleggene dine til flere språk.</p>
+                        <button class="setup-btn">Start oversettelse</button>
+                    </div>
+                </div>
+            </aside>
+
+        </div>
+    </div>
+
+    <!-- Image Picker Modal -->
+    <div id="image-picker-modal" class="studio-modal" style="display: none;">
+        <div class="image-picker-container">
+            <div class="image-picker-header">
+                <h2><i class="far fa-image"></i> Velg Bilde</h2>
+                <button onclick="closeImagePicker()" class="text-btn">✕</button>
+            </div>
+
+            <div class="image-picker-tabs">
+                <button class="tab-btn active" data-tab="upload">Last opp</button>
+                <button class="tab-btn" data-tab="unsplash">Unsplash</button>
+            </div>
+
+            <div class="image-picker-content">
+                <!-- Upload Tab -->
+                <div id="upload-tab" class="picker-tab active">
+                    <div class="upload-zone" id="upload-zone">
+                        <i class="fas fa-cloud-upload-alt"
+                            style="font-size: 48px; color: var(--primary-color); margin-bottom: 15px;"></i>
+                        <p style="margin-bottom: 10px; font-weight: 600;">Dra og slipp bilde her</p>
+                        <p style="color: #999; font-size: 13px; margin-bottom: 15px;">eller</p>
+                        <input type="file" id="blog-image-input" accept="image/*" style="display: none;">
+                        <button onclick="document.getElementById('blog-image-input').click()" class="save-btn">
+                            Velg fil
+                        </button>
+                        <p style="color: #999; font-size: 12px; margin-top: 10px;">Maks 5MB (JPG, PNG, GIF, WebP)</p>
+                    </div>
+                    <div id="upload-preview" style="display: none; margin-top: 20px;">
+                        <img id="preview-image" style="max-width: 100%; border-radius: 8px;">
+                        <button onclick="insertUploadedImage()" class="save-btn" style="margin-top: 15px; width: 100%;">
+                            Sett inn bilde
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Unsplash Tab -->
+                <div id="unsplash-tab" class="picker-tab">
+                    <div class="unsplash-search">
+                        <input type="text" id="unsplash-query" placeholder="Søk etter bilder..."
+                            style="flex: 1; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                        <button onclick="searchUnsplash()" class="save-btn">
+                            <i class="fas fa-search"></i> Søk
+                        </button>
+                    </div>
+                    <div id="unsplash-results" class="unsplash-grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Settings Modal -->
+    <div id="profile-modal" class="modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h2 data-i18n="profile_title"><i class="fas fa-user-cog"></i> Profile Settings</h2>
+                <button id="close-profile-modal" class="text-btn">✕</button>
+            </div>
+            <div class="modal-body" style="padding: 20px;">
+
+                <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
+                    <div style="position: relative;">
+                        <img src="" alt="Avatar" id="profile-avatar-preview"
+                            style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #f1f5f9;">
+                        <button onclick="document.getElementById('avatar-upload').click()"
+                            style="position: absolute; bottom: 0; right: 0; background: var(--primary-color); color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                            <i class="fas fa-camera" style="font-size: 14px;"></i>
+                        </button>
+                    </div>
+                    <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
+                    <p data-i18n="profile_avatar_hint" style="margin-top: 10px; color: #64748b; font-size: 13px;">
+                        Allowed: JPG, PNG, GIF, WebP (Max 2MB)
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="profile_display_name"
+                        style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px;">Display
+                        Name</label>
+                    <input type="text" id="profile-name-input" data-i18n-placeholder="profile_name_placeholder"
+                        placeholder="Your Name"
+                        style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                </div>
+
+                <div class="form-group" style="margin-top: 15px;">
+                    <label data-i18n="profile_email"
+                        style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px;">Email</label>
+                    <input type="email" id="profile-email-input" disabled
+                        style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; background: #f8fafc; color: #64748b;">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                    <div class="form-group">
+                        <label data-i18n="profile_phone"
+                            style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px;">Phone</label>
+                        <input type="tel" id="profile-phone-input" placeholder="+47 123 45 678"
+                            style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="profile_dob"
+                            style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px;">Date of
+                            Birth</label>
+                        <input type="date" id="profile-dob-input"
+                            style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 15px;">
+                    <label data-i18n="profile_address"
+                        style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px;">Address</label>
+                    <input type="text" id="profile-address-input" data-i18n-placeholder="profile_address_placeholder"
+                        placeholder="Street, City, Postal Code"
+                        style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                </div>
+
+                <div class="form-group" style="margin-top: 15px;">
+                    <label data-i18n="profile_bio"
+                        style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px;">About Me
+                        (Bio)</label>
+                    <textarea id="profile-bio-input" data-i18n-placeholder="profile_bio_placeholder"
+                        placeholder="Write a little about yourself..."
+                        style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; height: 80px; resize: vertical;"></textarea>
+                </div>
+
+                <div style="margin-top: 25px; display: flex; justify-content: flex-end; gap: 10px;">
+                    <button data-i18n="btn_cancel" class="save-btn"
+                        style="background: white; color: #64748b; border: 1px solid #e2e8f0;"
+                        onclick="closeProfileModal()">Cancel</button>
+                    <button data-i18n="btn_save_changes" class="save-btn" id="save-profile-btn"
+                        onclick="saveUserProfile()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

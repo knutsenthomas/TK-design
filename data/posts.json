@@ -1,0 +1,45 @@
+[
+    {
+        "id": 1770455354743,
+        "title": "Dette er en test",
+        "author": "Admin",
+        "category": "General",
+        "date": "February 7, 2026",
+        "image": "img/blog/bblog1.png",
+        "content": "<p>This is a test post.</p>",
+        "seoTitle": "Super SEO Test Tittel",
+        "seoDesc": "Dette er en unik beskrivelse for dette blogginnlegget.",
+        "seoKeywords": "seo, test, blogg",
+        "link": "blog-details.html?id=1770455354743"
+    },
+    {
+        "id": 1,
+        "title": "Brand design that helps the company grow",
+        "date": "October 19, 2025",
+        "author": "Admin",
+        "category": "Design",
+        "content": "<p>Sorem ipsum dolor sit amet, consectetur adipiscing elit...</p>",
+        "image": "img/blog/bblog1.png",
+        "link": "blog-details.html?id=1"
+    },
+    {
+        "id": 2,
+        "title": "Fresh design ideas & inspiration for 2025",
+        "date": "October 19, 2025",
+        "author": "Admin",
+        "category": "Inspiration",
+        "content": "<p>Updated content for fresh design ideas.</p>",
+        "image": "img/blog/bblog2.png",
+        "link": "blog-details.html?id=2"
+    },
+    {
+        "id": 3,
+        "title": "Fresh design ideas & inspiration for 2025",
+        "date": "October 19, 2025",
+        "author": "Admin",
+        "category": "Inspiration",
+        "content": "<p>Another post about design ideas.</p>",
+        "image": "img/blog/bblog3.png",
+        "link": "blog-details.html?id=3"
+    }
+]

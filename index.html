@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matias | Creative Visual Designer</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Custom Dynamic Styles -->
+    <link rel="stylesheet" href="admin/custom-style.css">
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="container nav-container">
+            <a href="#" class="logo">
+                <img src="img/logo/logo-new.png" alt="TK Design Logo">
+            </a>
+            <nav class="nav-desktop">
+                <ul>
+                    <li><a href="#home" data-i18n="nav.home">Home</a></li>
+                    <li><a href="#about" data-i18n="nav.about">About</a></li>
+                    <li><a href="#services" data-i18n="nav.services">Services</a></li>
+                    <li><a href="#projects" data-i18n="nav.portfolio">Portfolio</a></li>
+                    <li><a href="#testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
+                    <li><a href="#blog" data-i18n="nav.blog">Blog</a></li>
+                    <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="lang-switch-desktop">
+                <button onclick="switchLanguage('en')" class="lang-btn active">EN</button>
+                <span>|</span>
+                <button onclick="switchLanguage('no')" class="lang-btn">NO</button>
+            </div>
+            <button class="menu-trigger"><i class="fas fa-bars"></i></button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay">
+        <button class="menu-close"><i class="fas fa-times"></i></button>
+        <nav class="mobile-nav">
+            <ul>
+                <li><a href="index.html#home" data-i18n="nav.home">Home</a></li>
+                <li><a href="index.html#about" data-i18n="nav.about">About</a></li>
+                <li><a href="index.html#services" data-i18n="nav.services">Services</a></li>
+                <li><a href="index.html#projects" data-i18n="nav.portfolio">Portfolio</a></li>
+                <li><a href="index.html#testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
+                <li><a href="index.html#blog" data-i18n="nav.blog">Blog</a></li>
+                <li><a href="index.html#contact" data-i18n="nav.contact">Contact</a></li>
+            </ul>
+            <div class="lang-switch-mobile">
+                <button onclick="switchLanguage('en')" class="lang-btn active">EN</button>
+                <button onclick="switchLanguage('no')" class="lang-btn">NO</button>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Video Modal -->
+    <div class="video-modal" id="videoModal">
+        <div class="modal-content">
+            <button class="modal-close"><i class="fas fa-times"></i></button>
+            <iframe width="100%" height="100%" src="" title="YouTube video player" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <main>
+        <!-- Banner / Hero -->
+        <section id="home" class="banner">
+            <div class="container">
+                <div class="flex flex-wrap items-center">
+                    <div class="banner-content" style="flex: 1.2; min-width: 300px;" data-aos="fade-right">
+                        <a href="#" class="subtitle" data-i18n="hero.subtitle">Currently available for freelance</a>
+                        <h1>
+                            <span style="color: #fff; display: block;" data-i18n="hero.title_1">Creative Visual</span>
+                            <span class="designers" data-text="Designer" data-i18n="hero.title_2">Designer</span>
+                        </h1>
+                        <div class="flex items-center gap-6" style="gap: 20px; margin-top: 40px;">
+                            <div class="play-video-btn animate-scales">
+                                <i class="fas fa-play"></i>
+                            </div>
+                            <span style="color: #fff; font-size: 18px;" data-i18n="hero.work_process">Work
+                                Process</span>
+                        </div>
+                    </div>
+                    <div class="banner-image" style="flex: 1; min-width: 300px;" data-aos="fade-left">
+                        <img src="img/banner/banner-man.png" alt="Matias">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Marquee Top -->
+        <div class="marquee-wrapper">
+            <div class="marquee-content">
+                <img src="img/banner/ts1.png" alt="Brand">
+                <img src="img/banner/ts2.png" alt="Brand">
+                <img src="img/banner/ts3.png" alt="Brand">
+                <img src="img/banner/ts4.png" alt="Brand">
+                <img src="img/banner/ts5.png" alt="Brand">
+                <img src="img/banner/ts1.png" alt="Brand">
+                <img src="img/banner/ts2.png" alt="Brand">
+                <img src="img/banner/ts3.png" alt="Brand">
+                <img src="img/banner/ts4.png" alt="Brand">
+                <img src="img/banner/ts5.png" alt="Brand">
+            </div>
+        </div>
+
+        <!-- About Section -->
+        <section id="about" class="pt_120 pb_120 about-section" data-aos="fade-up">
+            <div class="container">
+                <div class="about-intro">
+                    <img src="img/about/section-star.png" class="animate-spin"
+                        style="margin: 0 auto 30px; display: block;" alt="Star">
+                    <p data-i18n="about.intro">I'm David Matias, I'm a Brand & Webflow Designer. Currently residing in
+                        the lush Victoria Street
+                        London, Matias operates globally and is ready to take on any design challenge.</p>
+                </div>
+
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="about" data-i18n="about.tabs.about">About</button>
+                    <button class="tab-btn" data-tab="experience" data-i18n="about.tabs.experience">Experience</button>
+                    <button class="tab-btn" data-tab="education" data-i18n="about.tabs.education">Education</button>
+                    <button class="tab-btn" data-tab="skills" data-i18n="about.tabs.skills">Skills</button>
+                </div>
+
+                <div class="tab-content-area">
+                    <!-- About Tab -->
+                    <div id="about-tab" class="tab-content active">
+                        <div class="info-card">
+                            <h3 data-i18n="about.about_tab.based_title">Based in London</h3>
+                            <p data-i18n="about.about_tab.based_desc">Sit amet, consectetur adipiscing elit sed do
+                                eiusmod tempor incididunt ut labore et
+                                dolore magna aliqua.</p>
+                        </div>
+                        <div class="info-card">
+                            <h3 data-i18n="about.about_tab.exp_title">5+ Years Experience</h3>
+                            <p data-i18n="about.about_tab.exp_desc">Designing digital products and branding for
+                                startups.</p>
+                        </div>
+                        <div class="info-card">
+                            <h3 data-i18n="about.about_tab.client_title">100% Client Satisfaction</h3>
+                            <p data-i18n="about.about_tab.client_desc">Always delivering quality and value.</p>
+                        </div>
+                    </div>
+
+                    <!-- Experience Tab -->
+                    <div id="experience-tab" class="tab-content">
+                        <div class="info-card">
+                            <h4>2021 - Present</h4>
+                            <h3 data-i18n="about.experience_tab.senior_role">Senior Product Designer</h3>
+                            <p>Webflow Studio</p>
+                        </div>
+                        <div class="info-card">
+                            <h4>2018 - 2021</h4>
+                            <h3 data-i18n="about.experience_tab.junior_role">Junior UX Designer</h3>
+                            <p>Canva</p>
+                        </div>
+                    </div>
+                    <!-- Education Tab -->
+                    <div id="education-tab" class="tab-content">
+                        <div class="info-card">
+                            <h4>2015 - 2018</h4>
+                            <h3 data-i18n="about.education_tab.degree">Bachelor in Design</h3>
+                            <p data-i18n="about.education_tab.university">University of London</p>
+                        </div>
+                    </div>
+                    <!-- Skills Tab -->
+                    <div id="skills-tab" class="tab-content">
+                        <div class="info-card">
+                            <h3>Figma / Adobe XD</h3>
+                        </div>
+                        <div class="info-card">
+                            <h3>HTML / CSS / JS</h3>
+                        </div>
+                        <div class="info-card">
+                            <h3>Next.js / React</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Marquee Bottom -->
+        <div class="marquee-wrapper">
+            <div class="marquee-content reverse">
+                <img src="img/banner/ts5.png" alt="Brand">
+                <img src="img/banner/ts6.png" alt="Brand">
+                <img src="img/banner/ts7.png" alt="Brand">
+                <img src="img/banner/ts8.png" alt="Brand">
+                <img src="img/banner/ts5.png" alt="Brand">
+                <img src="img/banner/ts6.png" alt="Brand">
+                <img src="img/banner/ts7.png" alt="Brand">
+                <img src="img/banner/ts8.png" alt="Brand">
+            </div>
+        </div>
+
+        <!-- Awards Section -->
+        <section class="awards-section" data-aos="fade-up">
+            <div class="container">
+                <table class="awards-table">
+                    <tbody>
+                        <tr>
+                            <td colspan="2"><span style="font-size: 40px; color: #fff;" data-i18n="awards.title">Our
+                                    Awards</span></td>
+                            <td><a href="#" class="award-link"><span data-i18n="awards.view_work">View My Work</span> <i
+                                        class="fas fa-arrow-right"></i></a></td>
+                        </tr>
+                        <tr>
+                            <td>Site Of The Day</td>
+                            <td data-i18n="awards.award_1_cat">Css & Animation</td>
+                            <td style="text-align: right;">2018</td>
+                        </tr>
+                        <tr>
+                            <td>Best Business Model</td>
+                            <td data-i18n="awards.award_2_cat">New Strategy</td>
+                            <td style="text-align: right;">2019</td>
+                        </tr>
+                        <tr>
+                            <td>Motion Graphic</td>
+                            <td data-i18n="awards.award_3_cat">3D & Visual Effect</td>
+                            <td style="text-align: right;">2020</td>
+                        </tr>
+                        <tr>
+                            <td>Video Design</td>
+                            <td data-i18n="awards.award_4_cat">Css & Animation</td>
+                            <td style="text-align: right;">2022</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Projects / Portfolio -->
+        <section id="projects" class="pt_120 pb_120" data-aos="fade-up">
+            <div class="container">
+                <div class="text-center mb-50">
+                    <div class="flex justify-center">
+                        <span class="section-subtitle-lines" data-i18n="projects.subtitle">Complete Project</span>
+                    </div>
+                    <h2 class="section-title" style="font-size: 50px;" data-i18n="projects.title">Look at my portfolio
+                        and give me your feedback
+                    </h2>
+                </div>
+
+                <div class="portfolio-grid">
+                    <!-- Project 1 -->
+                    <div class="project-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="project-img-wrapper">
+                            <a href="project-details.html">
+                                <img src="img/project/pro1.png" alt="Project 1">
+                            </a>
+                            <a href="project-details.html" class="project-arrow-btn">
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div class="project-content">
+                            <span class="project-category" data-i18n="projects.p1_desc">Brand Identity</span>
+                            <h3 class="project-title"><a href="project-details.html"
+                                    data-i18n="projects.p1_title">Product Design & Motion</a></h3>
+                        </div>
+                    </div>
+
+                    <!-- Project 2 -->
+                    <div class="project-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="project-img-wrapper">
+                            <a href="project-details.html">
+                                <img src="img/project/pro3.png" alt="Project 2">
+                            </a>
+                            <a href="project-details.html" class="project-arrow-btn">
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div class="project-content">
+                            <span class="project-category" data-i18n="projects.p2_desc">UI/UX Design</span>
+                            <h3 class="project-title"><a href="project-details.html"
+                                    data-i18n="projects.p2_title">Mobile Application Development</a></h3>
+                        </div>
+                    </div>
+
+                    <!-- Project 3 -->
+                    <div class="project-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="project-img-wrapper">
+                            <a href="project-details.html">
+                                <img src="img/project/pro5.png" alt="Project 3">
+                            </a>
+                            <a href="project-details.html" class="project-arrow-btn">
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div class="project-content">
+                            <span class="project-category" data-i18n="projects.p3_desc">Digital Design</span>
+                            <h3 class="project-title"><a href="project-details.html"
+                                    data-i18n="projects.p3_title">Design & Branding Mockup</a></h3>
+                        </div>
+                    </div>
+
+                    <!-- Project 4 -->
+                    <div class="project-card" data-aos="fade-up" data-aos-delay="400">
+                        <div class="project-img-wrapper">
+                            <a href="project-details.html">
+                                <img src="img/project/pro2.png" alt="Project 4">
+                            </a>
+                            <a href="project-details.html" class="project-arrow-btn">
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div class="project-content">
+                            <span class="project-category" data-i18n="projects.p4_desc">UI/UX Design</span>
+                            <h3 class="project-title"><a href="project-details.html"
+                                    data-i18n="projects.p4_title">Mobile Application Development</a></h3>
+                        </div>
+                    </div>
+
+                    <!-- Project 5 -->
+                    <div class="project-card" data-aos="fade-up" data-aos-delay="500">
+                        <div class="project-img-wrapper">
+                            <a href="project-details.html">
+                                <img src="img/project/pro4.png" alt="Project 5">
+                            </a>
+                            <a href="project-details.html" class="project-arrow-btn">
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div class="project-content">
+                            <span class="project-category" data-i18n="projects.p5_desc">Visual Identity</span>
+                            <h3 class="project-title"><a href="project-details.html" data-i18n="projects.p5_title">Brand
+                                    Identity & Visuals</a></h3>
+                        </div>
+                    </div>
+
+                    <!-- Project 6 -->
+                    <div class="project-card" data-aos="fade-up" data-aos-delay="600">
+                        <div class="project-img-wrapper">
+                            <a href="project-details.html">
+                                <img src="img/project/pro6.png" alt="Project 6">
+                            </a>
+                            <a href="project-details.html" class="project-arrow-btn">
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div class="project-content">
+                            <span class="project-category" data-i18n="projects.p6_desc">Design</span>
+                            <h3 class="project-title"><a href="project-details.html"
+                                    data-i18n="projects.p6_title">Creative Business Agency</a></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            </div>
+        </section>
+
+        <!-- Meeting Section -->
+        <section id="contact" class="meeting-section" data-aos="zoom-in">
+            <div class="container">
+                <div class="meeting-bg">
+                    <div class="flex flex-wrap gap-10">
+                        <div style="flex: 1;">
+                            <div class="meeting-content">
+                                <h2 data-i18n="meeting.title">Let's work together. fixed a meeting</h2>
+                                <h4 class="section-subtitle-lines" style="margin-bottom: 30px;"
+                                    data-i18n="meeting.subtitle">
+                                    Need a Project?</h4>
+
+                                <div class="meeting-contact-item">
+                                    <div class="meeting-icon"><i class="fas fa-envelope"></i></div>
+                                    <div>
+                                        <span style="display: block; color: var(--clr-common-text);"
+                                            data-i18n="meeting.email_label">Email</span>
+                                        <a href="mailto:thomas@tk-design.no" style="font-size: 20px; color: #fff;"
+                                            data-i18n="meeting.email_val">thomas@tk-design.no</a>
+                                    </div>
+                                </div>
+                                <div class="meeting-contact-item" style="border-bottom: none;">
+                                    <div class="meeting-icon"><i class="fas fa-map-marker-alt"></i></div>
+                                    <div>
+                                        <span style="display: block; color: var(--clr-common-text);"
+                                            data-i18n="meeting.location_label">Location</span>
+                                        <span style="font-size: 20px; color: #fff;"
+                                            data-i18n="meeting.location_val">Lyngdal, Norway</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="flex: 0.8;">
+                            <img src="img/project/project-need.png" alt="Project Need" style="border-radius: 10px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="services" class="pt_120 pb_120" data-aos="fade-up">
+            <div class="container">
+                <h2 class="section-title text-center" style="font-size: 50px; margin-bottom: 60px;"
+                    data-i18n="services.title">Services That I
+                    Provide</h2>
+
+                <div class="services-list">
+                    <div class="service-item" data-aos="fade-up" data-aos-delay="100">
+                        <div class="service-id">01</div>
+                        <div class="service-content">
+                            <h5 style="color: #666; margin-bottom: 5px;" data-i18n="services.s1_cat">Designer</h5>
+                            <h3><a href="service-details.html" style="color: #fff; text-decoration: none;"
+                                    data-i18n="services.s1_title">Illustration
+                                    Design</a></h3>
+                            <p style="max-width: 500px;" data-i18n="services.s1_desc">Duis aute irure dolor in
+                                reprehenderit in voluptate velit esse
+                                cillum.</p>
+                        </div>
+                        <div class="service-arrow"><a href="service-details.html"><i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="service-item" data-aos="fade-up" data-aos-delay="200">
+                        <div class="service-id">02</div>
+                        <div class="service-content">
+                            <h5 style="color: #666; margin-bottom: 5px;" data-i18n="services.s2_cat">Branding</h5>
+                            <h3><a href="service-details.html" style="color: #fff; text-decoration: none;"
+                                    data-i18n="services.s2_title">Business
+                                    Branding</a></h3>
+                            <p style="max-width: 500px;" data-i18n="services.s2_desc">Custom logos and brand guidelines
+                                to make your business stand
+                                out.</p>
+                        </div>
+                        <div class="service-arrow"><a href="service-details.html"><i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="service-item" data-aos="fade-up" data-aos-delay="300">
+                        <div class="service-id">03</div>
+                        <div class="service-content">
+                            <h5 style="color: #666; margin-bottom: 5px;" data-i18n="services.s3_cat">UI/UX</h5>
+                            <h3><a href="service-details.html" style="color: #fff; text-decoration: none;"
+                                    data-i18n="services.s3_title">Web UI/UX
+                                    Design</a></h3>
+                            <p style="max-width: 500px;" data-i18n="services.s3_desc">User-centric designs that drive
+                                engagement and retention.</p>
+                        </div>
+                        <div class="service-arrow"><a href="service-details.html"><i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="service-item" data-aos="fade-up" data-aos-delay="400">
+                        <div class="service-id">04</div>
+                        <div class="service-content">
+                            <h5 style="color: #666; margin-bottom: 5px;" data-i18n="services.s4_cat">Development</h5>
+                            <h3><a href="service-details.html" style="color: #fff; text-decoration: none;"
+                                    data-i18n="services.s4_title">Web
+                                    Development</a></h3>
+                            <p style="max-width: 500px;" data-i18n="services.s4_desc">Robust and scalable websites using
+                                modern technologies.</p>
+                        </div>
+                        <div class="service-arrow"><a href="service-details.html"><i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="service-item" data-aos="fade-up" data-aos-delay="500">
+                        <div class="service-id">05</div>
+                        <div class="service-content">
+                            <h5 style="color: #666; margin-bottom: 5px;" data-i18n="services.s5_cat">Digital Marketing
+                            </h5>
+                            <h3><a href="service-details.html" style="color: #fff; text-decoration: none;"
+                                    data-i18n="services.s5_title">SEO
+                                    Analytics</a></h3>
+                            <p style="max-width: 500px;" data-i18n="services.s5_desc">Optimizing your presence to reach
+                                the right audience.</p>
+                        </div>
+                        <div class="service-arrow"><a href="service-details.html"><i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Process Section -->
+        <section class="container pt_120 pb_120" data-aos="fade-up">
+            <div class="process-section">
+                <h2 class="text-center" style="margin-bottom: 60px;" data-i18n="process.title">Working Process</h2>
+                <div class="process-grid">
+                    <div class="process-card">
+                        <h3 style="font-size: 40px; margin-bottom: 20px;" data-i18n="process.c1_title">Concept</h3>
+                        <p style="margin-bottom: 20px;" data-i18n="process.c1_desc">Nemo enim ipsam voluptatem voluptas.
+                        </p>
+                        <ul style="color: #999; list-style: disc; padding-left: 20px;">
+                            <li data-i18n="process.c1_li1">Research & Discovery</li>
+                            <li data-i18n="process.c1_li2">Strategic Planning</li>
+                            <li data-i18n="process.c1_li3">Drafting Ideas</li>
+                        </ul>
+                    </div>
+                    <div class="process-card">
+                        <h3 style="font-size: 40px; margin-bottom: 20px;" data-i18n="process.c2_title">Design</h3>
+                        <p style="margin-bottom: 20px;" data-i18n="process.c2_desc">Developing the visual language.</p>
+                        <ul style="color: #999; list-style: disc; padding-left: 20px;">
+                            <li data-i18n="process.c2_li1">Wireframing</li>
+                            <li data-i18n="process.c2_li2">Visual Polishing</li>
+                            <li data-i18n="process.c2_li3">Prototyping</li>
+                        </ul>
+                    </div>
+                    <div class="process-card">
+                        <h3 style="font-size: 40px; margin-bottom: 20px;" data-i18n="process.c3_title">Webflow</h3>
+                        <p style="margin-bottom: 20px;" data-i18n="process.c3_desc">Bringing the design to life.</p>
+                        <ul style="color: #999; list-style: disc; padding-left: 20px;">
+                            <li data-i18n="process.c3_li1">Development</li>
+                            <li data-i18n="process.c3_li2">Testing & QA</li>
+                            <li data-i18n="process.c3_li3">Launch</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonial Section -->
+        <section id="testimonial" class="testimonial-section" data-aos="fade-up">
+            <div class="container">
+                <div class="text-center mb-50">
+                    <div class="flex justify-center">
+                        <span class="section-subtitle-lines" data-i18n="testimonial.tag">Testimonial</span>
+                    </div>
+                    <h2 style="font-size: 50px;" data-i18n="testimonial.title">Happy Words From Happy Customer</h2>
+                </div>
+
+                <div class="testimonial-bg">
+                    <div class="testimonial-slider">
+                        <!-- Custom JS Slider -->
+                        <div class="testimonial-slide active">
+                            <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                    class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                            <p class="testimonial-text" data-i18n="testimonial.t1_text">"There are many variations of
+                                passages of Lorem Ipsum available,
+                                by injected humour, or randomised words which don't look even slightly believable."</p>
+                            <div class="client-info">
+                                <h4>Shawn Beltran</h4>
+                                <span data-i18n="testimonial.t1_role">Business Owner</span>
+                            </div>
+                        </div>
+                        <div class="testimonial-slide">
+                            <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                    class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                    class="fas fa-star-half-alt"></i>
+                            </div>
+                            <p class="testimonial-text" data-i18n="testimonial.t2_text">"If you are going to use a
+                                passage of Lorem Ipsum, you need to
+                                be hidden in middle of text. All the Lorem Ipsum generators."</p>
+                            <div class="client-info">
+                                <h4>John Methcel</h4>
+                                <span data-i18n="testimonial.t2_role">Business Owner</span>
+                            </div>
+                        </div>
+
+                        <div class="testimonial-dots">
+                            <!-- Dots filled by JS -->
+                        </div>
+                    </div>
+                    <!-- Decorative Images -->
+                    <img src="img/testimonial/quote.png" alt="quote"
+                        style="position: absolute; top: 100px; left: 200px; width: 60px; opacity: 0.5;"
+                        class="hidden-mobile">
+                </div>
+
+                <!-- Partner Slider -->
+                <div class="partner-slider-container">
+                    <p style="color: #fff; margin-bottom: 40px; font-size: 24px;" data-i18n="testimonial.trusted_text">
+                        More than 100+ companies trusted us
+                        worldwide</p>
+                    <div class="partner-track">
+                        <img src="img/testimonial/partner1.png" alt="Partner">
+                        <img src="img/testimonial/partner2.png" alt="Partner">
+                        <img src="img/testimonial/partner3.png" alt="Partner">
+                        <img src="img/testimonial/partner4.png" alt="Partner">
+                        <img src="img/testimonial/partner1.png" alt="Partner">
+                        <img src="img/testimonial/partner2.png" alt="Partner">
+                        <img src="img/testimonial/partner3.png" alt="Partner">
+                        <img src="img/testimonial/partner4.png" alt="Partner">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Blog Section -->
+        <section id="blog" class="blog-section" data-aos="fade-up">
+            <div class="container">
+                <div class="flex justify-between items-end mb-50">
+                    <div>
+                        <h2 style="font-size: 50px;" data-i18n="blog.title">Recent Posts</h2>
+                        <span style="color: var(--clr-base);" data-i18n="blog.subtitle">My Blogs</span>
+                    </div>
+                    <div>
+                        <!-- Could add view all btn here -->
+                    </div>
+                </div>
+
+                <div class="blog-grid" id="blog-grid">
+                    <!-- Blog posts will be loaded here dynamically -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="pt_120 pb_120" style="border-top: 1px solid #262525;">
+        <div class="container">
+            <div class="footer-cta">
+                <h2 data-i18n="footer.cta">Get In Touch</h2>
+            </div>
+
+            <div class="footer-content">
+                <div class="footer-info">
+                    <p style="font-size: 20px; color: #fff; margin-bottom: 20px;" data-i18n="footer.intro">Hello, I’m
+                        David Matias, Website &
+                        User Interface Designer based in London.</p>
+                    <a href="mailto:thomas@tk-design.no"
+                        style="font-size: 30px; text-decoration: underline; color: #fff;"
+                        data-i18n="contact.email_val">thomas@tk-design.no</a>
+                </div>
+
+                <div class="footer-links" style="grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                    <a href="#" class="social-link">Facebook <i class="fas fa-arrow-right"></i></a>
+                    <a href="#" class="social-link">Instagram <i class="fas fa-arrow-right"></i></a>
+                    <a href="#" class="social-link">Dribbble <i class="fas fa-arrow-right"></i></a>
+                    <a href="#" class="social-link">Webflow <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-between items-center"
+                style="border-top: 1px solid #333; padding-top: 30px;">
+                <p><span data-i18n="footer.copyright">Copyright © 2026</span> <a href="#"
+                        style="color: var(--clr-base);">TK-design</a> <span data-i18n="footer.rights">All rights
+                        reserved.</span></p>
+                <div class="flex gap-4">
+                    <a href="accessibility.html" style="color: #fff;" data-i18n="footer.accessibility">Accessibility
+                        Statement</a>
+                    <a href="privacy.html" style="color: #fff;" data-i18n="footer.privacy">Privacy Policy</a>
+                    <a href="admin/index.html" style="color: #777; font-size: 0.8em;">Admin</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+    </script>
+    <script src="translations.js"></script>
+    <script src="script.js"></script>
+    <script src="js/cookies.js"></script>
+    <script>
+        // Dynamic Blog Loading
+        async function loadBlogPosts() {
+            try {
+                // Use absolute URL for Live Server compatibility
+                const response = await fetch('http://localhost:3000/api/posts');
+                const posts = await response.json();
+                const container = document.getElementById('blog-grid');
+
+                if (!container) return;
+                container.innerHTML = '';
+
+                posts.forEach((post, index) => {
+                    const delay = (index + 1) * 100;
+                    const card = document.createElement('div');
+                    card.className = 'blog-card';
+                    card.setAttribute('data-aos', 'zoom-in');
+                    card.setAttribute('data-aos-delay', delay);
+
+                    card.innerHTML = `
+                        <div class="blog-img"><img src="${post.image}" alt="${post.title}"></div>
+                        <span class="blog-date">${post.date}</span>
+                        <h3><a href="blog-details.html?id=${post.id}">${post.title}</a></h3>
+                        <a href="blog-details.html?id=${post.id}" class="award-link" style="justify-content: flex-start;">
+                            <span data-i18n="blog.read_more">Read More</span> <i class="fas fa-arrow-right"></i>
+                        </a>
+                    `;
+                    container.appendChild(card);
+                });
+
+                // Re-trigger translations if needed, though raw text is used here for title/date. 
+                // data-i18n="blog.read_more" will need updated translations if available.
+            } catch (error) {
+                console.error('Error loading posts:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadBlogPosts);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+{
+    "global": {
+        "siteTitle": "TK Design Studio",
+        "separator": "|",
+        "defaultKeywords": "design, portfolio, webutvikling, grafisk design"
+    },
+    "pages": {
+        "index.html": {
+            "title": "Hjem",
+            "description": "Portefølje for Thomas Knutsen - Grafisk Designer og Webutvikler.",
+            "keywords": "thomas knutsen, portefølje, hjem"
+        },
+        "blog.html": {
+            "title": "Blogg",
+            "description": "Les mine siste tanker og oppdateringer om design og teknologi.",
+            "keywords": "blogg, design, tech"
+        },
+        "portfolio.html": {
+            "title": "Portefølje",
+            "description": "Se mine siste prosjekter og arbeid.",
+            "keywords": "prosjekter, arbeid, showcase"
+        }
+    }
+}

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Details | Matias</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <img src="img/logo/logo-new.png" alt="TK Design Logo">
+            </a>
+            <nav class="nav-desktop">
+                <ul>
+                    <li><a href="index.html#home" data-i18n="nav.home">Home</a></li>
+                    <li><a href="index.html#about" data-i18n="nav.about">About</a></li>
+                    <li><a href="index.html#services" data-i18n="nav.services">Services</a></li>
+                    <li><a href="index.html#projects" data-i18n="nav.portfolio">Portfolio</a></li>
+                    <li><a href="index.html#blog" data-i18n="nav.blog">Blog</a></li>
+                    <li><a href="index.html#contact" data-i18n="nav.contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="lang-switch-desktop">
+                <button onclick="switchLanguage('en')" class="lang-btn active">EN</button>
+                <span>|</span>
+                <button onclick="switchLanguage('no')" class="lang-btn">NO</button>
+            </div>
+            <button class="menu-trigger"><i class="fas fa-bars"></i></button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay">
+        <button class="menu-close"><i class="fas fa-times"></i></button>
+        <nav class="mobile-nav">
+            <ul>
+                <li><a href="index.html#home" data-i18n="nav.home">Home</a></li>
+                <li><a href="index.html#about" data-i18n="nav.about">About</a></li>
+                <li><a href="index.html#services" data-i18n="nav.services">Services</a></li>
+                <li><a href="index.html#projects" data-i18n="nav.portfolio">Portfolio</a></li>
+                <li><a href="index.html#blog" data-i18n="nav.blog">Blog</a></li>
+                <li><a href="index.html#contact" data-i18n="nav.contact">Contact</a></li>
+            </ul>
+            <div class="lang-switch-mobile">
+                <button onclick="switchLanguage('en')" class="lang-btn active">EN</button>
+                <button onclick="switchLanguage('no')" class="lang-btn">NO</button>
+            </div>
+        </nav>
+    </div>
+
+    <main>
+        <!-- Page Banner -->
+        <section class="page-banner pt_120 pb_120">
+            <div class="container">
+                <div class="page-banner-content text-center">
+                    <h1 class="section-title" style="font-size: 60px;" data-i18n="service_details.banner_title">Web
+                        UI/UX Design</h1>
+                    <ul class="breadcrumb justify-center">
+                        <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+                        <li><a href="index.html#services" data-i18n="nav.services">Services</a></li>
+                        <li data-i18n="service_details.breadcrumb">Service Details</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Service Details Content -->
+        <section class="service-details-area pb_120">
+            <div class="container">
+                <div class="flex flex-wrap gap-10">
+                    <!-- Sidebar -->
+                    <div style="flex: 0.3; min-width: 300px;">
+                        <div class="service-sidebar" style="background: #1a1a1a; padding: 30px; border-radius: 10px;">
+                            <h3 style="margin-bottom: 20px;" data-i18n="service_details.sidebar_title">All Services</h3>
+                            <ul style="list-style: none; padding: 0;">
+                                <li style="margin-bottom: 15px;"><a href="#"
+                                        style="color: var(--clr-base); display: flex; justify-content: space-between;"><span
+                                            data-i18n="service_details.sidebar_items.uiux">UI/UX
+                                            Design</span> <i class="fas fa-arrow-right"></i></a></li>
+                                <li style="margin-bottom: 15px;"><a href="#"
+                                        style="color: #fff; display: flex; justify-content: space-between;"><span
+                                            data-i18n="service_details.sidebar_items.web_dev">Web
+                                            Development</span> <i class="fas fa-arrow-right"></i></a></li>
+                                <li style="margin-bottom: 15px;"><a href="#"
+                                        style="color: #fff; display: flex; justify-content: space-between;"><span
+                                            data-i18n="service_details.sidebar_items.digital_marketing">Digital
+                                            Marketing</span> <i class="fas fa-arrow-right"></i></a></li>
+                                <li style="margin-bottom: 15px;"><a href="#"
+                                        style="color: #fff; display: flex; justify-content: space-between;"><span
+                                            data-i18n="service_details.sidebar_items.branding">Branding</span> <i
+                                            class="fas fa-arrow-right"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Main Content -->
+                    <div style="flex: 0.7;">
+                        <div class="service-details-content">
+                            <img src="img/project/pro3.png" alt="Service"
+                                style="width: 100%; border-radius: 20px; margin-bottom: 30px;">
+
+                            <h2 style="font-size: 30px; margin-bottom: 20px;" data-i18n="service_details.content_title">
+                                We believe in Client satisfaction</h2>
+                            <p class="mb-30" style="color: #bbb; line-height: 1.8;"
+                                data-i18n="service_details.content_p1">
+                                Sorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                                incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida.
+                                Risus commodo viverra maecenas accumsan lacus vel facilisis.
+                            </p>
+
+                            <div class="flex flex-wrap gap-6 my-5">
+                                <div class="service-feature"
+                                    style="flex: 1; background: #1a1a1a; padding: 20px; border-radius: 10px;">
+                                    <h4 style="color: #fff; margin-bottom: 10px;"
+                                        data-i18n="service_details.feature_1_title">User Research</h4>
+                                    <p style="color: #999;" data-i18n="service_details.feature_1_desc">Understanding the
+                                        user needs and pain points.</p>
+                                </div>
+                                <div class="service-feature"
+                                    style="flex: 1; background: #1a1a1a; padding: 20px; border-radius: 10px;">
+                                    <h4 style="color: #fff; margin-bottom: 10px;"
+                                        data-i18n="service_details.feature_2_title">Prototyping</h4>
+                                    <p style="color: #999;" data-i18n="service_details.feature_2_desc">Building
+                                        interactive mockups to test flows.</p>
+                                </div>
+                            </div>
+
+                            <p class="mb-30" style="color: #bbb; line-height: 1.8;"
+                                data-i18n="service_details.content_p2">
+                                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+                                mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit
+                                voluptatem accusantium doloremque laudantium.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="pt_120 pb_120" style="border-top: 1px solid #262525;">
+        <div class="container">
+            <div class="footer-cta">
+                <h2 data-i18n="footer.cta">Get In Touch</h2>
+            </div>
+            <div class="footer-content">
+                <div class="footer-info">
+                    <p style="font-size: 20px; color: #fff; margin-bottom: 20px;" data-i18n="footer.intro">Hello, I’m
+                        David Matias, Website &
+                        User Interface Designer based in London.</p>
+                    <a href="mailto:thomas@tk-design.no"
+                        style="font-size: 30px; text-decoration: underline; color: #fff;"
+                        data-i18n="contact.email_val">thomas@tk-design.no</a>
+                </div>
+                <div class="footer-links" style="grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                    <a href="#" class="social-link">Facebook <i class="fas fa-arrow-right"></i></a>
+                    <a href="#" class="social-link">Instagram <i class="fas fa-arrow-right"></i></a>
+                    <a href="#" class="social-link">Dribbble <i class="fas fa-arrow-right"></i></a>
+                    <a href="#" class="social-link">Webflow <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            <div class="flex flex-wrap justify-between items-center"
+                style="border-top: 1px solid #333; padding-top: 30px;">
+                <p><span data-i18n="footer.copyright">Copyright © 2026</span> <a href="#"
+                        style="color: var(--clr-base);">TK-design</a> <span data-i18n="footer.rights">All rights
+                        reserved.</span></p>
+                <div class="flex gap-4">
+                    <a href="#" style="color: #fff;" data-i18n="footer.terms">Terms & Condition</a>
+                    <a href="#" style="color: #fff;" data-i18n="footer.privacy">Privacy Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="translations.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
