@@ -1,40 +1,126 @@
 <!DOCTYPE html>
-<html lang="no">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="accessibility_statement.title">Accessibility Statement - TK-design</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 
 <body>
-    <header class="admin-header">
-        <div class="header-left">
-            <a href="index.html" class="back-btn">
-                <i class="fas fa-arrow-left"></i> <span data-i18n="nav.home">Home</span>
+
+    <header class="header">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <img src="img/logo/logo-new.png" alt="TK Design Logo">
             </a>
+            <nav class="nav-desktop">
+                <ul>
+                    <li><a href="index.html#home" data-i18n="nav.home">Home</a></li>
+                    <li><a href="index.html#about" data-i18n="nav.about">About</a></li>
+                    <li><a href="index.html#services" data-i18n="nav.services">Services</a></li>
+                    <li><a href="index.html#projects" data-i18n="nav.portfolio">Portfolio</a></li>
+                    <li><a href="index.html#testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
+                    <li><a href="index.html#blog" data-i18n="nav.blog">Blog</a></li>
+                    <li><a href="index.html#contact" data-i18n="nav.contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="lang-switch-desktop">
+                <button onclick="switchLanguage('en')" class="lang-btn active">EN</button>
+                <span>|</span>
+                <button onclick="switchLanguage('no')" class="lang-btn">NO</button>
+            </div>
+            <button class="menu-trigger"><i class="fas fa-bars"></i></button>
         </div>
     </header>
 
-    <main class="admin-container" style="padding-top: 100px; padding-bottom: 100px;">
-        <div class="container"
-            style="max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-            <h1 data-i18n="accessibility_statement.title" style="font-size: 32px; margin-bottom: 30px;">Accessibility
-                Statement</h1>
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay">
+        <button class="menu-close"><i class="fas fa-times"></i></button>
+        <nav class="mobile-nav">
+            <ul>
+                <li><a href="index.html#home" data-i18n="nav.home">Home</a></li>
+                <li><a href="index.html#about" data-i18n="nav.about">About</a></li>
+                <li><a href="index.html#services" data-i18n="nav.services">Services</a></li>
+                <li><a href="index.html#projects" data-i18n="nav.portfolio">Portfolio</a></li>
+                <li><a href="index.html#testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
+                <li><a href="index.html#blog" data-i18n="nav.blog">Blog</a></li>
+                <li><a href="index.html#contact" data-i18n="nav.contact">Contact</a></li>
+            </ul>
+            <div class="lang-switch-mobile">
+                <button onclick="switchLanguage('en')" class="lang-btn active">EN</button>
+                <button onclick="switchLanguage('no')" class="lang-btn">NO</button>
+            </div>
+        </nav>
+    </div>
 
-            <p data-i18n="accessibility_statement.intro" style="margin-bottom: 20px; line-height: 1.6; color: #64748b;">
-            </p>
-            <p data-i18n="accessibility_statement.goal" style="margin-bottom: 20px; line-height: 1.6; color: #64748b;">
-            </p>
-            <p data-i18n="accessibility_statement.standards"
-                style="margin-bottom: 20px; line-height: 1.6; color: #64748b;"></p>
-        </div>
+    <main class="pt_120 pb_120">
+        <section class="container" data-aos="fade-up">
+            <h1 class="section-title text-center legal-content" style="margin-bottom: 60px;"
+                data-i18n="accessibility_statement.title">Accessibility Statement</h1>
+
+            <div class="legal-content" style="max-width: 800px; margin: 0 auto;">
+                <p data-i18n="accessibility_statement.intro"></p>
+                <p data-i18n="accessibility_statement.goal"></p>
+                <p data-i18n="accessibility_statement.standards"></p>
+            </div>
+        </section>
     </main>
 
+    <footer class="pt_120 pb_120" style="border-top: 1px solid #262525;">
+        <div class="container">
+            <div class="footer-cta">
+                <h2 data-i18n="footer.cta">Get In Touch</h2>
+            </div>
+
+            <div class="footer-content">
+                <div class="footer-info">
+                    <p style="font-size: 20px; color: #fff; margin-bottom: 20px;" data-i18n="footer.intro">Hello, I’m
+                        David Matias, Website &
+                        User Interface Designer based in London.</p>
+                    <a href="mailto:thomas@tk-design.no"
+                        style="font-size: 30px; text-decoration: underline; color: #fff;"
+                        data-i18n="contact.email_val">thomas@tk-design.no</a>
+                </div>
+
+                <div class="footer-links" style="grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                    <a href="#" class="social-link">Facebook <i class="fas fa-arrow-right"></i></a>
+                    <a href="#" class="social-link">Instagram <i class="fas fa-arrow-right"></i></a>
+                    <a href="#" class="social-link">Dribbble <i class="fas fa-arrow-right"></i></a>
+                    <a href="#" class="social-link">Webflow <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-between items-center"
+                style="border-top: 1px solid #333; padding-top: 30px;">
+                <p><span data-i18n="footer.copyright">Copyright © 2026</span> <a href="index.html"
+                        style="color: var(--clr-base);">TK-design</a> <span data-i18n="footer.rights">All rights
+                        reserved.</span></p>
+                <div class="flex gap-4">
+                    <a href="accessibility.html" style="color: #fff;" data-i18n="footer.accessibility">Accessibility
+                        Statement</a>
+                    <a href="privacy.html" style="color: #fff;" data-i18n="footer.privacy">Privacy Policy</a>
+                    <a href="admin/index.html" style="color: #777; font-size: 0.8em;">Admin</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+    </script>
     <script src="translations.js"></script>
     <script src="script.js"></script>
+    <script src="js/cookies.js"></script>
 </body>
 
 </html>
