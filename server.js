@@ -1,6 +1,5 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
@@ -28,17 +27,6 @@ app.use((req, res, next) => {
     }
     next();
 });
-
-// Storage for Image Uploads
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'img/');
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.originalname); // Use original name (overwrite existing)
-    }
-});
-const upload = multer({ storage: storage });
 
 async function getFetch() {
     const fetchModule = await import('node-fetch');
@@ -803,14 +791,6 @@ app.post('/api/posts', async (req, res) => {
     }
 });
 
-// API: Upload Image
-app.post('/api/upload', upload.single('image'), (req, res) => {
-    if (!req.file) {
-        return res.status(400).send('No file uploaded');
-    }
-    res.status(200).send({ message: 'Image uploaded', filename: req.file.originalname });
-});
-
 // --- SEO FEATURES ---
 
 // API: Get SEO Data
@@ -1051,55 +1031,6 @@ app.get('/api/unsplash/search', async (req, res) => {
     } catch (error) {
         console.error('Unsplash API Error:', error);
         res.status(500).json({ error: 'Failed to search images', details: error.message });
-    }
-});
-
-// API: Upload Blog Image
-const blogImageStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadDir = 'img/blog';
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
-        cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + path.extname(file.originalname));
-    }
-});
-
-const uploadBlogImage = multer({
-    storage: blogImageStorage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
-    fileFilter: (req, file, cb) => {
-        const allowedTypes = /jpeg|jpg|png|gif|webp/;
-        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-        const mimetype = allowedTypes.test(file.mimetype);
-
-        if (extname && mimetype) {
-            return cb(null, true);
-        } else {
-            cb(new Error('Only image files are allowed'));
-        }
-    }
-});
-
-app.post('/api/upload-blog-image', uploadBlogImage.single('image'), (req, res) => {
-    try {
-        if (!req.file) {
-            return res.status(400).json({ error: 'No image file provided' });
-        }
-
-        const imageUrl = `/img/blog/${req.file.filename}`;
-        res.json({
-            success: true,
-            imageUrl: imageUrl,
-            filename: req.file.filename
-        });
-    } catch (error) {
-        console.error('Image Upload Error:', error);
-        res.status(500).json({ error: 'Failed to upload image', details: error.message });
     }
 });
 

@@ -1463,6 +1463,125 @@ function setupEventListeners() {
 
 // --- Blog Management ---
 let currentEditingId = null;
+let selectedImageUrl = null;
+let selectedUploadFile = null;
+
+function sanitizeStorageFileName(fileName = 'image') {
+    return String(fileName)
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9.\-_]+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '') || 'image';
+}
+
+async function uploadFileToFirebaseStorage(file, folder = 'media') {
+    if (!file) {
+        throw new Error('Ingen fil valgt.');
+    }
+
+    if (!window.adminAuthClient?.storage) {
+        throw new Error('Firebase Storage er ikke tilgjengelig.');
+    }
+
+    const safeName = sanitizeStorageFileName(file.name || 'image');
+    const filePath = `${folder}/${Date.now()}-${safeName}`;
+
+    const { data, error: uploadError } = await window.adminAuthClient.storage
+        .from('uploads')
+        .upload(filePath, file);
+
+    if (uploadError) {
+        throw uploadError;
+    }
+
+    if (data?.publicUrl) {
+        return data.publicUrl;
+    }
+
+    const { data: publicData, error: publicUrlError } = await window.adminAuthClient.storage
+        .from('uploads')
+        .getPublicUrl(filePath);
+
+    if (publicUrlError) {
+        throw publicUrlError;
+    }
+
+    return publicData.publicUrl;
+}
+
+function insertImageIntoEditor(imageUrl) {
+    if (!imageUrl || !quill) return;
+
+    const range = quill.getSelection(true);
+    const insertIndex = range ? range.index : quill.getLength();
+    quill.insertEmbed(insertIndex, 'image', imageUrl, Quill.sources.USER);
+    quill.setSelection(insertIndex + 1, Quill.sources.SILENT);
+}
+
+function updatePostImageField(imageUrl) {
+    const postImageInput = document.getElementById('post-image');
+    if (!postImageInput || !imageUrl) return;
+
+    if (!postImageInput.value || /img\/blog\/bblog1\.png$/i.test(postImageInput.value)) {
+        postImageInput.value = imageUrl;
+    }
+}
+
+function renderMediaLibraryItem(imageUrl, label = 'Nytt bilde') {
+    const mediaGrid = document.querySelector('.media-grid');
+    if (!mediaGrid || !imageUrl) return;
+
+    const item = document.createElement('div');
+    item.className = 'media-item-card';
+
+    const thumb = document.createElement('div');
+    thumb.className = 'media-item-thumb';
+    thumb.innerHTML = `<img src="${imageUrl}" alt="${label}">`;
+
+    const meta = document.createElement('div');
+    meta.className = 'media-item-meta';
+
+    const name = document.createElement('strong');
+    name.textContent = label;
+
+    const link = document.createElement('a');
+    link.href = imageUrl;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = 'Åpne bilde';
+
+    const copyBtn = document.createElement('button');
+    copyBtn.type = 'button';
+    copyBtn.className = 'media-copy-btn';
+    copyBtn.textContent = 'Kopier lenke';
+    copyBtn.addEventListener('click', async () => {
+        try {
+            if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(imageUrl);
+                await showAdminNotice('Bildelenken er kopiert til utklippstavlen.', {
+                    title: 'Lenke kopiert',
+                    variant: 'success'
+                });
+            } else {
+                throw new Error('Clipboard API unavailable');
+            }
+        } catch (error) {
+            await showAdminNotice('Kunne ikke kopiere lenken automatisk. Åpne bildet og kopier adressen manuelt.', {
+                title: 'Kopiering feilet',
+                variant: 'warning'
+            });
+        }
+    });
+
+    meta.appendChild(name);
+    meta.appendChild(link);
+    meta.appendChild(copyBtn);
+
+    item.appendChild(thumb);
+    item.appendChild(meta);
+    mediaGrid.prepend(item);
+}
 
 async function fetchBlogPosts() {
     try {
@@ -1654,8 +1773,11 @@ window.closeImagePicker = function () {
     const modal = document.getElementById('image-picker-modal');
     if (modal) modal.style.display = 'none';
     selectedImageUrl = null;
+    selectedUploadFile = null;
     const preview = document.getElementById('upload-preview');
     if (preview) preview.style.display = 'none';
+    const fileInput = document.getElementById('blog-image-input');
+    if (fileInput) fileInput.value = '';
     const results = document.getElementById('unsplash-results');
     if (results) results.innerHTML = '';
 };
@@ -1677,6 +1799,108 @@ window.insertImage = function () {
     }
 }
 
+window.insertUploadedImage = async function () {
+    if (!selectedUploadFile) {
+        await showAdminNotice('Velg et bilde først, så kan det settes inn i innlegget.', {
+            title: 'Ingen bildefil valgt',
+            variant: 'warning'
+        });
+        return;
+    }
+
+    try {
+        const imageUrl = await uploadFileToFirebaseStorage(selectedUploadFile, 'blog');
+        selectedImageUrl = imageUrl;
+        insertImageIntoEditor(imageUrl);
+        updatePostImageField(imageUrl);
+        renderMediaLibraryItem(imageUrl, selectedUploadFile.name || 'Bloggbilde');
+        closeImagePicker();
+        await showAdminNotice('Bildet er lastet opp og satt inn i innlegget.', {
+            title: 'Bilde satt inn',
+            variant: 'success'
+        });
+    } catch (error) {
+        console.error('Error uploading blog image:', error);
+        await showAdminNotice(
+            normalizeAdminErrorMessage(error, 'Det oppstod en feil ved opplasting av bloggbildet.'),
+            {
+                title: 'Bildeopplasting feilet',
+                variant: 'danger'
+            }
+        );
+    }
+};
+
+window.searchUnsplash = async function () {
+    const queryInput = document.getElementById('unsplash-query');
+    const results = document.getElementById('unsplash-results');
+    const query = queryInput?.value?.trim();
+
+    if (!results) return;
+
+    if (!query) {
+        await showAdminNotice('Skriv inn et søkeord før du søker etter bilder.', {
+            title: 'Tomt søk',
+            variant: 'warning'
+        });
+        return;
+    }
+
+    results.innerHTML = '<p class="media-loading-state">Laster bilder...</p>';
+
+    try {
+        const response = await fetch(`${API_URL}/unsplash/search?query=${encodeURIComponent(query)}`);
+        const payload = await response.json();
+
+        if (!response.ok) {
+            throw new Error(payload?.details || payload?.error || `Unsplash-feil (${response.status})`);
+        }
+
+        const images = Array.isArray(payload?.images) ? payload.images : [];
+
+        if (!images.length) {
+            results.innerHTML = '<p class="media-loading-state">Ingen bilder funnet for dette søket.</p>';
+            return;
+        }
+
+        results.innerHTML = '';
+
+        images.forEach((image) => {
+            const card = document.createElement('button');
+            card.type = 'button';
+            card.className = 'unsplash-image-card';
+            card.innerHTML = `
+                <img src="${image.thumb}" alt="${image.alt || 'Unsplash bilde'}">
+                <span class="photographer">Unsplash</span>
+            `;
+            card.addEventListener('click', () => window.insertUnsplashImage(image.full));
+            results.appendChild(card);
+        });
+    } catch (error) {
+        console.error('Error searching Unsplash:', error);
+        results.innerHTML = '';
+        await showAdminNotice('Kunne ikke hente bilder fra Unsplash akkurat nå.', {
+            title: 'Bildesøk feilet',
+            variant: 'danger'
+        });
+    }
+};
+
+window.insertUnsplashImage = async function (imageUrl) {
+    if (!imageUrl) return;
+
+    selectedImageUrl = imageUrl;
+    insertImageIntoEditor(imageUrl);
+    updatePostImageField(imageUrl);
+    renderMediaLibraryItem(imageUrl, 'Unsplash-bilde');
+    closeImagePicker();
+
+    await showAdminNotice('Bildet er satt inn i innlegget.', {
+        title: 'Bilde satt inn',
+        variant: 'success'
+    });
+};
+
 // Media Upload
 window.uploadImage = async function () {
     const fileInput = document.getElementById('image-upload');
@@ -1689,32 +1913,23 @@ window.uploadImage = async function () {
         return;
     }
 
-    const formData = new FormData();
-    formData.append('image', file);
-
     try {
-        const response = await fetch(`${API_URL}/upload`, {
-            method: 'POST',
-            body: formData
+        const imageUrl = await uploadFileToFirebaseStorage(file, 'library');
+        renderMediaLibraryItem(imageUrl, file.name || 'Nytt bilde');
+        fileInput.value = '';
+        await showAdminNotice('Bildet ble lastet opp til Firebase Storage.', {
+            title: 'Opplasting fullført',
+            variant: 'success'
         });
-
-        if (response.ok) {
-            await showAdminNotice('Bildet ble lastet opp.', {
-                title: 'Opplasting fullført',
-                variant: 'success'
-            });
-        } else {
-            await showAdminNotice('Opplastingen mislyktes. Prøv igjen med en annen fil eller litt senere.', {
-                title: 'Opplasting feilet',
-                variant: 'danger'
-            });
-        }
     } catch (error) {
         console.error(error);
-        await showAdminNotice('Det oppstod en feil ved opplasting av bildet.', {
-            title: 'Opplasting feilet',
-            variant: 'danger'
-        });
+        await showAdminNotice(
+            normalizeAdminErrorMessage(error, 'Det oppstod en feil ved opplasting av bildet.'),
+            {
+                title: 'Opplasting feilet',
+                variant: 'danger'
+            }
+        );
     }
 };
 
@@ -1763,6 +1978,30 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (e.key === 'Enter') {
                 searchUnsplash();
             }
+        });
+    }
+
+    const blogImageInput = document.getElementById('blog-image-input');
+    const uploadPreview = document.getElementById('upload-preview');
+    const previewImage = document.getElementById('preview-image');
+
+    if (blogImageInput && uploadPreview && previewImage) {
+        blogImageInput.addEventListener('change', (event) => {
+            const file = event.target.files?.[0] || null;
+            selectedUploadFile = file;
+
+            if (!file) {
+                uploadPreview.style.display = 'none';
+                previewImage.removeAttribute('src');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (loadEvent) => {
+                previewImage.src = loadEvent.target?.result || '';
+                uploadPreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
         });
     }
 
