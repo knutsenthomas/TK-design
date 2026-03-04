@@ -111,6 +111,8 @@
     const auth = window.firebase.auth();
     const db = window.firebase.firestore();
     const storage = window.firebase.storage();
+    const AUTH_INIT_TIMEOUT_MS = 3000;
+    const PROFILE_LOAD_TIMEOUT_MS = 1500;
 
     window.firebaseApp = app;
     window.firebaseAuth = auth;
@@ -138,13 +140,40 @@
             return null;
         });
 
+    function withTimeout(promise, timeoutMs, errorMessage) {
+        return Promise.race([
+            promise,
+            new Promise((_, reject) => {
+                window.setTimeout(() => {
+                    reject(createClientError(errorMessage));
+                }, timeoutMs);
+            })
+        ]);
+    }
+
+    async function waitForAuthReady() {
+        try {
+            await withTimeout(
+                authReady,
+                AUTH_INIT_TIMEOUT_MS,
+                'Firebase auth initialization timed out'
+            );
+        } catch (error) {
+            console.warn(error.message);
+        }
+    }
+
     async function getProfileData(uid) {
         if (!uid) {
             return {};
         }
 
         try {
-            const snapshot = await db.collection('adminProfiles').doc(uid).get();
+            const snapshot = await withTimeout(
+                db.collection('adminProfiles').doc(uid).get(),
+                PROFILE_LOAD_TIMEOUT_MS,
+                'Firebase profile lookup timed out'
+            );
             return snapshot.exists ? (snapshot.data() || {}) : {};
         } catch (error) {
             console.error('Could not load Firebase profile:', error);
@@ -154,7 +183,7 @@
 
     async function getMappedCurrentUser() {
         await persistenceReady;
-        await authReady;
+        await waitForAuthReady();
 
         if (!auth.currentUser) {
             return null;

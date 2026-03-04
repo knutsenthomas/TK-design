@@ -240,6 +240,161 @@ const adminTranslations = {
     }
 };
 
+let adminDialogReady = false;
+let adminDialogResolver = null;
+let adminDialogState = null;
+
+function setupAdminDialog() {
+    if (adminDialogReady) return;
+
+    const dialog = document.getElementById('admin-dialog');
+    if (!dialog) return;
+
+    const backdrop = dialog.querySelector('[data-dialog-dismiss]');
+    const confirmBtn = document.getElementById('admin-dialog-confirm');
+    const cancelBtn = document.getElementById('admin-dialog-cancel');
+
+    function finishAdminDialog(result) {
+        dialog.classList.remove('active', 'is-success', 'is-warning', 'is-danger');
+        dialog.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('admin-dialog-open');
+
+        const resolver = adminDialogResolver;
+        adminDialogResolver = null;
+        adminDialogState = null;
+
+        if (resolver) {
+            resolver(result);
+        }
+    }
+
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', () => finishAdminDialog(true));
+    }
+
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => finishAdminDialog(false));
+    }
+
+    if (backdrop) {
+        backdrop.addEventListener('click', () => {
+            if (adminDialogState?.dismissible !== false) {
+                finishAdminDialog(false);
+            }
+        });
+    }
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && dialog.classList.contains('active') && adminDialogState?.dismissible !== false) {
+            finishAdminDialog(false);
+        }
+    });
+
+    adminDialogReady = true;
+}
+
+function normalizeAdminErrorMessage(error, fallbackMessage) {
+    const rawMessage = typeof error === 'string' ? error : (error?.message || '');
+
+    if (!rawMessage) {
+        return fallbackMessage;
+    }
+
+    if (/Could not save posts:\s*500/i.test(rawMessage)) {
+        return 'Kunne ikke lagre innlegget akkurat nå. Serveren svarte med en intern feil (500).';
+    }
+
+    if (/Could not save posts:/i.test(rawMessage)) {
+        return 'Kunne ikke lagre innlegget akkurat nå. Prøv igjen om et øyeblikk.';
+    }
+
+    return rawMessage;
+}
+
+function showAdminDialog({
+    title = 'Melding',
+    message = '',
+    confirmText = 'OK',
+    cancelText = 'Avbryt',
+    variant = 'info',
+    showCancel = false,
+    dismissible = true
+} = {}) {
+    setupAdminDialog();
+
+    const dialog = document.getElementById('admin-dialog');
+    const titleEl = document.getElementById('admin-dialog-title');
+    const messageEl = document.getElementById('admin-dialog-message');
+    const iconEl = document.getElementById('admin-dialog-icon');
+    const confirmBtn = document.getElementById('admin-dialog-confirm');
+    const cancelBtn = document.getElementById('admin-dialog-cancel');
+
+    if (!dialog || !titleEl || !messageEl || !iconEl || !confirmBtn || !cancelBtn) {
+        const fallbackResult = showCancel ? window.confirm(`${title}\n\n${message}`) : (window.alert(message), true);
+        return Promise.resolve(fallbackResult);
+    }
+
+    if (adminDialogResolver) {
+        adminDialogResolver(false);
+        adminDialogResolver = null;
+    }
+
+    const iconMap = {
+        info: 'fa-circle-info',
+        success: 'fa-circle-check',
+        warning: 'fa-triangle-exclamation',
+        danger: 'fa-circle-xmark'
+    };
+
+    dialog.classList.remove('is-success', 'is-warning', 'is-danger');
+    if (variant === 'success') dialog.classList.add('is-success');
+    if (variant === 'warning') dialog.classList.add('is-warning');
+    if (variant === 'danger') dialog.classList.add('is-danger');
+
+    iconEl.innerHTML = `<i class="fas ${iconMap[variant] || iconMap.info}"></i>`;
+    titleEl.textContent = title;
+    messageEl.textContent = message;
+    confirmBtn.textContent = confirmText;
+    cancelBtn.textContent = cancelText;
+    cancelBtn.style.display = showCancel ? 'inline-flex' : 'none';
+
+    dialog.setAttribute('aria-hidden', 'false');
+    dialog.classList.add('active');
+    document.body.classList.add('admin-dialog-open');
+    adminDialogState = { dismissible };
+
+    window.setTimeout(() => {
+        confirmBtn.focus();
+    }, 0);
+
+    return new Promise((resolve) => {
+        adminDialogResolver = resolve;
+    });
+}
+
+function showAdminNotice(message, options = {}) {
+    return showAdminDialog({
+        title: options.title || 'Oppdatering',
+        message,
+        confirmText: options.confirmText || 'OK',
+        variant: options.variant || 'info',
+        showCancel: false,
+        dismissible: options.dismissible !== false
+    });
+}
+
+function showAdminConfirm(message, options = {}) {
+    return showAdminDialog({
+        title: options.title || 'Bekreft handling',
+        message,
+        confirmText: options.confirmText || 'Fortsett',
+        cancelText: options.cancelText || 'Avbryt',
+        variant: options.variant || 'warning',
+        showCancel: true,
+        dismissible: options.dismissible !== false
+    });
+}
+
 function updateDashboardLanguage() {
     const t = adminTranslations[currentLang] || adminTranslations['no'];
 
@@ -412,9 +567,23 @@ window.openEditModal = function (index) {
 }
 
 window.deletePost = async function (index) {
-    if (confirm('Er du sikker på at du vil slette dette innlegget?')) {
+    const shouldDelete = await showAdminConfirm(
+        'Dette innlegget fjernes fra bloggoversikten. Du kan ikke angre direkte fra dashboardet.',
+        {
+            title: 'Slette innlegg?',
+            confirmText: 'Slett innlegg',
+            cancelText: 'Behold',
+            variant: 'danger'
+        }
+    );
+
+    if (shouldDelete) {
         blogData.splice(index, 1);
         await saveBlogPosts();
+        await showAdminNotice('Innlegget er slettet fra bloggoversikten.', {
+            title: 'Innlegg slettet',
+            variant: 'success'
+        });
     }
 };
 
@@ -426,7 +595,19 @@ async function saveBlogPosts() {
     });
 
     if (!response.ok) {
-        throw new Error(`Could not save posts: ${response.status}`);
+        let errorBody = '';
+
+        try {
+            errorBody = await response.text();
+        } catch (error) {
+            errorBody = '';
+        }
+
+        if (response.status >= 500) {
+            throw new Error(`Kunne ikke lagre innlegg. Serveren svarte med ${response.status}.`);
+        }
+
+        throw new Error(errorBody || `Kunne ikke lagre innlegg (${response.status}).`);
     }
 
     renderBlogList();
@@ -481,7 +662,10 @@ async function upsertCurrentPost(successMessage) {
     await saveBlogPosts();
     currentEditingId = postPayload.id;
     closeModal();
-    alert(successMessage);
+    await showAdminNotice(successMessage, {
+        title: 'Innlegg oppdatert',
+        variant: 'success'
+    });
 }
 
 window.savePost = async function () {
@@ -489,7 +673,13 @@ window.savePost = async function () {
         await upsertCurrentPost('Innlegg lagret.');
     } catch (error) {
         console.error('Error saving post:', error);
-        alert(error.message || 'Kunne ikke lagre innlegget.');
+        await showAdminNotice(
+            normalizeAdminErrorMessage(error, 'Kunne ikke lagre innlegget.'),
+            {
+                title: 'Kunne ikke lagre',
+                variant: 'danger'
+            }
+        );
     }
 };
 
@@ -498,7 +688,13 @@ window.publishPost = async function () {
         await upsertCurrentPost('Innlegg publisert.');
     } catch (error) {
         console.error('Error publishing post:', error);
-        alert(error.message || 'Kunne ikke publisere innlegget.');
+        await showAdminNotice(
+            normalizeAdminErrorMessage(error, 'Kunne ikke publisere innlegget.'),
+            {
+                title: 'Publisering feilet',
+                variant: 'danger'
+            }
+        );
     }
 };
 
@@ -529,10 +725,12 @@ async function init() {
     setupEventListeners();
     setupLogout();
 
-    await fetchStyles(); // Load Style data
-    await fetchContent();
-    await fetchBlogPosts();
-    await fetchSeo(); // Load SEO data
+    await Promise.allSettled([
+        fetchStyles(),
+        fetchContent(),
+        fetchBlogPosts(),
+        fetchSeo()
+    ]);
 
     try {
         renderContentEditor();
@@ -602,7 +800,10 @@ function registerCustomBlots() {
             }
 
             if (!videoId) {
-                alert('Ugyldig video URL. Bruk YouTube eller Vimeo URL.');
+                showAdminNotice('Bruk en gyldig YouTube- eller Vimeo-lenke for å legge inn video.', {
+                    title: 'Ugyldig videolenke',
+                    variant: 'warning'
+                });
                 return null;
             }
 
@@ -722,10 +923,16 @@ async function saveSeo() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(seoData)
         });
-        alert('SEO-innstillinger lagret!');
+        await showAdminNotice('SEO-innstillingene er lagret.', {
+            title: 'SEO oppdatert',
+            variant: 'success'
+        });
     } catch (error) {
         console.error('Error saving SEO:', error);
-        alert('Feil ved lagring av SEO.');
+        await showAdminNotice('Det oppstod en feil ved lagring av SEO-innstillingene.', {
+            title: 'SEO ble ikke lagret',
+            variant: 'danger'
+        });
     } finally {
         saveBtn.innerText = 'Lagre SEO';
     }
@@ -1126,10 +1333,19 @@ async function saveChanges() {
                 throw new Error(`Kunne ikke lagre design (${styleResponse.status})`);
             }
         }
-        alert('Endringer lagret!');
+        await showAdminNotice('Design- og innholdsinnstillingene er lagret.', {
+            title: 'Endringer lagret',
+            variant: 'success'
+        });
     } catch (error) {
         console.error('Error saving:', error);
-        alert('Feil ved lagring.');
+        await showAdminNotice(
+            normalizeAdminErrorMessage(error, 'Det oppstod en feil ved lagring.'),
+            {
+                title: 'Lagring feilet',
+                variant: 'danger'
+            }
+        );
     } finally {
         if (saveBtn) saveBtn.innerText = 'Lagre Endringer';
     }
@@ -1465,7 +1681,13 @@ window.insertImage = function () {
 window.uploadImage = async function () {
     const fileInput = document.getElementById('image-upload');
     const file = fileInput.files[0];
-    if (!file) return alert('Velg et bilde først');
+    if (!file) {
+        await showAdminNotice('Velg et bilde før du starter opplastingen.', {
+            title: 'Ingen fil valgt',
+            variant: 'warning'
+        });
+        return;
+    }
 
     const formData = new FormData();
     formData.append('image', file);
@@ -1477,18 +1699,29 @@ window.uploadImage = async function () {
         });
 
         if (response.ok) {
-            alert('Bilde lastet opp!');
+            await showAdminNotice('Bildet ble lastet opp.', {
+                title: 'Opplasting fullført',
+                variant: 'success'
+            });
         } else {
-            alert('Opplasting feilet');
+            await showAdminNotice('Opplastingen mislyktes. Prøv igjen med en annen fil eller litt senere.', {
+                title: 'Opplasting feilet',
+                variant: 'danger'
+            });
         }
     } catch (error) {
         console.error(error);
-        alert('Feil ved opplasting');
+        await showAdminNotice('Det oppstod en feil ved opplasting av bildet.', {
+            title: 'Opplasting feilet',
+            variant: 'danger'
+        });
     }
 };
 
 // Document Ready
 document.addEventListener('DOMContentLoaded', async () => {
+    setupAdminDialog();
+
     // Auth & Profile Setup
     const user = await checkAuth();
     if (!user) return;
@@ -1566,6 +1799,35 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 let currentUser = null;
 
+function withUiTimeout(promise, timeoutMs, fallbackValue = null) {
+    return Promise.race([
+        promise,
+        new Promise((resolve) => {
+            window.setTimeout(() => resolve(fallbackValue), timeoutMs);
+        })
+    ]);
+}
+
+function buildFallbackSessionUser(firebaseUser) {
+    if (!firebaseUser) return null;
+
+    const email = firebaseUser.email || '';
+    const displayName = firebaseUser.displayName || email.split('@')[0] || 'Admin';
+
+    return {
+        id: firebaseUser.uid,
+        email,
+        user_metadata: {
+            full_name: displayName,
+            avatar_url: firebaseUser.photoURL || '',
+            phone: '',
+            address: '',
+            dob: '',
+            bio: ''
+        }
+    };
+}
+
 async function checkAuth() {
     if (!window.adminAuthClient) {
         console.error('Firebase client not initialized');
@@ -1573,7 +1835,19 @@ async function checkAuth() {
         return null;
     }
 
-    const { data: { session }, error } = await window.adminAuthClient.auth.getSession();
+    const sessionResult = await withUiTimeout(
+        window.adminAuthClient.auth.getSession(),
+        4000,
+        { data: { session: null }, error: new Error('Session check timed out') }
+    );
+    const session = sessionResult?.data?.session || null;
+    const error = sessionResult?.error || null;
+    const fallbackUser = buildFallbackSessionUser(window.firebaseAuth?.currentUser);
+
+    if ((!session || error) && fallbackUser) {
+        currentUser = fallbackUser;
+        return currentUser;
+    }
 
     if (error || !session) {
         window.location.replace('login.html');
@@ -1778,11 +2052,20 @@ async function saveUserProfile() {
         currentUser = data.user;
         renderUserProfile(currentUser);
         closeProfileModal();
-        alert('Profile updated successfully!');
+        await showAdminNotice('Profilen din er oppdatert.', {
+            title: 'Profil lagret',
+            variant: 'success'
+        });
 
     } catch (error) {
         console.error('Error updating profile:', error);
-        alert('Failed to update profile: ' + error.message);
+        await showAdminNotice(
+            normalizeAdminErrorMessage(error, 'Det oppstod en feil ved oppdatering av profilen.'),
+            {
+                title: 'Profilen ble ikke lagret',
+                variant: 'danger'
+            }
+        );
     } finally {
         saveBtn.innerText = 'Save Changes';
         saveBtn.disabled = false;

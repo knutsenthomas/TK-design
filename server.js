@@ -258,6 +258,212 @@ async function saveContactMessage(messagePayload) {
     };
 }
 
+function isVercelRuntime() {
+    return Boolean(process.env.VERCEL);
+}
+
+function hasFirebaseServerCredentials() {
+    const { projectId, clientEmail, privateKey } = getFirebaseConfig();
+    return !!(projectId && clientEmail && privateKey);
+}
+
+function getFirebaseSiteDataCollection() {
+    return process.env.FIREBASE_SITE_DATA_COLLECTION || 'siteAdminData';
+}
+
+function getFirestoreDocumentUrl(collection, documentId) {
+    const { projectId, databaseId } = getFirebaseConfig();
+    return `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${encodeURIComponent(databaseId)}/documents/${encodeURIComponent(collection)}/${encodeURIComponent(documentId)}`;
+}
+
+async function readFirestoreDocument(collection, documentId) {
+    if (!hasFirebaseServerCredentials()) {
+        return null;
+    }
+
+    const accessToken = await getFirebaseAccessToken();
+    const fetch = await getFetch();
+    const response = await fetch(getFirestoreDocumentUrl(collection, documentId), {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        }
+    });
+
+    if (response.status === 404) {
+        return null;
+    }
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Firebase read failed: ${response.status} ${errorText}`);
+    }
+
+    return response.json();
+}
+
+async function upsertFirestoreDocument(collection, documentId, fields) {
+    if (!hasFirebaseServerCredentials()) {
+        throw new Error('Firebase server credentials are not configured.');
+    }
+
+    const accessToken = await getFirebaseAccessToken();
+    const fetch = await getFetch();
+    const response = await fetch(getFirestoreDocumentUrl(collection, documentId), {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({
+            fields: toFirestoreFields({
+                ...fields,
+                updated_at: new Date().toISOString()
+            })
+        })
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Firebase write failed: ${response.status} ${errorText}`);
+    }
+
+    return response.json();
+}
+
+function readFirestoreStringField(document, fieldName) {
+    return document?.fields?.[fieldName]?.stringValue || '';
+}
+
+async function readSiteJsonDocument(documentId) {
+    const document = await readFirestoreDocument(getFirebaseSiteDataCollection(), documentId);
+    if (!document) {
+        return null;
+    }
+
+    const rawJson = readFirestoreStringField(document, 'json');
+    if (!rawJson) {
+        return null;
+    }
+
+    return JSON.parse(rawJson);
+}
+
+async function writeSiteJsonDocument(documentId, payload) {
+    return upsertFirestoreDocument(getFirebaseSiteDataCollection(), documentId, {
+        json: JSON.stringify(payload)
+    });
+}
+
+async function readSiteTextDocument(documentId, fieldName = 'cssText') {
+    const document = await readFirestoreDocument(getFirebaseSiteDataCollection(), documentId);
+    if (!document) {
+        return null;
+    }
+
+    return readFirestoreStringField(document, fieldName) || null;
+}
+
+async function writeSiteTextDocument(documentId, text, fieldName = 'cssText') {
+    return upsertFirestoreDocument(getFirebaseSiteDataCollection(), documentId, {
+        [fieldName]: text
+    });
+}
+
+async function readSiteDataWithFallback(documentId, fallbackReader) {
+    if (hasFirebaseServerCredentials()) {
+        try {
+            const firebaseValue = await readSiteJsonDocument(documentId);
+            if (firebaseValue !== null) {
+                return firebaseValue;
+            }
+        } catch (error) {
+            console.error(`Failed to read ${documentId} from Firebase:`, error.message);
+        }
+    }
+
+    return fallbackReader();
+}
+
+async function persistSiteData(documentId, payload, localWriter) {
+    let savedToFirebase = false;
+    let savedToFile = false;
+    let lastError = null;
+
+    if (hasFirebaseServerCredentials()) {
+        try {
+            await writeSiteJsonDocument(documentId, payload);
+            savedToFirebase = true;
+        } catch (error) {
+            console.error(`Failed to save ${documentId} to Firebase:`, error.message);
+            lastError = error;
+        }
+    }
+
+    if (!isVercelRuntime()) {
+        try {
+            localWriter(payload);
+            savedToFile = true;
+        } catch (error) {
+            console.error(`Failed to save ${documentId} to file:`, error.message);
+            lastError = error;
+        }
+    }
+
+    if (!savedToFirebase && !savedToFile) {
+        throw lastError || new Error(`Could not persist ${documentId}`);
+    }
+
+    return { savedToFirebase, savedToFile };
+}
+
+async function readStyleCssWithFallback(fallbackReader) {
+    if (hasFirebaseServerCredentials()) {
+        try {
+            const cssText = await readSiteTextDocument('style');
+            if (cssText !== null) {
+                return cssText;
+            }
+        } catch (error) {
+            console.error('Failed to read style from Firebase:', error.message);
+        }
+    }
+
+    return fallbackReader();
+}
+
+async function persistStyleCss(cssText, localWriter) {
+    let savedToFirebase = false;
+    let savedToFile = false;
+    let lastError = null;
+
+    if (hasFirebaseServerCredentials()) {
+        try {
+            await writeSiteTextDocument('style', cssText);
+            savedToFirebase = true;
+        } catch (error) {
+            console.error('Failed to save style to Firebase:', error.message);
+            lastError = error;
+        }
+    }
+
+    if (!isVercelRuntime()) {
+        try {
+            localWriter(cssText);
+            savedToFile = true;
+        } catch (error) {
+            console.error('Failed to save style file:', error.message);
+            lastError = error;
+        }
+    }
+
+    if (!savedToFirebase && !savedToFile) {
+        throw lastError || new Error('Could not persist style');
+    }
+
+    return { savedToFirebase, savedToFile };
+}
+
 async function waitForFirebaseOperation(operationName, accessToken) {
     const fetch = await getFetch();
     const normalizedOperationName = String(operationName || '').replace(/^\/+/, '');
@@ -444,6 +650,18 @@ function getLegacyContentFilePath() {
     return path.join(__dirname, 'data/content.json');
 }
 
+function getPostsFilePath() {
+    return path.join(__dirname, 'data/posts.json');
+}
+
+function getSeoFilePath() {
+    return path.join(__dirname, 'data/seo.json');
+}
+
+function getAdminCustomStyleFilePath() {
+    return path.join(__dirname, 'admin/custom-style.css');
+}
+
 function parseTranslationsSource(source) {
     const match = source.match(/const\s+translations\s*=\s*([\s\S]*?)\s*;\s*$/);
     if (!match) {
@@ -465,16 +683,53 @@ function readDashboardContent() {
     return JSON.parse(legacySource);
 }
 
+function serializeDashboardContent(content) {
+    return `const translations = ${JSON.stringify(content, null, 4)};\n`;
+}
+
 function writeDashboardContent(content) {
-    const serializedTranslations = `const translations = ${JSON.stringify(content, null, 4)};\n`;
+    const serializedTranslations = serializeDashboardContent(content);
     fs.writeFileSync(getTranslationsFilePath(), serializedTranslations, 'utf8');
     fs.writeFileSync(getLegacyContentFilePath(), JSON.stringify(content, null, 4), 'utf8');
 }
 
+function readBlogPosts() {
+    return JSON.parse(fs.readFileSync(getPostsFilePath(), 'utf8'));
+}
+
+function writeBlogPosts(posts) {
+    fs.writeFileSync(getPostsFilePath(), JSON.stringify(posts, null, 4), 'utf8');
+}
+
+function readSeoData() {
+    if (!fs.existsSync(getSeoFilePath())) {
+        return { global: {}, pages: {} };
+    }
+
+    return JSON.parse(fs.readFileSync(getSeoFilePath(), 'utf8'));
+}
+
+function writeSeoData(seoData) {
+    fs.writeFileSync(getSeoFilePath(), JSON.stringify(seoData, null, 4), 'utf8');
+}
+
+function readCustomStyleCss() {
+    if (!fs.existsSync(getAdminCustomStyleFilePath())) {
+        return '';
+    }
+
+    return fs.readFileSync(getAdminCustomStyleFilePath(), 'utf8');
+}
+
+function writeCustomStyleCss(cssText) {
+    fs.writeFileSync(getAdminCustomStyleFilePath(), cssText, 'utf8');
+}
+
 // API: Get Content
-app.get('/api/content', (req, res) => {
+app.get('/api/content', async (req, res) => {
     try {
-        res.json(readDashboardContent());
+        const content = await readSiteDataWithFallback('content', readDashboardContent);
+        res.json(content);
     } catch (error) {
         console.error(error);
         res.status(500).send('Error reading content');
@@ -482,18 +737,18 @@ app.get('/api/content', (req, res) => {
 });
 
 // API: Save Content
-app.post('/api/content', (req, res) => {
+app.post('/api/content', async (req, res) => {
     try {
-        writeDashboardContent(req.body);
-        res.status(200).send('Content saved');
+        const result = await persistSiteData('content', req.body, writeDashboardContent);
+        res.status(200).json({ success: true, ...result });
     } catch (error) {
         console.error(error);
-        res.status(500).send('Error saving content');
+        res.status(500).json({ success: false, error: 'Error saving content', details: error.message });
     }
 });
 
 // API: Save Style (CSS Variables & Fonts)
-app.post('/api/style', (req, res) => {
+app.post('/api/style', async (req, res) => {
     const { cssVariables, fontUrl, fontFamily } = req.body;
 
     let cssContent = '';
@@ -515,36 +770,37 @@ app.post('/api/style', (req, res) => {
     }
     cssContent += `}\n`;
 
-    fs.writeFile(path.join(__dirname, 'admin/custom-style.css'), cssContent, (err) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).send('Error saving style');
-        }
-        res.status(200).send('Style saved');
-    });
+    try {
+        const result = await persistStyleCss(cssContent, writeCustomStyleCss);
+        res.status(200).json({ success: true, ...result });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Error saving style', details: error.message });
+    }
 });
 
 // API: Get Blog Posts
-app.get('/api/posts', (req, res) => {
-    fs.readFile(path.join(__dirname, 'data/posts.json'), 'utf8', (err, data) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).send('Error reading posts');
-        }
-        res.json(JSON.parse(data));
-    });
+app.get('/api/posts', async (req, res) => {
+    try {
+        const posts = await readSiteDataWithFallback('posts', readBlogPosts);
+        res.json(posts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error reading posts');
+    }
 });
 
 // API: Save Blog Posts
-app.post('/api/posts', (req, res) => {
+app.post('/api/posts', async (req, res) => {
     const newPosts = req.body;
-    fs.writeFile(path.join(__dirname, 'data/posts.json'), JSON.stringify(newPosts, null, 4), (err) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).send('Error saving posts');
-        }
-        res.status(200).send('Posts saved');
-    });
+
+    try {
+        const result = await persistSiteData('posts', newPosts, writeBlogPosts);
+        res.status(200).json({ success: true, ...result });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Error saving posts', details: error.message });
+    }
 });
 
 // API: Upload Image
@@ -558,40 +814,40 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
 // --- SEO FEATURES ---
 
 // API: Get SEO Data
-app.get('/api/seo', (req, res) => {
-    fs.readFile(path.join(__dirname, 'data/seo.json'), 'utf8', (err, data) => {
-        if (err) {
-            return res.json({ global: {}, pages: {} });
-        }
-        res.json(JSON.parse(data));
-    });
+app.get('/api/seo', async (req, res) => {
+    try {
+        const seoConfig = await readSiteDataWithFallback('seo', readSeoData);
+        res.json(seoConfig);
+    } catch (error) {
+        console.error(error);
+        res.json({ global: {}, pages: {} });
+    }
 });
 
 // API: Save SEO Data
-app.post('/api/seo', (req, res) => {
+app.post('/api/seo', async (req, res) => {
     const seoData = req.body;
-    fs.writeFile(path.join(__dirname, 'data/seo.json'), JSON.stringify(seoData, null, 4), (err) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).send('Error saving SEO data');
-        }
-        res.status(200).send('SEO data saved');
-    });
+
+    try {
+        const result = await persistSiteData('seo', seoData, writeSeoData);
+        res.status(200).json({ success: true, ...result });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Error saving SEO data', details: error.message });
+    }
 });
 
 // Sitemap Generation
-app.get('/sitemap.xml', (req, res) => {
-    fs.readFile(path.join(__dirname, 'data/seo.json'), 'utf8', (err, data) => {
-        if (err) return res.status(500).send('Error reading SEO config');
-
-        const seoConfig = JSON.parse(data);
+app.get('/sitemap.xml', async (req, res) => {
+    try {
+        const seoConfig = await readSiteDataWithFallback('seo', readSeoData);
+        const posts = await readSiteDataWithFallback('posts', readBlogPosts);
         const baseUrl = 'https://tk-design.no';
 
         let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
 
-        // Add static pages
-        for (const page of Object.keys(seoConfig.pages)) {
+        for (const page of Object.keys((seoConfig && seoConfig.pages) || {})) {
             xml += `
     <url>
         <loc>${baseUrl}/${page}</loc>
@@ -600,35 +856,31 @@ app.get('/sitemap.xml', (req, res) => {
     </url>`;
         }
 
-        // Add blog posts
-        try {
-            const postsData = fs.readFileSync(path.join(__dirname, 'data/posts.json'), 'utf8');
-            const posts = JSON.parse(postsData);
-            posts.forEach(post => {
-                xml += `
+        (posts || []).forEach((post) => {
+            xml += `
     <url>
         <loc>${baseUrl}/blog-details.html?id=${post.id}</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>`;
-            });
-        } catch (e) {
-            console.log('No posts found for sitemap');
-        }
+        });
 
         xml += `\n</urlset>`;
         res.header('Content-Type', 'application/xml');
         res.send(xml);
-    });
+    } catch (error) {
+        console.error('Error generating sitemap:', error);
+        res.status(500).send('Error reading SEO config');
+    }
 });
 
 // Server-Side Meta Injection
-app.get(['/', '/index.html', '/blog.html', '/project-details.html', '/blog-details.html', '/contact.html'], (req, res) => {
+app.get(['/', '/index.html', '/blog.html', '/project-details.html', '/blog-details.html', '/contact.html'], async (req, res) => {
     let reqFile = req.path === '/' ? 'index.html' : req.path.substring(1);
 
     let seoData = { global: {}, pages: {} };
     try {
-        seoData = JSON.parse(fs.readFileSync(path.join(__dirname, 'data/seo.json'), 'utf8'));
+        seoData = await readSiteDataWithFallback('seo', readSeoData);
     } catch (e) { }
 
     const globalSeo = seoData.global || {};
@@ -639,7 +891,7 @@ app.get(['/', '/index.html', '/blog.html', '/project-details.html', '/blog-detai
     // Specialized Logic for Blog Details
     if (reqFile === 'blog-details.html' && req.query.id) {
         try {
-            const posts = JSON.parse(fs.readFileSync(path.join(__dirname, 'data/posts.json'), 'utf8'));
+            const posts = await readSiteDataWithFallback('posts', readBlogPosts);
             const post = posts.find(p => p.id == req.query.id);
             if (post) {
                 title = post.seoTitle || post.title;
@@ -684,6 +936,47 @@ app.get(['/', '/index.html', '/blog.html', '/project-details.html', '/blog-detai
 
         res.send(injectedHtml);
     });
+});
+
+app.get('/translations.js', async (req, res) => {
+    try {
+        const content = await readSiteDataWithFallback('content', readDashboardContent);
+        res.type('application/javascript');
+        res.send(serializeDashboardContent(content));
+    } catch (error) {
+        console.error('Error serving translations.js:', error);
+        res.status(500).type('application/javascript').send('const translations = {};');
+    }
+});
+
+app.get('/data/posts.json', async (req, res) => {
+    try {
+        const posts = await readSiteDataWithFallback('posts', readBlogPosts);
+        res.json(posts);
+    } catch (error) {
+        console.error('Error serving posts.json:', error);
+        res.status(500).json([]);
+    }
+});
+
+app.get('/data/seo.json', async (req, res) => {
+    try {
+        const seoConfig = await readSiteDataWithFallback('seo', readSeoData);
+        res.json(seoConfig);
+    } catch (error) {
+        console.error('Error serving seo.json:', error);
+        res.status(500).json({ global: {}, pages: {} });
+    }
+});
+
+app.get(['/admin/custom-style.css', '/custom-style.css'], async (req, res) => {
+    try {
+        const cssText = await readStyleCssWithFallback(readCustomStyleCss);
+        res.type('text/css').send(cssText || '');
+    } catch (error) {
+        console.error('Error serving custom-style.css:', error);
+        res.type('text/css').send('');
+    }
 });
 
 // API: Generate Blog Content with Gemini AI

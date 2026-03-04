@@ -1525,6 +1525,167 @@ header h1 {
     padding: 20px;
 }
 
+.admin-dialog {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 4200;
+    padding: 24px;
+}
+
+.admin-dialog.active {
+    display: flex;
+}
+
+.admin-dialog-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.34);
+    backdrop-filter: blur(8px);
+}
+
+.admin-dialog-panel {
+    position: relative;
+    width: min(100%, 520px);
+    border-radius: 28px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 250, 244, 0.96) 100%);
+    box-shadow: 0 28px 70px rgba(15, 23, 42, 0.18);
+    padding: 26px;
+    transform: translateY(14px) scale(0.98);
+    opacity: 0;
+    transition: transform 0.22s ease, opacity 0.22s ease;
+}
+
+.admin-dialog.active .admin-dialog-panel {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+.admin-dialog-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.admin-dialog-icon {
+    flex-shrink: 0;
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, #fff0e2 0%, #ffe3cc 100%);
+    color: var(--primary-color);
+    box-shadow: inset 0 0 0 1px rgba(249, 115, 22, 0.16);
+    font-size: 22px;
+}
+
+.admin-dialog-copy {
+    min-width: 0;
+}
+
+.admin-dialog-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #94a3b8;
+}
+
+.admin-dialog-kicker::before {
+    content: "";
+    width: 20px;
+    height: 1px;
+    background: rgba(249, 115, 22, 0.35);
+}
+
+.admin-dialog-copy h2 {
+    margin: 10px 0 8px;
+    font-size: 24px;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    color: var(--text-color);
+}
+
+.admin-dialog-copy p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--text-muted);
+    white-space: pre-line;
+}
+
+.admin-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.admin-dialog-btn {
+    border: none;
+    border-radius: 16px;
+    min-width: 112px;
+    padding: 13px 18px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease, color 0.16s ease;
+}
+
+.admin-dialog-btn:hover {
+    transform: translateY(-1px);
+}
+
+.admin-dialog-btn.primary {
+    background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+    color: #ffffff;
+    box-shadow: 0 14px 28px rgba(249, 115, 22, 0.24);
+}
+
+.admin-dialog-btn.primary:hover {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+}
+
+.admin-dialog-btn.secondary {
+    background: #ffffff;
+    color: #475569;
+    box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.3);
+}
+
+.admin-dialog-btn.secondary:hover {
+    background: #f8fafc;
+}
+
+.admin-dialog.is-success .admin-dialog-icon {
+    background: linear-gradient(180deg, #e9fff3 0%, #d8fbe8 100%);
+    color: #10b981;
+    box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.16);
+}
+
+.admin-dialog.is-warning .admin-dialog-icon {
+    background: linear-gradient(180deg, #fff6dc 0%, #ffecb5 100%);
+    color: #d97706;
+    box-shadow: inset 0 0 0 1px rgba(217, 119, 6, 0.16);
+}
+
+.admin-dialog.is-danger .admin-dialog-icon {
+    background: linear-gradient(180deg, #ffe8e8 0%, #ffd6d6 100%);
+    color: #dc2626;
+    box-shadow: inset 0 0 0 1px rgba(220, 38, 38, 0.14);
+}
+
+body.admin-dialog-open {
+    overflow: hidden;
+}
+
 /* ========== Dashboard Refresh ========== */
 body.admin-dashboard-refresh {
     --content-bg: #f6efe8;
@@ -1834,7 +1995,8 @@ body.admin-dashboard-refresh .dashboard-section-actions {
 body.admin-dashboard-refresh .card,
 body.admin-dashboard-refresh .stat-card,
 body.admin-dashboard-refresh .section-card,
-body.admin-dashboard-refresh .modal-content {
+body.admin-dashboard-refresh .modal-content,
+body.admin-dashboard-refresh .admin-dialog-panel {
     border-radius: 24px;
     border: 1px solid rgba(15, 23, 42, 0.06);
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.97) 0%, rgba(255, 252, 248, 0.92) 100%);
