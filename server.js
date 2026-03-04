@@ -80,15 +80,31 @@ function getFirebaseConfig() {
 
 function getFirebaseWebConfig() {
     const projectId = process.env.FIREBASE_PROJECT_ID || 'tk-design-f43f6';
+    const defaultWebConfig = {
+        apiKey: 'AIzaSyDLYgqo2E1UiHoydEB6-WfFc119HES2U5c',
+        messagingSenderId: '729667300921',
+        appId: '1:729667300921:web:5061be8d41f10707a727e8'
+    };
 
     return {
-        apiKey: process.env.FIREBASE_WEB_API_KEY || '',
+        apiKey: process.env.FIREBASE_WEB_API_KEY || defaultWebConfig.apiKey,
         authDomain: process.env.FIREBASE_AUTH_DOMAIN || `${projectId}.firebaseapp.com`,
         projectId,
         storageBucket: process.env.FIREBASE_STORAGE_BUCKET || `${projectId}.firebasestorage.app`,
-        messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || '',
-        appId: process.env.FIREBASE_APP_ID || ''
+        messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || defaultWebConfig.messagingSenderId,
+        appId: process.env.FIREBASE_APP_ID || defaultWebConfig.appId
     };
+}
+
+function hasUsableFirebaseWebConfig(config) {
+    return !!(
+        config &&
+        config.apiKey &&
+        config.authDomain &&
+        config.projectId &&
+        config.storageBucket &&
+        config.appId
+    );
 }
 
 function createGoogleAccessJwt(clientEmail, privateKey, scope) {
@@ -909,9 +925,10 @@ app.get('/js/firebase-config.js', async (req, res) => {
             `window.__TK_FIREBASE_CONFIG__ = ${JSON.stringify(config, null, 4)};\nwindow.__TK_FIREBASE_CONFIG_ERROR__ = null;`
         );
     } catch (error) {
+        const fallbackConfig = getFirebaseWebConfig();
         res.type('application/javascript');
         res.send(
-            `window.__TK_FIREBASE_CONFIG__ = ${JSON.stringify(getFirebaseWebConfig(), null, 4)};\nwindow.__TK_FIREBASE_CONFIG_ERROR__ = ${JSON.stringify(error.message)};`
+            `window.__TK_FIREBASE_CONFIG__ = ${JSON.stringify(fallbackConfig, null, 4)};\nwindow.__TK_FIREBASE_CONFIG_ERROR__ = ${JSON.stringify(hasUsableFirebaseWebConfig(fallbackConfig) ? null : error.message)};`
         );
     }
 });
