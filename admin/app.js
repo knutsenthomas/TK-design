@@ -1,4 +1,19 @@
-const API_URL = 'http://localhost:3000/api';
+function getAdminApiUrl() {
+    const host = window.location.hostname || 'localhost';
+    const isLocalHost = ['localhost', '127.0.0.1'].includes(host);
+
+    if (window.location.protocol === 'file:') {
+        return `http://${host}:3000/api`;
+    }
+
+    if (isLocalHost && window.location.port && window.location.port !== '3000') {
+        return `http://${host}:3000/api`;
+    }
+
+    return '/api';
+}
+
+const API_URL = getAdminApiUrl();
 let contentData = {};
 let blogData = [];
 let currentLang = 'no';
