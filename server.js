@@ -378,6 +378,10 @@ async function persistSiteData(documentId, payload, localWriter) {
     let savedToFile = false;
     let lastError = null;
 
+    if (isVercelRuntime() && !hasFirebaseServerCredentials()) {
+        throw new Error('FIREBASE_CLIENT_EMAIL og/eller FIREBASE_PRIVATE_KEY mangler i Vercel-miljøet.');
+    }
+
     if (hasFirebaseServerCredentials()) {
         try {
             await writeSiteJsonDocument(documentId, payload);
@@ -424,6 +428,10 @@ async function persistStyleCss(cssText, localWriter) {
     let savedToFirebase = false;
     let savedToFile = false;
     let lastError = null;
+
+    if (isVercelRuntime() && !hasFirebaseServerCredentials()) {
+        throw new Error('FIREBASE_CLIENT_EMAIL og/eller FIREBASE_PRIVATE_KEY mangler i Vercel-miljøet.');
+    }
 
     if (hasFirebaseServerCredentials()) {
         try {

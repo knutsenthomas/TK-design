@@ -308,7 +308,31 @@ function normalizeAdminErrorMessage(error, fallbackMessage) {
         return 'Kunne ikke lagre innlegget akkurat nå. Prøv igjen om et øyeblikk.';
     }
 
+    if (/FIREBASE_CLIENT_EMAIL|FIREBASE_PRIVATE_KEY|mangler i Vercel-miljøet/i.test(rawMessage)) {
+        return 'Vercel mangler FIREBASE_CLIENT_EMAIL eller FIREBASE_PRIVATE_KEY. Legg dem inn i Project Settings → Environment Variables og deploy på nytt.';
+    }
+
     return rawMessage;
+}
+
+async function parseApiErrorMessage(response, fallbackMessage) {
+    let bodyText = '';
+    let parsedDetails = '';
+
+    try {
+        bodyText = await response.text();
+        try {
+            const parsed = JSON.parse(bodyText);
+            parsedDetails = parsed?.details || parsed?.error || '';
+        } catch (parseError) {
+            parsedDetails = '';
+        }
+    } catch (readError) {
+        bodyText = '';
+        parsedDetails = '';
+    }
+
+    return parsedDetails || bodyText || fallbackMessage;
 }
 
 function showAdminDialog({
@@ -596,18 +620,26 @@ async function saveBlogPosts() {
 
     if (!response.ok) {
         let errorBody = '';
+        let serverDetails = '';
 
         try {
             errorBody = await response.text();
+            try {
+                const parsed = JSON.parse(errorBody);
+                serverDetails = parsed?.details || parsed?.error || '';
+            } catch (parseError) {
+                serverDetails = '';
+            }
         } catch (error) {
             errorBody = '';
+            serverDetails = '';
         }
 
         if (response.status >= 500) {
-            throw new Error(`Kunne ikke lagre innlegg. Serveren svarte med ${response.status}.`);
+            throw new Error(serverDetails || `Kunne ikke lagre innlegg. Serveren svarte med ${response.status}.`);
         }
 
-        throw new Error(errorBody || `Kunne ikke lagre innlegg (${response.status}).`);
+        throw new Error(serverDetails || errorBody || `Kunne ikke lagre innlegg (${response.status}).`);
     }
 
     renderBlogList();
@@ -918,11 +950,17 @@ async function saveSeo() {
     });
 
     try {
-        await fetch(`${API_URL}/seo`, {
+        const response = await fetch(`${API_URL}/seo`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(seoData)
         });
+
+        if (!response.ok) {
+            const apiMessage = await parseApiErrorMessage(response, `Kunne ikke lagre SEO (${response.status})`);
+            throw new Error(apiMessage);
+        }
+
         await showAdminNotice('SEO-innstillingene er lagret.', {
             title: 'SEO oppdatert',
             variant: 'success'
@@ -1305,7 +1343,8 @@ async function saveChanges() {
             body: JSON.stringify(contentData)
         });
         if (!contentResponse.ok) {
-            throw new Error(`Kunne ikke lagre innhold (${contentResponse.status})`);
+            const apiMessage = await parseApiErrorMessage(contentResponse, `Kunne ikke lagre innhold (${contentResponse.status})`);
+            throw new Error(apiMessage);
         }
 
         const styleData = {
@@ -1330,7 +1369,8 @@ async function saveChanges() {
                 })
             });
             if (!styleResponse.ok) {
-                throw new Error(`Kunne ikke lagre design (${styleResponse.status})`);
+                const apiMessage = await parseApiErrorMessage(styleResponse, `Kunne ikke lagre design (${styleResponse.status})`);
+                throw new Error(apiMessage);
             }
         }
         await showAdminNotice('Design- og innholdsinnstillingene er lagret.', {
