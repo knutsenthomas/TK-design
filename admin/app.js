@@ -1,7 +1,8 @@
 const API_URL = 'http://localhost:3000/api';
 let contentData = {};
 let blogData = [];
-let currentLang = 'en';
+let currentLang = 'no';
+let seoData = { global: {}, pages: {} };
 let quill; // Define quill globally but initialize later
 
 // Section Translations
@@ -43,8 +44,41 @@ const adminTranslations = {
         'nav_media': 'Media',
         'nav_view_site': 'Se Nettside',
         'nav_logout': 'Logg ut',
+        'sidebar_menu': 'Meny',
         'welcome': 'Velkommen tilbake',
         'new_post': '+ Nytt Innlegg',
+        'dashboard_kicker': 'Nettstedsoversikt',
+        'dashboard_title': 'Ett sted for å holde tk-design oppdatert',
+        'dashboard_desc': 'Administrer forsiden, blogg, media, SEO og nøkkelsider fra dette dashboardet.',
+        'dashboard_latest_post': 'Siste innlegg',
+        'dashboard_focus_label': 'Fokus nå',
+        'dashboard_focus_value': 'Hold prosjekter, SEO og innhold oppdatert',
+        'stats_posts_live': 'Publiserte innlegg',
+        'stats_posts_live_note': 'Vises på Aktuelt-siden',
+        'stats_sections': 'Redigerbare seksjoner',
+        'stats_sections_note': 'Innhold du kan oppdatere her',
+        'stats_services_live': 'Tjenestekort',
+        'stats_services_live_note': 'Kort i innholdsredigeringen',
+        'stats_languages_live': 'Språk',
+        'stats_languages_live_note': 'Norsk og engelsk',
+        'dashboard_manage_title': 'Hva du styrer her',
+        'dashboard_manage_desc': 'Bruk dashbordet til å holde hele nettsiden konsistent og oppdatert.',
+        'dashboard_section_home_label': 'Forside',
+        'dashboard_section_home_title': 'Hero, tjenester og prosjekter',
+        'dashboard_section_home_desc': 'Oppdater innholdet som møter besøkende først.',
+        'dashboard_section_home_cta': 'Rediger innhold',
+        'dashboard_section_blog_label': 'Aktuelt',
+        'dashboard_section_blog_title': 'Blogg og detaljsider',
+        'dashboard_section_blog_desc': 'Publiser, oppdater og rydd opp i innlegg.',
+        'dashboard_section_blog_cta': 'Åpne blogg',
+        'dashboard_section_growth_label': 'Synlighet',
+        'dashboard_section_growth_title': 'SEO, design og media',
+        'dashboard_section_growth_desc': 'Juster metadata, farger og bilder for et helhetlig uttrykk.',
+        'dashboard_section_growth_cta': 'Gå til SEO',
+        'dashboard_section_site_label': 'Live',
+        'dashboard_section_site_title': 'Kontakt og offentlige sider',
+        'dashboard_section_site_desc': 'Se hvordan besøkende opplever innholdet ute på siden.',
+        'dashboard_section_site_cta': 'Åpne nettsiden',
         'stats_visits': 'Besøk (30d)',
         'stats_read': 'Innlegg Lest',
         'stats_active': 'Aktive Brukere',
@@ -104,8 +138,41 @@ const adminTranslations = {
         'nav_media': 'Media',
         'nav_view_site': 'View Site',
         'nav_logout': 'Logout',
+        'sidebar_menu': 'Menu',
         'welcome': 'Welcome back',
         'new_post': '+ New Post',
+        'dashboard_kicker': 'Site Overview',
+        'dashboard_title': 'One place to keep tk-design updated',
+        'dashboard_desc': 'Manage the homepage, blog, media, SEO and key pages from this dashboard.',
+        'dashboard_latest_post': 'Latest Post',
+        'dashboard_focus_label': 'Current Focus',
+        'dashboard_focus_value': 'Keep projects, SEO and content updated',
+        'stats_posts_live': 'Published Posts',
+        'stats_posts_live_note': 'Shown on the News page',
+        'stats_sections': 'Editable Sections',
+        'stats_sections_note': 'Content you can update here',
+        'stats_services_live': 'Service Cards',
+        'stats_services_live_note': 'Cards in the content editor',
+        'stats_languages_live': 'Languages',
+        'stats_languages_live_note': 'Norwegian and English',
+        'dashboard_manage_title': 'What You Manage Here',
+        'dashboard_manage_desc': 'Use the dashboard to keep the entire site consistent and up to date.',
+        'dashboard_section_home_label': 'Homepage',
+        'dashboard_section_home_title': 'Hero, services and projects',
+        'dashboard_section_home_desc': 'Update the content visitors see first.',
+        'dashboard_section_home_cta': 'Edit content',
+        'dashboard_section_blog_label': 'News',
+        'dashboard_section_blog_title': 'Blog and detail pages',
+        'dashboard_section_blog_desc': 'Publish, update and tidy up posts.',
+        'dashboard_section_blog_cta': 'Open blog',
+        'dashboard_section_growth_label': 'Visibility',
+        'dashboard_section_growth_title': 'SEO, design and media',
+        'dashboard_section_growth_desc': 'Adjust metadata, colors and images for a consistent expression.',
+        'dashboard_section_growth_cta': 'Go to SEO',
+        'dashboard_section_site_label': 'Live',
+        'dashboard_section_site_title': 'Contact and public pages',
+        'dashboard_section_site_desc': 'See how visitors experience the public site.',
+        'dashboard_section_site_cta': 'Open website',
         'stats_visits': 'Visits (30d)',
         'stats_read': 'Posts Read',
         'stats_active': 'Active Users',
@@ -191,6 +258,11 @@ function updateDashboardLanguage() {
             el.placeholder = t[key];
         }
     });
+
+    const activeNav = document.querySelector('.nav-btn.active[data-tab]');
+    if (activeNav?.dataset.tab) {
+        updateBreadcrumb(activeNav.dataset.tab);
+    }
 }
 
 // ==========================================
@@ -311,6 +383,8 @@ window.openEditModal = function (index) {
     document.getElementById('post-category').value = post.category || 'Generelt';
     document.getElementById('post-date').value = post.date;
     document.getElementById('post-image').value = post.image;
+    const excerptInput = document.getElementById('post-excerpt');
+    if (excerptInput) excerptInput.value = post.excerpt || '';
 
     // Populate SEO fields
     document.getElementById('post-seo-title').value = post.seoTitle || '';
@@ -326,6 +400,90 @@ window.deletePost = async function (index) {
     if (confirm('Er du sikker på at du vil slette dette innlegget?')) {
         blogData.splice(index, 1);
         await saveBlogPosts();
+    }
+};
+
+async function saveBlogPosts() {
+    const response = await fetch(`${API_URL}/posts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(blogData)
+    });
+
+    if (!response.ok) {
+        throw new Error(`Could not save posts: ${response.status}`);
+    }
+
+    renderBlogList();
+}
+
+function getNextPostId() {
+    return blogData.reduce((maxId, post) => {
+        const numericId = Number(post.id) || 0;
+        return Math.max(maxId, numericId);
+    }, 0) + 1;
+}
+
+function buildPostPayload() {
+    const title = document.getElementById('post-title')?.value.trim();
+    if (!title) {
+        throw new Error('Innleggstittel mangler');
+    }
+
+    const postId = currentEditingId || getNextPostId();
+    const content = quill ? quill.root.innerHTML.trim() : '';
+
+    return {
+        id: postId,
+        title,
+        author: document.getElementById('post-author')?.value || 'Admin',
+        category: document.getElementById('post-category')?.value || 'Generelt',
+        date: document.getElementById('post-date')?.value || new Date().toLocaleDateString('no-NO', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        }),
+        image: document.getElementById('post-image')?.value || 'img/blog/bblog1.png',
+        excerpt: document.getElementById('post-excerpt')?.value.trim() || '',
+        content: content || '<p>Nytt innlegg uten innhold.</p>',
+        seoTitle: document.getElementById('post-seo-title')?.value.trim() || title,
+        seoDesc: document.getElementById('post-seo-desc')?.value.trim() || '',
+        seoKeywords: document.getElementById('post-seo-keywords')?.value.trim() || '',
+        link: `blog-details.html?id=${postId}`
+    };
+}
+
+async function upsertCurrentPost(successMessage) {
+    const postPayload = buildPostPayload();
+    const existingIndex = blogData.findIndex((post) => Number(post.id) === Number(postPayload.id));
+
+    if (existingIndex >= 0) {
+        blogData[existingIndex] = postPayload;
+    } else {
+        blogData.unshift(postPayload);
+    }
+
+    await saveBlogPosts();
+    currentEditingId = postPayload.id;
+    closeModal();
+    alert(successMessage);
+}
+
+window.savePost = async function () {
+    try {
+        await upsertCurrentPost('Innlegg lagret.');
+    } catch (error) {
+        console.error('Error saving post:', error);
+        alert(error.message || 'Kunne ikke lagre innlegget.');
+    }
+};
+
+window.publishPost = async function () {
+    try {
+        await upsertCurrentPost('Innlegg publisert.');
+    } catch (error) {
+        console.error('Error publishing post:', error);
+        alert(error.message || 'Kunne ikke publisere innlegget.');
     }
 };
 
@@ -353,14 +511,31 @@ async function init() {
         console.error("Quill library not loaded!");
     }
 
+    setupEventListeners();
+    setupLogout();
+
     await fetchStyles(); // Load Style data
     await fetchContent();
     await fetchBlogPosts();
     await fetchSeo(); // Load SEO data
-    renderContentEditor();
-    renderBlogList();
-    setupEventListeners();
-    setupLogout();
+
+    try {
+        renderContentEditor();
+    } catch (error) {
+        console.error('Error rendering content editor:', error);
+    }
+
+    try {
+        renderBlogList();
+    } catch (error) {
+        console.error('Error rendering blog list:', error);
+    }
+
+    try {
+        renderDashboardOverview();
+    } catch (error) {
+        console.error('Error rendering dashboard overview:', error);
+    }
 }
 
 function registerCustomBlots() {
@@ -546,8 +721,8 @@ function setupLogout() {
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
-            if (window.supabaseClient) {
-                await window.supabaseClient.auth.signOut();
+            if (window.adminAuthClient) {
+                await window.adminAuthClient.auth.signOut();
                 window.location.href = 'login.html';
             }
         });
@@ -609,14 +784,56 @@ async function fetchContent() {
     }
 }
 
+function getDashboardBaseContent() {
+    return contentData.no || contentData.en || {};
+}
+
+function countDashboardSections() {
+    const baseContent = getDashboardBaseContent();
+    return Object.keys(baseContent).filter((key) => !key.endsWith('_details')).length;
+}
+
+function countDashboardServices() {
+    const services = getDashboardBaseContent().services || {};
+    return Object.keys(services).filter((key) => /^s\d+_title$/.test(key)).length;
+}
+
+function renderDashboardOverview() {
+    const postCountEl = document.getElementById('dashboard-post-count');
+    const sectionCountEl = document.getElementById('dashboard-section-count');
+    const serviceCountEl = document.getElementById('dashboard-service-count');
+    const languageCountEl = document.getElementById('dashboard-language-count');
+    const latestPostEl = document.getElementById('dashboard-latest-post');
+
+    if (postCountEl) {
+        postCountEl.textContent = String(blogData.length || 0);
+    }
+
+    if (sectionCountEl) {
+        sectionCountEl.textContent = String(countDashboardSections());
+    }
+
+    if (serviceCountEl) {
+        serviceCountEl.textContent = String(countDashboardServices());
+    }
+
+    if (languageCountEl) {
+        languageCountEl.textContent = String(Object.keys(contentData || {}).length);
+    }
+
+    if (latestPostEl) {
+        latestPostEl.textContent = blogData[0]?.title || (currentLang === 'en' ? 'No posts yet' : 'Ingen innlegg ennå');
+    }
+}
+
 function renderContentEditor() {
     const contentEditor = document.getElementById('content-editor');
     if (!contentEditor) return;
 
     contentEditor.innerHTML = '';
-    const sectionData = contentData[currentLang];
+    const sectionData = contentData[currentLang] || contentData.no || contentData.en;
 
-    if (!sectionData) return;
+    if (!sectionData || typeof sectionData !== 'object') return;
 
     // Define Groups
     const groupTranslations = {
@@ -759,6 +976,7 @@ function renderContentEditor() {
 
                         createFields(value, `${prefix}${key}.`);
                     } else {
+                        const safeValue = typeof value === 'string' ? value : String(value ?? '');
                         const formGroup = document.createElement('div');
                         formGroup.className = 'form-group';
                         formGroup.style.marginBottom = '15px';
@@ -772,7 +990,7 @@ function renderContentEditor() {
                         label.style.color = '#475569';
 
                         let input;
-                        if (value.length > 80) {
+                        if (safeValue.length > 80) {
                             input = document.createElement('textarea');
                             input.rows = 4;
                             input.style.width = '100%';
@@ -789,7 +1007,7 @@ function renderContentEditor() {
                             input.style.borderRadius = '6px';
                         }
 
-                        input.value = value;
+                        input.value = safeValue;
                         input.dataset.section = sectionKey;
                         const fullKeyPath = prefix ? `${sectionKey}.${prefix}${key}` : `${sectionKey}.${key}`;
 
@@ -859,11 +1077,14 @@ async function saveChanges() {
     const saveBtn = document.getElementById('save-btn'); // Local definition for safety
     if (saveBtn) saveBtn.innerText = 'Lagrer...';
     try {
-        await fetch(`${API_URL}/content`, {
+        const contentResponse = await fetch(`${API_URL}/content`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(contentData)
         });
+        if (!contentResponse.ok) {
+            throw new Error(`Kunne ikke lagre innhold (${contentResponse.status})`);
+        }
 
         const styleData = {
             "--clr-base": document.getElementById('clr-base').value,
@@ -878,7 +1099,7 @@ async function saveChanges() {
         } : {};
 
         if (styleData["--clr-base"]) {
-            await fetch(`${API_URL}/style`, {
+            const styleResponse = await fetch(`${API_URL}/style`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -886,6 +1107,9 @@ async function saveChanges() {
                     ...fontData
                 })
             });
+            if (!styleResponse.ok) {
+                throw new Error(`Kunne ikke lagre design (${styleResponse.status})`);
+            }
         }
         alert('Endringer lagret!');
     } catch (error) {
@@ -898,23 +1122,32 @@ async function saveChanges() {
 
 // ========== HEADER NAVIGATION ==========
 const breadcrumbConfig = {
-    'home': ['Dashboard'],
-    'blog': ['Dashboard', 'Blogg'],
-    'content': ['Dashboard', 'Sideinnhold'],
-    'style': ['Dashboard', 'Design'],
-    'seo': ['Dashboard', 'SEO'],
-    'media': ['Dashboard', 'Media']
+    'no': {
+        'home': ['Hjem'],
+        'blog': ['Blogg'],
+        'content': ['Sideinnhold'],
+        'style': ['Design'],
+        'seo': ['SEO'],
+        'media': ['Media']
+    },
+    'en': {
+        'home': ['Home'],
+        'blog': ['Blog'],
+        'content': ['Site Content'],
+        'style': ['Design'],
+        'seo': ['SEO'],
+        'media': ['Media']
+    }
 };
 
 function updateBreadcrumb(section) {
     const breadcrumb = document.getElementById('breadcrumb');
     if (!breadcrumb) return;
 
-    const items = breadcrumbConfig[section] || ['Dashboard'];
-    breadcrumb.innerHTML = items.map((item, index) => {
-        const isActive = index === items.length - 1;
-        return `<span class="breadcrumb-item ${isActive ? 'active' : ''}">${item}</span>`;
-    }).join('');
+    const localizedBreadcrumbs = breadcrumbConfig[currentLang] || breadcrumbConfig.no;
+    const items = localizedBreadcrumbs[section] || localizedBreadcrumbs.home;
+    const activeItem = items[items.length - 1] || localizedBreadcrumbs.home[0];
+    breadcrumb.innerHTML = `<span class="breadcrumb-item active">${activeItem}</span>`;
 }
 
 function updateHeaderActions(section) {
@@ -946,7 +1179,13 @@ function setupEventListeners() {
             langBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             currentLang = btn.dataset.lang;
+            const headerLangBtns = document.querySelectorAll('.lang-btn-header');
+            headerLangBtns.forEach(b => {
+                b.classList.toggle('active', b.dataset.lang === currentLang);
+            });
+            updateDashboardLanguage();
             renderContentEditor();
+            renderDashboardOverview();
         });
     });
 
@@ -1006,6 +1245,9 @@ async function fetchBlogPosts() {
 function renderBlogList() {
     const listContainer = document.getElementById('blog-list');
     if (!listContainer) return;
+    if (!Array.isArray(blogData)) {
+        blogData = [];
+    }
     listContainer.innerHTML = '';
 
     blogData.forEach((post, index) => {
@@ -1023,6 +1265,8 @@ function renderBlogList() {
         `;
         listContainer.appendChild(item);
     });
+
+    renderDashboardOverview();
 }
 
 // View Switching Logic
@@ -1232,10 +1476,9 @@ window.uploadImage = async function () {
 document.addEventListener('DOMContentLoaded', async () => {
     // Auth & Profile Setup
     const user = await checkAuth();
-    if (user) {
-        renderUserProfile(user);
-        setupProfileEventListeners();
-    }
+    if (!user) return;
+    renderUserProfile(user);
+    setupProfileEventListeners();
 
     // Setup Header Language Buttons
     const headerLangBtns = document.querySelectorAll('.lang-btn-header');
@@ -1251,7 +1494,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             updateDashboardLanguage(); // Update dashboard text
             renderContentEditor();
+            renderDashboardOverview();
         });
+    });
+
+    headerLangBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === currentLang);
+    });
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === currentLang);
     });
 
     // Initial Dashboard Language Update
@@ -1278,6 +1529,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('post-category').value = 'Generelt';
             document.getElementById('post-date').value = new Date().toLocaleDateString('no-NO', { year: 'numeric', month: 'long', day: 'numeric' });
             document.getElementById('post-image').value = 'img/blog/bblog1.png';
+            const excerptInput = document.getElementById('post-excerpt');
+            if (excerptInput) excerptInput.value = '';
             document.getElementById('post-seo-title').value = '';
             document.getElementById('post-seo-desc').value = '';
             document.getElementById('post-seo-keywords').value = '';
@@ -1299,15 +1552,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 let currentUser = null;
 
 async function checkAuth() {
-    if (!window.supabaseClient) {
-        console.error('Supabase client not initialized');
+    if (!window.adminAuthClient) {
+        console.error('Firebase client not initialized');
+        window.location.replace('login.html');
         return null;
     }
 
-    const { data: { session }, error } = await window.supabaseClient.auth.getSession();
+    const { data: { session }, error } = await window.adminAuthClient.auth.getSession();
 
     if (error || !session) {
-        window.location.href = 'login.html';
+        window.location.replace('login.html');
         return null;
     }
 
@@ -1396,8 +1650,8 @@ function setupProfileEventListeners() {
     const logoutBtnDropdown = document.getElementById('logout-btn-dropdown'); // Dropdown
 
     async function handleLogout() {
-        if (window.supabaseClient) {
-            await window.supabaseClient.auth.signOut();
+        if (window.adminAuthClient) {
+            await window.adminAuthClient.auth.signOut();
             window.location.href = 'login.html';
         }
     }
@@ -1473,22 +1727,26 @@ async function saveUserProfile() {
             const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
             const filePath = `avatars/${fileName}`;
 
-            const { data, error: uploadError } = await window.supabaseClient.storage
+            const { data, error: uploadError } = await window.adminAuthClient.storage
                 .from('images') // Assuming 'images' bucket exists, or create 'avatars' bucket
                 .upload(filePath, file);
 
             if (uploadError) throw uploadError;
 
-            // Get Public URL
-            const { data: { publicUrl } } = window.supabaseClient.storage
-                .from('images')
-                .getPublicUrl(filePath);
+            if (data && data.publicUrl) {
+                avatarUrl = data.publicUrl;
+            } else {
+                const { data: publicData, error: publicUrlError } = await window.adminAuthClient.storage
+                    .from('images')
+                    .getPublicUrl(filePath);
 
-            avatarUrl = publicUrl;
+                if (publicUrlError) throw publicUrlError;
+                avatarUrl = publicData.publicUrl;
+            }
         }
 
         // Update User Metadata
-        const { data, error } = await window.supabaseClient.auth.updateUser({
+        const { data, error } = await window.adminAuthClient.auth.updateUser({
             data: {
                 full_name: nameInput.value,
                 avatar_url: avatarUrl,

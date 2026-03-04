@@ -1,56 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="no">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog Details | Matias</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Font Awesome -->
+    <title>Bloggdetaljer | tk-design</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=4">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .blog-details-content p {
-            margin-bottom: 20px;
-            color: #bbb;
-            line-height: 1.8;
-        }
-
-        .blog-details-content h2,
-        .blog-details-content h3 {
-            color: #fff;
-            margin-top: 30px;
-            margin-bottom: 15px;
-        }
-
-        .blog-details-content ul,
-        .blog-details-content ol {
-            margin-bottom: 20px;
-            padding-left: 20px;
-            color: #bbb;
-        }
-
-        .blog-details-content img {
-            max-width: 100%;
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-
-        .blog-details-content blockquote {
-            border-left: 4px solid var(--clr-base);
-            padding-left: 20px;
-            font-style: italic;
-            color: #ddd;
-            margin: 20px 0;
-        }
-    </style>
 </head>
 
-<body>
+<body class="homepage-refresh blog-page-refresh">
 
     <header class="header">
         <div class="container nav-container">
-            <a href="index.html" class="logo">
-                <img src="img/logo/logo-new.png" alt="TK Design Logo">
+            <a href="index.html#home" class="logo" aria-label="tk-design">
+                <span class="logo-icon">
+                    <img src="img/logo/d.png" alt="tk-design logo">
+                </span>
+                <span class="logo-text">tk-design</span>
             </a>
             <nav class="nav-desktop">
                 <ul>
@@ -58,20 +30,18 @@
                     <li><a href="index.html#about" data-i18n="nav.about">About</a></li>
                     <li><a href="index.html#services" data-i18n="nav.services">Services</a></li>
                     <li><a href="index.html#projects" data-i18n="nav.portfolio">Portfolio</a></li>
-                    <li><a href="index.html#blog" data-i18n="nav.blog">Blog</a></li>
-                    <li><a href="index.html#contact" data-i18n="nav.contact">Contact</a></li>
+                    <li><a href="blog.html" class="is-current" data-i18n="nav.blog">Blog</a></li>
+                    <li><a href="contact.html" data-i18n="nav.contact">Contact</a></li>
                 </ul>
             </nav>
             <div class="lang-switch-desktop">
-                <button onclick="switchLanguage('en')" class="lang-btn active">EN</button>
-                <span>|</span>
-                <button onclick="switchLanguage('no')" class="lang-btn">NO</button>
+                <button onclick="switchLanguage('en')" class="lang-btn">EN</button>
+                <button onclick="switchLanguage('no')" class="lang-btn active">NO</button>
             </div>
             <button class="menu-trigger"><i class="fas fa-bars"></i></button>
         </div>
     </header>
 
-    <!-- Mobile Menu Overlay -->
     <div class="mobile-menu-overlay">
         <button class="menu-close"><i class="fas fa-times"></i></button>
         <nav class="mobile-nav">
@@ -80,280 +50,564 @@
                 <li><a href="index.html#about" data-i18n="nav.about">About</a></li>
                 <li><a href="index.html#services" data-i18n="nav.services">Services</a></li>
                 <li><a href="index.html#projects" data-i18n="nav.portfolio">Portfolio</a></li>
-                <li><a href="index.html#blog" data-i18n="nav.blog">Blog</a></li>
-                <li><a href="index.html#contact" data-i18n="nav.contact">Contact</a></li>
+                <li><a href="blog.html" class="is-current" data-i18n="nav.blog">Blog</a></li>
+                <li><a href="contact.html" data-i18n="nav.contact">Contact</a></li>
             </ul>
             <div class="lang-switch-mobile">
-                <button onclick="switchLanguage('en')" class="lang-btn active">EN</button>
-                <button onclick="switchLanguage('no')" class="lang-btn">NO</button>
+                <button onclick="switchLanguage('en')" class="lang-btn">EN</button>
+                <button onclick="switchLanguage('no')" class="lang-btn active">NO</button>
             </div>
         </nav>
     </div>
 
-    <!-- Video Modal -->
-    <div class="video-modal" id="videoModal">
-        <div class="modal-content">
-            <button class="modal-close"><i class="fas fa-times"></i></button>
-            <iframe width="100%" height="100%" src="" title="YouTube video player" frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen></iframe>
-        </div>
-    </div>
-
     <main>
-        <!-- Page Banner -->
-        <section class="page-banner pt_120 pb_120">
+        <section class="page-banner blog-page-banner">
             <div class="container">
-                <div class="page-banner-content text-center">
-                    <h1 class="section-title" style="font-size: 60px;" data-i18n="blog_details.banner_title">Brand
-                        design that helps the company grow</h1>
-                    <ul class="breadcrumb justify-center">
-                        <li><a href="index.html" data-i18n="nav.home">Home</a></li>
-                        <li><a href="index.html#blog" data-i18n="nav.blog">Blog</a></li>
-                        <li data-i18n="blog_details.breadcrumb">Blog Details</li>
-                    </ul>
+                <div class="blog-page-hero">
+                    <div class="blog-page-copy">
+                        <span class="section-subtitle-lines" data-i18n="blog_details.eyebrow">Aktuelt</span>
+                        <h1 class="section-title blog-page-title" id="blogDetailTitle">Laster inn innlegg...</h1>
+                        <p class="blog-page-summary" id="blogDetailSummary" data-i18n="blog_details.loading">
+                            Laster inn innhold...
+                        </p>
+                        <div class="blog-page-actions">
+                            <a href="blog.html" class="primary-cta" data-i18n="blog_details.back_to_blog">
+                                Tilbake til aktuelt
+                            </a>
+                            <a href="contact.html" class="blog-page-secondary" data-i18n="blog_details.contact_cta">
+                                Start et prosjekt
+                            </a>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+                            <li><a href="blog.html" data-i18n="nav.blog">Blog</a></li>
+                            <li id="blogDetailBreadcrumb" data-i18n="blog_details.breadcrumb">Bloggdetaljer</li>
+                        </ul>
+                    </div>
+
+                    <div class="blog-page-preview" aria-hidden="true">
+                        <div class="blog-preview-shell">
+                            <span class="blog-preview-badge" data-i18n="blog_details.preview_label">Utvalgt innlegg</span>
+                            <h2 id="blogPreviewTitle">TK-design</h2>
+                            <p id="blogPreviewLead">Praktiske råd, tydelige valg og innhold som er lett å bruke videre.</p>
+                            <div class="blog-preview-stats">
+                                <div class="blog-preview-stat">
+                                    <span data-i18n="blog_details.category_label">Kategori</span>
+                                    <strong id="blogCategoryValue">Webdesign</strong>
+                                </div>
+                                <div class="blog-preview-stat">
+                                    <span data-i18n="blog_details.published_label">Publisert</span>
+                                    <strong id="blogDateValue">2025</strong>
+                                </div>
+                                <div class="blog-preview-stat">
+                                    <span data-i18n="blog_details.author_label">Skrevet av</span>
+                                    <strong id="blogAuthorValue">Thomas Knutsen</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Blog Details Content -->
-        <section class="blog-details-area pt_120 pb_120">
+        <section class="blog-page-main pb_120">
             <div class="container">
-                <div class="blog-details-grid">
-                    <!-- Main Content (Left Column) -->
-                    <div class="blog-main-content">
-                        <div class="blog-details-thumb mb-50">
-                            <img src="img/blog/blog-detailsb2.png" alt="Blog Details"
-                                style="width: 100%; border-radius: 20px;">
+                <div class="blog-details-wrapper">
+                    <div class="blog-overview-grid">
+                        <div class="blog-overview-card">
+                            <span class="blog-overview-label" data-i18n="blog_details.category_label">Kategori</span>
+                            <strong class="blog-overview-value" id="blogOverviewCategory">Webdesign</strong>
                         </div>
-
-                        <div class="blog-details-wrapper">
-                            <div class="blog-meta-top"
-                                style="border-bottom: 1px solid #333; padding-bottom: 30px; margin-bottom: 40px; margin-top: 30px;">
-                                <span style="color: #fff; font-weight: 500;">By: Admin / Design / Posted on October 19,
-                                    2025 / <span data-i18n="blog_details.comments">Comments</span>: 05</span>
-                            </div>
-
-                            <div class="blog-details-content" id="blog-content-container">
-                                <!-- Content will be loaded dynamically -->
-                                <p>Loading...</p>
-                            </div>
-
-                            <!-- Tags & Share Box -->
-                            <div class="blog-share-box">
-                                <div class="flex items-center gap-4">
-                                    <span style="font-size: 20px; font-weight: 500; color: #fff;">Posted in :</span>
-                                    <a href="#" class="tag-btn">Business</a>
-                                    <a href="#" class="tag-btn">Digital</a>
-                                </div>
-                                <div class="flex items-center gap-4">
-                                    <span style="font-size: 20px; font-weight: 500; color: #fff;">Share :</span>
-                                    <div class="share-links">
-                                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                                        <a href="#"><i class="fab fa-twitter"></i></a>
-                                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                                        <a href="#"><i class="fab fa-youtube"></i></a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Leave a Reply Form -->
-                            <div class="reply-form-box">
-                                <h3 style="font-size: 32px; color: #fff; margin-bottom: 20px;">Leave a Reply</h3>
-                                <p style="color: #999; margin-bottom: 30px;">Your email address will not be published.
-                                    Required fields are marked *</p>
-                                <form action="#">
-                                    <div class="form-row">
-                                        <input type="text" placeholder="Name">
-                                        <input type="email" placeholder="Email">
-                                    </div>
-                                    <textarea placeholder="Write Comments" rows="5"></textarea>
-                                    <button type="submit" class="submit-btn">
-                                        <span>Submit Comment</span>
-                                        <i class="fas fa-arrow-right"></i>
-                                    </button>
-                                </form>
-                            </div>
-
+                        <div class="blog-overview-card">
+                            <span class="blog-overview-label" data-i18n="blog_details.published_label">Publisert</span>
+                            <strong class="blog-overview-value" id="blogOverviewDate">2025</strong>
+                        </div>
+                        <div class="blog-overview-card">
+                            <span class="blog-overview-label" data-i18n="blog_details.author_label">Skrevet av</span>
+                            <strong class="blog-overview-value" id="blogOverviewAuthor">Thomas Knutsen</strong>
+                        </div>
+                        <div class="blog-overview-card">
+                            <span class="blog-overview-label" data-i18n="blog_details.reading_label">Lesetid</span>
+                            <strong class="blog-overview-value" id="blogReadingTime">2 min</strong>
                         </div>
                     </div>
 
-                    <!-- Sidebar (Right Column) -->
-                    <aside class="blog-sidebar">
-                        <!-- Search Widget -->
-                        <div class="widget search-widget">
-                            <h4 class="widget-title">Search</h4>
-                            <form action="#" class="search-form">
-                                <input type="text" placeholder="Search">
-                                <button type="submit"><i class="fas fa-search"></i></button>
-                            </form>
-                        </div>
-
-                        <!-- Categories Widget -->
-                        <div class="widget categories-widget">
-                            <h4 class="widget-title">Categories</h4>
-                            <ul>
-                                <li><a href="#"><span>Creative</span> <span class="arrow"><i
-                                                class="fas fa-chevron-right"></i></span></a></li>
-                                <li><a href="#"><span>Business</span> <span class="arrow"><i
-                                                class="fas fa-chevron-right"></i></span></a></li>
-                                <li><a href="#"><span>Design</span> <span class="arrow"><i
-                                                class="fas fa-chevron-right"></i></span></a></li>
-                                <li><a href="#"><span>Marketing</span> <span class="arrow"><i
-                                                class="fas fa-chevron-right"></i></span></a></li>
-                                <li><a href="#"><span>Lifestyle</span> <span class="arrow"><i
-                                                class="fas fa-chevron-right"></i></span></a></li>
-                            </ul>
-                        </div>
-
-                        <!-- Recent Post Widget -->
-                        <div class="widget recent-post-widget">
-                            <h4 class="widget-title">Recent Post</h4>
-                            <ul>
-                                <li>
-                                    <a href="#">
-                                        <img src="img/blog/bsmall1.png" alt="Post">
-                                        <div class="post-info">
-                                            <span class="post-title">The Main Thing For The Designer</span>
-                                            <span class="post-date"><i class="far fa-clock"></i> October 19, 2025</span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <img src="img/blog/bsmall2.png" alt="Post">
-                                        <div class="post-info">
-                                            <span class="post-title">The services provide for design</span>
-                                            <span class="post-date"><i class="far fa-clock"></i> October 19, 2025</span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <img src="img/blog/bsmall3.png" alt="Post">
-                                        <div class="post-info">
-                                            <span class="post-title">The Main Thing For The Designer</span>
-                                            <span class="post-date"><i class="far fa-clock"></i> October 19, 2025</span>
-                                        </div>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <!-- Tags Widget -->
-                        <div class="widget tags-widget">
-                            <h4 class="widget-title">Tag</h4>
-                            <div class="tag-cloud">
-                                <a href="#">Business</a>
-                                <a href="#">Digital</a>
-                                <a href="#">Audio Post</a>
-                                <a href="#">Gallery Post</a>
-                                <a href="#">Marketing</a>
-                                <a href="#">Agency</a>
-                                <a href="#">Graphic</a>
-                                <a href="#">Web Development</a>
+                    <div class="blog-detail-grid">
+                        <article class="blog-article-shell">
+                            <div class="blog-article-media">
+                                <img id="blogDetailImage" src="img/blog/bblog1.png" alt="Bloggbilde">
                             </div>
-                        </div>
-                    </aside>
+
+                            <div class="blog-article-head">
+                                <span class="section-subtitle-lines" data-i18n="blog_details.content_title">Innhold</span>
+                                <p data-i18n="blog_details.content_intro">
+                                    Praktiske råd og tydelige poeng, skrevet så det er lett å ta videre i egen bedrift.
+                                </p>
+                            </div>
+
+                            <div class="blog-rich-content" id="blog-content-container">
+                                <p data-i18n="blog_details.loading">Laster inn innhold...</p>
+                            </div>
+
+                            <ul class="blog-tag-list" id="blogTagList">
+                                <li>Webdesign</li>
+                            </ul>
+                        </article>
+
+                        <aside class="blog-sidebar-stack">
+                            <section class="blog-side-card">
+                                <h2 data-i18n="blog_details.outline_title">Kort oversikt</h2>
+                                <p data-i18n="blog_details.outline_intro">
+                                    De viktigste punktene fra innlegget, komprimert til raske takeaways.
+                                </p>
+                                <ul class="blog-outline-list" id="blogOutlineList">
+                                    <li data-i18n="blog_details.loading">Laster inn innhold...</li>
+                                </ul>
+                            </section>
+
+                            <section class="blog-side-card">
+                                <h2 data-i18n="blog_details.share_title">Del innlegget</h2>
+                                <div class="blog-share-links">
+                                    <a class="blog-share-link" id="shareFacebook" href="#" target="_blank"
+                                        rel="noopener noreferrer" aria-label="Facebook">
+                                        <i class="fab fa-facebook-f"></i>
+                                    </a>
+                                    <a class="blog-share-link" id="shareLinkedIn" href="#" target="_blank"
+                                        rel="noopener noreferrer" aria-label="LinkedIn">
+                                        <i class="fab fa-linkedin-in"></i>
+                                    </a>
+                                    <a class="blog-share-link" id="shareMail" href="#" aria-label="E-post">
+                                        <i class="fas fa-envelope"></i>
+                                    </a>
+                                </div>
+                            </section>
+
+                            <section class="blog-side-card">
+                                <h2 data-i18n="blog_details.recent_title">Flere innlegg</h2>
+                                <div class="blog-recent-list" id="blogRecentPosts">
+                                    <p data-i18n="blog_details.loading">Laster inn innhold...</p>
+                                </div>
+                            </section>
+
+                            <section class="blog-side-card blog-cta-card">
+                                <span class="section-subtitle-lines" data-i18n="blog_details.eyebrow">Aktuelt</span>
+                                <h2 data-i18n="blog_details.cta_title">Vil du bruke dette i praksis?</h2>
+                                <p data-i18n="blog_details.cta_body">
+                                    Jeg kan hjelpe deg med nettside, SEO eller innhold som faktisk passer bedriften din.
+                                </p>
+                                <a href="contact.html" class="primary-cta" data-i18n="blog_details.cta_button">
+                                    Gå til kontaktsiden
+                                </a>
+                            </section>
+                        </aside>
+                    </div>
+
+                    <div class="blog-post-nav">
+                        <a href="blog-details.html?id=1" class="blog-post-nav-link prev-post" id="prevPostLink">
+                            <i class="fas fa-arrow-left"></i>
+                            <div>
+                                <span data-i18n="blog_details.prev_post">Forrige innlegg</span>
+                                <strong id="prevPostName">Forrige innlegg</strong>
+                            </div>
+                        </a>
+                        <a href="blog.html" class="grid-view blog-grid-view" aria-label="Tilbake til alle innlegg">
+                            <i class="fas fa-th"></i>
+                        </a>
+                        <a href="blog-details.html?id=2" class="blog-post-nav-link next-post" id="nextPostLink">
+                            <div>
+                                <span data-i18n="blog_details.next_post">Neste innlegg</span>
+                                <strong id="nextPostName">Neste innlegg</strong>
+                            </div>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </section>
-
     </main>
 
-    <footer class="pt_120 pb_120" style="border-top: 1px solid #262525;">
+    <footer class="pt_120 pb_120" style="border-top: 1px solid var(--clr-border);">
         <div class="container">
             <div class="footer-cta">
-                <h2 data-i18n="footer.cta">Get In Touch</h2>
+                <h2 data-i18n="footer.cta">La oss starte</h2>
             </div>
 
             <div class="footer-content">
                 <div class="footer-info">
-                    <p style="font-size: 20px; color: #fff; margin-bottom: 20px;" data-i18n="footer.intro">Hello, I’m
-                        David Matias, Website &
-                        User Interface Designer based in London.</p>
+                    <p style="font-size: 20px; color: var(--clr-base); margin-bottom: 20px;" data-i18n="footer.intro">
+                        Vi bygger din digitale identitet med skreddersydd webdesign, SEO og SoMe-strategi.
+                    </p>
                     <a href="mailto:thomas@tk-design.no"
-                        style="font-size: 30px; text-decoration: underline; color: #fff;"
+                        style="font-size: 30px; text-decoration: underline; color: var(--clr-base);"
                         data-i18n="contact.email_val">thomas@tk-design.no</a>
                 </div>
 
                 <div class="footer-links" style="grid-template-columns: repeat(2, 1fr); gap: 20px;">
-                    <a href="#" class="social-link">Facebook <i class="fas fa-arrow-right"></i></a>
-                    <a href="#" class="social-link">Instagram <i class="fas fa-arrow-right"></i></a>
-                    <a href="#" class="social-link">Dribbble <i class="fas fa-arrow-right"></i></a>
-                    <a href="#" class="social-link">Webflow <i class="fas fa-arrow-right"></i></a>
+                    <a href="https://www.facebook.com/profile.php?id=61574614704737&amp;locale=nb_NO" class="social-link"
+                        target="_blank" rel="noopener noreferrer">Facebook <i class="fas fa-arrow-right"></i></a>
+                    <a href="https://www.instagram.com/tkdesign777" class="social-link" target="_blank"
+                        rel="noopener noreferrer">Instagram <i class="fas fa-arrow-right"></i></a>
+                    <a href="https://www.kudosregnskap.no/" class="social-link" target="_blank"
+                        rel="noopener noreferrer">Kudos Regnskap <i class="fas fa-arrow-right"></i></a>
+                    <a href="https://www.hiskingdomministry.no/" class="social-link" target="_blank"
+                        rel="noopener noreferrer">His Kingdom <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
 
             <div class="flex flex-wrap justify-between items-center"
-                style="border-top: 1px solid #333; padding-top: 30px;">
-                <p><span data-i18n="footer.copyright">Copyright © 2026</span> <a href="#"
-                        style="color: var(--clr-base);">TK-design</a> <span data-i18n="footer.rights">All rights
+                style="border-top: 1px solid var(--clr-border); padding-top: 30px;">
+                <p><span data-i18n="footer.copyright">Copyright © 2026</span> <a href="index.html"
+                        style="color: var(--clr-base);">tk-design</a> <span data-i18n="footer.rights">All rights
                         reserved.</span></p>
                 <div class="flex gap-4">
-                    <a href="#" style="color: #fff;" data-i18n="footer.terms">Terms & Condition</a>
-                    <a href="#" style="color: #fff;" data-i18n="footer.privacy">Privacy Policy</a>
+                    <a href="accessibility.html" style="color: var(--clr-base);"
+                        data-i18n="footer.accessibility">Accessibility Statement</a>
+                    <a href="privacy.html" style="color: var(--clr-base);"
+                        data-i18n="footer.privacy">Privacy Policy</a>
                 </div>
             </div>
         </div>
     </footer>
 
     <script src="translations.js"></script>
+    <script src="script.js"></script>
+    <script src="js/cookies.js"></script>
     <script>
-        async function loadPostDetails() {
-            const params = new URLSearchParams(window.location.search);
-            const postId = params.get('id');
+        const BLOG_DETAIL_RUNTIME = {
+            no: {
+                loading: 'Laster inn innhold...',
+                notFound: 'Innlegget ble ikke funnet.',
+                loadError: 'Det oppstod en feil ved lasting av innlegget.',
+                recentEmpty: 'Ingen flere innlegg tilgjengelig.'
+            },
+            en: {
+                loading: 'Loading content...',
+                notFound: 'The post was not found.',
+                loadError: 'There was a problem loading the post.',
+                recentEmpty: 'No additional posts available.'
+            }
+        };
 
-            if (!postId) {
-                // If no ID, maybe redirect or show default (fallback behavior)
-                // For now, let's just leave it or show an error
-                document.getElementById('blog-content-container').innerHTML = '<p>Post not found.</p>';
-                return;
+        let blogPosts = [];
+        let currentPostId = null;
+
+        function getBlogRuntimeText() {
+            return BLOG_DETAIL_RUNTIME[currentLang] || BLOG_DETAIL_RUNTIME.no;
+        }
+
+        async function fetchBlogPosts() {
+            const sources = ['data/posts.json', 'http://localhost:3000/api/posts'];
+
+            for (const source of sources) {
+                try {
+                    const response = await fetch(source);
+                    if (!response.ok) {
+                        continue;
+                    }
+
+                    const posts = await response.json();
+                    if (Array.isArray(posts) && posts.length) {
+                        return posts;
+                    }
+                } catch (error) {
+                    // Try next source.
+                }
             }
 
-            try {
-                // Fetch all posts - optimization: endpoints should support /api/posts/:id but we'll filter client-side for now
-                const response = await fetch('http://localhost:3000/api/posts');
-                const posts = await response.json();
+            throw new Error('Unable to load posts');
+        }
 
-                // Find post by ID (handle both string/number types just in case)
-                const post = posts.find(p => p.id == postId);
+        function stripHtml(html) {
+            const temp = document.createElement('div');
+            temp.innerHTML = html || '';
+            return (temp.textContent || temp.innerText || '').replace(/\s+/g, ' ').trim();
+        }
 
-                if (post) {
-                    // Update Page Title
-                    document.querySelector('.section-title').innerText = post.title;
-                    document.title = `${post.seoTitle || post.title} | TK Design`;
+        function extractParagraphs(html) {
+            const temp = document.createElement('div');
+            temp.innerHTML = html || '';
+            const paragraphs = Array.from(temp.querySelectorAll('p'))
+                .map((paragraph) => paragraph.textContent.replace(/\s+/g, ' ').trim())
+                .filter(Boolean);
 
-                    // Update Meta Info
-                    const metaSpan = document.querySelector('.blog-meta-top span');
-                    if (metaSpan) {
-                        metaSpan.innerHTML = `By: ${post.author || 'Admin'} / ${post.category || 'General'} / Posted on ${post.date}`;
-                    }
+            if (paragraphs.length) {
+                return paragraphs;
+            }
 
-                    // Update Image
-                    const img = document.querySelector('.blog-details-thumb img');
-                    if (img) {
-                        img.src = post.image;
-                        img.alt = post.title;
-                    }
+            const plainText = stripHtml(html);
+            return plainText ? [plainText] : [];
+        }
 
-                    // Update Content
-                    const contentContainer = document.getElementById('blog-content-container');
-                    contentContainer.innerHTML = post.content || '<p>No content available.</p>';
+        function buildSummary(post) {
+            const fromSeo = (post.seoDesc || '').trim();
+            if (fromSeo) {
+                return fromSeo;
+            }
 
-                } else {
-                    document.getElementById('blog-content-container').innerHTML = '<p>Post not found.</p>';
-                }
+            const [firstParagraph] = extractParagraphs(post.content);
+            if (!firstParagraph) {
+                return '';
+            }
 
-            } catch (error) {
-                console.error('Error loading post:', error);
-                document.getElementById('blog-content-container').innerHTML = '<p>Error loading post.</p>';
+            return firstParagraph.length > 180 ? `${firstParagraph.slice(0, 177)}...` : firstParagraph;
+        }
+
+        function estimateReadingTime(post) {
+            const wordCount = stripHtml(post.content).split(/\s+/).filter(Boolean).length;
+            const minutes = Math.max(1, Math.ceil(wordCount / 180));
+            return `${minutes} min`;
+        }
+
+        function updateShareLinks(post) {
+            const url = encodeURIComponent(window.location.href);
+            const title = encodeURIComponent(post.title || 'TK-design');
+
+            const shareFacebook = document.getElementById('shareFacebook');
+            const shareLinkedIn = document.getElementById('shareLinkedIn');
+            const shareMail = document.getElementById('shareMail');
+
+            if (shareFacebook) {
+                shareFacebook.href = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+            }
+
+            if (shareLinkedIn) {
+                shareLinkedIn.href = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+            }
+
+            if (shareMail) {
+                shareMail.href = `mailto:?subject=${title}&body=${url}`;
             }
         }
 
-        document.addEventListener('DOMContentLoaded', loadPostDetails);
+        function renderOutline(post) {
+            const outlineList = document.getElementById('blogOutlineList');
+            if (!outlineList) {
+                return;
+            }
+
+            const paragraphs = extractParagraphs(post.content).slice(0, 3);
+            if (!paragraphs.length) {
+                outlineList.innerHTML = `<li>${getBlogRuntimeText().notFound}</li>`;
+                return;
+            }
+
+            outlineList.innerHTML = paragraphs.map((paragraph) => {
+                const shortText = paragraph.length > 120 ? `${paragraph.slice(0, 117)}...` : paragraph;
+                return `<li>${shortText}</li>`;
+            }).join('');
+        }
+
+        function renderTags(post) {
+            const tagList = document.getElementById('blogTagList');
+            if (!tagList) {
+                return;
+            }
+
+            const keywordTags = (post.seoKeywords || '')
+                .split(',')
+                .map((keyword) => keyword.trim())
+                .filter(Boolean);
+
+            const tags = [post.category, ...keywordTags].filter(Boolean).slice(0, 6);
+            tagList.innerHTML = tags.map((tag) => `<li>${tag}</li>`).join('');
+        }
+
+        function renderRecentPosts(activePost) {
+            const recentContainer = document.getElementById('blogRecentPosts');
+            if (!recentContainer) {
+                return;
+            }
+
+            const otherPosts = blogPosts.filter((post) => post.id !== activePost.id).slice(0, 3);
+            if (!otherPosts.length) {
+                recentContainer.innerHTML = `<p>${getBlogRuntimeText().recentEmpty}</p>`;
+                return;
+            }
+
+            recentContainer.innerHTML = otherPosts.map((post) => `
+                <a href="blog-details.html?id=${post.id}" class="blog-recent-link">
+                    <span>${post.category || 'TK-design'}</span>
+                    <strong>${post.title}</strong>
+                    <em>${post.date || ''}</em>
+                </a>
+            `).join('');
+        }
+
+        function renderPostNavigation(activePost) {
+            const activeIndex = blogPosts.findIndex((post) => post.id === activePost.id);
+            if (activeIndex === -1) {
+                return;
+            }
+
+            const prevPost = blogPosts[(activeIndex - 1 + blogPosts.length) % blogPosts.length];
+            const nextPost = blogPosts[(activeIndex + 1) % blogPosts.length];
+
+            const prevLink = document.getElementById('prevPostLink');
+            const nextLink = document.getElementById('nextPostLink');
+            const prevName = document.getElementById('prevPostName');
+            const nextName = document.getElementById('nextPostName');
+
+            if (prevLink && prevName) {
+                prevLink.href = `blog-details.html?id=${prevPost.id}`;
+                prevName.textContent = prevPost.title;
+            }
+
+            if (nextLink && nextName) {
+                nextLink.href = `blog-details.html?id=${nextPost.id}`;
+                nextName.textContent = nextPost.title;
+            }
+        }
+
+        function renderPost(post) {
+            const summary = buildSummary(post);
+            const readingTime = estimateReadingTime(post);
+
+            const title = document.getElementById('blogDetailTitle');
+            const summaryEl = document.getElementById('blogDetailSummary');
+            const breadcrumb = document.getElementById('blogDetailBreadcrumb');
+            const previewTitle = document.getElementById('blogPreviewTitle');
+            const previewLead = document.getElementById('blogPreviewLead');
+            const categoryValue = document.getElementById('blogCategoryValue');
+            const dateValue = document.getElementById('blogDateValue');
+            const authorValue = document.getElementById('blogAuthorValue');
+            const overviewCategory = document.getElementById('blogOverviewCategory');
+            const overviewDate = document.getElementById('blogOverviewDate');
+            const overviewAuthor = document.getElementById('blogOverviewAuthor');
+            const overviewReading = document.getElementById('blogReadingTime');
+            const detailImage = document.getElementById('blogDetailImage');
+            const contentContainer = document.getElementById('blog-content-container');
+
+            if (title) {
+                title.textContent = post.title;
+            }
+
+            if (summaryEl) {
+                summaryEl.textContent = summary;
+            }
+
+            if (breadcrumb) {
+                breadcrumb.textContent = post.title;
+            }
+
+            if (previewTitle) {
+                previewTitle.textContent = post.title;
+            }
+
+            if (previewLead) {
+                previewLead.textContent = summary;
+            }
+
+            if (categoryValue) {
+                categoryValue.textContent = post.category || 'TK-design';
+            }
+
+            if (dateValue) {
+                dateValue.textContent = post.date || '';
+            }
+
+            if (authorValue) {
+                authorValue.textContent = post.author || 'Thomas Knutsen';
+            }
+
+            if (overviewCategory) {
+                overviewCategory.textContent = post.category || 'TK-design';
+            }
+
+            if (overviewDate) {
+                overviewDate.textContent = post.date || '';
+            }
+
+            if (overviewAuthor) {
+                overviewAuthor.textContent = post.author || 'Thomas Knutsen';
+            }
+
+            if (overviewReading) {
+                overviewReading.textContent = readingTime;
+            }
+
+            if (detailImage) {
+                detailImage.src = post.image || 'img/blog/bblog1.png';
+                detailImage.alt = post.title;
+            }
+
+            if (contentContainer) {
+                contentContainer.innerHTML = post.content || `<p>${getBlogRuntimeText().notFound}</p>`;
+            }
+
+            document.title = `${post.seoTitle || post.title} | tk-design`;
+            renderTags(post);
+            renderOutline(post);
+            renderRecentPosts(post);
+            renderPostNavigation(post);
+            updateShareLinks(post);
+        }
+
+        function renderError(message) {
+            const title = document.getElementById('blogDetailTitle');
+            const summaryEl = document.getElementById('blogDetailSummary');
+            const contentContainer = document.getElementById('blog-content-container');
+            const outlineList = document.getElementById('blogOutlineList');
+            const recentContainer = document.getElementById('blogRecentPosts');
+
+            if (title) {
+                title.textContent = message;
+            }
+
+            if (summaryEl) {
+                summaryEl.textContent = message;
+            }
+
+            if (contentContainer) {
+                contentContainer.innerHTML = `<p>${message}</p>`;
+            }
+
+            if (outlineList) {
+                outlineList.innerHTML = `<li>${message}</li>`;
+            }
+
+            if (recentContainer) {
+                recentContainer.innerHTML = `<p>${message}</p>`;
+            }
+        }
+
+        async function loadPostDetails() {
+            const params = new URLSearchParams(window.location.search);
+            const requestedId = Number(params.get('id') || 1);
+            currentPostId = requestedId;
+
+            try {
+                blogPosts = await fetchBlogPosts();
+                const post = blogPosts.find((item) => Number(item.id) === requestedId);
+
+                if (!post) {
+                    renderError(getBlogRuntimeText().notFound);
+                    return;
+                }
+
+                renderPost(post);
+            } catch (error) {
+                renderError(getBlogRuntimeText().loadError);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPostDetails();
+
+            const originalSwitchLanguage = window.switchLanguage;
+            if (typeof originalSwitchLanguage === 'function') {
+                window.switchLanguage = function overrideSwitchLanguage(lang) {
+                    originalSwitchLanguage(lang);
+
+                    if (blogPosts.length) {
+                        const activePost = blogPosts.find((item) => Number(item.id) === Number(currentPostId));
+                        if (activePost) {
+                            renderPost(activePost);
+                        }
+                    }
+                };
+            }
+        });
     </script>
-    <script src="script.js"></script>
 </body>
 
 </html>

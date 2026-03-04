@@ -1,123 +1,246 @@
 /**
  * Cookie Consent System
- * Implementation for TK-design
+ * Styled consent banner with category preferences.
  */
 
 (function () {
     const COOKIE_PREFERENCE_KEY = 'tk_cookie_consent';
 
-    function initCookieBanner() {
-        if (localStorage.getItem(COOKIE_PREFERENCE_KEY)) return;
+    function getCurrentLanguage() {
+        return window.currentLang ||
+            localStorage.getItem('site_lang') ||
+            localStorage.getItem('selectedLanguage') ||
+            'no';
+    }
+
+    function getTranslation(path, fallback = '') {
+        if (typeof translations === 'undefined') {
+            return fallback || path;
+        }
+
+        const lang = getCurrentLanguage();
+        const keys = path.split('.');
+        let value = translations[lang];
+
+        for (const key of keys) {
+            if (value && Object.prototype.hasOwnProperty.call(value, key)) {
+                value = value[key];
+            } else {
+                return fallback || path;
+            }
+        }
+
+        return value;
+    }
+
+    function hasSavedPreferences() {
+        return Boolean(localStorage.getItem(COOKIE_PREFERENCE_KEY));
+    }
+
+    function savePreferences(preferences) {
+        localStorage.setItem(COOKIE_PREFERENCE_KEY, JSON.stringify({
+            essential: true,
+            analytics: Boolean(preferences.analytics),
+            marketing: Boolean(preferences.marketing),
+            choice: preferences.choice || 'custom',
+            savedAt: new Date().toISOString()
+        }));
+
+        window.dispatchEvent(new CustomEvent('cookiePreferencesSaved', {
+            detail: preferences
+        }));
+    }
+
+    function removeBanner() {
+        const banner = document.getElementById('cookie-consent-banner');
+        if (banner) {
+            banner.remove();
+        }
+    }
+
+    function buildDescriptionHtml() {
+        const cookieText = getTranslation('privacy_policy.section3_content', getTranslation('cookies.text'));
+        const accessibilityText = getTranslation('accessibility_statement.goal', '');
+        const learnMore = getTranslation('cookies.learn_more', 'Les mer her');
+
+        const pieces = [cookieText, accessibilityText].filter(Boolean);
+        return `${pieces.join(' ')} <a href="privacy.html">${learnMore}</a>`;
+    }
+
+    function createToggle(labelText, type, active, locked) {
+        const item = document.createElement('div');
+        item.className = 'cookie-option';
+
+        const label = document.createElement('span');
+        label.className = 'cookie-option-label';
+        label.textContent = labelText;
+
+        const toggle = document.createElement('button');
+        toggle.type = 'button';
+        toggle.className = 'cookie-toggle';
+        toggle.dataset.type = type;
+        toggle.dataset.active = active ? 'true' : 'false';
+        toggle.setAttribute('aria-pressed', active ? 'true' : 'false');
+        toggle.setAttribute('aria-label', labelText);
+
+        if (locked) {
+            toggle.disabled = true;
+            toggle.classList.add('is-locked');
+        }
+
+        const knob = document.createElement('span');
+        knob.className = 'cookie-toggle-knob';
+        toggle.appendChild(knob);
+
+        item.appendChild(label);
+        item.appendChild(toggle);
+
+        return { item, toggle };
+    }
+
+    function applyToggleState(toggle, active) {
+        toggle.dataset.active = active ? 'true' : 'false';
+        toggle.setAttribute('aria-pressed', active ? 'true' : 'false');
+    }
+
+    function buildBanner() {
+        if (hasSavedPreferences()) {
+            return;
+        }
+
+        removeBanner();
+
+        const state = {
+            analytics: false,
+            marketing: false
+        };
 
         const banner = document.createElement('div');
         banner.id = 'cookie-consent-banner';
-        banner.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            background: #1a1a1a;
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            flex-wrap: wrap;
-            border-left: 4px solid var(--clr-base, #f97316);
-            animation: slideUp 0.5s ease-out;
-        `;
 
-        const text = document.createElement('div');
-        text.style.flex = '1';
-        text.style.minWidth = '250px';
+        const heading = document.createElement('h3');
+        heading.className = 'cookie-banner-title';
+        heading.textContent = getTranslation('cookies.title', 'Cookies & Personvern');
 
-        const p = document.createElement('p');
-        p.style.margin = '0';
-        p.style.fontSize = '14px';
-        p.setAttribute('data-i18n', 'cookies.text');
-        p.innerText = getTranslation('cookies.text');
+        const description = document.createElement('p');
+        description.className = 'cookie-banner-description';
+        description.innerHTML = buildDescriptionHtml();
 
-        const btnContainer = document.createElement('div');
-        btnContainer.style.display = 'flex';
-        btnContainer.style.gap = '10px';
+        const options = document.createElement('div');
+        options.className = 'cookie-options';
 
-        const acceptBtn = document.createElement('button');
-        acceptBtn.className = 'save-btn';
-        acceptBtn.style.padding = '8px 20px';
-        acceptBtn.setAttribute('data-i18n', 'cookies.accept');
-        acceptBtn.innerText = getTranslation('cookies.accept');
-        acceptBtn.onclick = () => {
-            localStorage.setItem(COOKIE_PREFERENCE_KEY, 'accepted');
-            banner.style.display = 'none';
-        };
+        const necessaryToggle = createToggle(
+            getTranslation('cookies.necessary', 'Nødvendige'),
+            'essential',
+            true,
+            true
+        );
+        const analyticsToggle = createToggle(
+            getTranslation('cookies.analytics', 'Statistikk'),
+            'analytics',
+            state.analytics,
+            false
+        );
+        const marketingToggle = createToggle(
+            getTranslation('cookies.marketing', 'Markedsføring'),
+            'marketing',
+            state.marketing,
+            false
+        );
 
-        const declineBtn = document.createElement('button');
-        declineBtn.style.cssText = `
-            background: transparent;
-            border: 1px solid #444;
-            color: #ccc;
-            padding: 8px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-        `;
-        declineBtn.setAttribute('data-i18n', 'cookies.decline');
-        declineBtn.innerText = getTranslation('cookies.decline');
-        declineBtn.onclick = () => {
-            localStorage.setItem(COOKIE_PREFERENCE_KEY, 'declined');
-            banner.style.display = 'none';
-        };
+        options.appendChild(necessaryToggle.item);
+        options.appendChild(analyticsToggle.item);
+        options.appendChild(marketingToggle.item);
 
-        const learnMore = document.createElement('a');
-        learnMore.href = 'privacy.html';
-        learnMore.style.color = 'var(--clr-base, #f97316)';
-        learnMore.style.fontSize = '12px';
-        learnMore.style.display = 'block';
-        learnMore.style.marginTop = '5px';
-        learnMore.setAttribute('data-i18n', 'cookies.learn_more');
-        learnMore.innerText = getTranslation('cookies.learn_more');
+        const actions = document.createElement('div');
+        actions.className = 'cookie-actions';
 
-        text.appendChild(p);
-        text.appendChild(learnMore);
-        btnContainer.appendChild(declineBtn);
-        btnContainer.appendChild(acceptBtn);
-        banner.appendChild(text);
-        banner.appendChild(btnContainer);
+        const allowAllButton = document.createElement('button');
+        allowAllButton.type = 'button';
+        allowAllButton.className = 'cookie-action-primary';
+        allowAllButton.textContent = getTranslation('cookies.allow_all', 'Tillat alle');
+
+        const saveSelectionButton = document.createElement('button');
+        saveSelectionButton.type = 'button';
+        saveSelectionButton.className = 'cookie-action-secondary';
+        saveSelectionButton.textContent = getTranslation('cookies.save_selection', 'Lagre valg');
+
+        const onlyNecessaryButton = document.createElement('button');
+        onlyNecessaryButton.type = 'button';
+        onlyNecessaryButton.className = 'cookie-action-tertiary';
+        onlyNecessaryButton.textContent = getTranslation('cookies.only_necessary', 'Kun nødvendige');
+
+        actions.appendChild(allowAllButton);
+        actions.appendChild(saveSelectionButton);
+        actions.appendChild(onlyNecessaryButton);
+
+        banner.appendChild(heading);
+        banner.appendChild(description);
+        banner.appendChild(options);
+        banner.appendChild(actions);
 
         document.body.appendChild(banner);
 
-        // Add Animation Keyframes
-        if (!document.getElementById('cookie-styles')) {
-            const style = document.createElement('style');
-            style.id = 'cookie-styles';
-            style.innerHTML = `
-                @keyframes slideUp {
-                    from { transform: translateY(100px); opacity: 0; }
-                    to { transform: translateY(0); opacity: 1; }
+        [analyticsToggle.toggle, marketingToggle.toggle].forEach((toggle) => {
+            toggle.addEventListener('click', () => {
+                const type = toggle.dataset.type;
+                state[type] = !state[type];
+                applyToggleState(toggle, state[type]);
+            });
+        });
+
+        allowAllButton.addEventListener('click', () => {
+            state.analytics = true;
+            state.marketing = true;
+            applyToggleState(analyticsToggle.toggle, true);
+            applyToggleState(marketingToggle.toggle, true);
+            savePreferences({
+                analytics: true,
+                marketing: true,
+                choice: 'all'
+            });
+            removeBanner();
+        });
+
+        saveSelectionButton.addEventListener('click', () => {
+            savePreferences({
+                analytics: state.analytics,
+                marketing: state.marketing,
+                choice: 'custom'
+            });
+            removeBanner();
+        });
+
+        onlyNecessaryButton.addEventListener('click', () => {
+            state.analytics = false;
+            state.marketing = false;
+            applyToggleState(analyticsToggle.toggle, false);
+            applyToggleState(marketingToggle.toggle, false);
+            savePreferences({
+                analytics: false,
+                marketing: false,
+                choice: 'necessary'
+            });
+            removeBanner();
+        });
+    }
+
+    function initCookieBanner() {
+        buildBanner();
+
+        if (typeof window.switchLanguage === 'function' && !window.__cookieBannerWrapped) {
+            const originalSwitchLanguage = window.switchLanguage;
+            window.switchLanguage = function wrappedSwitchLanguage(lang) {
+                originalSwitchLanguage(lang);
+
+                if (!hasSavedPreferences()) {
+                    buildBanner();
                 }
-            `;
-            document.head.appendChild(style);
+            };
+            window.__cookieBannerWrapped = true;
         }
     }
 
-    function getTranslation(key) {
-        if (typeof translations === 'undefined') return key;
-        const lang = localStorage.getItem('selectedLanguage') || 'no';
-        const keys = key.split('.');
-        let val = translations[lang];
-        for (const k of keys) {
-            if (val && val[k]) val = val[k];
-            else return key;
-        }
-        return val;
-    }
-
-    // Initialize when DOM ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initCookieBanner);
     } else {

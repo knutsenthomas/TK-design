@@ -4,19 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TK Design CMS</title>
+    <title>tk-design Admin</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="panel.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../js/supabase-config.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/firebase-client.js"></script>
     <!-- Quill CSS -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.bubble.css" rel="stylesheet">
     <!-- Quill JS -->
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 </head>
 
-<body>
+<body class="admin-dashboard-refresh">
 
     <!-- Modern Admin Header -->
     <header class="admin-header">
@@ -24,9 +28,15 @@
             <button class="back-btn" onclick="navigateBack()" style="display: none;">
                 <i class="fas fa-arrow-left"></i> Tilbake
             </button>
-            <nav class="breadcrumb" id="breadcrumb">
-                <span class="breadcrumb-item active">Dashboard</span>
-            </nav>
+                <div class="admin-header-title-group">
+                    <div class="admin-brand-chip">
+                        <i class="fas fa-layer-group"></i>
+                        <span>tk-design Studio</span>
+                    </div>
+                <nav class="breadcrumb" id="breadcrumb">
+                    <span class="breadcrumb-item active">Hjem</span>
+                </nav>
+            </div>
         </div>
 
         <div class="header-right">
@@ -35,21 +45,21 @@
             </div>
 
             <div class="language-switcher-header">
-                <button class="lang-btn-header active" data-lang="en">EN</button>
-                <button class="lang-btn-header" data-lang="no">NO</button>
+                <button class="lang-btn-header" data-lang="en">EN</button>
+                <button class="lang-btn-header active" data-lang="no">NO</button>
             </div>
 
             <div class="user-menu">
                 <button class="user-btn" id="user-menu-btn">
                     <img src="https://ui-avatars.com/api/?name=Admin&background=random" alt="User"
                         class="user-avatar-small" id="header-avatar">
-                    <span class="user-name-display" id="header-username">Admin</span>
+                    <span class="user-name-display" id="header-username">Laster...</span>
                     <i class="fas fa-chevron-down" style="font-size: 12px; color: #888;"></i>
                 </button>
                 <div class="user-dropdown" id="user-dropdown">
                     <div class="dropdown-header">
-                        <span class="dropdown-user-name" id="dropdown-name">Admin User</span>
-                        <span class="dropdown-user-email" id="dropdown-email">admin@example.com</span>
+                        <span class="dropdown-user-name" id="dropdown-name">Laster bruker...</span>
+                        <span class="dropdown-user-email" id="dropdown-email">Ikke innlogget</span>
                     </div>
                     <button class="dropdown-item" id="profile-settings-btn" data-i18n="profile_title">
                         <i class="fas fa-cog"></i> Profile Settings
@@ -68,7 +78,7 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo">
-                <h2><i class="fas fa-layer-group" style="color: #f97316;"></i> TK Studio</h2>
+                <h2 class="sidebar-menu-title" data-i18n="sidebar_menu">Meny</h2>
             </div>
             <nav>
                 <button class="nav-btn active" data-tab="home" data-i18n="nav_home"><i class="fas fa-home"></i>
@@ -104,35 +114,98 @@
                         Innlegg</button>
                 </header>
 
+                <div class="card dashboard-hero-card">
+                    <div class="dashboard-hero-layout">
+                        <div class="dashboard-hero-copy">
+                            <span class="dashboard-kicker" data-i18n="dashboard_kicker">Nettstedsoversikt</span>
+                            <h2 class="dashboard-panel-title" data-i18n="dashboard_title">Ett sted for å holde
+                                tk-design oppdatert</h2>
+                            <p class="dashboard-panel-text" data-i18n="dashboard_desc">Administrer forsiden, blogg,
+                                media, SEO og nøkkelsider fra dette dashboardet.</p>
+                        </div>
+                        <div class="dashboard-summary-grid">
+                            <div class="dashboard-mini-card">
+                                <span class="dashboard-mini-label" data-i18n="dashboard_latest_post">Siste innlegg</span>
+                                <strong id="dashboard-latest-post">Laster inn...</strong>
+                            </div>
+                            <div class="dashboard-mini-card">
+                                <span class="dashboard-mini-label" data-i18n="dashboard_focus_label">Fokus nå</span>
+                                <strong data-i18n="dashboard_focus_value">Hold prosjekter, SEO og innhold oppdatert</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <h3 data-i18n="stats_visits">Besøk (30d)</h3>
-                        <div class="value">1,204 <span class="trend">+12%</span></div>
+                        <h3 data-i18n="stats_posts_live">Publiserte innlegg</h3>
+                        <div class="value"><span id="dashboard-post-count">0</span></div>
+                        <p class="dashboard-stat-note" data-i18n="stats_posts_live_note">Vises på Aktuelt-siden</p>
                     </div>
                     <div class="stat-card">
-                        <h3 data-i18n="stats_read">Innlegg Lest</h3>
-                        <div class="value">843 <span class="trend">+5%</span></div>
+                        <h3 data-i18n="stats_sections">Redigerbare seksjoner</h3>
+                        <div class="value"><span id="dashboard-section-count">0</span></div>
+                        <p class="dashboard-stat-note" data-i18n="stats_sections_note">Innhold du kan oppdatere her</p>
                     </div>
                     <div class="stat-card">
-                        <h3 data-i18n="stats_active">Aktive Brukere</h3>
-                        <div class="value">42</div>
+                        <h3 data-i18n="stats_services_live">Tjenestekort</h3>
+                        <div class="value"><span id="dashboard-service-count">0</span></div>
+                        <p class="dashboard-stat-note" data-i18n="stats_services_live_note">Kort i innholdsredigeringen</p>
                     </div>
                     <div class="stat-card">
-                        <h3 data-i18n="stats_time">Gj.snitt Tid</h3>
-                        <div class="value">2m 14s</div>
+                        <h3 data-i18n="stats_languages_live">Språk</h3>
+                        <div class="value"><span id="dashboard-language-count">0</span></div>
+                        <p class="dashboard-stat-note" data-i18n="stats_languages_live_note">Norsk og engelsk</p>
                     </div>
                 </div>
 
                 <div class="card">
-                    <h2 style="margin-bottom: 20px; font-size: 18px;" data-i18n="quick_actions">Hurtigvalg</h2>
-                    <div style="display: flex; gap: 15px;">
-                        <button class="save-btn" style="background: #fff; color: #333; border: 1px solid #ddd;"
-                            onclick="document.querySelector('[data-tab=\'content\']').click()"
-                            data-i18n="edit_hero">Rediger
-                            Forsidetekst</button>
-                        <button class="save-btn" style="background: #fff; color: #333; border: 1px solid #ddd;"
-                            onclick="document.querySelector('[data-tab=\'media\']').click()"
-                            data-i18n="upload_images">Last opp Bilder</button>
+                    <h2 class="dashboard-panel-title" data-i18n="dashboard_manage_title">Hva du styrer her</h2>
+                    <p class="dashboard-panel-text" data-i18n="dashboard_manage_desc">Bruk dashbordet til å holde
+                        hele nettsiden konsistent og oppdatert.</p>
+                    <div class="dashboard-section-grid">
+                        <div class="dashboard-section-card">
+                            <span class="dashboard-section-label" data-i18n="dashboard_section_home_label">Forside</span>
+                            <h3 data-i18n="dashboard_section_home_title">Hero, tjenester og prosjekter</h3>
+                            <p data-i18n="dashboard_section_home_desc">Oppdater innholdet som møter besøkende først.
+                            </p>
+                            <div class="dashboard-section-actions">
+                                <button class="save-btn secondary-action-btn"
+                                    onclick="document.querySelector('[data-tab=\'content\']').click()"
+                                    data-i18n="dashboard_section_home_cta">Rediger innhold</button>
+                            </div>
+                        </div>
+                        <div class="dashboard-section-card">
+                            <span class="dashboard-section-label" data-i18n="dashboard_section_blog_label">Aktuelt</span>
+                            <h3 data-i18n="dashboard_section_blog_title">Blogg og detaljsider</h3>
+                            <p data-i18n="dashboard_section_blog_desc">Publiser, oppdater og rydd opp i innlegg.</p>
+                            <div class="dashboard-section-actions">
+                                <button class="save-btn secondary-action-btn"
+                                    onclick="document.querySelector('[data-tab=\'blog\']').click()"
+                                    data-i18n="dashboard_section_blog_cta">Åpne blogg</button>
+                            </div>
+                        </div>
+                        <div class="dashboard-section-card">
+                            <span class="dashboard-section-label" data-i18n="dashboard_section_growth_label">Synlighet</span>
+                            <h3 data-i18n="dashboard_section_growth_title">SEO, design og media</h3>
+                            <p data-i18n="dashboard_section_growth_desc">Juster metadata, farger og bilder for et
+                                helhetlig uttrykk.</p>
+                            <div class="dashboard-section-actions">
+                                <button class="save-btn secondary-action-btn"
+                                    onclick="document.querySelector('[data-tab=\'seo\']').click()"
+                                    data-i18n="dashboard_section_growth_cta">Gå til SEO</button>
+                            </div>
+                        </div>
+                        <div class="dashboard-section-card">
+                            <span class="dashboard-section-label" data-i18n="dashboard_section_site_label">Live</span>
+                            <h3 data-i18n="dashboard_section_site_title">Kontakt og offentlige sider</h3>
+                            <p data-i18n="dashboard_section_site_desc">Se hvordan besøkende opplever innholdet ute på
+                                siden.</p>
+                            <div class="dashboard-section-actions">
+                                <button class="save-btn secondary-action-btn" onclick="window.open('/', '_blank')"
+                                    data-i18n="dashboard_section_site_cta">Åpne nettsiden</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -146,8 +219,8 @@
 
                 <div class="card">
                     <div class="language-switcher">
-                        <button class="lang-btn active" data-lang="en">Engelsk</button>
-                        <button class="lang-btn" data-lang="no">Norsk</button>
+                        <button class="lang-btn" data-lang="en">Engelsk</button>
+                        <button class="lang-btn active" data-lang="no">Norsk</button>
                     </div>
                     <div id="content-editor"></div>
                 </div>
@@ -357,8 +430,8 @@
                 </div>
 
                 <div class="language-switcher-header">
-                    <button class="lang-btn-header active" data-lang="en">EN</button>
-                    <button class="lang-btn-header" data-lang="no">NO</button>
+                    <button class="lang-btn-header" data-lang="en">EN</button>
+                    <button class="lang-btn-header active" data-lang="no">NO</button>
                 </div>
             </div>
         </header>
@@ -514,7 +587,7 @@
                             <label>Utdrag <i class="far fa-question-circle info-icon"></i></label>
                             <span class="char-count">0/500</span>
                         </div>
-                        <textarea
+                        <textarea id="post-excerpt"
                             placeholder="f.eks. Denne raske og enkle pastaretten er perfekt for travle familiemåltider midt i uken..."
                             rows="4"></textarea>
                     </div>
@@ -553,9 +626,6 @@
                     <!-- Hidden inputs for compatibility with existing save logic -->
                     <input type="hidden" id="post-image" value="img/blog/bblog1.png">
                     <input type="hidden" id="post-category" value="Generelt">
-                    <input type="hidden" id="post-seo-title">
-                    <input type="hidden" id="post-seo-desc">
-                    <input type="hidden" id="post-seo-keywords">
                 </div>
 
                 <!-- Tab: Kategorier -->
@@ -602,14 +672,20 @@
                 <div id="panel-seo" class="settings-content main-panel-view" style="display: none;">
                     <div class="setting-group">
                         <label>SEO Tittel</label>
-                        <input type="text"
+                        <input type="text" id="post-seo-title"
                             style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"
                             placeholder="Tittel for søkemotorer">
                     </div>
                     <div class="setting-group">
                         <label>Beskrivelse</label>
-                        <textarea rows="4" placeholder="Beskrivelse..."
+                        <textarea id="post-seo-desc" rows="4" placeholder="Beskrivelse..."
                             style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"></textarea>
+                    </div>
+                    <div class="setting-group">
+                        <label>Nøkkelord</label>
+                        <input type="text" id="post-seo-keywords"
+                            style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"
+                            placeholder="webdesign, seo, innhold">
                     </div>
                 </div>
 

@@ -1,23 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="no">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="privacy_policy.title">Privacy Policy - TK-design</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Font Awesome -->
+    <title>Personvernerklæring | tk-design</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=6">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- AOS Animation -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 
-<body>
+<body class="homepage-refresh legal-page-refresh privacy-page-refresh">
 
     <header class="header">
         <div class="container nav-container">
-            <a href="index.html" class="logo">
-                <img src="img/logo/logo-new.png" alt="TK Design Logo">
+            <a href="index.html#home" class="logo" aria-label="tk-design">
+                <span class="logo-icon">
+                    <img src="img/logo/d.png" alt="tk-design logo">
+                </span>
+                <span class="logo-text">tk-design</span>
             </a>
             <nav class="nav-desktop">
                 <ul>
@@ -25,21 +30,18 @@
                     <li><a href="index.html#about" data-i18n="nav.about">About</a></li>
                     <li><a href="index.html#services" data-i18n="nav.services">Services</a></li>
                     <li><a href="index.html#projects" data-i18n="nav.portfolio">Portfolio</a></li>
-                    <li><a href="index.html#testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
-                    <li><a href="index.html#blog" data-i18n="nav.blog">Blog</a></li>
-                    <li><a href="index.html#contact" data-i18n="nav.contact">Contact</a></li>
+                    <li><a href="blog.html" data-i18n="nav.blog">Blog</a></li>
+                    <li><a href="contact.html" data-i18n="nav.contact">Contact</a></li>
                 </ul>
             </nav>
             <div class="lang-switch-desktop">
-                <button onclick="switchLanguage('en')" class="lang-btn active">EN</button>
-                <span>|</span>
-                <button onclick="switchLanguage('no')" class="lang-btn">NO</button>
+                <button onclick="switchLanguage('en')" class="lang-btn">EN</button>
+                <button onclick="switchLanguage('no')" class="lang-btn active">NO</button>
             </div>
             <button class="menu-trigger"><i class="fas fa-bars"></i></button>
         </div>
     </header>
 
-    <!-- Mobile Menu Overlay -->
     <div class="mobile-menu-overlay">
         <button class="menu-close"><i class="fas fa-times"></i></button>
         <nav class="mobile-nav">
@@ -48,83 +50,163 @@
                 <li><a href="index.html#about" data-i18n="nav.about">About</a></li>
                 <li><a href="index.html#services" data-i18n="nav.services">Services</a></li>
                 <li><a href="index.html#projects" data-i18n="nav.portfolio">Portfolio</a></li>
-                <li><a href="index.html#testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
-                <li><a href="index.html#blog" data-i18n="nav.blog">Blog</a></li>
-                <li><a href="index.html#contact" data-i18n="nav.contact">Contact</a></li>
+                <li><a href="blog.html" data-i18n="nav.blog">Blog</a></li>
+                <li><a href="contact.html" data-i18n="nav.contact">Contact</a></li>
             </ul>
             <div class="lang-switch-mobile">
-                <button onclick="switchLanguage('en')" class="lang-btn active">EN</button>
-                <button onclick="switchLanguage('no')" class="lang-btn">NO</button>
+                <button onclick="switchLanguage('en')" class="lang-btn">EN</button>
+                <button onclick="switchLanguage('no')" class="lang-btn active">NO</button>
             </div>
         </nav>
     </div>
 
-    <main class="pt_120 pb_120">
-        <section class="container" data-aos="fade-up">
-            <h1 class="section-title text-center legal-content" style="margin-bottom: 60px;"
-                data-i18n="privacy_policy.title">Privacy Policy</h1>
+    <main>
+        <section class="page-banner legal-page-banner">
+            <div class="container">
+                <div class="legal-page-hero">
+                    <div class="legal-page-copy">
+                        <span class="section-subtitle-lines" data-i18n="privacy_policy.eyebrow">Personvern</span>
+                        <h1 class="section-title legal-page-title" data-i18n="privacy_policy.title">Personvernerklæring</h1>
+                        <p class="legal-page-summary" data-i18n="privacy_policy.summary">
+                            Slik håndterer TK-design personopplysninger, henvendelser og informasjonskapsler på dette
+                            nettstedet.
+                        </p>
+                        <div class="legal-page-actions">
+                            <a href="index.html" class="primary-cta" data-i18n="privacy_policy.back_home">Tilbake til forsiden</a>
+                            <a href="contact.html" class="legal-page-secondary" data-i18n="privacy_policy.contact_cta">Kontakt TK-design</a>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+                            <li data-i18n="privacy_policy.breadcrumb">Personvernerklæring</li>
+                        </ul>
+                    </div>
 
-            <div class="legal-content" style="max-width: 800px; margin: 0 auto;">
-                <p data-i18n="privacy_policy.intro"></p>
+                    <div class="legal-page-spotlight" aria-hidden="true">
+                        <span class="legal-page-badge" data-i18n="privacy_policy.eyebrow">Personvern</span>
+                        <h2 data-i18n="privacy_policy.title">Personvernerklæring</h2>
+                        <ul class="legal-spotlight-list">
+                            <li>
+                                <strong data-i18n="privacy_policy.section1_title">1. Informasjon vi samler inn</strong>
+                                <span data-i18n="privacy_policy.section1_content">Vi ber kun om personlig informasjon når vi virkelig trenger det for å tilby en tjeneste til deg.</span>
+                            </li>
+                            <li>
+                                <strong data-i18n="privacy_policy.section2_title">2. Bruk av informasjon</strong>
+                                <span data-i18n="privacy_policy.section2_content">Vi oppbevarer kun innsamlet informasjon så lenge det er nødvendig.</span>
+                            </li>
+                            <li>
+                                <strong data-i18n="privacy_policy.section3_title">3. Informasjonskapsler</strong>
+                                <span data-i18n="privacy_policy.section3_content">Vi bruker informasjonskapsler for å forbedre opplevelsen din.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-                <h2 data-i18n="privacy_policy.section1_title"></h2>
-                <p data-i18n="privacy_policy.section1_content"></p>
+        <section class="legal-page-main pb_120">
+            <div class="container">
+                <div class="legal-page-wrapper">
+                    <div class="legal-overview-grid">
+                        <div class="legal-overview-card">
+                            <span class="legal-overview-label" data-i18n="privacy_policy.updated_label">Oppdatert</span>
+                            <strong class="legal-overview-value" data-i18n="privacy_policy.updated_value">4. mars 2026</strong>
+                        </div>
+                        <div class="legal-overview-card">
+                            <span class="legal-overview-label" data-i18n="privacy_policy.scope_label">Gjelder for</span>
+                            <strong class="legal-overview-value" data-i18n="privacy_policy.scope_value">Nettside, skjema og kommunikasjon</strong>
+                        </div>
+                        <div class="legal-overview-card">
+                            <span class="legal-overview-label" data-i18n="privacy_policy.contact_label">Kontakt</span>
+                            <strong class="legal-overview-value" data-i18n="privacy_policy.contact_value">thomas@tk-design.no</strong>
+                        </div>
+                    </div>
 
-                <h2 data-i18n="privacy_policy.section2_title"></h2>
-                <p data-i18n="privacy_policy.section2_content"></p>
+                    <div class="legal-content-grid">
+                        <article class="legal-copy-card">
+                            <h2 data-i18n="privacy_policy.title">Personvernerklæring</h2>
+                            <p data-i18n="privacy_policy.intro">
+                                Ditt personvern er viktig for oss. Det er TK-designs policy å respektere ditt personvern angående informasjon vi samler inn fra deg på nettstedet vårt.
+                            </p>
+                        </article>
 
-                <h2 data-i18n="privacy_policy.section3_title"></h2>
-                <p data-i18n="privacy_policy.section3_content"></p>
+                        <article class="legal-copy-card">
+                            <h2 data-i18n="privacy_policy.section1_title">1. Informasjon vi samler inn</h2>
+                            <p data-i18n="privacy_policy.section1_content">
+                                Vi ber kun om personlig informasjon når vi virkelig trenger det for å tilby en tjeneste til deg. Vi samler det inn på en rettferdig og lovlig måte, med din kunnskap og samtykke.
+                            </p>
+                        </article>
+
+                        <article class="legal-copy-card">
+                            <h2 data-i18n="privacy_policy.section2_title">2. Bruk av informasjon</h2>
+                            <p data-i18n="privacy_policy.section2_content">
+                                Vi oppbevarer kun innsamlet informasjon så lenge det er nødvendig for å gi deg den forespurte tjenesten.
+                            </p>
+                        </article>
+
+                        <article class="legal-copy-card">
+                            <h2 data-i18n="privacy_policy.section3_title">3. Informasjonskapsler</h2>
+                            <p data-i18n="privacy_policy.section3_content">
+                                Vi bruker informasjonskapsler for å forstå hvordan du bruker siden vår og for å forbedre opplevelsen din.
+                            </p>
+                        </article>
+                    </div>
+
+                    <section class="legal-note-card">
+                        <div>
+                            <span class="section-subtitle-lines" data-i18n="privacy_policy.eyebrow">Personvern</span>
+                            <h2 data-i18n="privacy_policy.note_title">Spørsmål om personvern?</h2>
+                            <p data-i18n="privacy_policy.note_content">
+                                Hvis du har spørsmål om hvordan informasjon håndteres, kan du kontakte TK-design direkte.
+                            </p>
+                        </div>
+                        <a href="contact.html" class="primary-cta" data-i18n="privacy_policy.contact_cta">Kontakt TK-design</a>
+                    </section>
+                </div>
             </div>
         </section>
     </main>
 
-    <footer class="pt_120 pb_120" style="border-top: 1px solid #262525;">
+    <footer class="pt_120 pb_120" style="border-top: 1px solid var(--clr-border);">
         <div class="container">
             <div class="footer-cta">
-                <h2 data-i18n="footer.cta">Get In Touch</h2>
+                <h2 data-i18n="footer.cta">La oss starte</h2>
             </div>
 
             <div class="footer-content">
                 <div class="footer-info">
-                    <p style="font-size: 20px; color: #fff; margin-bottom: 20px;" data-i18n="footer.intro">Hello, I’m
-                        David Matias, Website &
-                        User Interface Designer based in London.</p>
+                    <p style="font-size: 20px; color: var(--clr-base); margin-bottom: 20px;" data-i18n="footer.intro">
+                        Vi bygger din digitale identitet med skreddersydd webdesign, SEO og SoMe-strategi.
+                    </p>
                     <a href="mailto:thomas@tk-design.no"
-                        style="font-size: 30px; text-decoration: underline; color: #fff;"
+                        style="font-size: 30px; text-decoration: underline; color: var(--clr-base);"
                         data-i18n="contact.email_val">thomas@tk-design.no</a>
                 </div>
 
                 <div class="footer-links" style="grid-template-columns: repeat(2, 1fr); gap: 20px;">
-                    <a href="#" class="social-link">Facebook <i class="fas fa-arrow-right"></i></a>
-                    <a href="#" class="social-link">Instagram <i class="fas fa-arrow-right"></i></a>
-                    <a href="#" class="social-link">Dribbble <i class="fas fa-arrow-right"></i></a>
-                    <a href="#" class="social-link">Webflow <i class="fas fa-arrow-right"></i></a>
+                    <a href="https://www.facebook.com/profile.php?id=61574614704737&amp;locale=nb_NO" class="social-link"
+                        target="_blank" rel="noopener noreferrer">Facebook <i class="fas fa-arrow-right"></i></a>
+                    <a href="https://www.instagram.com/tkdesign777" class="social-link" target="_blank"
+                        rel="noopener noreferrer">Instagram <i class="fas fa-arrow-right"></i></a>
+                    <a href="https://www.kudosregnskap.no/" class="social-link" target="_blank"
+                        rel="noopener noreferrer">Kudos Regnskap <i class="fas fa-arrow-right"></i></a>
+                    <a href="https://www.hiskingdomministry.no/" class="social-link" target="_blank"
+                        rel="noopener noreferrer">His Kingdom <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
 
             <div class="flex flex-wrap justify-between items-center"
-                style="border-top: 1px solid #333; padding-top: 30px;">
+                style="border-top: 1px solid var(--clr-border); padding-top: 30px;">
                 <p><span data-i18n="footer.copyright">Copyright © 2026</span> <a href="index.html"
-                        style="color: var(--clr-base);">TK-design</a> <span data-i18n="footer.rights">All rights
+                        style="color: var(--clr-base);">tk-design</a> <span data-i18n="footer.rights">All rights
                         reserved.</span></p>
                 <div class="flex gap-4">
-                    <a href="accessibility.html" style="color: #fff;" data-i18n="footer.accessibility">Accessibility
-                        Statement</a>
-                    <a href="privacy.html" style="color: #fff;" data-i18n="footer.privacy">Privacy Policy</a>
-                    <a href="admin/index.html" style="color: #777; font-size: 0.8em;">Admin</a>
+                    <a href="accessibility.html" style="color: var(--clr-base);" data-i18n="footer.accessibility">Accessibility Statement</a>
+                    <a href="privacy.html" style="color: var(--clr-base);" data-i18n="footer.privacy">Privacy Policy</a>
                 </div>
             </div>
         </div>
     </footer>
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        AOS.init({
-            duration: 800,
-            once: true
-        });
-    </script>
     <script src="translations.js"></script>
     <script src="script.js"></script>
     <script src="js/cookies.js"></script>

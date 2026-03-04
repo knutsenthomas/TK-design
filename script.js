@@ -102,7 +102,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Language Init
     initLanguage();
+
+    // Back To Top
+    initBackToTopButton();
 });
+
+function initBackToTopButton() {
+    if (document.querySelector('.back-to-top-btn')) {
+        return;
+    }
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'back-to-top-btn';
+    button.setAttribute('aria-label', 'Tilbake til toppen');
+    button.innerHTML = '<span aria-hidden="true">↑</span>';
+
+    const toggleVisibility = () => {
+        if (window.scrollY > 320) {
+            button.classList.add('visible');
+        } else {
+            button.classList.remove('visible');
+        }
+    };
+
+    button.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+
+    window.addEventListener('scroll', toggleVisibility, { passive: true });
+    document.body.appendChild(button);
+    toggleVisibility();
+}
 
 function initTestimonialSlider() {
     const slides = document.querySelectorAll('.testimonial-slide');

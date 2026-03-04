@@ -7,9 +7,12 @@
     <title>Admin Login | TK Design</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="../style.css">
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../js/supabase-config.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/firebase-client.js"></script>
     <style>
         body {
             display: flex;
@@ -131,12 +134,44 @@
         const loginBtn = document.getElementById('login-btn');
         const googleBtn = document.getElementById('google-login-btn');
 
+        function getFriendlyAuthError(error) {
+            const code = error && error.code ? error.code : '';
+
+            if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
+                return 'Feil e-post eller passord. Sjekk at brukeren finnes i Firebase Authentication > Users, og at passordet er riktig.';
+            }
+
+            if (code === 'auth/too-many-requests') {
+                return 'For mange forsøk på innlogging. Vent litt og prøv igjen.';
+            }
+
+            if (code === 'auth/network-request-failed') {
+                return 'Klarte ikke å kontakte Firebase. Sjekk nettverk og prøv igjen.';
+            }
+
+            if (code === 'auth/popup-closed-by-user') {
+                return 'Google-vinduet ble lukket før innloggingen ble fullført.';
+            }
+
+            if (code === 'auth/popup-blocked') {
+                return 'Nettleseren blokkerte Google-innloggingen. Tillat popup-vinduer og prøv igjen.';
+            }
+
+            if (code === 'auth/unauthorized-domain') {
+                return 'Dette domenet er ikke tillatt i Firebase ennå. Legg til localhost i Authorized domains.';
+            }
+
+            return error.message || 'Innlogging feilet.';
+        }
+
         // Google Login Handler
         googleBtn.addEventListener('click', async () => {
+            errorMsg.style.display = 'none';
+            googleBtn.disabled = true;
             try {
-                if (!window.supabaseClient) throw new Error('Supabase client not initialized.');
+                if (!window.adminAuthClient) throw new Error('Firebase client not initialized.');
 
-                const { data, error } = await window.supabaseClient.auth.signInWithOAuth({
+                const { data, error } = await window.adminAuthClient.auth.signInWithOAuth({
                     provider: 'google',
                     options: {
                         redirectTo: window.location.origin + '/admin/index.html'
@@ -144,10 +179,14 @@
                 });
 
                 if (error) throw error;
+                if (!data || !data.session) {
+                    throw new Error('Ingen gyldig innloggingssesjon ble opprettet.');
+                }
             } catch (error) {
                 console.error('Google Login Error:', error);
-                errorMsg.textContent = error.message;
+                errorMsg.textContent = getFriendlyAuthError(error);
                 errorMsg.style.display = 'block';
+                googleBtn.disabled = false;
             }
         });
 
@@ -157,28 +196,32 @@
             loginBtn.innerText = 'Logging in...';
             loginBtn.disabled = true;
 
-            const email = document.getElementById('email').value;
+            const email = document.getElementById('email').value.trim().toLowerCase();
             const password = document.getElementById('password').value;
 
             try {
-                if (!window.supabaseClient) {
-                    throw new Error('Supabase client not initialized.');
+                if (!window.adminAuthClient) {
+                    throw new Error('Firebase client not initialized.');
                 }
 
-                const { data, error } = await window.supabaseClient.auth.signInWithPassword({
+                const { data, error } = await window.adminAuthClient.auth.signInWithPassword({
                     email: email,
                     password: password
                 });
 
                 if (error) throw error;
+                if (!data || !data.session) {
+                    throw new Error('Ingen gyldig innloggingssesjon ble opprettet.');
+                }
 
                 // Success
                 window.location.href = 'index.html';
 
             } catch (error) {
                 console.error('Login Error:', error);
-                errorMsg.textContent = error.message || 'Failed to login';
+                errorMsg.textContent = getFriendlyAuthError(error);
                 errorMsg.style.display = 'block';
+            } finally {
                 loginBtn.innerText = 'Login';
                 loginBtn.disabled = false;
             }
@@ -186,8 +229,8 @@
 
         // Check if already logged in
         (async function checkSession() {
-            if (window.supabaseClient) {
-                const { data } = await window.supabaseClient.auth.getSession();
+            if (window.adminAuthClient) {
+                const { data } = await window.adminAuthClient.auth.getSession();
                 if (data.session) {
                     window.location.href = 'index.html';
                 }

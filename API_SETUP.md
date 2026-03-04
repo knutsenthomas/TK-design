@@ -42,3 +42,53 @@ Nå kan du:
 - 📤 Laste opp dine egne bilder til bloggen
 
 Alle funksjonene finner du i venstre sidebar når du oppretter/redigerer et blogginnlegg.
+
+## 5. Kontaktskjema (Firebase Firestore + e-postvarsel)
+
+Kontaktsiden bruker en backend-route i `server.js` som:
+
+- lagrer meldingen i en Firestore-collection i Firebase
+- sender e-postvarsel til `thomas@tk-design.no` via Resend når Resend er satt opp
+
+Legg til disse verdiene i `.env`:
+
+```env
+FIREBASE_PROJECT_ID=tk-design-f43f6
+FIREBASE_CLIENT_EMAIL=din_service_account_client_email
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+FIREBASE_DATABASE_ID=(default)
+FIREBASE_CONTACT_COLLECTION=contactMessages
+
+RESEND_API_KEY=din_resend_api_nokkel
+RESEND_FROM_EMAIL=TK-design <onboarding@resend.dev>
+CONTACT_TO_EMAIL=thomas@tk-design.no
+```
+
+Merk:
+
+- `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL` og `FIREBASE_PRIVATE_KEY` må komme fra en Firebase/Google Cloud service account med tilgang til Firestore.
+- `FIREBASE_DATABASE_ID` og `FIREBASE_CONTACT_COLLECTION` er valgfrie. Hvis de ikke er satt, brukes `(default)` og `contactMessages`.
+- `RESEND_API_KEY` må være satt for at e-postvarsel faktisk skal bli sendt.
+- Du trenger ikke kjøre SQL for kontaktskjemaet når du bruker Firestore, men du må ha aktivert Firestore i Firebase-prosjektet ditt.
+
+## 6. Admin-panel (Firebase Auth, Firestore og Storage)
+
+Admin-login og profilhåndtering bruker nå Firebase-klienten i stedet for Supabase. For at `admin/login.html` og `admin/index.html` skal fungere, må serveren kunne eksponere den offentlige Firebase web-konfigurasjonen.
+
+Legg også til disse verdiene i `.env`:
+
+```env
+FIREBASE_WEB_API_KEY=din_firebase_web_api_key
+FIREBASE_AUTH_DOMAIN=tk-design-f43f6.firebaseapp.com
+FIREBASE_STORAGE_BUCKET=tk-design-f43f6.firebasestorage.app
+FIREBASE_MESSAGING_SENDER_ID=din_sender_id
+FIREBASE_APP_ID=din_app_id
+```
+
+Merk:
+
+- `FIREBASE_PROJECT_ID` fra steg 5 gjenbrukes også av admin-klienten.
+- Google-innlogging må være aktivert i Firebase Authentication hvis du vil bruke "Sign in with Google".
+- E-post/passord-innlogging må også være aktivert i Firebase Authentication hvis du vil bruke vanlig admin-login.
+- Admin-profilfelt lagres i Firestore under `adminProfiles/{uid}`.
+- Profilbilder lagres i Firebase Storage. Hvis du vil at opplastede avatarer skal kunne vises direkte, må Storage-reglene tillate lesing for de filene du bruker.

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="no">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aktuelt | tk-design</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=5">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="homepage-refresh blog-list-page-refresh">
+
+    <header class="header">
+        <div class="container nav-container">
+            <a href="index.html#home" class="logo" aria-label="tk-design">
+                <span class="logo-icon">
+                    <img src="img/logo/d.png" alt="tk-design logo">
+                </span>
+                <span class="logo-text">tk-design</span>
+            </a>
+            <nav class="nav-desktop">
+                <ul>
+                    <li><a href="index.html#home" data-i18n="nav.home">Home</a></li>
+                    <li><a href="index.html#about" data-i18n="nav.about">About</a></li>
+                    <li><a href="index.html#services" data-i18n="nav.services">Services</a></li>
+                    <li><a href="index.html#projects" data-i18n="nav.portfolio">Portfolio</a></li>
+                    <li><a href="blog.html" class="is-current" data-i18n="nav.blog">Blog</a></li>
+                    <li><a href="contact.html" data-i18n="nav.contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="lang-switch-desktop">
+                <button onclick="switchLanguage('en')" class="lang-btn">EN</button>
+                <button onclick="switchLanguage('no')" class="lang-btn active">NO</button>
+            </div>
+            <button class="menu-trigger"><i class="fas fa-bars"></i></button>
+        </div>
+    </header>
+
+    <div class="mobile-menu-overlay">
+        <button class="menu-close"><i class="fas fa-times"></i></button>
+        <nav class="mobile-nav">
+            <ul>
+                <li><a href="index.html#home" data-i18n="nav.home">Home</a></li>
+                <li><a href="index.html#about" data-i18n="nav.about">About</a></li>
+                <li><a href="index.html#services" data-i18n="nav.services">Services</a></li>
+                <li><a href="index.html#projects" data-i18n="nav.portfolio">Portfolio</a></li>
+                <li><a href="blog.html" class="is-current" data-i18n="nav.blog">Blog</a></li>
+                <li><a href="contact.html" data-i18n="nav.contact">Contact</a></li>
+            </ul>
+            <div class="lang-switch-mobile">
+                <button onclick="switchLanguage('en')" class="lang-btn">EN</button>
+                <button onclick="switchLanguage('no')" class="lang-btn active">NO</button>
+            </div>
+        </nav>
+    </div>
+
+    <main>
+        <section class="page-banner blog-list-page-banner">
+            <div class="container">
+                <div class="blog-list-hero">
+                    <div class="blog-list-copy">
+                        <span class="section-subtitle-lines" data-i18n="blog_page.eyebrow">Aktuelt</span>
+                        <h1 class="section-title blog-list-title" data-i18n="blog_page.title">Alle blogginnlegg fra TK-design</h1>
+                        <p class="blog-list-summary" data-i18n="blog_page.lead">
+                            Alle innlegg samlet på ett sted. Praktiske tips om webdesign, SEO, innhold og digital
+                            synlighet.
+                        </p>
+                        <div class="blog-list-actions">
+                            <a href="index.html" class="primary-cta" data-i18n="blog_page.back_home">Tilbake til forsiden</a>
+                            <a href="contact.html" class="blog-list-secondary" data-i18n="blog_page.contact_cta">Trenger du hjelp?</a>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+                            <li data-i18n="nav.blog">Blog</li>
+                        </ul>
+                    </div>
+
+                    <div class="blog-list-spotlight">
+                        <span class="blog-list-spotlight-badge" data-i18n="blog_page.featured_label">Siste innlegg</span>
+                        <h2 id="blogFeaturedTitle">Laster innlegg...</h2>
+                        <p id="blogFeaturedSummary" data-i18n="blog_page.loading">Laster innlegg...</p>
+                        <div class="blog-list-spotlight-meta">
+                            <span id="blogFeaturedCategory">Webdesign</span>
+                            <span id="blogFeaturedDate">2025</span>
+                        </div>
+                        <a href="blog-details.html?id=1" class="blog-list-spotlight-link" id="blogFeaturedLink">
+                            <span id="blogFeaturedLinkText" data-i18n="blog_page.open_post">Åpne innlegg</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="blog-list-main pb_120">
+            <div class="container">
+                <div class="blog-list-wrapper">
+                    <div class="blog-list-overview-grid">
+                        <div class="blog-list-overview-card">
+                            <span class="blog-list-overview-label" data-i18n="blog_page.total_posts">Innlegg</span>
+                            <strong class="blog-list-overview-value" id="blogTotalPosts">0</strong>
+                        </div>
+                        <div class="blog-list-overview-card">
+                            <span class="blog-list-overview-label" data-i18n="blog_page.total_topics">Temaer</span>
+                            <strong class="blog-list-overview-value" id="blogTotalTopics">0</strong>
+                        </div>
+                        <div class="blog-list-overview-card">
+                            <span class="blog-list-overview-label" data-i18n="blog_page.latest_update">Sist oppdatert</span>
+                            <strong class="blog-list-overview-value" id="blogLatestUpdate">-</strong>
+                        </div>
+                    </div>
+
+                    <div class="blog-list-section-head">
+                        <div>
+                            <span class="section-subtitle-lines" data-i18n="blog_page.eyebrow">Aktuelt</span>
+                            <h2 data-i18n="blog_page.all_posts_title">Alle innlegg</h2>
+                        </div>
+                        <p data-i18n="blog_page.all_posts_intro">
+                            En samlet oversikt over alle innlegg du kan klikke deg videre inn i.
+                        </p>
+                    </div>
+
+                    <div class="blog-list-grid" id="blogListGrid">
+                        <article class="blog-list-card blog-list-empty-card">
+                            <p data-i18n="blog_page.loading">Laster innlegg...</p>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="pt_120 pb_120" style="border-top: 1px solid var(--clr-border);">
+        <div class="container">
+            <div class="footer-cta">
+                <h2 data-i18n="footer.cta">La oss starte</h2>
+            </div>
+
+            <div class="footer-content">
+                <div class="footer-info">
+                    <p style="font-size: 20px; color: var(--clr-base); margin-bottom: 20px;" data-i18n="footer.intro">
+                        Vi bygger din digitale identitet med skreddersydd webdesign, SEO og SoMe-strategi.
+                    </p>
+                    <a href="mailto:thomas@tk-design.no"
+                        style="font-size: 30px; text-decoration: underline; color: var(--clr-base);"
+                        data-i18n="contact.email_val">thomas@tk-design.no</a>
+                </div>
+
+                <div class="footer-links" style="grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                    <a href="https://www.facebook.com/profile.php?id=61574614704737&amp;locale=nb_NO" class="social-link"
+                        target="_blank" rel="noopener noreferrer">Facebook <i class="fas fa-arrow-right"></i></a>
+                    <a href="https://www.instagram.com/tkdesign777" class="social-link" target="_blank"
+                        rel="noopener noreferrer">Instagram <i class="fas fa-arrow-right"></i></a>
+                    <a href="https://www.kudosregnskap.no/" class="social-link" target="_blank"
+                        rel="noopener noreferrer">Kudos Regnskap <i class="fas fa-arrow-right"></i></a>
+                    <a href="https://www.hiskingdomministry.no/" class="social-link" target="_blank"
+                        rel="noopener noreferrer">His Kingdom <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-between items-center"
+                style="border-top: 1px solid var(--clr-border); padding-top: 30px;">
+                <p><span data-i18n="footer.copyright">Copyright © 2026</span> <a href="index.html"
+                        style="color: var(--clr-base);">tk-design</a> <span data-i18n="footer.rights">All rights
+                        reserved.</span></p>
+                <div class="flex gap-4">
+                    <a href="accessibility.html" style="color: var(--clr-base);"
+                        data-i18n="footer.accessibility">Accessibility Statement</a>
+                    <a href="privacy.html" style="color: var(--clr-base);"
+                        data-i18n="footer.privacy">Privacy Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="translations.js"></script>
+    <script src="script.js"></script>
+    <script src="js/cookies.js"></script>
+    <script>
+        let blogListPosts = [];
+
+        function getBlogPageText(key) {
+            const bundle = (translations[currentLang] && translations[currentLang].blog_page) || translations.no.blog_page;
+            return bundle[key] || '';
+        }
+
+        async function fetchBlogListPosts() {
+            const sources = ['data/posts.json', 'http://localhost:3000/api/posts'];
+
+            for (const source of sources) {
+                try {
+                    const response = await fetch(source);
+                    if (!response.ok) {
+                        continue;
+                    }
+
+                    const posts = await response.json();
+                    if (Array.isArray(posts)) {
+                        return posts;
+                    }
+                } catch (error) {
+                    // Try next source.
+                }
+            }
+
+            throw new Error('Unable to load blog posts');
+        }
+
+        function stripHtml(html) {
+            const temp = document.createElement('div');
+            temp.innerHTML = html || '';
+            return (temp.textContent || temp.innerText || '').replace(/\s+/g, ' ').trim();
+        }
+
+        function buildPostSummary(post) {
+            const fromSeo = (post.seoDesc || '').trim();
+            if (fromSeo) {
+                return fromSeo;
+            }
+
+            const plainText = stripHtml(post.content);
+            if (!plainText) {
+                return '';
+            }
+
+            return plainText.length > 170 ? `${plainText.slice(0, 167)}...` : plainText;
+        }
+
+        function renderBlogSpotlight(posts) {
+            const post = posts[0];
+            const title = document.getElementById('blogFeaturedTitle');
+            const summary = document.getElementById('blogFeaturedSummary');
+            const category = document.getElementById('blogFeaturedCategory');
+            const date = document.getElementById('blogFeaturedDate');
+            const link = document.getElementById('blogFeaturedLink');
+            const linkText = document.getElementById('blogFeaturedLinkText');
+
+            if (!post) {
+                if (title) {
+                    title.textContent = getBlogPageText('empty');
+                }
+                if (summary) {
+                    summary.textContent = getBlogPageText('empty');
+                }
+                if (category) {
+                    category.textContent = '-';
+                }
+                if (date) {
+                    date.textContent = '-';
+                }
+                if (link) {
+                    link.href = 'blog.html';
+                }
+                if (linkText) {
+                    linkText.textContent = getBlogPageText('open_post');
+                }
+                return;
+            }
+
+            if (title) {
+                title.textContent = post.title;
+            }
+            if (summary) {
+                summary.textContent = buildPostSummary(post);
+            }
+            if (category) {
+                category.textContent = post.category || 'TK-design';
+            }
+            if (date) {
+                date.textContent = post.date || '-';
+            }
+            if (link) {
+                link.href = post.link || `blog-details.html?id=${post.id}`;
+            }
+            if (linkText) {
+                linkText.textContent = getBlogPageText('open_post');
+            }
+        }
+
+        function renderBlogOverview(posts) {
+            const totalPosts = document.getElementById('blogTotalPosts');
+            const totalTopics = document.getElementById('blogTotalTopics');
+            const latestUpdate = document.getElementById('blogLatestUpdate');
+
+            const topicCount = new Set(posts.map((post) => post.category).filter(Boolean)).size;
+
+            if (totalPosts) {
+                totalPosts.textContent = String(posts.length);
+            }
+            if (totalTopics) {
+                totalTopics.textContent = String(topicCount);
+            }
+            if (latestUpdate) {
+                latestUpdate.textContent = posts[0] && posts[0].date ? posts[0].date : '-';
+            }
+        }
+
+        function renderBlogCards(posts) {
+            const grid = document.getElementById('blogListGrid');
+            if (!grid) {
+                return;
+            }
+
+            if (!posts.length) {
+                grid.innerHTML = `
+                    <article class="blog-list-card blog-list-empty-card">
+                        <p>${getBlogPageText('empty')}</p>
+                    </article>
+                `;
+                return;
+            }
+
+            grid.innerHTML = posts.map((post) => {
+                const url = post.link || `blog-details.html?id=${post.id}`;
+                return `
+                    <article class="blog-list-card">
+                        <a href="${url}" class="blog-list-image">
+                            <img src="${post.image}" alt="${post.title}">
+                        </a>
+                        <div class="blog-list-card-body">
+                            <div class="blog-list-card-meta">
+                                <span class="blog-list-chip">${post.category || 'TK-design'}</span>
+                                <span>${post.date || ''}</span>
+                            </div>
+                            <h3><a href="${url}">${post.title}</a></h3>
+                            <p>${buildPostSummary(post)}</p>
+                            <a href="${url}" class="award-link blog-list-link">
+                                <span>${getBlogPageText('open_post')}</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        function renderBlogListPage() {
+            renderBlogSpotlight(blogListPosts);
+            renderBlogOverview(blogListPosts);
+            renderBlogCards(blogListPosts);
+        }
+
+        async function loadBlogListPage() {
+            try {
+                blogListPosts = await fetchBlogListPosts();
+                renderBlogListPage();
+            } catch (error) {
+                blogListPosts = [];
+                renderBlogListPage();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadBlogListPage();
+
+            const originalSwitchLanguage = window.switchLanguage;
+            if (typeof originalSwitchLanguage === 'function') {
+                window.switchLanguage = function overrideSwitchLanguage(lang) {
+                    originalSwitchLanguage(lang);
+                    renderBlogListPage();
+                };
+            }
+        });
+    </script>
+</body>
+
+</html>
