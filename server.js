@@ -919,7 +919,11 @@ app.get('/js/firebase-config.js', async (req, res) => {
 // Static Files (as fallback)
 app.use(express.static(path.join(__dirname)));
 
-app.listen(PORT, () => {
-    console.log(`CMS Server running at http://localhost:${PORT}`);
-    console.log(`Admin Panel available at http://localhost:${PORT}/admin`);
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`CMS Server running at http://localhost:${PORT}`);
+        console.log(`Admin Panel available at http://localhost:${PORT}/admin`);
+    });
+}
+
+module.exports = app;
