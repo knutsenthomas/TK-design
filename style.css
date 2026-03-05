@@ -7239,4 +7239,20 @@ body.homepage-refresh .video-modal .modal-content {
     .footer .flex.flex-wrap.justify-between.items-center p {
         margin-bottom: 5px !important;
     }
+
+    /* Blog Header Mobile Optimization */
+    .blog-header-flex {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 20px !important;
+    }
+
+    .blog-header-flex h2 {
+        font-size: 38px !important;
+        line-height: 1.2 !important;
+    }
+
+    .blog-header-flex .award-link {
+        margin-top: 10px !important;
+    }
 }
