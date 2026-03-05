@@ -1096,12 +1096,6 @@ app.post('/api/contact', async (req, res) => {
             });
         }
 
-        if (cleanMessage.length < 10) {
-            return res.status(400).json({
-                success: false,
-                error: 'Meldingen må være minst 10 tegn.'
-            });
-        }
 
         const payload = {
             name: cleanName,

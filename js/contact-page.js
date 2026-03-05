@@ -3,7 +3,7 @@ const CONTACT_API_MESSAGES = {
         sending: 'Sender meldingen...',
         success: 'Takk. Meldingen er sendt og lagret.',
         successNoEmail: 'Meldingen er sendt og lagret, men e-postvarsling er ikke aktivert enda.',
-        validation: 'Fyll ut navn, e-post og en melding på minst 10 tegn, og godkjenn lagring.',
+        validation: 'Fyll ut navn, e-post og en melding, og godkjenn lagring.',
         network: 'Noe gikk galt. Prøv igjen om litt.',
         backendMissing: 'Backend svarer ikke. Start `node server.js` hvis du kjører lokalt.'
     },
@@ -11,7 +11,7 @@ const CONTACT_API_MESSAGES = {
         sending: 'Sending your message...',
         success: 'Thanks. Your message has been sent and stored.',
         successNoEmail: 'Your message has been sent and stored, but email notifications are not configured yet.',
-        validation: 'Please fill in name, email and a message with at least 10 characters, and confirm consent.',
+        validation: 'Please fill in name, email and a message, and confirm consent.',
         network: 'Something went wrong. Please try again shortly.',
         backendMissing: 'The backend did not respond. Start `node server.js` when running locally.'
     }
@@ -112,12 +112,10 @@ function initContactPageForm() {
             return;
         }
 
-        if (!payload.message || payload.message.length < 10) {
+        if (!payload.message) {
             setContactStatus(status, 'error', messages.validation);
             if (messageField) {
-                if (!payload.message) {
-                    messageField.value = '';
-                }
+                messageField.value = '';
                 focusContactField(messageField);
             }
             return;
