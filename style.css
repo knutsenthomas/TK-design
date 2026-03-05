@@ -7134,7 +7134,8 @@ body.homepage-refresh .video-modal .modal-content {
     body.homepage-refresh .awards-table tr {
         display: flex;
         flex-direction: column;
-        width: 100%;
+        width: auto;
+        margin: 0 20px;
         border-top: 1px solid rgba(17, 38, 60, 0.06);
     }
 
@@ -7144,7 +7145,7 @@ body.homepage-refresh .video-modal .modal-content {
         align-items: center;
         flex-wrap: wrap;
         gap: 16px;
-        padding: 24px 20px;
+        padding: 24px 0px;
         border-top: none;
     }
 
@@ -7158,7 +7159,7 @@ body.homepage-refresh .video-modal .modal-content {
     body.homepage-refresh .awards-table tr:not(:first-child) td {
         display: block;
         width: 100%;
-        padding: 4px 20px;
+        padding: 4px 0px;
         text-align: left !important;
         border: none !important;
     }
