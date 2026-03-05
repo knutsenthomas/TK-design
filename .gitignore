@@ -1,0 +1,14 @@
+node_modules/
+.firebase/
+firebase-debug.log
+.env
+.DS_Store
+dist/
+public/success-test.html
+public/test.html
+public/test2.html
+public/hello.txt
+public/final-test.txt
+firebase-debug.log*
+.firebaserc
+EOF

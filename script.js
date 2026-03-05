@@ -31,30 +31,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Mobile Menu Toggle
     const menuTrigger = document.querySelector('.menu-trigger');
-    const menuClose = document.querySelector('.menu-close');
+    const menuIcon = menuTrigger ? menuTrigger.querySelector('i') : null;
     const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
     const mobileNavLinks = document.querySelectorAll('.mobile-nav a');
 
-    if (menuTrigger && mobileMenuOverlay) {
-        menuTrigger.addEventListener('click', () => {
+    function toggleMenu(forceClose = false) {
+        const isOpen = mobileMenuOverlay.classList.contains('active');
+        const shouldClose = forceClose || isOpen;
+
+        if (shouldClose) {
+            mobileMenuOverlay.classList.remove('active');
+            document.body.classList.remove('mobile-menu-active');
+            document.body.style.overflow = '';
+            if (menuIcon) {
+                menuIcon.classList.remove('fa-times');
+                menuIcon.classList.add('fa-bars');
+            }
+        } else {
             mobileMenuOverlay.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Prevent scrolling
-        });
+            document.body.classList.add('mobile-menu-active');
+            document.body.style.overflow = 'hidden';
+            if (menuIcon) {
+                menuIcon.classList.remove('fa-bars');
+                menuIcon.classList.add('fa-times');
+            }
+        }
     }
 
-    if (menuClose && mobileMenuOverlay) {
-        menuClose.addEventListener('click', () => {
-            mobileMenuOverlay.classList.remove('active');
-            document.body.style.overflow = '';
-        });
+    if (menuTrigger && mobileMenuOverlay) {
+        menuTrigger.addEventListener('click', () => toggleMenu());
     }
 
     // Close menu when clicking a link
     mobileNavLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            mobileMenuOverlay.classList.remove('active');
-            document.body.style.overflow = '';
-        });
+        link.addEventListener('click', () => toggleMenu(true));
     });
 
     // Video Modal

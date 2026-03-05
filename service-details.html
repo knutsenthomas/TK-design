@@ -8,14 +8,18 @@
     <link rel="stylesheet" href="style.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="img/logo/d.png">
 </head>
 
-<body>
+<body class="homepage-refresh service-details-page-refresh">
 
     <header class="header">
         <div class="container nav-container">
-            <a href="index.html" class="logo">
-                <img src="img/logo/logo-new.png" alt="TK Design Logo">
+            <a href="index.html#home" class="logo" aria-label="tk-design">
+                <span class="logo-icon">
+                    <img src="img/logo/d.png" alt="tk-design logo">
+                </span>
+                <span class="logo-text">tk-design</span>
             </a>
             <nav class="nav-desktop">
                 <ul>
@@ -23,14 +27,14 @@
                     <li><a href="index.html#about" data-i18n="nav.about">About</a></li>
                     <li><a href="index.html#services" data-i18n="nav.services">Services</a></li>
                     <li><a href="index.html#projects" data-i18n="nav.portfolio">Portfolio</a></li>
+                    <li><a href="index.html#testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
                     <li><a href="blog.html" data-i18n="nav.blog">Blog</a></li>
                     <li><a href="contact.html" data-i18n="nav.contact">Contact</a></li>
                 </ul>
             </nav>
             <div class="lang-switch-desktop">
-                <button onclick="switchLanguage('en')" class="lang-btn active">EN</button>
-                <span>|</span>
-                <button onclick="switchLanguage('no')" class="lang-btn">NO</button>
+                <button onclick="switchLanguage('en')" class="lang-btn">EN</button>
+                <button onclick="switchLanguage('no')" class="lang-btn active">NO</button>
             </div>
             <button class="menu-trigger"><i class="fas fa-bars"></i></button>
         </div>
@@ -38,26 +42,35 @@
 
     <!-- Mobile Menu Overlay -->
     <div class="mobile-menu-overlay">
-        <button class="menu-close"><i class="fas fa-times"></i></button>
         <nav class="mobile-nav">
             <ul>
                 <li><a href="index.html#home" data-i18n="nav.home">Home</a></li>
                 <li><a href="index.html#about" data-i18n="nav.about">About</a></li>
                 <li><a href="index.html#services" data-i18n="nav.services">Services</a></li>
                 <li><a href="index.html#projects" data-i18n="nav.portfolio">Portfolio</a></li>
+                <li><a href="index.html#testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
                 <li><a href="blog.html" data-i18n="nav.blog">Blog</a></li>
                 <li><a href="contact.html" data-i18n="nav.contact">Contact</a></li>
             </ul>
-            <div class="lang-switch-mobile">
-                <button onclick="switchLanguage('en')" class="lang-btn active">EN</button>
-                <button onclick="switchLanguage('no')" class="lang-btn">NO</button>
+
+            <div class="mobile-menu-footer">
+                <div class="mobile-contact-info">
+                    <a href="mailto:thomas@tk-design.no">thomas@tk-design.no</a>
+                    <a href="tel:+4793094615">930 94 615</a>
+                </div>
+                <div class="mobile-social-links">
+                    <a href="https://www.facebook.com/profile.php?id=61574614704737&amp;locale=nb_NO" target="_blank"
+                        rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/tkdesign777" target="_blank" rel="noopener noreferrer"><i
+                            class="fab fa-instagram"></i></a>
+                </div>
             </div>
         </nav>
     </div>
 
     <main>
         <!-- Page Banner -->
-        <section class="page-banner pt_120 pb_120">
+        <section class="page-banner">
             <div class="container">
                 <div class="page-banner-content text-center">
                     <h1 class="section-title" style="font-size: 60px;" data-i18n="service_details.banner_title">Web
@@ -146,35 +159,44 @@
 
     </main>
 
-    <footer class="pt_120 pb_120" style="border-top: 1px solid #262525;">
+    <footer class="pt_120 pb_120" style="border-top: 1px solid var(--clr-border);">
         <div class="container">
             <div class="footer-cta">
-                <h2 data-i18n="footer.cta">Get In Touch</h2>
+                <h2 data-i18n="footer.cta">La oss starte</h2>
             </div>
+
             <div class="footer-content">
                 <div class="footer-info">
-                    <p style="font-size: 20px; color: #fff; margin-bottom: 20px;" data-i18n="footer.intro">Hello, I’m
-                        David Matias, Website &
-                        User Interface Designer based in London.</p>
+                    <p style="font-size: 20px; color: var(--clr-base); margin-bottom: 20px;" data-i18n="footer.intro">
+                        Vi bygger din digitale identitet med skreddersydd webdesign, SEO og SoMe-strategi.
+                    </p>
                     <a href="mailto:thomas@tk-design.no"
-                        style="font-size: 30px; text-decoration: underline; color: #fff;"
+                        style="font-size: 30px; text-decoration: underline; color: var(--clr-base);"
                         data-i18n="contact.email_val">thomas@tk-design.no</a>
                 </div>
+
                 <div class="footer-links" style="grid-template-columns: repeat(2, 1fr); gap: 20px;">
-                    <a href="#" class="social-link">Facebook <i class="fas fa-arrow-right"></i></a>
-                    <a href="#" class="social-link">Instagram <i class="fas fa-arrow-right"></i></a>
-                    <a href="#" class="social-link">Dribbble <i class="fas fa-arrow-right"></i></a>
-                    <a href="#" class="social-link">Webflow <i class="fas fa-arrow-right"></i></a>
+                    <a href="https://www.facebook.com/profile.php?id=61574614704737&amp;locale=nb_NO"
+                        class="social-link" target="_blank" rel="noopener noreferrer">Facebook <i
+                            class="fas fa-arrow-right"></i></a>
+                    <a href="https://www.instagram.com/tkdesign777" class="social-link" target="_blank"
+                        rel="noopener noreferrer">Instagram <i class="fas fa-arrow-right"></i></a>
+                    <a href="https://www.kudosregnskap.no/" class="social-link" target="_blank"
+                        rel="noopener noreferrer">Kudos Regnskap <i class="fas fa-arrow-right"></i></a>
+                    <a href="https://www.hiskingdomministry.no/" class="social-link" target="_blank"
+                        rel="noopener noreferrer">His Kingdom <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
+
             <div class="flex flex-wrap justify-between items-center"
-                style="border-top: 1px solid #333; padding-top: 30px;">
-                <p><span data-i18n="footer.copyright">Copyright © 2026</span> <a href="#"
-                        style="color: var(--clr-base);">TK-design</a> <span data-i18n="footer.rights">All rights
+                style="border-top: 1px solid var(--clr-border); padding-top: 30px;">
+                <p><span data-i18n="footer.copyright">Copyright © 2026</span> <a href="index.html"
+                        style="color: var(--clr-base);">tk-design</a> <span data-i18n="footer.rights">All rights
                         reserved.</span></p>
                 <div class="flex gap-4">
-                    <a href="#" style="color: #fff;" data-i18n="footer.terms">Terms & Condition</a>
-                    <a href="privacy.html" style="color: #fff;" data-i18n="footer.privacy">Privacy Policy</a>
+                    <a href="accessibility.html" style="color: var(--clr-base);"
+                        data-i18n="footer.accessibility">Accessibility Statement</a>
+                    <a href="privacy.html" style="color: var(--clr-base);" data-i18n="footer.privacy">Privacy Policy</a>
                 </div>
             </div>
         </div>

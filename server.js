@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const functions = require('firebase-functions');
 require('dotenv').config();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
@@ -54,20 +55,20 @@ function toBase64Url(input) {
 }
 
 function getFirebaseConfig() {
-    const privateKey = (process.env.FIREBASE_PRIVATE_KEY || '').replace(/\\n/g, '\n');
-    const projectId = process.env.FIREBASE_PROJECT_ID || 'tk-design-f43f6';
+    const privateKey = (process.env.TK_FIREBASE_PRIVATE_KEY || '').replace(/\\n/g, '\n');
+    const projectId = process.env.TK_FIREBASE_PROJECT_ID || 'tk-design-f43f6';
 
     return {
         projectId,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL || '',
+        clientEmail: process.env.TK_FIREBASE_CLIENT_EMAIL || '',
         privateKey,
-        databaseId: process.env.FIREBASE_DATABASE_ID || '(default)',
-        collection: process.env.FIREBASE_CONTACT_COLLECTION || 'contactMessages'
+        databaseId: process.env.TK_FIREBASE_DATABASE_ID || '(default)',
+        collection: process.env.TK_FIREBASE_CONTACT_COLLECTION || 'contactMessages'
     };
 }
 
 function getFirebaseWebConfig() {
-    const projectId = process.env.FIREBASE_PROJECT_ID || 'tk-design-f43f6';
+    const projectId = process.env.TK_FIREBASE_PROJECT_ID || 'tk-design-f43f6';
     const defaultWebConfig = {
         apiKey: 'AIzaSyDLYgqo2E1UiHoydEB6-WfFc119HES2U5c',
         messagingSenderId: '729667300921',
@@ -75,12 +76,12 @@ function getFirebaseWebConfig() {
     };
 
     return {
-        apiKey: process.env.FIREBASE_WEB_API_KEY || defaultWebConfig.apiKey,
-        authDomain: process.env.FIREBASE_AUTH_DOMAIN || `${projectId}.firebaseapp.com`,
+        apiKey: process.env.TK_FIREBASE_WEB_API_KEY || defaultWebConfig.apiKey,
+        authDomain: process.env.TK_FIREBASE_AUTH_DOMAIN || `${projectId}.firebaseapp.com`,
         projectId,
-        storageBucket: process.env.FIREBASE_STORAGE_BUCKET || `${projectId}.firebasestorage.app`,
-        messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || defaultWebConfig.messagingSenderId,
-        appId: process.env.FIREBASE_APP_ID || defaultWebConfig.appId
+        storageBucket: process.env.TK_FIREBASE_STORAGE_BUCKET || `${projectId}.firebasestorage.app`,
+        messagingSenderId: process.env.TK_FIREBASE_MESSAGING_SENDER_ID || defaultWebConfig.messagingSenderId,
+        appId: process.env.TK_FIREBASE_APP_ID || defaultWebConfig.appId
     };
 }
 
@@ -129,7 +130,7 @@ async function getFirebaseAccessToken(scope = 'https://www.googleapis.com/auth/d
 
     const { clientEmail, privateKey } = getFirebaseConfig();
     if (!clientEmail || !privateKey) {
-        throw new Error('Firebase mangler FIREBASE_CLIENT_EMAIL eller FIREBASE_PRIVATE_KEY i .env');
+        throw new Error('Firebase mangler TK_FIREBASE_CLIENT_EMAIL eller TK_FIREBASE_PRIVATE_KEY i .env');
     }
 
     const fetch = await getFetch();
@@ -209,7 +210,7 @@ function toFirestoreFields(objectValue) {
 async function saveContactMessage(messagePayload) {
     const { projectId, databaseId, collection } = getFirebaseConfig();
     if (!projectId) {
-        throw new Error('Firebase mangler FIREBASE_PROJECT_ID i .env');
+        throw new Error('Firebase mangler TK_FIREBASE_PROJECT_ID i .env');
     }
 
     const accessToken = await getFirebaseAccessToken();
@@ -222,15 +223,15 @@ async function saveContactMessage(messagePayload) {
     const response = await fetch(
         `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${encodeURIComponent(databaseId)}/documents/${collection}?documentId=${documentId}`,
         {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
-        },
-        body: JSON.stringify({
-            fields: toFirestoreFields(payload)
-        })
-    });
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            },
+            body: JSON.stringify({
+                fields: toFirestoreFields(payload)
+            })
+        });
 
     if (!response.ok) {
         const errorText = await response.text();
@@ -256,7 +257,7 @@ function hasFirebaseServerCredentials() {
 }
 
 function getFirebaseSiteDataCollection() {
-    return process.env.FIREBASE_SITE_DATA_COLLECTION || 'siteAdminData';
+    return process.env.TK_FIREBASE_SITE_DATA_COLLECTION || 'siteAdminData';
 }
 
 function getFirestoreDocumentUrl(collection, documentId) {
@@ -379,7 +380,7 @@ async function persistSiteData(documentId, payload, localWriter) {
     let lastError = null;
 
     if (isVercelRuntime() && !hasFirebaseServerCredentials()) {
-        throw new Error('FIREBASE_CLIENT_EMAIL og/eller FIREBASE_PRIVATE_KEY mangler i Vercel-miljøet.');
+        throw new Error('TK_FIREBASE_CLIENT_EMAIL og/eller TK_FIREBASE_PRIVATE_KEY mangler i Vercel-miljøet.');
     }
 
     if (hasFirebaseServerCredentials()) {
@@ -430,7 +431,7 @@ async function persistStyleCss(cssText, localWriter) {
     let lastError = null;
 
     if (isVercelRuntime() && !hasFirebaseServerCredentials()) {
-        throw new Error('FIREBASE_CLIENT_EMAIL og/eller FIREBASE_PRIVATE_KEY mangler i Vercel-miljøet.');
+        throw new Error('TK_FIREBASE_CLIENT_EMAIL og/eller TK_FIREBASE_PRIVATE_KEY mangler i Vercel-miljøet.');
     }
 
     if (hasFirebaseServerCredentials()) {
@@ -1176,3 +1177,4 @@ if (require.main === module) {
 }
 
 module.exports = app;
+module.exports.api = functions.https.onRequest(app);
