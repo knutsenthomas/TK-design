@@ -459,18 +459,21 @@
         googleBtn.addEventListener('click', async () => {
             errorMsg.style.display = 'none';
             googleBtn.disabled = true;
+            googleBtn.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width:18px;"> Logger inn…';
             try {
-                if (!window.adminAuthClient) throw new Error('Firebase client not initialized.');
-                const { data, error } = await window.adminAuthClient.auth.signInWithOAuth({
-                    provider: 'google',
-                    options: { redirectTo: window.location.origin + '/admin/index.html' }
-                });
-                if (error) throw error;
-                if (!data || !data.session) throw new Error('Ingen gyldig innloggingssesjon.');
+                // Bruk Firebase Auth direkte for Google-innlogging
+                if (!window.firebase) throw new Error('Firebase er ikke tilgjengelig.');
+                const auth = window.firebase.auth();
+                const provider = new window.firebase.auth.GoogleAuthProvider();
+                await auth.signInWithPopup(provider);
+                // Suksess — redirect direkte til admin
+                window.location.href = 'index.html';
             } catch (error) {
+                console.error('Google Login Error:', error);
                 errorMsg.textContent = getFriendlyAuthError(error);
                 errorMsg.style.display = 'block';
                 googleBtn.disabled = false;
+                googleBtn.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width:18px;"> Fortsett med Google';
             }
         });
 
