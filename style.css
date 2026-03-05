@@ -7219,4 +7219,24 @@ body.homepage-refresh .video-modal .modal-content {
     body.homepage-refresh .hidden-mobile {
         display: none !important;
     }
+
+    /* Footer Bottom Optimization */
+    .footer .flex.flex-wrap.justify-between.items-center {
+        flex-direction: column !important;
+        gap: 30px !important;
+        text-align: center !important;
+        padding-top: 40px !important;
+        padding-bottom: 40px !important;
+    }
+
+    .footer .flex.flex-wrap.justify-between.items-center .flex.gap-4 {
+        flex-direction: column !important;
+        gap: 15px !important;
+        width: 100% !important;
+        align-items: center !important;
+    }
+
+    .footer .flex.flex-wrap.justify-between.items-center p {
+        margin-bottom: 5px !important;
+    }
 }
