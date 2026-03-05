@@ -29,11 +29,11 @@
             <button class="back-btn" onclick="navigateBack()" style="display: none;">
                 <i class="fas fa-arrow-left"></i> Tilbake
             </button>
-                <div class="admin-header-title-group">
-                    <div class="admin-brand-chip">
-                        <i class="fas fa-layer-group"></i>
-                        <span>tk-design Studio</span>
-                    </div>
+            <div class="admin-header-title-group">
+                <div class="admin-brand-chip">
+                    <i class="fas fa-layer-group"></i>
+                    <span>tk-design Studio</span>
+                </div>
                 <nav class="breadcrumb" id="breadcrumb">
                     <span class="breadcrumb-item active">Hjem</span>
                 </nav>
@@ -93,6 +93,8 @@
                 <button class="nav-btn" data-tab="seo" data-i18n="nav_seo"><i class="fas fa-search"></i> SEO</button>
                 <button class="nav-btn" data-tab="media" data-i18n="nav_media"><i class="fas fa-image"></i>
                     Media</button>
+                <button class="nav-btn" data-tab="messages" data-i18n="nav_messages"><i class="fas fa-envelope"></i>
+                    Meldinger</button>
                 <div style="flex-grow: 1;"></div>
                 <button class="nav-btn" onclick="window.open('/', '_blank')" data-i18n="nav_view_site"><i
                         class="fas fa-external-link-alt"></i>
@@ -126,12 +128,14 @@
                         </div>
                         <div class="dashboard-summary-grid">
                             <div class="dashboard-mini-card">
-                                <span class="dashboard-mini-label" data-i18n="dashboard_latest_post">Siste innlegg</span>
+                                <span class="dashboard-mini-label" data-i18n="dashboard_latest_post">Siste
+                                    innlegg</span>
                                 <strong id="dashboard-latest-post">Laster inn...</strong>
                             </div>
                             <div class="dashboard-mini-card">
                                 <span class="dashboard-mini-label" data-i18n="dashboard_focus_label">Fokus nå</span>
-                                <strong data-i18n="dashboard_focus_value">Hold prosjekter, SEO og innhold oppdatert</strong>
+                                <strong data-i18n="dashboard_focus_value">Hold prosjekter, SEO og innhold
+                                    oppdatert</strong>
                             </div>
                         </div>
                     </div>
@@ -151,7 +155,8 @@
                     <div class="stat-card">
                         <h3 data-i18n="stats_services_live">Tjenestekort</h3>
                         <div class="value"><span id="dashboard-service-count">0</span></div>
-                        <p class="dashboard-stat-note" data-i18n="stats_services_live_note">Kort i innholdsredigeringen</p>
+                        <p class="dashboard-stat-note" data-i18n="stats_services_live_note">Kort i innholdsredigeringen
+                        </p>
                     </div>
                     <div class="stat-card">
                         <h3 data-i18n="stats_languages_live">Språk</h3>
@@ -166,7 +171,8 @@
                         hele nettsiden konsistent og oppdatert.</p>
                     <div class="dashboard-section-grid">
                         <div class="dashboard-section-card">
-                            <span class="dashboard-section-label" data-i18n="dashboard_section_home_label">Forside</span>
+                            <span class="dashboard-section-label"
+                                data-i18n="dashboard_section_home_label">Forside</span>
                             <h3 data-i18n="dashboard_section_home_title">Hero, tjenester og prosjekter</h3>
                             <p data-i18n="dashboard_section_home_desc">Oppdater innholdet som møter besøkende først.
                             </p>
@@ -177,7 +183,8 @@
                             </div>
                         </div>
                         <div class="dashboard-section-card">
-                            <span class="dashboard-section-label" data-i18n="dashboard_section_blog_label">Aktuelt</span>
+                            <span class="dashboard-section-label"
+                                data-i18n="dashboard_section_blog_label">Aktuelt</span>
                             <h3 data-i18n="dashboard_section_blog_title">Blogg og detaljsider</h3>
                             <p data-i18n="dashboard_section_blog_desc">Publiser, oppdater og rydd opp i innlegg.</p>
                             <div class="dashboard-section-actions">
@@ -187,7 +194,8 @@
                             </div>
                         </div>
                         <div class="dashboard-section-card">
-                            <span class="dashboard-section-label" data-i18n="dashboard_section_growth_label">Synlighet</span>
+                            <span class="dashboard-section-label"
+                                data-i18n="dashboard_section_growth_label">Synlighet</span>
                             <h3 data-i18n="dashboard_section_growth_title">SEO, design og media</h3>
                             <p data-i18n="dashboard_section_growth_desc">Juster metadata, farger og bilder for et
                                 helhetlig uttrykk.</p>
@@ -396,6 +404,35 @@
                 </div>
                 <div class="media-grid">
                     <!-- Images listed here -->
+                </div>
+            </div>
+
+            <!-- Messages Tab -->
+            <div id="messages-tab" class="tab-content">
+                <header>
+                    <h1 data-i18n="nav_messages">Meldinger</h1>
+                    <div class="header-actions">
+                        <button class="action-btn" onclick="fetchMessages()" title="Oppdater">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </header>
+
+                <div class="card" style="padding: 0; overflow: hidden;">
+                    <div class="blog-list-header message-list-header">
+                        <div data-i18n="msg_sender">Avsender</div>
+                        <div data-i18n="msg_subject">Emne/Melding</div>
+                        <div data-i18n="msg_date">Dato</div>
+                        <div style="text-align: right;" data-i18n="blog_actions">Handlinger</div>
+                    </div>
+                    <div id="messages-list" class="messages-list">
+                        <!-- Messages will be rendered here -->
+                        <div class="empty-state" style="padding: 40px; text-align: center; color: var(--text-muted);">
+                            <i class="fas fa-envelope-open"
+                                style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
+                            <p data-i18n="msg_loading">Laster meldinger...</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>

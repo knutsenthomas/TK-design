@@ -5,10 +5,10 @@
     --content-bg: #f8fafc;
     /* Slate 50 */
     --card-bg: #ffffff;
-    --primary-color: #f97316;
-    /* Orange 500 */
-    --primary-hover: #ea580c;
-    /* Orange 600 */
+    --primary-color: #1B4965;
+    /* Mandal Regnskap Mørkeblå */
+    --primary-hover: #153a50;
+    /* Dypere blå */
     --text-color: #0f172a;
     /* Slate 900 */
     --text-muted: #64748b;
@@ -2211,4 +2211,33 @@ body.admin-dashboard-refresh .user-dropdown {
     body.admin-dashboard-refresh .dashboard-section-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* Message List Specifics */
+.message-item {
+    cursor: pointer;
+    border-left: 4px solid transparent;
+}
+
+.message-item:hover {
+    border-left-color: var(--primary-color);
+}
+
+.message-item.archived {
+    background-color: #f1f5f9;
+    color: var(--text-muted);
+}
+
+.message-item.archived .blog-title {
+    color: var(--text-muted);
+}
+
+.message-item.archived i.fa-archive {
+    color: var(--text-muted);
+    opacity: 0.5;
+}
+
+.message-list-header {
+    background-color: #f8fafc;
+    border-top: 1px solid var(--border-color);
 }

@@ -782,6 +782,115 @@ app.post('/api/style', async (req, res) => {
 });
 
 // API: Get Blog Posts
+// --- Messages API ---
+app.get('/api/messages', async (req, res) => {
+    try {
+        const { projectId, databaseId, collection } = getFirebaseConfig();
+        const accessToken = await getFirebaseAccessToken();
+        const fetch = await getFetch();
+
+        const response = await fetch(
+            `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${encodeURIComponent(databaseId)}/documents/${collection}`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            }
+        );
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Firebase read failed: ${response.status} ${errorText}`);
+        }
+
+        const data = await response.json();
+        const messages = (data.documents || []).map(doc => {
+            const fields = doc.fields || {};
+            const item = {};
+            // Flatten Firestore fields
+            for (const [key, value] of Object.entries(fields)) {
+                if (value.stringValue !== undefined) item[key] = value.stringValue;
+                else if (value.integerValue !== undefined) item[key] = parseInt(value.integerValue);
+                else if (value.booleanValue !== undefined) item[key] = value.booleanValue;
+                else if (value.timestampValue !== undefined) item[key] = value.timestampValue;
+            }
+            item.id = doc.name.split('/').pop();
+            return item;
+        });
+
+        res.json(messages);
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        res.status(500).json({ error: 'Kunne ikke hente meldinger.', details: error.message });
+    }
+});
+
+app.patch('/api/messages/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updateData = req.body;
+        const { projectId, databaseId, collection } = getFirebaseConfig();
+        const accessToken = await getFirebaseAccessToken();
+        const fetch = await getFetch();
+
+        // Firestore PATCH requires updateMask
+        const updateMask = Object.keys(updateData).map(k => `updateMask.fieldPaths=${k}`).join('&');
+
+        const response = await fetch(
+            `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${encodeURIComponent(databaseId)}/documents/${collection}/${id}?${updateMask}`,
+            {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                },
+                body: JSON.stringify({
+                    fields: toFirestoreFields(updateData)
+                })
+            }
+        );
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Firebase update failed: ${response.status} ${errorText}`);
+        }
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error updating message:', error);
+        res.status(500).json({ error: 'Kunne ikke oppdatere meldingen.', details: error.message });
+    }
+});
+
+app.delete('/api/messages/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { projectId, databaseId, collection } = getFirebaseConfig();
+        const accessToken = await getFirebaseAccessToken();
+        const fetch = await getFetch();
+
+        const response = await fetch(
+            `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${encodeURIComponent(databaseId)}/documents/${collection}/${id}`,
+            {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            }
+        );
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Firebase delete failed: ${response.status} ${errorText}`);
+        }
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error deleting message:', error);
+        res.status(500).json({ error: 'Kunne ikke slette meldingen.', details: error.message });
+    }
+});
+
 app.get('/api/posts', async (req, res) => {
     try {
         const posts = await readSiteDataWithFallback('posts', readBlogPosts);

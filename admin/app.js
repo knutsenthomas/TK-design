@@ -59,6 +59,14 @@ const adminTranslations = {
         'nav_media': 'Media',
         'nav_view_site': 'Se Nettside',
         'nav_logout': 'Logg ut',
+        'nav_messages': 'Meldinger',
+        'msg_sender': 'Avsender',
+        'msg_subject': 'Melding',
+        'msg_date': 'Dato',
+        'msg_loading': 'Laster meldinger...',
+        'msg_empty': 'Ingen meldinger funnet.',
+        'msg_delete_confirm': 'Er du sikker på at du vil slette denne meldingen?',
+        'msg_archive_confirm': 'Vil du arkivere denne meldingen?',
         'sidebar_menu': 'Meny',
         'welcome': 'Velkommen tilbake',
         'new_post': '+ Nytt Innlegg',
@@ -153,6 +161,14 @@ const adminTranslations = {
         'nav_media': 'Media',
         'nav_view_site': 'View Site',
         'nav_logout': 'Logout',
+        'nav_messages': 'Messages',
+        'msg_sender': 'Sender',
+        'msg_subject': 'Message',
+        'msg_date': 'Date',
+        'msg_loading': 'Loading messages...',
+        'msg_empty': 'No messages found.',
+        'msg_delete_confirm': 'Are you sure you want to delete this message?',
+        'msg_archive_confirm': 'Do you want to archive this message?',
         'sidebar_menu': 'Menu',
         'welcome': 'Welcome back',
         'new_post': '+ New Post',
@@ -727,6 +743,152 @@ window.publishPost = async function () {
                 variant: 'danger'
             }
         );
+    }
+};
+
+// ==========================================
+// CONTACT MESSAGES LOGIC
+// ==========================================
+
+let contactMessages = [];
+
+window.fetchMessages = async function () {
+    const listContainer = document.getElementById('messages-list');
+    if (listContainer) {
+        listContainer.innerHTML = `
+            <div class="empty-state" style="padding: 40px; text-align: center; color: var(--text-muted);">
+                <i class="fas fa-spinner fa-spin" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
+                <p data-i18n="msg_loading">${adminTranslations[currentLang]?.msg_loading || 'Laster meldinger...'}</p>
+            </div>
+        `;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/messages`);
+        if (!response.ok) throw new Error('Kunne ikke hente meldinger');
+
+        contactMessages = await response.json();
+        renderMessages();
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        if (listContainer) {
+            listContainer.innerHTML = `
+                <div class="empty-state" style="padding: 40px; text-align: center; color: #ef4444;">
+                    <i class="fas fa-exclamation-circle" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
+                    <p>Feil ved henting av meldinger: ${error.message}</p>
+                </div>
+            `;
+        }
+    }
+};
+
+function renderMessages() {
+    const listContainer = document.getElementById('messages-list');
+    if (!listContainer) return;
+
+    if (!contactMessages || contactMessages.length === 0) {
+        listContainer.innerHTML = `
+            <div class="empty-state" style="padding: 40px; text-align: center; color: var(--text-muted);">
+                <i class="fas fa-envelope-open" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
+                <p data-i18n="msg_empty">${adminTranslations[currentLang]?.msg_empty || 'Ingen meldinger funnet.'}</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Sort by date descending
+    const sortedMessages = [...contactMessages].sort((a, b) => {
+        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+    });
+
+    listContainer.innerHTML = '';
+    sortedMessages.forEach(msg => {
+        const dateStr = msg.created_at ? new Date(msg.created_at).toLocaleString('no-NO', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }) : '-';
+
+        const item = document.createElement('div');
+        item.className = `blog-item message-item ${msg.status === 'archived' ? 'archived' : ''}`;
+        if (msg.status === 'archived') item.style.opacity = '0.6';
+
+        item.innerHTML = `
+            <div class="blog-title">
+                <div style="font-weight: 700;">${msg.name || 'Anonym'}</div>
+                <div style="font-size: 12px; color: var(--text-muted); font-weight: 400;">${msg.email || ''}</div>
+            </div>
+            <div class="blog-meta" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 400px;">
+                ${msg.message || ''}
+            </div>
+            <div class="blog-meta">${dateStr}</div>
+            <div style="text-align: right;">
+                <button class="action-btn" onclick="viewMessage('${msg.id}')" title="Vis">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button class="action-btn archive-btn" onclick="archiveMessage('${msg.id}')" title="Arkiver" ${msg.status === 'archived' ? 'disabled' : ''}>
+                    <i class="fas fa-archive"></i>
+                </button>
+                <button class="action-btn delete" onclick="deleteMessage('${msg.id}')" title="Slett">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        listContainer.appendChild(item);
+    });
+}
+
+window.viewMessage = async function (id) {
+    const msg = contactMessages.find(m => m.id === id);
+    if (!msg) return;
+
+    await showAdminNotice(msg.message, {
+        title: `Fra: ${msg.name} (${msg.email})`,
+        confirmText: 'Lukk'
+    });
+};
+
+window.archiveMessage = async function (id) {
+    const confirmed = await showAdminConfirm(
+        adminTranslations[currentLang]?.msg_archive_confirm || 'Vil du arkivere denne meldingen?',
+        { title: 'Arkiver melding' }
+    );
+    if (!confirmed) return;
+
+    try {
+        const response = await fetch(`${API_URL}/messages/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'archived' })
+        });
+        if (!response.ok) throw new Error('Kunne ikke arkivere melding');
+
+        await fetchMessages();
+    } catch (error) {
+        console.error('Error archiving message:', error);
+        showAdminNotice('Kunne ikke arkivere meldingen: ' + error.message, { variant: 'danger' });
+    }
+};
+
+window.deleteMessage = async function (id) {
+    const confirmed = await showAdminConfirm(
+        adminTranslations[currentLang]?.msg_delete_confirm || 'Er du sikker på at du vil slette denne meldingen?',
+        { title: 'Slett melding', variant: 'danger', confirmText: 'Slett' }
+    );
+    if (!confirmed) return;
+
+    try {
+        const response = await fetch(`${API_URL}/messages/${id}`, {
+            method: 'DELETE'
+        });
+        if (!response.ok) throw new Error('Kunne ikke slette melding');
+
+        await fetchMessages();
+    } catch (error) {
+        console.error('Error deleting message:', error);
+        showAdminNotice('Kunne ikke slette meldingen: ' + error.message, { variant: 'danger' });
     }
 };
 
@@ -1473,6 +1635,11 @@ function setupEventListeners() {
                 if (targetTab) targetTab.classList.add('active');
                 updateBreadcrumb(section);
                 updateHeaderActions(section);
+
+                // Fetch messages if tab is selected
+                if (section === 'messages') {
+                    fetchMessages();
+                }
             }
         });
     });
