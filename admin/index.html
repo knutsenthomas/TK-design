@@ -95,6 +95,8 @@
                     Media</button>
                 <button class="nav-btn" data-tab="messages" data-i18n="nav_messages"><i class="fas fa-envelope"></i>
                     Meldinger</button>
+                <button class="nav-btn" data-tab="analytics" data-i18n="nav_analytics"><i class="fas fa-chart-line"></i>
+                    Statistikk</button>
                 <div style="flex-grow: 1;"></div>
                 <button class="nav-btn" onclick="window.open('/', '_blank')" data-i18n="nav_view_site"><i
                         class="fas fa-external-link-alt"></i>
@@ -404,6 +406,88 @@
                 </div>
                 <div class="media-grid">
                     <!-- Images listed here -->
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="analytics-tab" class="tab-content">
+                <header>
+                    <h1 data-i18n="nav_analytics">Statistikk</h1>
+                    <div class="header-actions">
+                        <a href="https://analytics.google.com/analytics/web/#/p000000000/reports/intelligenthome"
+                            target="_blank" class="action-btn" title="Åpne Google Analytics"
+                            style="text-decoration:none;">
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </div>
+                </header>
+
+                <div class="stats-grid"
+                    style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px;">
+                    <div class="card stat-card" style="padding:24px;display:flex;flex-direction:column;gap:8px;">
+                        <div style="display:flex;align-items:center;gap:10px;color:var(--clr-primary);">
+                            <i class="fas fa-users" style="font-size:1.4rem;"></i>
+                            <span
+                                style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--clr-text-light);">Brukere
+                                siste 7 dager</span>
+                        </div>
+                        <div id="ga-users" style="font-size:2.2rem;font-weight:800;color:var(--clr-base);">—</div>
+                    </div>
+                    <div class="card stat-card" style="padding:24px;display:flex;flex-direction:column;gap:8px;">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <i class="fas fa-eye" style="font-size:1.4rem;color:var(--clr-primary);"></i>
+                            <span
+                                style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--clr-text-light);">Sidevisninger
+                                siste 7 dager</span>
+                        </div>
+                        <div id="ga-pageviews" style="font-size:2.2rem;font-weight:800;color:var(--clr-base);">—</div>
+                    </div>
+                    <div class="card stat-card" style="padding:24px;display:flex;flex-direction:column;gap:8px;">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <i class="fas fa-clock" style="font-size:1.4rem;color:var(--clr-primary);"></i>
+                            <span
+                                style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--clr-text-light);">Aktive
+                                brukere nå</span>
+                        </div>
+                        <div id="ga-realtime" style="font-size:2.2rem;font-weight:800;color:var(--clr-base);">—</div>
+                    </div>
+                    <div class="card stat-card" style="padding:24px;display:flex;flex-direction:column;gap:8px;">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <i class="fas fa-search" style="font-size:1.4rem;color:var(--clr-primary);"></i>
+                            <span
+                                style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--clr-text-light);">Google
+                                Search Klikk (28d)</span>
+                        </div>
+                        <div id="ga-search-clicks" style="font-size:2.2rem;font-weight:800;color:var(--clr-base);">9
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card"
+                    style="padding:32px;text-align:center;background:linear-gradient(135deg,#1B4965 0%,#0d2b3e 100%);color:#fff;border-radius:16px;">
+                    <i class="fas fa-chart-line" style="font-size:2.5rem;margin-bottom:16px;opacity:0.9;"></i>
+                    <h2 style="color:#fff;margin-bottom:8px;">Google Analytics – Full rapport</h2>
+                    <p style="opacity:0.8;margin-bottom:24px;max-width:480px;margin-left:auto;margin-right:auto;">
+                        Se detaljerte rapporter om trafikk, brukeradferd, konverteringer og søkeord direkte i Google
+                        Analytics.
+                    </p>
+                    <a href="https://analytics.google.com" target="_blank" rel="noopener"
+                        style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#1B4965;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;transition:opacity .2s;"
+                        onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+                        <i class="fas fa-external-link-alt"></i> Åpne Google Analytics
+                    </a>
+                </div>
+
+                <div class="card" style="padding:24px;margin-top:16px;">
+                    <h3 style="margin-bottom:16px;"><i class="fas fa-info-circle"
+                            style="color:var(--clr-primary);margin-right:8px;"></i>GA4 Measurement ID</h3>
+                    <p
+                        style="font-family:monospace;font-size:1.1rem;background:var(--clr-bg);padding:12px 16px;border-radius:8px;display:inline-block;font-weight:600;">
+                        G-5RZVDEBBYM</p>
+                    <p style="margin-top:12px;color:var(--clr-text-light);font-size:0.88rem;">
+                        Sporskoden er aktiv på alle sider. Live-data oppdateres av Google Analytics
+                        og kan ta opptil 24 timer å reflektere nye besøk.
+                    </p>
                 </div>
             </div>
 
