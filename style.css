@@ -6733,12 +6733,13 @@ body.homepage-refresh .social-link {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 18px;
+    padding: 16px 22px;
     border-radius: 18px;
     background: #fff;
     border: 1px solid rgba(17, 38, 60, 0.08);
     color: var(--refresh-heading);
     font-weight: 700;
+    gap: 12px;
 }
 
 body.homepage-refresh .social-link:hover {
@@ -7208,6 +7209,11 @@ body.homepage-refresh .video-modal .modal-content {
 
     body.homepage-refresh .footer-links {
         grid-template-columns: 1fr !important;
+        gap: 14px !important;
+    }
+
+    body.homepage-refresh .social-link {
+        padding: 18px 24px !important;
     }
 
     body.homepage-refresh .hidden-mobile {
