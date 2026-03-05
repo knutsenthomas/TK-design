@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" href="../img/logo/d.png">
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -28,172 +29,221 @@
 
         body {
             font-family: 'Manrope', sans-serif;
+            background: #f8fafc;
             min-height: 100vh;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            background: #f4f6f9;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* LEFT PANEL */
-        .login-left {
-            background: linear-gradient(145deg, #1B4965 0%, #0d2b3e 100%);
+        /* TOP BAR — same as admin header */
+        .login-topbar {
+            background: #fff;
+            border-bottom: 1px solid #e2e8f0;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            padding: 0 32px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Brand chip — identical to admin dashboard */
+        .admin-brand-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(249, 115, 22, 0.16);
+            background: #fff7ed;
+            color: #9a3412;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .admin-brand-chip i {
+            font-size: 13px;
+            color: #f97316;
+        }
+
+        /* MAIN CONTENT */
+        .login-main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 24px;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: #fff;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.07);
+            overflow: hidden;
+        }
+
+        /* LEFT — orange brand panel */
+        .login-panel-left {
+            background: linear-gradient(145deg, #f97316 0%, #ea580c 100%);
+            padding: 48px 40px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 48px;
             position: relative;
             overflow: hidden;
         }
 
-        .login-left::before {
+        .login-panel-left::before {
             content: '';
             position: absolute;
-            width: 420px;
-            height: 420px;
+            width: 320px;
+            height: 320px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, 0.08);
             top: -80px;
-            right: -100px;
+            right: -80px;
         }
 
-        .login-left::after {
+        .login-panel-left::after {
             content: '';
             position: absolute;
-            width: 280px;
-            height: 280px;
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.04);
-            bottom: -60px;
-            left: -60px;
+            background: rgba(255, 255, 255, 0.06);
+            bottom: -40px;
+            left: -40px;
         }
 
-        .login-brand {
+        .panel-logo {
             display: flex;
             align-items: center;
-            gap: 12px;
-            text-decoration: none;
+            gap: 10px;
             position: relative;
             z-index: 1;
         }
 
-        .login-brand img {
-            width: 36px;
-            height: 36px;
-            object-fit: contain;
+        .panel-logo img {
+            width: 32px;
+            height: 32px;
             filter: brightness(0) invert(1);
+            object-fit: contain;
         }
 
-        .login-brand-name {
-            font-size: 1.1rem;
-            font-weight: 700;
+        .panel-logo-name {
             color: #fff;
-            letter-spacing: 0.05em;
+            font-size: 0.85rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
         }
 
-        .login-left-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .login-left-tag {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.12);
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.72rem;
+        .panel-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            font-size: 0.68rem;
             font-weight: 700;
             letter-spacing: 0.12em;
             text-transform: uppercase;
-            padding: 6px 14px;
+            padding: 5px 12px;
             border-radius: 100px;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
 
-        .login-left-title {
-            font-size: clamp(1.8rem, 3vw, 2.8rem);
-            font-weight: 800;
-            color: #fff;
-            line-height: 1.15;
-            margin-bottom: 20px;
-        }
-
-        .login-left-title span {
-            opacity: 0.5;
-        }
-
-        .login-left-desc {
-            color: rgba(255, 255, 255, 0.65);
-            font-size: 1rem;
-            line-height: 1.7;
-            max-width: 340px;
-        }
-
-        .login-left-footer {
+        .panel-body {
             position: relative;
             z-index: 1;
-            color: rgba(255, 255, 255, 0.35);
-            font-size: 0.78rem;
         }
 
-        /* RIGHT PANEL */
-        .login-right {
+        .panel-title {
+            font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.2;
+            margin-bottom: 14px;
+        }
+
+        .panel-title span {
+            opacity: 0.6;
+        }
+
+        .panel-desc {
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        .panel-footer {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.72rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* RIGHT — form */
+        .login-panel-right {
+            padding: 48px 44px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 48px 40px;
         }
 
-        .login-card {
+        .login-form-wrap {
             width: 100%;
-            max-width: 420px;
         }
 
-        .login-card-header {
-            margin-bottom: 40px;
-        }
-
-        .login-card-eyebrow {
-            font-size: 0.72rem;
+        .form-eyebrow {
+            font-size: 0.7rem;
             font-weight: 700;
             letter-spacing: 0.14em;
             text-transform: uppercase;
-            color: #1B4965;
-            margin-bottom: 10px;
-        }
-
-        .login-card-title {
-            font-size: 1.9rem;
-            font-weight: 800;
-            color: #0d1f2d;
+            color: #f97316;
             margin-bottom: 8px;
         }
 
-        .login-card-subtitle {
-            color: #6b7a8d;
-            font-size: 0.9rem;
+        .form-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+
+        .form-subtitle {
+            color: #64748b;
+            font-size: 0.875rem;
             line-height: 1.6;
+            margin-bottom: 32px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .form-group label {
             display: block;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             font-weight: 600;
             color: #374151;
-            margin-bottom: 7px;
+            margin-bottom: 6px;
         }
 
         .form-group input {
             width: 100%;
-            padding: 13px 16px;
+            padding: 12px 14px;
             background: #fff;
             border: 1.5px solid #e2e8f0;
             border-radius: 10px;
-            color: #0d1f2d;
-            font-size: 0.95rem;
+            color: #0f172a;
+            font-size: 0.9rem;
             font-family: 'Manrope', sans-serif;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
@@ -204,27 +254,26 @@
 
         .form-group input:focus {
             outline: none;
-            border-color: #1B4965;
-            box-shadow: 0 0 0 3px rgba(27, 73, 101, 0.1);
+            border-color: #f97316;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
         }
 
         .btn-login {
             width: 100%;
-            padding: 14px;
+            padding: 13px;
             background: #1B4965;
             color: #fff;
             border: none;
             border-radius: 10px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 700;
             font-family: 'Manrope', sans-serif;
             cursor: pointer;
             transition: background 0.2s, transform 0.15s;
-            letter-spacing: 0.02em;
         }
 
         .btn-login:hover {
-            background: #163d54;
+            background: #153a50;
         }
 
         .btn-login:active {
@@ -239,8 +288,8 @@
         .login-divider {
             display: flex;
             align-items: center;
-            gap: 14px;
-            margin: 22px 0;
+            gap: 12px;
+            margin: 20px 0;
         }
 
         .login-divider::before,
@@ -252,8 +301,8 @@
         }
 
         .login-divider span {
-            color: #9ca3af;
-            font-size: 0.75rem;
+            color: #94a3b8;
+            font-size: 0.72rem;
             font-weight: 600;
             letter-spacing: 0.08em;
             text-transform: uppercase;
@@ -261,12 +310,12 @@
 
         .btn-google {
             width: 100%;
-            padding: 13px 16px;
+            padding: 12px 14px;
             background: #fff;
             color: #374151;
             border: 1.5px solid #e2e8f0;
             border-radius: 10px;
-            font-size: 0.9rem;
+            font-size: 0.87rem;
             font-weight: 600;
             font-family: 'Manrope', sans-serif;
             cursor: pointer;
@@ -274,13 +323,12 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         .btn-google:hover {
-            border-color: #1B4965;
-            background: #f8fafc;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border-color: #f97316;
+            box-shadow: 0 2px 8px rgba(249, 115, 22, 0.1);
         }
 
         .btn-google:active {
@@ -289,29 +337,29 @@
 
         #error-msg {
             display: none;
-            margin-top: 16px;
-            padding: 12px 16px;
+            margin-top: 14px;
+            padding: 11px 14px;
             background: #fff1f1;
-            border: 1px solid #fcd4d4;
+            border: 1px solid #fcdada;
             border-radius: 8px;
             color: #b91c1c;
-            font-size: 0.83rem;
+            font-size: 0.8rem;
             line-height: 1.5;
             text-align: center;
         }
 
         /* RESPONSIVE */
-        @media (max-width: 768px) {
-            body {
+        @media (max-width: 700px) {
+            .login-wrapper {
                 grid-template-columns: 1fr;
             }
 
-            .login-left {
+            .login-panel-left {
                 display: none;
             }
 
-            .login-right {
-                padding: 40px 24px;
+            .login-panel-right {
+                padding: 40px 28px;
             }
         }
     </style>
@@ -319,60 +367,74 @@
 
 <body>
 
-    <!-- LEFT: Brand panel -->
-    <div class="login-left">
-        <a href="/" class="login-brand">
-            <img src="../img/logo/d.png" alt="TK-design logo">
-            <span class="login-brand-name">TK-design</span>
-        </a>
-
-        <div class="login-left-content">
-            <span class="login-left-tag">Admin Studio</span>
-            <h1 class="login-left-title">
-                Din digitale
-                <br><span>kontrollpanel.</span>
-            </h1>
-            <p class="login-left-desc">
-                Administrer innhold, bilder, blogginnlegg og statistikk for tk-design.no fra én plass.
-            </p>
+    <!-- TOP BAR -->
+    <header class="login-topbar">
+        <div class="admin-brand-chip">
+            <i class="fas fa-layer-group"></i>
+            <span>tk-design Studio</span>
         </div>
+    </header>
 
-        <p class="login-left-footer">© 2026 TK-design. Kun for autorisert bruk.</p>
-    </div>
+    <!-- MAIN -->
+    <main class="login-main">
+        <div class="login-wrapper">
 
-    <!-- RIGHT: Login form -->
-    <div class="login-right">
-        <div class="login-card">
-            <div class="login-card-header">
-                <p class="login-card-eyebrow">Admin-tilgang</p>
-                <h2 class="login-card-title">Logg inn</h2>
-                <p class="login-card-subtitle">Skriv inn e-post og passord for å komme inn i dashbordet.</p>
+            <!-- LEFT PANEL -->
+            <div class="login-panel-left">
+                <div class="panel-logo">
+                    <img src="../img/logo/d.png" alt="TK-design logo">
+                    <span class="panel-logo-name">TK-design</span>
+                </div>
+
+                <div class="panel-body">
+                    <span class="panel-tag"><i class="fas fa-layer-group"></i> Admin Studio</span>
+                    <h1 class="panel-title">
+                        Din digitale<br>
+                        <span>kontrollpanel.</span>
+                    </h1>
+                    <p class="panel-desc">
+                        Administrer innhold, blogg, bilder og statistikk for tk-design.no fra én plass.
+                    </p>
+                </div>
+
+                <p class="panel-footer">© 2026 TK-design — Kun for autorisert bruk.</p>
             </div>
 
-            <form id="login-form">
-                <div class="form-group">
-                    <label for="email">E-postadresse</label>
-                    <input type="email" id="email" required placeholder="thomas@tk-design.no" autocomplete="email">
+            <!-- RIGHT PANEL (form) -->
+            <div class="login-panel-right">
+                <div class="login-form-wrap">
+                    <p class="form-eyebrow">Admin-tilgang</p>
+                    <h2 class="form-title">Logg inn</h2>
+                    <p class="form-subtitle">Skriv inn e-post og passord for å komme inn i dashbordet.</p>
+
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label for="email">E-postadresse</label>
+                            <input type="email" id="email" required placeholder="thomas@tk-design.no"
+                                autocomplete="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Passord</label>
+                            <input type="password" id="password" required placeholder="••••••••"
+                                autocomplete="current-password">
+                        </div>
+                        <button type="submit" class="btn-login" id="login-btn">Logg inn</button>
+
+                        <div class="login-divider"><span>eller</span></div>
+
+                        <button type="button" class="btn-google" id="google-login-btn">
+                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"
+                                style="width:18px;">
+                            Fortsett med Google
+                        </button>
+
+                        <p id="error-msg"></p>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <label for="password">Passord</label>
-                    <input type="password" id="password" required placeholder="••••••••"
-                        autocomplete="current-password">
-                </div>
-                <button type="submit" class="btn-login" id="login-btn">Logg inn</button>
+            </div>
 
-                <div class="login-divider"><span>eller</span></div>
-
-                <button type="button" class="btn-google" id="google-login-btn">
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"
-                        style="width:18px;">
-                    Fortsett med Google
-                </button>
-
-                <p id="error-msg"></p>
-            </form>
         </div>
-    </div>
+    </main>
 
     <script>
         const loginForm = document.getElementById('login-form');
@@ -382,9 +444,8 @@
 
         function getFriendlyAuthError(error) {
             const code = error && error.code ? error.code : '';
-            if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
+            if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found')
                 return 'Feil e-post eller passord. Sjekk at brukeren finnes i Firebase Authentication > Users.';
-            }
             if (code === 'auth/too-many-requests') return 'For mange forsøk. Vent litt og prøv igjen.';
             if (code === 'auth/network-request-failed') return 'Klarte ikke å kontakte Firebase. Sjekk nettverk.';
             if (code === 'auth/popup-closed-by-user') return 'Google-vinduet ble lukket. Prøv igjen.';
@@ -403,9 +464,8 @@
                     options: { redirectTo: window.location.origin + '/admin/index.html' }
                 });
                 if (error) throw error;
-                if (!data || !data.session) throw new Error('Ingen gyldig innloggingssesjon ble opprettet.');
+                if (!data || !data.session) throw new Error('Ingen gyldig innloggingssesjon.');
             } catch (error) {
-                console.error('Google Login Error:', error);
                 errorMsg.textContent = getFriendlyAuthError(error);
                 errorMsg.style.display = 'block';
                 googleBtn.disabled = false;
@@ -417,18 +477,15 @@
             errorMsg.style.display = 'none';
             loginBtn.textContent = 'Logger inn…';
             loginBtn.disabled = true;
-
             const email = document.getElementById('email').value.trim().toLowerCase();
             const password = document.getElementById('password').value;
-
             try {
                 if (!window.adminAuthClient) throw new Error('Firebase client not initialized.');
                 const { data, error } = await window.adminAuthClient.auth.signInWithPassword({ email, password });
                 if (error) throw error;
-                if (!data || !data.session) throw new Error('Ingen gyldig innloggingssesjon ble opprettet.');
+                if (!data || !data.session) throw new Error('Ingen gyldig innloggingssesjon.');
                 window.location.href = 'index.html';
             } catch (error) {
-                console.error('Login Error:', error);
                 errorMsg.textContent = getFriendlyAuthError(error);
                 errorMsg.style.display = 'block';
             } finally {
