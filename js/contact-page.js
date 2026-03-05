@@ -142,7 +142,7 @@ function initContactPageForm() {
             const result = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                throw new Error(result.error || result.details || messages.network);
+                throw new Error(result.details || result.error || messages.network);
             }
 
             form.reset();
