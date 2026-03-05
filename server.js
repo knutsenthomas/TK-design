@@ -208,6 +208,7 @@ function toFirestoreFields(objectValue) {
 }
 
 async function saveContactMessage(messagePayload) {
+    console.log('Saving message to Firestore...', JSON.stringify(messagePayload, null, 2));
     const { projectId, databaseId, collection } = getFirebaseConfig();
     if (!projectId) {
         throw new Error('Firebase mangler TK_FIREBASE_PROJECT_ID i .env');
@@ -1045,6 +1046,9 @@ app.get('/api/unsplash/search', async (req, res) => {
 
 // API: Contact Form
 app.post('/api/contact', async (req, res) => {
+    console.log('--- CONTACT FORM SUBMISSION START ---');
+    console.log('Headers:', JSON.stringify(req.headers, null, 2));
+    console.log('Body:', JSON.stringify(req.body, null, 2));
     try {
         const {
             name = '',
@@ -1107,7 +1111,7 @@ app.post('/api/contact', async (req, res) => {
             consent: true,
             source_page: cleanSourcePage,
             status: 'new',
-            ip_address: (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').toString().split(',')[0].trim() || null,
+            ip_address: (req.headers['x-forwarded-for'] || (req.socket && req.socket.remoteAddress) || '').toString().split(',')[0].trim() || null,
             user_agent: req.get('user-agent') || null
         };
 
@@ -1136,6 +1140,11 @@ app.post('/api/contact', async (req, res) => {
         });
     } catch (error) {
         console.error('Contact form submission error:', error);
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name
+        });
         res.status(500).json({
             success: false,
             error: 'Kunne ikke sende kontaktskjemaet.',
