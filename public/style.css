@@ -4901,6 +4901,12 @@ body.homepage-refresh .designers {
     color: #000 !important;
 }
 
+body.homepage-refresh .banner-content h1 .hero-title-line.designers {
+    display: inline-block;
+    width: fit-content;
+    max-width: max-content;
+}
+
 body.homepage-refresh .banner-content .subtitle {
     display: inline-flex;
     align-items: center;
