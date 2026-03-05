@@ -89,6 +89,11 @@ function getFirebaseWebConfig() {
     };
 }
 
+function getFirebaseAuthHelperHost() {
+    const projectId = process.env.TK_FIREBASE_PROJECT_ID || 'tk-design-f43f6';
+    return `${projectId}.firebaseapp.com`;
+}
+
 function hasUsableFirebaseWebConfig(config) {
     return !!(
         config &&
@@ -1276,6 +1281,62 @@ app.get('/js/firebase-config.js', async (req, res) => {
         res.send(
             `window.__TK_FIREBASE_CONFIG__ = ${JSON.stringify(fallbackConfig, null, 4)};\nwindow.__TK_FIREBASE_CONFIG_ERROR__ = ${JSON.stringify(hasUsableFirebaseWebConfig(fallbackConfig) ? null : error.message)};`
         );
+    }
+});
+
+async function proxyFirebaseAuthHelper(req, res) {
+    const fetch = await getFetch();
+    const helperHost = getFirebaseAuthHelperHost();
+    const targetUrl = `https://${helperHost}${req.originalUrl}`;
+    const upstreamResponse = await fetch(targetUrl, {
+        method: 'GET',
+        headers: {
+            Accept: req.get('accept') || '*/*',
+            'Accept-Language': req.get('accept-language') || 'en-US,en;q=0.9',
+            'User-Agent': req.get('user-agent') || 'tk-design-auth-proxy'
+        }
+    });
+
+    res.status(upstreamResponse.status);
+
+    const hopByHopHeaders = new Set([
+        'connection',
+        'transfer-encoding',
+        'content-length',
+        'content-encoding',
+        'keep-alive',
+        'proxy-authenticate',
+        'proxy-authorization',
+        'te',
+        'trailer',
+        'upgrade'
+    ]);
+
+    upstreamResponse.headers.forEach((value, key) => {
+        if (!hopByHopHeaders.has(String(key).toLowerCase())) {
+            res.setHeader(key, value);
+        }
+    });
+
+    const bodyBuffer = Buffer.from(await upstreamResponse.arrayBuffer());
+    res.send(bodyBuffer);
+}
+
+app.get(/^\/__\/auth\/.*$/, async (req, res) => {
+    try {
+        await proxyFirebaseAuthHelper(req, res);
+    } catch (error) {
+        console.error('Firebase auth helper proxy error:', error);
+        res.status(502).send('Firebase auth helper proxy failed.');
+    }
+});
+
+app.get(/^\/__\/firebase\/.*$/, async (req, res) => {
+    try {
+        await proxyFirebaseAuthHelper(req, res);
+    } catch (error) {
+        console.error('Firebase firebase-helper proxy error:', error);
+        res.status(502).send('Firebase helper proxy failed.');
     }
 });
 

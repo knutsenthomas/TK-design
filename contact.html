@@ -318,6 +318,15 @@
     <script src="script.js"></script>
     <script src="js/cookies.js"></script>
     <script src="js/contact-page.js"></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "@vercel/speed-insights": "https://esm.sh/@vercel/speed-insights",
+                "@vercel/analytics": "https://esm.sh/@vercel/analytics"
+            }
+        }
+    </script>
+    <script type="module" src="/js/speed-insights-init.js"></script>
 </body>
 
 </html>

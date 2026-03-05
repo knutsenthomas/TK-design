@@ -453,6 +453,8 @@
             if (code === 'auth/popup-closed-by-user') return 'Google-vinduet ble lukket. Prøv igjen.';
             if (code === 'auth/popup-blocked') return 'Nettleseren blokkerte Google-innloggingen. Tillat popup-vinduer.';
             if (code === 'auth/unauthorized-domain') return 'Dette domenet er ikke tillatt i Firebase. Legg til i Authorized domains.';
+            if (code === 'auth/web-storage-unsupported') return 'Nettleseren blokkerer lagring som trengs for Google-innlogging. Deaktiver streng sporingsbeskyttelse eller prøv en annen nettleser.';
+            if (code === 'auth/internal-error' && /missing initial state/i.test(error.message || '')) return 'Google-innloggingen mistet økten underveis. Prøv igjen, eller bruk e-post/passord.';
             return error.message || 'Innlogging feilet.';
         }
 
@@ -461,13 +463,16 @@
             googleBtn.disabled = true;
             googleBtn.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width:18px;"> Logger inn…';
             try {
-                // Bruk Firebase Auth direkte for Google-innlogging
-                if (!window.firebase) throw new Error('Firebase er ikke tilgjengelig.');
-                const auth = window.firebase.auth();
-                const provider = new window.firebase.auth.GoogleAuthProvider();
-                await auth.signInWithPopup(provider);
-                // Suksess — redirect direkte til admin
-                window.location.href = 'index.html';
+                if (!window.adminAuthClient) throw new Error('Firebase client not initialized.');
+                const { data, error } = await window.adminAuthClient.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: window.location.origin + '/admin/index.html'
+                    }
+                });
+                if (error) throw error;
+                if (data && data.redirecting) return;
+                if (!data || !data.session) throw new Error('Ingen gyldig innloggingssesjon ble opprettet.');
             } catch (error) {
                 console.error('Google Login Error:', error);
                 errorMsg.textContent = getFriendlyAuthError(error);
@@ -506,6 +511,15 @@
             }
         })();
     </script>
+    <script type="importmap">
+        {
+            "imports": {
+                "@vercel/speed-insights": "https://esm.sh/@vercel/speed-insights",
+                "@vercel/analytics": "https://esm.sh/@vercel/analytics"
+            }
+        }
+    </script>
+    <script type="module" src="/js/speed-insights-init.js"></script>
 </body>
 
 </html>

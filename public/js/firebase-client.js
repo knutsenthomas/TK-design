@@ -87,7 +87,35 @@
         }
     }
 
-    const config = window.__TK_FIREBASE_CONFIG__ || {};
+    function shouldUseCurrentHostAsAuthDomain(baseConfig) {
+        const host = (window.location.hostname || '').trim().toLowerCase();
+        const configuredAuthDomain = String(baseConfig.authDomain || '').trim().toLowerCase();
+
+        if (!host) {
+            return false;
+        }
+
+        if (host === 'localhost' || host === '127.0.0.1') {
+            return false;
+        }
+
+        if (!configuredAuthDomain) {
+            return true;
+        }
+
+        return host !== configuredAuthDomain;
+    }
+
+    let config = window.__TK_FIREBASE_CONFIG__ || {};
+
+    if (shouldUseCurrentHostAsAuthDomain(config)) {
+        config = {
+            ...config,
+            authDomain: window.location.hostname
+        };
+        window.__TK_FIREBASE_CONFIG__ = config;
+    }
+
     const requiredKeys = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'appId'];
     const missingKeys = requiredKeys.filter((key) => !config[key]);
 
@@ -111,7 +139,7 @@
     const auth = window.firebase.auth();
     const db = window.firebase.firestore();
     const storage = window.firebase.storage();
-    const AUTH_INIT_TIMEOUT_MS = 3000;
+    const AUTH_INIT_TIMEOUT_MS = 12000;
     const PROFILE_LOAD_TIMEOUT_MS = 1500;
 
     window.firebaseApp = app;
@@ -137,6 +165,13 @@
         .setPersistence(window.firebase.auth.Auth.Persistence.LOCAL)
         .catch((error) => {
             console.error('Could not set Firebase auth persistence:', error);
+            return null;
+        });
+    const redirectResultReady = auth
+        .getRedirectResult()
+        .catch((error) => {
+            console.error('Firebase redirect auth error:', error);
+            window.__TK_FIREBASE_REDIRECT_ERROR__ = error;
             return null;
         });
 
@@ -183,6 +218,7 @@
 
     async function getMappedCurrentUser() {
         await persistenceReady;
+        await redirectResultReady;
         await waitForAuthReady();
 
         if (!auth.currentUser) {
@@ -242,6 +278,7 @@
                     await persistenceReady;
                     const googleProvider = new window.firebase.auth.GoogleAuthProvider();
                     await auth.signInWithPopup(googleProvider);
+
                     const mappedUser = await getMappedCurrentUser();
 
                     if (options.redirectTo) {

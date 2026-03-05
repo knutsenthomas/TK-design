@@ -2114,14 +2114,48 @@ async function checkAuth() {
         return null;
     }
 
-    const sessionResult = await withUiTimeout(
+    const firstSessionResult = await withUiTimeout(
         window.adminAuthClient.auth.getSession(),
-        4000,
+        12000,
         { data: { session: null }, error: new Error('Session check timed out') }
     );
-    const session = sessionResult?.data?.session || null;
-    const error = sessionResult?.error || null;
-    const fallbackUser = buildFallbackSessionUser(window.firebaseAuth?.currentUser);
+    let session = firstSessionResult?.data?.session || null;
+    let error = firstSessionResult?.error || null;
+    let fallbackUser = buildFallbackSessionUser(window.firebaseAuth?.currentUser);
+
+    if (!session && !fallbackUser) {
+        await withUiTimeout(
+            new Promise((resolve) => {
+                if (!window.firebaseAuth || typeof window.firebaseAuth.onAuthStateChanged !== 'function') {
+                    resolve(null);
+                    return;
+                }
+
+                const unsubscribe = window.firebaseAuth.onAuthStateChanged(
+                    (firebaseUser) => {
+                        unsubscribe();
+                        resolve(firebaseUser || null);
+                    },
+                    () => {
+                        unsubscribe();
+                        resolve(null);
+                    }
+                );
+            }),
+            6000,
+            null
+        );
+
+        const retrySessionResult = await withUiTimeout(
+            window.adminAuthClient.auth.getSession(),
+            6000,
+            { data: { session: null }, error: null }
+        );
+
+        session = retrySessionResult?.data?.session || session;
+        error = session ? null : (retrySessionResult?.error || error);
+        fallbackUser = buildFallbackSessionUser(window.firebaseAuth?.currentUser) || fallbackUser;
+    }
 
     if ((!session || error) && fallbackUser) {
         currentUser = fallbackUser;

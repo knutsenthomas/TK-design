@@ -162,6 +162,14 @@
                 return 'Dette domenet er ikke tillatt i Firebase ennå. Legg til localhost i Authorized domains.';
             }
 
+            if (code === 'auth/web-storage-unsupported') {
+                return 'Nettleseren blokkerer lagring som trengs for Google-innlogging. Deaktiver streng sporingsbeskyttelse eller prøv en annen nettleser.';
+            }
+
+            if (code === 'auth/internal-error' && /missing initial state/i.test(error.message || '')) {
+                return 'Google-innloggingen mistet økten underveis. Prøv igjen, eller bruk e-post/passord.';
+            }
+
             return error.message || 'Innlogging feilet.';
         }
 
@@ -180,6 +188,9 @@
                 });
 
                 if (error) throw error;
+                if (data && data.redirecting) {
+                    return;
+                }
                 if (!data || !data.session) {
                     throw new Error('Ingen gyldig innloggingssesjon ble opprettet.');
                 }
@@ -238,6 +249,15 @@
             }
         })();
     </script>
+    <script type="importmap">
+        {
+            "imports": {
+                "@vercel/speed-insights": "https://esm.sh/@vercel/speed-insights",
+                "@vercel/analytics": "https://esm.sh/@vercel/analytics"
+            }
+        }
+    </script>
+    <script type="module" src="/js/speed-insights-init.js"></script>
 </body>
 
 </html>
