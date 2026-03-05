@@ -30,8 +30,12 @@ app.use((req, res, next) => {
 });
 
 async function getFetch() {
-    const fetchModule = await import('node-fetch');
-    return fetchModule.default;
+    try {
+        return require('node-fetch');
+    } catch (e) {
+        const fetchModule = await import('node-fetch');
+        return fetchModule.default;
+    }
 }
 
 function escapeHtml(value = '') {
