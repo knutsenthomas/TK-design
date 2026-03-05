@@ -7229,10 +7229,10 @@ body.homepage-refresh .video-modal .modal-content {
         padding-bottom: 40px !important;
     }
 
-    /* Footer Bottom Optimization - Balanced Space */
+    /* Footer Bottom Optimization - Balanced Space v26 */
     footer .flex.flex-wrap.justify-between.items-center {
         flex-direction: column !important;
-        gap: 25px !important;
+        gap: 30px !important;
         text-align: center !important;
         padding-top: 40px !important;
         padding-bottom: 40px !important;
@@ -7240,10 +7240,17 @@ body.homepage-refresh .video-modal .modal-content {
 
     footer .flex.flex-wrap.justify-between.items-center .flex.gap-4 {
         flex-direction: column !important;
-        gap: 12px !important;
+        gap: 15px !important;
         width: 100% !important;
         align-items: center !important;
         margin-top: 10px !important;
+    }
+
+    .admin-secret {
+        opacity: 0 !important;
+        cursor: default !important;
+        pointer-events: auto !important;
+        user-select: none !important;
     }
 
     footer .flex.flex-wrap.justify-between.items-center p {
