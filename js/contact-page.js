@@ -153,11 +153,12 @@ function initContactPageForm() {
                 setContactStatus(status, 'success', messages.success);
             }
         } catch (error) {
-            const fallbackMessage = error.message && error.message.includes('Failed to fetch')
+            const detailText = error.message || '';
+            const fallbackMessage = (error.message && error.message.includes('Failed to fetch'))
                 ? messages.backendMissing
-                : (error.message || messages.network);
+                : messages.network;
 
-            setContactStatus(status, 'error', fallbackMessage);
+            setContactStatus(status, 'error', `${fallbackMessage}${detailText ? ' (' + detailText + ')' : ''}`);
         } finally {
             submitButton.disabled = false;
         }
