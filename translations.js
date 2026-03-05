@@ -12,6 +12,8 @@ const translations = {
         hero: {
             subtitle: "Professional web design",
             title_1: "YOUR DIGITAL",
+            title_1_line1: "YOUR",
+            title_1_line2: "DIGITAL",
             title_2: "PARTNER",
             description: "We build your digital identity with tailored web design, SEO and SoMe strategy. From idea to launch - simple, professional and visible.",
             cta_primary: "Start now",
@@ -336,6 +338,8 @@ const translations = {
         hero: {
             subtitle: "Profesjonell webdesign",
             title_1: "DIN DIGITALE",
+            title_1_line1: "DIN",
+            title_1_line2: "DIGITALE",
             title_2: "PARTNER",
             description: "Vi bygger din digitale identitet med skreddersydd webdesign, SEO og SoMe-strategi. Fra ide til lansering - enkelt, profesjonelt og synlig.",
             cta_primary: "Start nå",

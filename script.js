@@ -210,6 +210,9 @@ function applyLanguage(lang) {
         const text = getNestedTranslation(translations[lang], key);
         if (text) {
             el.textContent = text;
+            if (el.classList.contains('designers')) {
+                el.setAttribute('data-text', text);
+            }
         }
     });
 

@@ -4888,7 +4888,7 @@ body.homepage-refresh .banner-content h1 {
     -webkit-hyphens: none;
 }
 
-body.homepage-refresh .banner-content h1 span:first-child {
+body.homepage-refresh .banner-content h1 .hero-title-line {
     color: #000 !important;
     display: block;
     white-space: nowrap;
@@ -4898,14 +4898,7 @@ body.homepage-refresh .designers {
     background: none;
     -webkit-background-clip: initial;
     background-clip: initial;
-    -webkit-text-stroke-width: 0;
     color: #000 !important;
-}
-
-body.homepage-refresh .designers::before {
-    content: none;
-    animation: none;
-    border-right: none;
 }
 
 body.homepage-refresh .banner-content .subtitle {
