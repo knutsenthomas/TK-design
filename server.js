@@ -649,6 +649,17 @@ async function sendContactNotification(messagePayload) {
     return { sent: true };
 }
 
+function logContactPipelineConfig() {
+    const hasResendApiKey = Boolean(String(process.env.RESEND_API_KEY || '').trim());
+    const targetEmail = String(process.env.CONTACT_TO_EMAIL || 'thomas@tk-design.no').trim() || 'thomas@tk-design.no';
+
+    if (!hasResendApiKey) {
+        console.warn('[contact] RESEND_API_KEY mangler. Kontaktskjema lagres, men e-postvarsel blir ikke sendt.');
+    } else {
+        console.log(`[contact] E-postvarsel aktivert. Mottaker: ${targetEmail}`);
+    }
+}
+
 function getTranslationsFilePath() {
     return path.join(__dirname, 'translations.js');
 }
@@ -1235,10 +1246,19 @@ app.post('/api/contact', async (req, res) => {
             user_agent: req.get('user-agent') || null
         };
 
-        const savedMessage = await saveContactMessage(payload);
-
+        let saved = false;
+        let savedMessage = null;
+        let saveWarning = null;
         let emailSent = false;
         let emailWarning = null;
+
+        try {
+            savedMessage = await saveContactMessage(payload);
+            saved = true;
+        } catch (saveError) {
+            console.error('Contact message save error:', saveError);
+            saveWarning = 'Meldingen kunne ikke lagres i dashboardet.';
+        }
 
         try {
             const notificationResult = await sendContactNotification(payload);
@@ -1251,9 +1271,18 @@ app.post('/api/contact', async (req, res) => {
             emailWarning = 'Meldingen ble lagret, men e-postvarsel feilet.';
         }
 
-        res.status(201).json({
+        if (!saved && !emailSent) {
+            return res.status(500).json({
+                success: false,
+                error: 'Kunne ikke levere kontaktskjemaet.',
+                details: [saveWarning, emailWarning].filter(Boolean).join(' ') || 'Lagring og e-post feilet.'
+            });
+        }
+
+        res.status(saved ? 201 : 202).json({
             success: true,
-            saved: true,
+            saved,
+            saveWarning,
             emailSent,
             emailWarning,
             id: savedMessage && savedMessage.id ? savedMessage.id : null
@@ -1393,6 +1422,7 @@ app.use(express.static(path.join(__dirname)));
 
 if (require.main === module) {
     app.listen(PORT, () => {
+        logContactPipelineConfig();
         console.log(`CMS Server running at http://localhost:${PORT}`);
         console.log(`Admin Panel available at http://localhost:${PORT}/admin`);
     });

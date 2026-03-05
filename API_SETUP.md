@@ -70,6 +70,7 @@ Merk:
 - `TK_FIREBASE_DATABASE_ID` og `TK_FIREBASE_CONTACT_COLLECTION` er valgfrie. Hvis de ikke er satt, brukes `(default)` og `contactMessages`.
 - `RESEND_API_KEY` må være satt for at e-postvarsel faktisk skal bli sendt.
 - Du trenger ikke kjøre SQL for kontaktskjemaet når du bruker Firestore, men du må ha aktivert Firestore i Firebase-prosjektet ditt.
+- Hvis nettsiden er deployet (for eksempel på Vercel), må variablene også settes i deploy-miljøet. Lokal `.env` alene påvirker ikke produksjon.
 
 ## 6. Admin-panel (Firebase Auth, Firestore og Storage)
 

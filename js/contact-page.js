@@ -3,7 +3,8 @@ const CONTACT_API_MESSAGES = {
         sending: 'Sender meldingen...',
         success: 'Takk. Meldingen er sendt og lagret.',
         successNoEmail: 'Meldingen er sendt og lagret, men e-postvarsling er ikke aktivert enda.',
-        validation: 'Fyll ut navn, e-post og en melding, og godkjenn lagring.',
+        successEmailOnly: 'Meldingen er sendt på e-post, men kunne ikke lagres i systemet.',
+        validation: 'Fyll ut navn, e-post og en melding på minst 10 tegn, og godkjenn lagring.',
         network: 'Noe gikk galt. Prøv igjen om litt.',
         backendMissing: 'Backend svarer ikke. Start `node server.js` hvis du kjører lokalt.'
     },
@@ -11,7 +12,8 @@ const CONTACT_API_MESSAGES = {
         sending: 'Sending your message...',
         success: 'Thanks. Your message has been sent and stored.',
         successNoEmail: 'Your message has been sent and stored, but email notifications are not configured yet.',
-        validation: 'Please fill in name, email and a message, and confirm consent.',
+        successEmailOnly: 'Your message was sent by email, but could not be stored in the system.',
+        validation: 'Please fill in name, email and a message with at least 10 characters, and confirm consent.',
         network: 'Something went wrong. Please try again shortly.',
         backendMissing: 'The backend did not respond. Start `node server.js` when running locally.'
     }
@@ -55,6 +57,14 @@ function focusContactField(field) {
             block: 'center'
         });
     }
+}
+
+function withWarning(baseMessage, warningText) {
+    const cleanWarning = String(warningText || '').trim();
+    if (!cleanWarning) {
+        return baseMessage;
+    }
+    return `${baseMessage} (${cleanWarning})`;
 }
 
 function initContactPageForm() {
@@ -112,10 +122,12 @@ function initContactPageForm() {
             return;
         }
 
-        if (!payload.message) {
+        if (!payload.message || payload.message.length < 10) {
             setContactStatus(status, 'error', messages.validation);
             if (messageField) {
-                messageField.value = '';
+                if (!payload.message) {
+                    messageField.value = '';
+                }
                 focusContactField(messageField);
             }
             return;
@@ -142,17 +154,23 @@ function initContactPageForm() {
             const result = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                throw new Error(result.details || result.error || messages.network);
+                throw new Error(result.error || result.details || messages.network);
             }
 
             form.reset();
 
             if (result.emailSent === false) {
-                setContactStatus(status, 'success', messages.successNoEmail);
+                setContactStatus(status, 'success', withWarning(messages.successNoEmail, result.emailWarning));
+            } else if (result.saved === false) {
+                setContactStatus(status, 'success', withWarning(messages.successEmailOnly, result.saveWarning));
             } else {
                 setContactStatus(status, 'success', messages.success);
             }
         } catch (error) {
+            const fallbackMessage = error.message && error.message.includes('Failed to fetch')
+                ? messages.backendMissing
+                : (error.message || messages.network);
+
             setContactStatus(status, 'error', fallbackMessage);
         } finally {
             submitButton.disabled = false;
