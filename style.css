@@ -7229,21 +7229,21 @@ body.homepage-refresh .video-modal .modal-content {
         padding-bottom: 40px !important;
     }
 
-    /* Footer Bottom Optimization - Balanced Space v26 */
+    /* Footer Bottom Optimization - Extra Breathing Room v27 */
     footer .flex.flex-wrap.justify-between.items-center {
         flex-direction: column !important;
-        gap: 30px !important;
+        gap: 40px !important;
         text-align: center !important;
-        padding-top: 40px !important;
-        padding-bottom: 40px !important;
+        padding-top: 60px !important;
+        padding-bottom: 60px !important;
     }
 
     footer .flex.flex-wrap.justify-between.items-center .flex.gap-4 {
         flex-direction: column !important;
-        gap: 15px !important;
+        gap: 20px !important;
         width: 100% !important;
         align-items: center !important;
-        margin-top: 10px !important;
+        margin-top: 15px !important;
     }
 
     .admin-secret {
@@ -7254,7 +7254,7 @@ body.homepage-refresh .video-modal .modal-content {
     }
 
     footer .flex.flex-wrap.justify-between.items-center p {
-        margin-bottom: 8px !important;
+        margin-bottom: 12px !important;
         font-size: 0.95rem !important;
         opacity: 0.8;
     }
