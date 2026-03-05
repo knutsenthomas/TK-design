@@ -1,24 +1,160 @@
 <!DOCTYPE html>
-<html lang="no">
+<html lang="no" prefix="og: https://ogp.me/ns#">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TK-design | Profesjonell webdesign</title>
-    <meta name="description" content="">
-    <meta name="keywords" content="">
+
+    <!-- ===================== SEO CORE ===================== -->
+    <title>TK-design | Profesjonell webdesign og nettside i Norge</title>
+    <meta name="description"
+        content="TK-design lager profesjonelle nettsider, webdesign og digitale løsninger for bedrifter i Norge. Fra idé til lansering – skreddersydd, synlig og effektivt. Ta kontakt i dag!">
+    <meta name="keywords"
+        content="webdesign norge, nettside design, lage nettside, webbyrå norge, profesjonell nettside, webdesigner norge, nettside pris, seo norge, tk-design, nettside bedrift, responsiv nettside">
+    <meta name="author" content="Thomas Knutsen – TK-design">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="theme-color" content="#1B4965">
+    <link rel="canonical" href="https://tk-design.no/">
+
+    <!-- ===================== HREFLANG ===================== -->
+    <link rel="alternate" hreflang="no" href="https://tk-design.no/">
+    <link rel="alternate" hreflang="en" href="https://tk-design.no/">
+    <link rel="alternate" hreflang="x-default" href="https://tk-design.no/">
+
+    <!-- ===================== OPEN GRAPH ===================== -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tk-design.no/">
+    <meta property="og:site_name" content="TK-design">
+    <meta property="og:title" content="TK-design | Profesjonell webdesign og nettside i Norge">
+    <meta property="og:description"
+        content="Vi bygger din digitale identitet med skreddersydd webdesign, SEO og SoMe-strategi. Fra idé til lansering – enkelt, profesjonelt og synlig.">
+    <meta property="og:image" content="https://tk-design.no/img/logo/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="TK-design – Profesjonell webdesign i Norge">
+    <meta property="og:locale" content="nb_NO">
+
+    <!-- ===================== TWITTER CARD ===================== -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="TK-design | Profesjonell webdesign i Norge">
+    <meta name="twitter:description"
+        content="Vi bygger din digitale identitet med skreddersydd webdesign, SEO og SoMe-strategi.">
+    <meta name="twitter:image" content="https://tk-design.no/img/logo/og-image.png">
+
+    <!-- ===================== JSON-LD STRUKTURERTE DATA (GEO) ===================== -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://tk-design.no/#website",
+          "url": "https://tk-design.no/",
+          "name": "TK-design",
+          "description": "Profesjonell webdesign og digitale løsninger for bedrifter i Norge",
+          "inLanguage": ["nb-NO", "en"],
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://tk-design.no/blog?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "LocalBusiness",
+          "@id": "https://tk-design.no/#business",
+          "name": "TK-design",
+          "legalName": "TK-design",
+          "url": "https://tk-design.no/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://tk-design.no/img/logo/d.png",
+            "width": 200,
+            "height": 200
+          },
+          "image": "https://tk-design.no/img/logo/og-image.png",
+          "description": "TK-design tilbyr profesjonell webdesign, nettside-utvikling, SEO og SoMe-strategi for bedrifter i hele Norge.",
+          "telephone": "+4793094615",
+          "email": "thomas@tk-design.no",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "NO",
+            "addressRegion": "Agder"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "58.0294",
+            "longitude": "7.4602"
+          },
+          "areaServed": {
+            "@type": "Country",
+            "name": "Norway"
+          },
+          "priceRange": "$$",
+          "openingHours": "Mo-Fr 08:00-17:00",
+          "sameAs": [
+            "https://www.facebook.com/profile.php?id=61574614704737",
+            "https://www.instagram.com/tkdesign777"
+          ],
+          "serviceType": ["Webdesign", "Nettside-utvikling", "SEO", "SoMe-strategi"]
+        },
+        {
+          "@type": "Person",
+          "@id": "https://tk-design.no/#person",
+          "name": "Thomas Knutsen",
+          "url": "https://tk-design.no/",
+          "jobTitle": "Webdesigner og digitalt strateg",
+          "worksFor": {"@id": "https://tk-design.no/#business"},
+          "email": "thomas@tk-design.no",
+          "telephone": "+4793094615",
+          "sameAs": [
+            "https://www.instagram.com/tkdesign777"
+          ]
+        },
+        {
+          "@type": "Service",
+          "@id": "https://tk-design.no/#services",
+          "name": "Webdesign og nettside-utvikling",
+          "provider": {"@id": "https://tk-design.no/#business"},
+          "areaServed": {"@type": "Country", "name": "Norway"},
+          "description": "Skreddersydd webdesign og profesjonelle nettsider for norske bedrifter. Vi lager moderne, raske og mobilevennlige nettsider.",
+          "offers": [
+            {
+              "@type": "Offer",
+              "name": "Profesjonell nettside",
+              "description": "Skreddersydd nettside med moderne design og SEO-optimalisering"
+            },
+            {
+              "@type": "Offer",
+              "name": "SEO-optimalisering",
+              "description": "Få din bedrift øverst i Google-søk i Norge"
+            },
+            {
+              "@type": "Offer",
+              "name": "SoMe-strategi",
+              "description": "Strategisk markedsføring på sosiale medier"
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+
+    <!-- ===================== FONTER & RESSURSER ===================== -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=43">
+    <link rel="stylesheet" href="style.css?v=45">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- AOS Animation -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <!-- Custom Dynamic Styles -->
-    <link rel="stylesheet" href="admin/custom-style.css?v=43">
+    <link rel="stylesheet" href="admin/custom-style.css?v=45">
     <link rel="icon" type="image/png" href="img/logo/d.png">
 </head>
 

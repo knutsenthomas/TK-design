@@ -1312,6 +1312,19 @@ app.get('/admin/index.html', (req, res) => res.redirect(301, '/admin/'));
 app.get('/admin/', (req, res) => res.sendFile(path.join(__dirname, 'admin', 'index.html')));
 app.get('/admin', (req, res) => res.redirect(301, '/admin/'));
 
+// SEO: Serve sitemap and robots.txt with correct content-type
+app.get('/sitemap.xml', (req, res) => {
+    res.setHeader('Content-Type', 'application/xml');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.sendFile(path.join(__dirname, 'sitemap.xml'));
+});
+
+app.get('/robots.txt', (req, res) => {
+    res.setHeader('Content-Type', 'text/plain');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.sendFile(path.join(__dirname, 'robots.txt'));
+});
+
 // Static Files (as fallback)
 app.use(express.static(path.join(__dirname)));
 

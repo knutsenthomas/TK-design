@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Ikke indekser admin-panelet
+Disallow: /admin/
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://tk-design.no/sitemap.xml

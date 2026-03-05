@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- Forside -->
+  <url>
+    <loc>https://tk-design.no/</loc>
+    <lastmod>2026-03-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="no" href="https://tk-design.no/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tk-design.no/"/>
+  </url>
+
+  <!-- Blogg -->
+  <url>
+    <loc>https://tk-design.no/blog</loc>
+    <lastmod>2026-03-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Kontakt -->
+  <url>
+    <loc>https://tk-design.no/contact</loc>
+    <lastmod>2026-03-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Blogginnlegg (detalj) -->
+  <url>
+    <loc>https://tk-design.no/blog-details</loc>
+    <lastmod>2026-03-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Prosjektdetaljer -->
+  <url>
+    <loc>https://tk-design.no/project-details</loc>
+    <lastmod>2026-03-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Tjenestedetaljer -->
+  <url>
+    <loc>https://tk-design.no/service-details</loc>
+    <lastmod>2026-03-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Personvern -->
+  <url>
+    <loc>https://tk-design.no/privacy</loc>
+    <lastmod>2026-03-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- Tilgjengelighet -->
+  <url>
+    <loc>https://tk-design.no/accessibility</loc>
+    <lastmod>2026-03-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+</urlset>
