@@ -7229,21 +7229,21 @@ body.homepage-refresh .video-modal .modal-content {
         padding-bottom: 40px !important;
     }
 
-    /* Footer Bottom Optimization - Extra Breathing Room v27 */
+    /* Footer Bottom Optimization - Fine-tuned Balance v28 */
     footer .flex.flex-wrap.justify-between.items-center {
         flex-direction: column !important;
-        gap: 40px !important;
+        gap: 25px !important;
         text-align: center !important;
-        padding-top: 60px !important;
-        padding-bottom: 60px !important;
+        padding-top: 40px !important;
+        padding-bottom: 40px !important;
     }
 
     footer .flex.flex-wrap.justify-between.items-center .flex.gap-4 {
         flex-direction: column !important;
-        gap: 20px !important;
+        gap: 12px !important;
         width: 100% !important;
         align-items: center !important;
-        margin-top: 15px !important;
+        margin-top: 8px !important;
     }
 
     .admin-secret {
@@ -7254,9 +7254,10 @@ body.homepage-refresh .video-modal .modal-content {
     }
 
     footer .flex.flex-wrap.justify-between.items-center p {
-        margin-bottom: 12px !important;
+        margin-bottom: 5px !important;
         font-size: 0.95rem !important;
         opacity: 0.8;
+        word-spacing: 2px !important;
     }
 
     /* Blog Header Mobile Optimization */
