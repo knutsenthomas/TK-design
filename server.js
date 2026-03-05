@@ -1018,7 +1018,9 @@ app.get(['/', '/index.html', '/blog.html', '/project-details.html', '/blog-detai
     }
 
     // Construct Final Title
-    const finalTitle = title ? `${title} ${globalSeo.separator || '|'} ${globalSeo.siteTitle || ''}` : globalSeo.siteTitle;
+    const siteTitleRaw = (globalSeo.siteTitle || '').trim();
+    const siteTitle = siteTitleRaw === 'TK Design Studio' ? 'TK-design' : siteTitleRaw;
+    const finalTitle = title ? `${title} ${globalSeo.separator || '|'} ${siteTitle}` : siteTitle;
 
     fs.readFile(path.join(__dirname, reqFile), 'utf8', (err, html) => {
         if (err) return res.status(404).send('Page not found');
