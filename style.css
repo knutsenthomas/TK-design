@@ -512,7 +512,11 @@ body.project-page-refresh .project-grid-view {
 
     body.project-page-refresh .project-grid-view {
         order: 2;
-        align-self: center;
+        margin: 20px auto 10px !important;
+        /* Midtstilt med margin */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
 }
 
@@ -535,6 +539,10 @@ body.project-page-refresh .project-grid-view {
     body.project-page-refresh .project-page-secondary,
     body.project-page-refresh .project-grid-view {
         width: 100%;
+        max-width: 320px !important;
+        /* Begrens bredden for å beholde knapp-følelsen */
+        margin-left: auto !important;
+        margin-right: auto !important;
     }
 
     body.project-page-refresh .project-overview-grid {
