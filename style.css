@@ -2363,7 +2363,11 @@ body.legal-page-refresh .legal-note-card .primary-cta {
     height: 28px !important;
     min-width: 46px !important;
     min-height: 28px !important;
-    padding: 0;
+    max-width: 46px !important;
+    max-height: 28px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
     border: none;
     border-radius: 999px;
     background: #d7dde5;
@@ -2382,11 +2386,18 @@ body.legal-page-refresh .legal-note-card .primary-cta {
 
 #cookie-consent-banner .cookie-toggle-knob {
     position: absolute;
-    top: 50%;
-    left: 4px;
-    transform: translateY(-50%);
-    width: 20px;
-    height: 20px;
+    top: 50% !important;
+    left: 4px !important;
+    transform: translateY(-50%) !important;
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+    min-height: 20px !important;
+    max-width: 20px !important;
+    max-height: 20px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
     border-radius: 50%;
     background: #fff;
     box-shadow: 0 2px 6px rgba(17, 38, 60, 0.14);
@@ -2394,7 +2405,7 @@ body.legal-page-refresh .legal-note-card .primary-cta {
 }
 
 #cookie-consent-banner .cookie-toggle[data-active="true"] .cookie-toggle-knob {
-    transform: translate(18px, -50%);
+    transform: translate(18px, -50%) !important;
 }
 
 #cookie-consent-banner .cookie-actions {
