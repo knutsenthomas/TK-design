@@ -66,7 +66,7 @@ function getFirebaseConfig() {
         projectId,
         clientEmail: process.env.TK_FIREBASE_CLIENT_EMAIL || '',
         privateKey,
-        databaseId: process.env.TK_FIREBASE_DATABASE_ID || '(default)',
+        databaseId: process.env.TK_FIREBASE_DATABASE_ID || projectId,
         collection: process.env.TK_FIREBASE_CONTACT_COLLECTION || 'contactMessages'
     };
 }
