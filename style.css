@@ -5539,6 +5539,13 @@ body.homepage-refresh .award-link {
     gap: 10px;
     color: var(--refresh-accent);
     font-weight: 700;
+    white-space: nowrap;
+}
+
+body.homepage-refresh .awards-title-text {
+    font-size: clamp(24px, 6vw, 40px);
+    line-height: 1.2;
+    display: inline-block;
 }
 
 body.homepage-refresh .award-link:hover {
