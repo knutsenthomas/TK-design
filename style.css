@@ -7087,8 +7087,20 @@ body.homepage-refresh .video-modal .modal-content {
     body.homepage-refresh .tab-buttons {
         display: flex;
         width: 100%;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         justify-content: center;
+        overflow-x: auto;
+    }
+
+    body.homepage-refresh .tab-btn {
+        display: inline-block !important;
+        border: 0 !important;
+        border-radius: 14px !important;
+        padding: 16px 18px 8px !important;
+        height: auto !important;
+        box-sizing: border-box !important;
+        text-align: center;
+        flex: 0 0 auto;
     }
 
     body.homepage-refresh .awards-table td {
