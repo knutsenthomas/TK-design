@@ -511,12 +511,14 @@ body.project-page-refresh .project-grid-view {
     }
 
     body.project-page-refresh .project-grid-view {
-        order: 2;
-        margin: 20px auto 10px !important;
-        /* Midtstilt med margin */
+        margin: 15px auto !important;
+        /* Sentrert mellom lenkene */
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
+        width: 72px !important;
+        /* Beholder kvadratisk form */
+        height: 72px !important;
     }
 }
 
@@ -536,13 +538,8 @@ body.project-page-refresh .project-grid-view {
         align-items: stretch;
     }
 
-    body.project-page-refresh .project-page-secondary,
-    body.project-page-refresh .project-grid-view {
+    body.project-page-refresh .project-page-secondary {
         width: 100%;
-        max-width: 320px !important;
-        /* Begrens bredden for å beholde knapp-følelsen */
-        margin-left: auto !important;
-        margin-right: auto !important;
     }
 
     body.project-page-refresh .project-overview-grid {
