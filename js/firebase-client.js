@@ -87,34 +87,7 @@
         }
     }
 
-    function shouldUseCurrentHostAsAuthDomain(baseConfig) {
-        const host = (window.location.hostname || '').trim().toLowerCase();
-        const configuredAuthDomain = String(baseConfig.authDomain || '').trim().toLowerCase();
-
-        if (!host) {
-            return false;
-        }
-
-        if (host === 'localhost' || host === '127.0.0.1') {
-            return false;
-        }
-
-        if (!configuredAuthDomain) {
-            return true;
-        }
-
-        return host !== configuredAuthDomain;
-    }
-
-    let config = window.__TK_FIREBASE_CONFIG__ || {};
-
-    if (shouldUseCurrentHostAsAuthDomain(config)) {
-        config = {
-            ...config,
-            authDomain: window.location.hostname
-        };
-        window.__TK_FIREBASE_CONFIG__ = config;
-    }
+    const config = window.__TK_FIREBASE_CONFIG__ || {};
 
     const requiredKeys = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'appId'];
     const missingKeys = requiredKeys.filter((key) => !config[key]);

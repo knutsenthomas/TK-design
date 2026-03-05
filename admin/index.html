@@ -415,80 +415,60 @@
                     <h1 data-i18n="nav_analytics">Statistikk</h1>
                     <div class="header-actions">
                         <a href="https://analytics.google.com/analytics/web/#/p000000000/reports/intelligenthome"
-                            target="_blank" class="action-btn" title="Åpne Google Analytics"
-                            style="text-decoration:none;">
+                            target="_blank" class="action-btn analytics-header-link" title="Åpne Google Analytics">
                             <i class="fas fa-external-link-alt"></i>
                         </a>
                     </div>
                 </header>
 
-                <div class="stats-grid"
-                    style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px;">
-                    <div class="card stat-card"
-                        style="padding:24px;display:flex;flex-direction:column;gap:8px;background:#fff;border:1px solid #e8ecf0;">
-                        <div style="display:flex;align-items:center;gap:10px;color:var(--clr-primary);">
-                            <i class="fas fa-users" style="font-size:1.4rem;"></i>
-                            <span
-                                style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#8a9bb0;">Brukere
-                                siste 7 dager</span>
+                <div class="analytics-cards-grid">
+                    <div class="card stat-card analytics-metric-card">
+                        <div class="analytics-metric-head">
+                            <i class="fas fa-users analytics-metric-icon"></i>
+                            <span class="analytics-metric-label">Brukere siste 7 dager</span>
                         </div>
-                        <div id="ga-users" style="font-size:2.2rem;font-weight:800;color:#1B4965;">—</div>
+                        <div id="ga-users" class="analytics-metric-value">—</div>
                     </div>
-                    <div class="card stat-card"
-                        style="padding:24px;display:flex;flex-direction:column;gap:8px;background:#fff;border:1px solid #e8ecf0;">
-                        <div style="display:flex;align-items:center;gap:10px;">
-                            <i class="fas fa-eye" style="font-size:1.4rem;color:#1B4965;"></i>
-                            <span
-                                style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#8a9bb0;">Sidevisninger
-                                siste 7 dager</span>
+                    <div class="card stat-card analytics-metric-card">
+                        <div class="analytics-metric-head">
+                            <i class="fas fa-eye analytics-metric-icon"></i>
+                            <span class="analytics-metric-label">Sidevisninger siste 7 dager</span>
                         </div>
-                        <div id="ga-pageviews" style="font-size:2.2rem;font-weight:800;color:#1B4965;">—</div>
+                        <div id="ga-pageviews" class="analytics-metric-value">—</div>
                     </div>
-                    <div class="card stat-card"
-                        style="padding:24px;display:flex;flex-direction:column;gap:8px;background:#fff;border:1px solid #e8ecf0;">
-                        <div style="display:flex;align-items:center;gap:10px;">
-                            <i class="fas fa-clock" style="font-size:1.4rem;color:#1B4965;"></i>
-                            <span
-                                style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#8a9bb0;">Aktive
-                                brukere nå</span>
+                    <div class="card stat-card analytics-metric-card">
+                        <div class="analytics-metric-head">
+                            <i class="fas fa-clock analytics-metric-icon"></i>
+                            <span class="analytics-metric-label">Aktive brukere nå</span>
                         </div>
-                        <div id="ga-realtime" style="font-size:2.2rem;font-weight:800;color:#1B4965;">—</div>
+                        <div id="ga-realtime" class="analytics-metric-value">—</div>
                     </div>
-                    <div class="card stat-card"
-                        style="padding:24px;display:flex;flex-direction:column;gap:8px;background:#fff;border:1px solid #e8ecf0;">
-                        <div style="display:flex;align-items:center;gap:10px;">
-                            <i class="fas fa-search" style="font-size:1.4rem;color:#1B4965;"></i>
-                            <span
-                                style="font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#8a9bb0;">Google
-                                Search Klikk (28d)</span>
+                    <div class="card stat-card analytics-metric-card">
+                        <div class="analytics-metric-head">
+                            <i class="fas fa-search analytics-metric-icon"></i>
+                            <span class="analytics-metric-label">Google Search Klikk (28d)</span>
                         </div>
-                        <div id="ga-search-clicks" style="font-size:2.2rem;font-weight:800;color:#1B4965;">9
-                        </div>
+                        <div id="ga-search-clicks" class="analytics-metric-value">9</div>
                     </div>
                 </div>
 
-                <div class="card"
-                    style="padding:32px;text-align:center;background:linear-gradient(135deg,#1B4965 0%,#0d2b3e 100%);color:#fff;border-radius:16px;">
-                    <i class="fas fa-chart-line" style="font-size:2.5rem;margin-bottom:16px;opacity:0.9;"></i>
-                    <h2 style="color:#fff;margin-bottom:8px;">Google Analytics – Full rapport</h2>
-                    <p style="opacity:0.8;margin-bottom:24px;max-width:480px;margin-left:auto;margin-right:auto;">
+                <div class="card analytics-hero-card">
+                    <i class="fas fa-chart-line analytics-hero-icon"></i>
+                    <h2 class="analytics-hero-title">Google Analytics – Full rapport</h2>
+                    <p class="analytics-hero-text">
                         Se detaljerte rapporter om trafikk, brukeradferd, konverteringer og søkeord direkte i Google
                         Analytics.
                     </p>
                     <a href="https://analytics.google.com" target="_blank" rel="noopener"
-                        style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#1B4965;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;transition:opacity .2s;"
-                        onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+                        class="analytics-hero-link">
                         <i class="fas fa-external-link-alt"></i> Åpne Google Analytics
                     </a>
                 </div>
 
-                <div class="card" style="padding:24px;margin-top:16px;">
-                    <h3 style="margin-bottom:16px;"><i class="fas fa-info-circle"
-                            style="color:var(--clr-primary);margin-right:8px;"></i>GA4 Measurement ID</h3>
-                    <p
-                        style="font-family:monospace;font-size:1.1rem;background:var(--clr-bg);padding:12px 16px;border-radius:8px;display:inline-block;font-weight:600;">
-                        G-5RZVDEBBYM</p>
-                    <p style="margin-top:12px;color:var(--clr-text-light);font-size:0.88rem;">
+                <div class="card analytics-meta-card">
+                    <h3 class="analytics-meta-title"><i class="fas fa-info-circle"></i>GA4 Measurement ID</h3>
+                    <p class="analytics-meta-id">G-5RZVDEBBYM</p>
+                    <p class="analytics-meta-note">
                         Sporskoden er aktiv på alle sider. Live-data oppdateres av Google Analytics
                         og kan ta opptil 24 timer å reflektere nye besøk.
                     </p>
