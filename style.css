@@ -5436,18 +5436,21 @@ body.homepage-refresh .tab-buttons {
 }
 
 body.homepage-refresh .tab-btn {
+    -webkit-appearance: none;
+    appearance: none;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     border: 0 !important;
     border-radius: 14px !important;
-    padding: 0 24px !important;
+    padding: 14px 24px !important;
+    margin: 0 !important;
     background: transparent;
     color: #6a7a90;
     font-weight: 800;
     line-height: normal !important;
     letter-spacing: 0.05em;
-    height: 44px !important;
+    height: auto !important;
     box-sizing: border-box !important;
     text-align: center;
 }
@@ -7095,13 +7098,16 @@ body.homepage-refresh .video-modal .modal-content {
     }
 
     body.homepage-refresh .tab-btn {
+        -webkit-appearance: none;
+        appearance: none;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
         border: 0 !important;
         border-radius: 14px !important;
-        padding: 0 18px !important;
-        height: 44px !important;
+        padding: 14px 18px !important;
+        margin: 0 !important;
+        height: auto !important;
         box-sizing: border-box !important;
         text-align: center;
         flex: 0 0 auto;
