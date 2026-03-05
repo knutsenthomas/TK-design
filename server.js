@@ -1279,6 +1279,11 @@ app.get('/js/firebase-config.js', async (req, res) => {
     }
 });
 
+// Clean URLs – redirect /admin/index.html → /admin/
+app.get('/admin/index.html', (req, res) => res.redirect(301, '/admin/'));
+app.get('/admin/', (req, res) => res.sendFile(path.join(__dirname, 'admin', 'index.html')));
+app.get('/admin', (req, res) => res.redirect(301, '/admin/'));
+
 // Static Files (as fallback)
 app.use(express.static(path.join(__dirname)));
 
