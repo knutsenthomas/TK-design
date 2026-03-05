@@ -5441,11 +5441,11 @@ body.homepage-refresh .tab-btn {
     justify-content: center !important;
     border: 0 !important;
     border-radius: 14px !important;
-    padding: 14px 22px 12px !important;
+    padding: 0 24px !important;
     background: transparent;
     color: #6a7a90;
     font-weight: 800;
-    line-height: 1 !important;
+    line-height: normal !important;
     letter-spacing: 0.05em;
     height: 44px !important;
     box-sizing: border-box !important;
@@ -7100,12 +7100,13 @@ body.homepage-refresh .video-modal .modal-content {
         justify-content: center !important;
         border: 0 !important;
         border-radius: 14px !important;
-        padding: 14px 18px 12px !important;
+        padding: 0 18px !important;
         height: 44px !important;
         box-sizing: border-box !important;
         text-align: center;
         flex: 0 0 auto;
         font-weight: 800 !important;
+        line-height: normal !important;
     }
 
     body.homepage-refresh .awards-table td {
