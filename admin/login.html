@@ -1,12 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="no">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login | TK Design</title>
-    <link rel="stylesheet" href="style.css?v=43">
-    <link rel="stylesheet" href="../style.css?v=43">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/png" href="../img/logo/d.png">
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -14,34 +18,160 @@
     <script src="../js/firebase-config.js"></script>
     <script src="../js/firebase-client.js"></script>
     <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: 'Manrope', sans-serif;
             min-height: 100vh;
-            background-color: #121212;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: #f4f6f9;
+        }
+
+        /* LEFT PANEL */
+        .login-left {
+            background: linear-gradient(145deg, #1B4965 0%, #0d2b3e 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-left::before {
+            content: '';
+            position: absolute;
+            width: 420px;
+            height: 420px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.04);
+            top: -80px;
+            right: -100px;
+        }
+
+        .login-left::after {
+            content: '';
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.04);
+            bottom: -60px;
+            left: -60px;
+        }
+
+        .login-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-brand img {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+        }
+
+        .login-brand-name {
+            font-size: 1.1rem;
+            font-weight: 700;
             color: #fff;
-            font-family: 'Inter', sans-serif;
-            /* Assuming Inter or standard sans */
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
         }
 
-        .login-container {
-            background: #1a1a1a;
-            padding: 40px;
-            border-radius: 10px;
+        .login-left-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-left-tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 6px 14px;
+            border-radius: 100px;
+            margin-bottom: 24px;
+        }
+
+        .login-left-title {
+            font-size: clamp(1.8rem, 3vw, 2.8rem);
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.15;
+            margin-bottom: 20px;
+        }
+
+        .login-left-title span {
+            opacity: 0.5;
+        }
+
+        .login-left-desc {
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 1rem;
+            line-height: 1.7;
+            max-width: 340px;
+        }
+
+        .login-left-footer {
+            position: relative;
+            z-index: 1;
+            color: rgba(255, 255, 255, 0.35);
+            font-size: 0.78rem;
+        }
+
+        /* RIGHT PANEL */
+        .login-right {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 40px;
+        }
+
+        .login-card {
             width: 100%;
-            max-width: 400px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            max-width: 420px;
         }
 
-        .login-header {
-            text-align: center;
-            margin-bottom: 30px;
+        .login-card-header {
+            margin-bottom: 40px;
         }
 
-        .login-header h2 {
-            font-size: 24px;
+        .login-card-eyebrow {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: #1B4965;
             margin-bottom: 10px;
+        }
+
+        .login-card-title {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: #0d1f2d;
+            margin-bottom: 8px;
+        }
+
+        .login-card-subtitle {
+            color: #6b7a8d;
+            font-size: 0.9rem;
+            line-height: 1.6;
         }
 
         .form-group {
@@ -50,83 +180,198 @@
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
-            color: #ccc;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 7px;
         }
 
         .form-group input {
             width: 100%;
-            padding: 12px;
-            background: #2a2a2a;
-            border: 1px solid #333;
-            border-radius: 5px;
-            color: #fff;
-            font-size: 16px;
+            padding: 13px 16px;
+            background: #fff;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            color: #0d1f2d;
+            font-size: 0.95rem;
+            font-family: 'Manrope', sans-serif;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input::placeholder {
+            color: #b0bec5;
         }
 
         .form-group input:focus {
             outline: none;
-            border-color: var(--clr-base, #1B4965);
+            border-color: #1B4965;
+            box-shadow: 0 0 0 3px rgba(27, 73, 101, 0.1);
         }
 
         .btn-login {
             width: 100%;
-            padding: 12px;
-            background: var(--clr-base, #1B4965);
+            padding: 14px;
+            background: #1B4965;
             color: #fff;
             border: none;
-            border-radius: 5px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            font-family: 'Manrope', sans-serif;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: background 0.2s, transform 0.15s;
+            letter-spacing: 0.02em;
         }
 
         .btn-login:hover {
-            opacity: 0.9;
+            background: #163d54;
+        }
+
+        .btn-login:active {
+            transform: scale(0.98);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .login-divider {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 22px 0;
+        }
+
+        .login-divider::before,
+        .login-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        .login-divider span {
+            color: #9ca3af;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .btn-google {
+            width: 100%;
+            padding: 13px 16px;
+            background: #fff;
+            color: #374151;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: 'Manrope', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+
+        .btn-google:hover {
+            border-color: #1B4965;
+            background: #f8fafc;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .btn-google:active {
+            transform: scale(0.98);
         }
 
         #error-msg {
-            color: #ff4d4d;
-            margin-top: 15px;
-            text-align: center;
             display: none;
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: #fff1f1;
+            border: 1px solid #fcd4d4;
+            border-radius: 8px;
+            color: #b91c1c;
+            font-size: 0.83rem;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            body {
+                grid-template-columns: 1fr;
+            }
+
+            .login-left {
+                display: none;
+            }
+
+            .login-right {
+                padding: 40px 24px;
+            }
         }
     </style>
-    <link rel="icon" type="image/png" href="../img/logo/d.png">
 </head>
 
 <body>
 
-    <div class="login-container">
-        <div class="login-header">
-            <h2>Admin Login</h2>
-            <p style="color: #888;">Enter your credentials to access the dashboard</p>
+    <!-- LEFT: Brand panel -->
+    <div class="login-left">
+        <a href="/" class="login-brand">
+            <img src="../img/logo/d.png" alt="TK-design logo">
+            <span class="login-brand-name">TK-design</span>
+        </a>
+
+        <div class="login-left-content">
+            <span class="login-left-tag">Admin Studio</span>
+            <h1 class="login-left-title">
+                Din digitale
+                <br><span>kontrollpanel.</span>
+            </h1>
+            <p class="login-left-desc">
+                Administrer innhold, bilder, blogginnlegg og statistikk for tk-design.no fra én plass.
+            </p>
         </div>
-        <form id="login-form">
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" required placeholder="admin@example.com">
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" required placeholder="********">
-            </div>
-            <button type="submit" class="btn-login" id="login-btn">Login</button>
 
-            <div style="display: flex; align-items: center; margin: 20px 0;">
-                <div style="flex: 1; height: 1px; background: #333;"></div>
-                <span style="padding: 0 10px; color: #666; font-size: 14px;">OR</span>
-                <div style="flex: 1; height: 1px; background: #333;"></div>
+        <p class="login-left-footer">© 2026 TK-design. Kun for autorisert bruk.</p>
+    </div>
+
+    <!-- RIGHT: Login form -->
+    <div class="login-right">
+        <div class="login-card">
+            <div class="login-card-header">
+                <p class="login-card-eyebrow">Admin-tilgang</p>
+                <h2 class="login-card-title">Logg inn</h2>
+                <p class="login-card-subtitle">Skriv inn e-post og passord for å komme inn i dashbordet.</p>
             </div>
 
-            <button type="button" class="btn-google" id="google-login-btn">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"
-                    style="width: 18px; margin-right: 10px;">
-                Sign in with Google
-            </button>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">E-postadresse</label>
+                    <input type="email" id="email" required placeholder="thomas@tk-design.no" autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="password">Passord</label>
+                    <input type="password" id="password" required placeholder="••••••••"
+                        autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn-login" id="login-btn">Logg inn</button>
 
-            <p id="error-msg"></p>
-        </form>
+                <div class="login-divider"><span>eller</span></div>
+
+                <button type="button" class="btn-google" id="google-login-btn">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"
+                        style="width:18px;">
+                    Fortsett med Google
+                </button>
+
+                <p id="error-msg"></p>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -137,52 +382,28 @@
 
         function getFriendlyAuthError(error) {
             const code = error && error.code ? error.code : '';
-
             if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
-                return 'Feil e-post eller passord. Sjekk at brukeren finnes i Firebase Authentication > Users, og at passordet er riktig.';
+                return 'Feil e-post eller passord. Sjekk at brukeren finnes i Firebase Authentication > Users.';
             }
-
-            if (code === 'auth/too-many-requests') {
-                return 'For mange forsøk på innlogging. Vent litt og prøv igjen.';
-            }
-
-            if (code === 'auth/network-request-failed') {
-                return 'Klarte ikke å kontakte Firebase. Sjekk nettverk og prøv igjen.';
-            }
-
-            if (code === 'auth/popup-closed-by-user') {
-                return 'Google-vinduet ble lukket før innloggingen ble fullført.';
-            }
-
-            if (code === 'auth/popup-blocked') {
-                return 'Nettleseren blokkerte Google-innloggingen. Tillat popup-vinduer og prøv igjen.';
-            }
-
-            if (code === 'auth/unauthorized-domain') {
-                return 'Dette domenet er ikke tillatt i Firebase ennå. Legg til localhost i Authorized domains.';
-            }
-
+            if (code === 'auth/too-many-requests') return 'For mange forsøk. Vent litt og prøv igjen.';
+            if (code === 'auth/network-request-failed') return 'Klarte ikke å kontakte Firebase. Sjekk nettverk.';
+            if (code === 'auth/popup-closed-by-user') return 'Google-vinduet ble lukket. Prøv igjen.';
+            if (code === 'auth/popup-blocked') return 'Nettleseren blokkerte Google-innloggingen. Tillat popup-vinduer.';
+            if (code === 'auth/unauthorized-domain') return 'Dette domenet er ikke tillatt i Firebase. Legg til i Authorized domains.';
             return error.message || 'Innlogging feilet.';
         }
 
-        // Google Login Handler
         googleBtn.addEventListener('click', async () => {
             errorMsg.style.display = 'none';
             googleBtn.disabled = true;
             try {
                 if (!window.adminAuthClient) throw new Error('Firebase client not initialized.');
-
                 const { data, error } = await window.adminAuthClient.auth.signInWithOAuth({
                     provider: 'google',
-                    options: {
-                        redirectTo: window.location.origin + '/admin/index.html'
-                    }
+                    options: { redirectTo: window.location.origin + '/admin/index.html' }
                 });
-
                 if (error) throw error;
-                if (!data || !data.session) {
-                    throw new Error('Ingen gyldig innloggingssesjon ble opprettet.');
-                }
+                if (!data || !data.session) throw new Error('Ingen gyldig innloggingssesjon ble opprettet.');
             } catch (error) {
                 console.error('Google Login Error:', error);
                 errorMsg.textContent = getFriendlyAuthError(error);
@@ -194,47 +415,32 @@
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             errorMsg.style.display = 'none';
-            loginBtn.innerText = 'Logging in...';
+            loginBtn.textContent = 'Logger inn…';
             loginBtn.disabled = true;
 
             const email = document.getElementById('email').value.trim().toLowerCase();
             const password = document.getElementById('password').value;
 
             try {
-                if (!window.adminAuthClient) {
-                    throw new Error('Firebase client not initialized.');
-                }
-
-                const { data, error } = await window.adminAuthClient.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-
+                if (!window.adminAuthClient) throw new Error('Firebase client not initialized.');
+                const { data, error } = await window.adminAuthClient.auth.signInWithPassword({ email, password });
                 if (error) throw error;
-                if (!data || !data.session) {
-                    throw new Error('Ingen gyldig innloggingssesjon ble opprettet.');
-                }
-
-                // Success
+                if (!data || !data.session) throw new Error('Ingen gyldig innloggingssesjon ble opprettet.');
                 window.location.href = 'index.html';
-
             } catch (error) {
                 console.error('Login Error:', error);
                 errorMsg.textContent = getFriendlyAuthError(error);
                 errorMsg.style.display = 'block';
             } finally {
-                loginBtn.innerText = 'Login';
+                loginBtn.textContent = 'Logg inn';
                 loginBtn.disabled = false;
             }
         });
 
-        // Check if already logged in
         (async function checkSession() {
             if (window.adminAuthClient) {
                 const { data } = await window.adminAuthClient.auth.getSession();
-                if (data.session) {
-                    window.location.href = 'index.html';
-                }
+                if (data.session) window.location.href = 'index.html';
             }
         })();
     </script>
