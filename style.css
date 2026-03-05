@@ -2361,6 +2361,8 @@ body.legal-page-refresh .legal-note-card .primary-cta {
     align-items: center;
     width: 46px;
     height: 28px;
+    min-width: 46px;
+    min-height: 28px;
     padding: 0;
     border: none;
     border-radius: 999px;
