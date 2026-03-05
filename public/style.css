@@ -4882,17 +4882,30 @@ body.homepage-refresh .banner-content h1 {
     line-height: 0.92;
     margin-top: 12px;
     color: var(--refresh-heading) !important;
+    word-break: normal;
+    overflow-wrap: normal;
+    hyphens: none;
+    -webkit-hyphens: none;
 }
 
 body.homepage-refresh .banner-content h1 span:first-child {
     color: #000 !important;
+    display: block;
+    white-space: nowrap;
 }
 
 body.homepage-refresh .designers {
     background: none;
     -webkit-background-clip: initial;
     background-clip: initial;
+    -webkit-text-stroke-width: 0;
     color: #000 !important;
+}
+
+body.homepage-refresh .designers::before {
+    content: none;
+    animation: none;
+    border-right: none;
 }
 
 body.homepage-refresh .banner-content .subtitle {

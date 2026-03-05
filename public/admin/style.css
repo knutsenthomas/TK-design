@@ -2130,6 +2130,22 @@ body.admin-dashboard-refresh .save-btn:hover {
     box-shadow: 0 18px 26px rgba(249, 115, 22, 0.26);
 }
 
+body.admin-dashboard-refresh .upload-area button,
+body.admin-dashboard-refresh .upload-area input[type="file"]::file-selector-button,
+body.admin-dashboard-refresh .upload-area input[type="file"]::-webkit-file-upload-button {
+    background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+    color: #fff;
+    border: none;
+    box-shadow: 0 14px 24px rgba(249, 115, 22, 0.2);
+}
+
+body.admin-dashboard-refresh .upload-area button:hover,
+body.admin-dashboard-refresh .upload-area input[type="file"]:hover::file-selector-button,
+body.admin-dashboard-refresh .upload-area input[type="file"]:hover::-webkit-file-upload-button {
+    box-shadow: 0 18px 26px rgba(249, 115, 22, 0.26);
+    transform: translateY(-1px);
+}
+
 body.admin-dashboard-refresh .secondary-action-btn {
     color: #9a3412;
     background: rgba(255, 247, 237, 0.95);

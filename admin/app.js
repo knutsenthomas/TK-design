@@ -1589,17 +1589,6 @@ function updateHeaderActions(section) {
 
     actionsContainer.innerHTML = '';
 
-    if (section === 'content' || section === 'style' || section === 'seo') {
-        const saveBtn = document.createElement('button');
-        saveBtn.className = 'header-action-btn primary';
-        saveBtn.innerHTML = '<i class="fas fa-save"></i> Lagre';
-        saveBtn.onclick = () => {
-            if (section === 'content') saveChanges();
-            else if (section === 'seo') saveSeo();
-        };
-        actionsContainer.appendChild(saveBtn);
-    }
-
     if (section === 'blog') {
         // Button moved to content area
     }
