@@ -55,7 +55,7 @@ function toBase64Url(input) {
 }
 
 function getFirebaseConfig() {
-    const privateKey = (process.env.TK_FIREBASE_PRIVATE_KEY || '').replace(/\\n/g, '\n');
+    const privateKey = (process.env.TK_FIREBASE_PRIVATE_KEY || '').replace(/\\n/g, '\n').replace(/^"|"$/g, '');
     const projectId = process.env.TK_FIREBASE_PROJECT_ID || 'tk-design-f43f6';
 
     return {
@@ -1140,15 +1140,12 @@ app.post('/api/contact', async (req, res) => {
         });
     } catch (error) {
         console.error('Contact form submission error:', error);
-        console.error('Error details:', {
-            message: error.message,
-            stack: error.stack,
-            name: error.name
-        });
+        console.error('Error details:', error.message);
         res.status(500).json({
             success: false,
             error: 'Kunne ikke sende kontaktskjemaet.',
-            details: error.message
+            details: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
         });
     }
 });
