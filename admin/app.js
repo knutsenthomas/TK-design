@@ -2275,67 +2275,74 @@ function buildFallbackSessionUser(firebaseUser) {
 }
 
 async function checkAuth() {
-    if (!window.adminAuthClient) {
-        console.error('Firebase client not initialized');
-        window.location.replace('login.html');
-        return null;
-    }
+    try {
+        if (!window.adminAuthClient) {
+            console.error('Firebase client not initialized');
+            window.location.replace('login.html');
+            return null;
+        }
 
-    const firstSessionResult = await withUiTimeout(
-        window.adminAuthClient.auth.getSession(),
-        12000,
-        { data: { session: null }, error: new Error('Session check timed out') }
-    );
-    let session = firstSessionResult?.data?.session || null;
-    let error = firstSessionResult?.error || null;
-    let fallbackUser = buildFallbackSessionUser(window.firebaseAuth?.currentUser);
-
-    if (!session && !fallbackUser) {
-        await withUiTimeout(
-            new Promise((resolve) => {
-                if (!window.firebaseAuth || typeof window.firebaseAuth.onAuthStateChanged !== 'function') {
-                    resolve(null);
-                    return;
-                }
-
-                const unsubscribe = window.firebaseAuth.onAuthStateChanged(
-                    (firebaseUser) => {
-                        unsubscribe();
-                        resolve(firebaseUser || null);
-                    },
-                    () => {
-                        unsubscribe();
-                        resolve(null);
-                    }
-                );
-            }),
-            6000,
-            null
-        );
-
-        const retrySessionResult = await withUiTimeout(
+        const firstSessionResult = await withUiTimeout(
             window.adminAuthClient.auth.getSession(),
-            6000,
-            { data: { session: null }, error: null }
+            12000,
+            { data: { session: null }, error: new Error('Session check timed out') }
         );
+        let session = firstSessionResult?.data?.session || null;
+        let error = firstSessionResult?.error || null;
+        let fallbackUser = buildFallbackSessionUser(window.firebaseAuth?.currentUser);
 
-        session = retrySessionResult?.data?.session || session;
-        error = session ? null : (retrySessionResult?.error || error);
-        fallbackUser = buildFallbackSessionUser(window.firebaseAuth?.currentUser) || fallbackUser;
-    }
+        if (!session && !fallbackUser) {
+            await withUiTimeout(
+                new Promise((resolve) => {
+                    if (!window.firebaseAuth || typeof window.firebaseAuth.onAuthStateChanged !== 'function') {
+                        resolve(null);
+                        return;
+                    }
 
-    if ((!session || error) && fallbackUser) {
-        currentUser = fallbackUser;
+                    let unsubscribe = function () { };
+                    unsubscribe = window.firebaseAuth.onAuthStateChanged(
+                        (firebaseUser) => {
+                            unsubscribe();
+                            resolve(firebaseUser || null);
+                        },
+                        () => {
+                            unsubscribe();
+                            resolve(null);
+                        }
+                    );
+                }),
+                6000,
+                null
+            );
+
+            const retrySessionResult = await withUiTimeout(
+                window.adminAuthClient.auth.getSession(),
+                6000,
+                { data: { session: null }, error: null }
+            );
+
+            session = retrySessionResult?.data?.session || session;
+            error = session ? null : (retrySessionResult?.error || error);
+            fallbackUser = buildFallbackSessionUser(window.firebaseAuth?.currentUser) || fallbackUser;
+        }
+
+        if ((!session || error) && fallbackUser) {
+            currentUser = fallbackUser;
+            return currentUser;
+        }
+
+        if (error || !session) {
+            window.location.replace('login.html');
+            return null;
+        }
+
+        currentUser = session.user;
         return currentUser;
-    }
-
-    if (error || !session) {
+    } catch (error) {
+        console.error('Auth check failed:', error);
         window.location.replace('login.html');
         return null;
     }
-
-    currentUser = session.user;
-    return currentUser;
 }
 
 function renderUserProfile(user) {
