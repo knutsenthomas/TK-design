@@ -2575,6 +2575,7 @@ img {
     font-family: var(--font-secondary);
     color: var(--clr-base);
     font-size: 30px;
+    margin: 0;
     display: flex;
     align-items: center;
     gap: 20px;
@@ -3109,7 +3110,8 @@ img {
     border-color: var(--clr-base);
 }
 
-.info-card h4 {
+.info-card h4,
+.info-card .info-card-label {
     color: var(--clr-base) !important;
     font-size: 14px;
     margin-bottom: 10px;
@@ -3669,7 +3671,8 @@ img {
     margin-bottom: 20px;
 }
 
-.client-info h4 {
+.client-info h4,
+.client-info h3 {
     color: var(--clr-base);
     font-size: 20px;
 }
@@ -5471,11 +5474,13 @@ body.homepage-refresh .info-card {
 }
 
 body.homepage-refresh .info-card h3,
-body.homepage-refresh .info-card h4 {
+body.homepage-refresh .info-card h4,
+body.homepage-refresh .info-card .info-card-label {
     color: var(--refresh-heading);
 }
 
-body.homepage-refresh .info-card h4 {
+body.homepage-refresh .info-card h4,
+body.homepage-refresh .info-card .info-card-label {
     margin-bottom: 10px;
     color: var(--refresh-accent);
     font-size: 0.95rem;
@@ -6479,7 +6484,8 @@ body.homepage-refresh .service-id {
     font-family: 'Space Grotesk', sans-serif;
 }
 
-body.homepage-refresh .service-content h5 {
+body.homepage-refresh .service-content h5,
+body.homepage-refresh .service-content .service-category {
     color: #718097 !important;
     font-size: 0.8rem;
     font-weight: 800;
@@ -6569,7 +6575,8 @@ body.homepage-refresh .testimonial-text {
     line-height: 1.7;
 }
 
-body.homepage-refresh .client-info h4 {
+body.homepage-refresh .client-info h4,
+body.homepage-refresh .client-info h3 {
     color: var(--refresh-heading);
 }
 
