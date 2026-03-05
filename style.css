@@ -4770,49 +4770,53 @@ body.homepage-refresh .mobile-nav {
     align-items: center;
     /* Midtstill innhold horisontalt */
     /* Unngå at lenkene strekkes ut til bunnen */
-    padding: 85px 24px 30px;
-    overflow: hidden;
-    /* Fjern all scrolling */
+    padding: 70px 24px 20px;
+    overflow-y: auto;
+    /* Tillat scrolling hvis innholdet er for stort */
     text-align: center;
+}
+
+/* Sørg for at headeren er sticky over menyen */
+body.mobile-menu-active .header {
+    z-index: 10001 !important;
 }
 
 body.homepage-refresh .mobile-nav ul {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    /* Superkompakt avstand */
-    margin: auto 0;
-    /* Vertikal midtstilling mellom topp og footer */
+    gap: 8px !important;
+    /* Mer kompakt avstand */
+    margin: 20px 0;
+    /* Fast avstand i stedet for auto */
     padding: 0;
     list-style: none;
 }
 
 body.homepage-refresh .mobile-nav li {
     margin: 0 !important;
-    /* Fjern gammel 32px margin */
     padding: 0;
 }
 
 body.homepage-refresh .mobile-nav a {
     color: var(--refresh-heading);
-    font-size: 1.4rem;
+    font-size: 1.35rem;
+    /* Litt mindre font */
     font-weight: 700;
-    padding: 8px 0 !important;
-    /* Minimal padding for trykkbarhet */
+    padding: 6px 0 !important;
+    /* Enda mer kompakt */
     display: block;
 }
 
 body.homepage-refresh .mobile-menu-footer {
     width: 100%;
-    margin-top: auto;
-    /* Skyv footeren helt til bunnen */
-    padding-top: 20px;
+    margin-top: 15px;
+    padding-top: 15px;
     border-top: 1px solid rgba(17, 38, 60, 0.08);
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* Midtstill footeren */
-    gap: 18px;
+    gap: 12px !important;
+    /* Mer kompakt footer */
     text-align: center;
 }
 
@@ -4820,8 +4824,8 @@ body.homepage-refresh .mobile-contact-info {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* Midtstill e-post og tlf */
-    gap: 8px;
+    gap: 4px !important;
+    /* Enda mer kompakt */
 }
 
 body.homepage-refresh .mobile-contact-info a {
