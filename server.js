@@ -1280,6 +1280,11 @@ app.get('/js/firebase-config.js', async (req, res) => {
 });
 
 // Clean URLs – redirect .html → uten .html og server filene
+// Forside: /index.html → /
+app.get('/index.html', (req, res) => {
+    const hash = req.query['#'] || '';
+    res.redirect(301, '/' + (hash ? '#' + hash : ''));
+});
 const htmlPages = [
     'blog',
     'blog-details',
