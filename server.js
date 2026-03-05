@@ -1279,7 +1279,30 @@ app.get('/js/firebase-config.js', async (req, res) => {
     }
 });
 
-// Clean URLs – redirect /admin/index.html → /admin/
+// Clean URLs – redirect .html → uten .html og server filene
+const htmlPages = [
+    'blog',
+    'blog-details',
+    'contact',
+    'project-details',
+    'service-details',
+    'privacy',
+    'accessibility',
+];
+
+htmlPages.forEach(page => {
+    // Redirect /page.html → /page
+    app.get(`/${page}.html`, (req, res) => {
+        const qs = Object.keys(req.query).length ? '?' + new URLSearchParams(req.query).toString() : '';
+        res.redirect(301, `/${page}${qs}`);
+    });
+    // Serve /page → file
+    app.get(`/${page}`, (req, res) => {
+        res.sendFile(path.join(__dirname, `${page}.html`));
+    });
+});
+
+// Admin clean URL
 app.get('/admin/index.html', (req, res) => res.redirect(301, '/admin/'));
 app.get('/admin/', (req, res) => res.sendFile(path.join(__dirname, 'admin', 'index.html')));
 app.get('/admin', (req, res) => res.redirect(301, '/admin/'));
