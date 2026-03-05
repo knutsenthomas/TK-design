@@ -7129,6 +7129,7 @@ body.homepage-refresh .video-modal .modal-content {
     body.homepage-refresh .awards-table tbody {
         display: block;
         width: 100%;
+        border: none !important;
     }
 
     body.homepage-refresh .awards-table tr {
