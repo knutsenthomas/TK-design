@@ -5441,7 +5441,7 @@ body.homepage-refresh .tab-btn {
     justify-content: center;
     border: 0;
     border-radius: 14px;
-    padding: 12px 22px;
+    padding: 14px 22px 10px;
     background: transparent;
     color: #6a7a90;
     font-weight: 800;
