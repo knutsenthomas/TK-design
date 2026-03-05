@@ -2095,8 +2095,8 @@ body.admin-dashboard-refresh .modal-content,
 body.admin-dashboard-refresh .admin-dialog-panel {
     border-radius: 24px;
     border: 1px solid rgba(15, 23, 42, 0.06);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.97) 0%, rgba(255, 252, 248, 0.92) 100%);
-    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.06);
+    background: #ffffff;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
 }
 
 body.admin-dashboard-refresh .stat-card {
