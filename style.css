@@ -5436,12 +5436,17 @@ body.homepage-refresh .tab-buttons {
 }
 
 body.homepage-refresh .tab-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     border: 0;
     border-radius: 14px;
-    padding: 12px 18px;
+    padding: 12px 22px;
     background: transparent;
     color: #6a7a90;
-    font-weight: 700;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.05em;
 }
 
 body.homepage-refresh .tab-btn.active {
