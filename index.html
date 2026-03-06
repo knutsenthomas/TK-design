@@ -13,8 +13,16 @@
         content="webdesign norge, nettside design, lage nettside, webbyrå norge, profesjonell nettside, webdesigner norge, nettside pris, seo norge, tk-design, nettside bedrift, responsiv nettside">
     <meta name="author" content="Thomas Knutsen – TK-design">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-    <meta name="theme-color" content="#1B4965">
+    <meta name="theme-color" content="#ffffff">
     <link rel="canonical" href="https://tk-design.no/">
+
+    <!-- ===================== PWA ===================== -->
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/img/logo/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="TK-design">
+    <meta name="mobile-web-app-capable" content="yes">
 
     <!-- ===================== HREFLANG ===================== -->
     <link rel="alternate" hreflang="no" href="https://tk-design.no/">
@@ -1034,6 +1042,13 @@
         }
     </script>
     <script type="module" src="/js/speed-insights-init.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(() => { });
+            });
+        }
+    </script>
 </body>
 
 </html>
