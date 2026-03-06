@@ -1224,12 +1224,14 @@ app.get(['/', '/index.html', '/blog.html', '/project-details.html', '/blog-detai
         if (err) return res.status(404).send('Page not found');
 
         let injectedHtml = html
-            .replace(/<title>.*<\/title>/, `<title>${finalTitle}</title>`)
-            .replace(/<meta name="description" content=".*">/, `<meta name="description" content="${description}">`)
-            .replace(/<meta name="keywords" content=".*">/, `<meta name="keywords" content="${keywords}">`);
+            .replace(/<title>[\s\S]*?<\/title>/i, `<title>${finalTitle}</title>`)
+            .replace(/<meta\s+name="description"\s+content="[\s\S]*?">/i, `<meta name="description" content="${description}">`)
+            .replace(/<meta\s+name="keywords"\s+content="[\s\S]*?">/i, `<meta name="keywords" content="${keywords}">`)
+            .replace(/<meta\s+property="og:title"\s+content="[\s\S]*?">/i, `<meta property="og:title" content="${finalTitle}">`)
+            .replace(/<meta\s+property="og:description"\s+content="[\s\S]*?">/i, `<meta property="og:description" content="${description}">`);
 
-        // Inject Google Analytics if ID exists
-        if (globalSeo.googleAnalyticsId) {
+        // Inject Google Analytics if ID exists and NOT already in the HTML
+        if (globalSeo.googleAnalyticsId && !html.includes(globalSeo.googleAnalyticsId)) {
             const gaScript = `
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=${globalSeo.googleAnalyticsId}"></script>
