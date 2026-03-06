@@ -1,20 +1,7 @@
 function getAdminApiUrl() {
-    const host = window.location.hostname || 'localhost';
-    const isLocalHost = ['localhost', '127.0.0.1'].includes(host);
-
-    // If we are on the live domain, but want to talk to the local CMS server on port 3000
-    // We try to use the local server if the current host is not local.
-    if (!isLocalHost && window.location.protocol !== 'file:') {
-        // We still return '/api' as default, but in the fetch calls we can add a fallback
-        // Actually, let's make it smarter: if we are on live, we strictly want the local port 3000
-        // for this specific "local CMS" setup.
+    if (window.location.protocol === 'file:') {
         return 'http://localhost:3000/api';
     }
-
-    if (window.location.protocol === 'file:') {
-        return `http://localhost:3000/api`;
-    }
-
     return '/api';
 }
 
@@ -2223,21 +2210,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Initial Dashboard Language Update
     updateDashboardLanguage();
-
-    // Populate Debug Banner
-    const debugHost = document.getElementById('debug-host');
-    const debugApi = document.getElementById('debug-api');
-    const debugStatus = document.getElementById('debug-status');
-    if (debugHost) debugHost.textContent = `Host: ${window.location.host}`;
-    if (debugApi) debugApi.textContent = `API: ${API_URL}`;
-
-    // Quick API Check
-    try {
-        const check = await fetch(`${API_URL}/analytics`);
-        if (debugStatus) debugStatus.textContent = `Status: ${check.ok ? 'Connected ✅' : 'Server Error ❌ (' + check.status + ')'}`;
-    } catch (e) {
-        if (debugStatus) debugStatus.textContent = `Status: Connection Failed ❌ (${e.message})`;
-    }
 
     // Setup Unsplash Enter Key
     const unsplashInput = document.getElementById('unsplash-query');
