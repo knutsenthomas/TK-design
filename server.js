@@ -18,6 +18,9 @@ let analyticsClient = null;
 try {
     if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
         const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
+        if (credentials.private_key) {
+            credentials.private_key = credentials.private_key.replace(/\\n/g, '\n');
+        }
         analyticsClient = new BetaAnalyticsDataClient({ credentials });
         console.log('[Analytics] GA4 Client initialisert med service account.');
     }
