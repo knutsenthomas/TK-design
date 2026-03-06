@@ -3554,6 +3554,12 @@ img {
     padding: 100px 0;
 }
 
+@media (max-width: 768px) {
+    .awards-section {
+        padding: 50px 0;
+    }
+}
+
 .awards-table {
     width: 100%;
     border-collapse: collapse;
@@ -5381,7 +5387,7 @@ body.homepage-refresh .section-subtitle-lines {
     text-align: center;
     color: var(--refresh-accent);
     font-family: 'Manrope', sans-serif;
-    font-size: 0.82rem;
+    font-size: 0.82rem !important;
     font-weight: 800;
     letter-spacing: 0.14em;
     text-transform: uppercase;

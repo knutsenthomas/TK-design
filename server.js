@@ -6,6 +6,24 @@ const crypto = require('crypto');
 const functions = require('firebase-functions');
 require('dotenv').config();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { BetaAnalyticsDataClient } = require('@google-analytics/data');
+
+// GA4 Client initialization
+/**
+ * To enable GA4 dashboard integration, you need:
+ * 1. GA_PROPERTY_ID (found in GA Admin > Property Settings)
+ * 2. GOOGLE_SERVICE_ACCOUNT_JSON (JSON key from Google Cloud Service Account)
+ */
+let analyticsClient = null;
+try {
+    if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
+        const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
+        analyticsClient = new BetaAnalyticsDataClient({ credentials });
+        console.log('[Analytics] GA4 Client initialisert med service account.');
+    }
+} catch (err) {
+    console.error('[Analytics] Kunne ikke initialisere GA4 client:', err.message);
+}
 
 // Initialize Gemini AI
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -611,19 +629,85 @@ async function sendContactNotification(messagePayload) {
     const safeSubject = messagePayload.subject ? `: ${messagePayload.subject}` : '';
 
     const html = `
-        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827;">
-            <h2 style="margin-bottom: 16px;">Ny melding fra kontaktskjemaet</h2>
-            <p><strong>Navn:</strong> ${escapeHtml(messagePayload.name)}</p>
-            <p><strong>E-post:</strong> ${escapeHtml(messagePayload.email)}</p>
-            <p><strong>Telefon:</strong> ${escapeHtml(messagePayload.phone || 'Ikke oppgitt')}</p>
-            <p><strong>Firma:</strong> ${escapeHtml(messagePayload.company || 'Ikke oppgitt')}</p>
-            <p><strong>Emne:</strong> ${escapeHtml(messagePayload.subject || 'Ikke oppgitt')}</p>
-            <p><strong>Kilde:</strong> ${escapeHtml(messagePayload.source_page || 'contact.html')}</p>
-            <div style="margin-top: 20px; padding: 16px; border-radius: 12px; background: #f9fafb; border: 1px solid #e5e7eb;">
-                <strong>Melding:</strong>
-                <p style="white-space: pre-wrap; margin-top: 10px;">${escapeHtml(messagePayload.message)}</p>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f7f9; margin: 0; padding: 0; }
+        .wrapper { width: 100%; background-color: #f4f7f9; padding: 40px 0; }
+        .main { background-color: #ffffff; width: 100%; max-width: 600px; margin: 0 auto; border-radius: 8px; border: 1px solid #e1e8ed; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .header { background-color: #ffffff; padding: 40px 40px 20px 40px; text-align: center; border-bottom: 2px solid #f0f4f8; }
+        .content { padding: 40px; text-align: center; color: #102a43; }
+        .footer { padding: 30px; text-align: center; color: #627d98; font-size: 11px; border-top: 1px solid #f0f4f8; }
+        .logo-img { width: 60px; height: auto; display: block; margin: 0 auto; }
+        h1 { color: #102a43; font-size: 24px; margin: 25px 0 0 0; font-weight: bold; }
+        .intro-text { font-size: 16px; color: #627d98; margin-bottom: 30px; }
+        
+        .info-card { background: #ffffff; border: 1px solid #e1e8ed; border-radius: 12px; padding: 20px; text-align: left; margin-bottom: 30px; }
+        .info-row { border-bottom: 1px solid #f0f4f8; padding: 12px 0; margin: 0; }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { font-size: 11px; text-transform: uppercase; color: #9fb3c8; font-weight: bold; margin-bottom: 4px; display: block; }
+        .info-value { font-size: 15px; color: #102a43; font-weight: 500; margin: 0; }
+        
+        .message-section { text-align: left; margin-top: 30px; }
+        .message-title { font-weight: bold; font-size: 14px; text-transform: uppercase; color: #9fb3c8; margin-bottom: 10px; }
+        .message-body { background: #f9fafb; padding: 20px; border-radius: 8px; border-left: 4px solid #ff6a1b; color: #334e68; line-height: 1.6; font-style: italic; white-space: pre-wrap; }
+        
+        .btn-container { margin: 40px 0 20px 0; }
+        .button { background-color: #ff6a1b; color: #ffffff !important; padding: 16px 40px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 15px; box-shadow: 0 4px 14px rgba(255, 106, 27, 0.3); }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="main">
+            <div class="header">
+                <img src="https://tk-design.no/img/logo/d.png" alt="TK-design" class="logo-img">
+                <h1>TK-design kontaktskjema</h1>
+            </div>
+            <div class="content">
+                <p class="intro-text">Du har mottatt en ny henvendelse via kontaktskjemaet på nettsiden.</p>
+                
+                <div class="info-card">
+                    <div class="info-row">
+                        <span class="info-label">Navn</span>
+                        <p class="info-value">${escapeHtml(messagePayload.name)}</p>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">E-post</span>
+                        <p class="info-value">${escapeHtml(messagePayload.email)}</p>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Telefon</span>
+                        <p class="info-value">${escapeHtml(messagePayload.phone || 'Ikke oppgitt')}</p>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Bedrift / Firma</span>
+                        <p class="info-value">${escapeHtml(messagePayload.company || 'Ikke oppgitt')}</p>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Emne</span>
+                        <p class="info-value">${escapeHtml(messagePayload.subject || 'Ikke oppgitt')}</p>
+                    </div>
+                </div>
+
+                <div class="message-section">
+                    <div class="message-title">Melding</div>
+                    <div class="message-body">${escapeHtml(messagePayload.message)}</div>
+                </div>
+
+                <div class="btn-container">
+                    <a href="https://tk-design.no/admin" class="button">Gå til Innboks</a>
+                </div>
+            </div>
+            <div class="footer">
+                Dette er en automatisert melding fra TK-design.<br>
+                &copy; 2026 TK-design. Alle rettigheter reservert.
             </div>
         </div>
+    </div>
+</body>
+</html>
     `;
 
     const response = await fetch('https://api.resend.com/emails', {
@@ -645,6 +729,9 @@ async function sendContactNotification(messagePayload) {
         const errorText = await response.text();
         throw new Error(`Resend request failed: ${response.status} ${errorText}`);
     }
+
+    const resendBody = await response.json();
+    console.log('[Resend API Success Detais]:', resendBody);
 
     return { sent: true };
 }
@@ -799,6 +886,62 @@ app.post('/api/style', async (req, res) => {
 
 // API: Get Blog Posts
 // --- Messages API ---
+app.get('/api/analytics', async (req, res) => {
+    const propertyId = process.env.GA_PROPERTY_ID;
+
+    if (!analyticsClient || !propertyId) {
+        return res.json({
+            status: 'unconfigured',
+            message: 'Google Analytics er ikke konfigurert ennå.',
+            data: {
+                active7DayUsers: '—',
+                screenPageViews: '—',
+                activeUsers: '—'
+            }
+        });
+    }
+
+    try {
+        // 1. Get 7-day metrics
+        const [response] = await analyticsClient.runReport({
+            property: `properties/${propertyId}`,
+            dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
+            dimensions: [],
+            metrics: [
+                { name: 'activeUsers' },
+                { name: 'screenPageViews' }
+            ],
+        });
+
+        // 2. Get Real-time users (using runRealtimeReport)
+        let activeUsersNow = '0';
+        try {
+            const [realtimeResponse] = await analyticsClient.runRealtimeReport({
+                property: `properties/${propertyId}`,
+                dimensions: [],
+                metrics: [{ name: 'activeUsers' }],
+            });
+            activeUsersNow = realtimeResponse.rows?.[0]?.metricValues?.[0]?.value || '0';
+        } catch (rtErr) {
+            console.warn('[Analytics] Kunne ikke hente sanntidsdata:', rtErr.message);
+        }
+
+        const metrics = response.rows?.[0]?.metricValues || [];
+
+        res.json({
+            status: 'success',
+            data: {
+                active7DayUsers: metrics[0]?.value || '0',
+                screenPageViews: metrics[1]?.value || '0',
+                activeUsers: activeUsersNow
+            }
+        });
+    } catch (err) {
+        console.error('[Analytics] API feil:', err.message);
+        res.status(500).json({ error: 'Kunne ikke hente statistikk fra Google' });
+    }
+});
+
 app.get('/api/messages', async (req, res) => {
     try {
         const { projectId, databaseId, collection } = getFirebaseConfig();
@@ -1253,14 +1396,6 @@ app.post('/api/contact', async (req, res) => {
         let emailWarning = null;
 
         try {
-            savedMessage = await saveContactMessage(payload);
-            saved = true;
-        } catch (saveError) {
-            console.error('Contact message save error:', saveError);
-            saveWarning = 'Meldingen kunne ikke lagres i dashboardet.';
-        }
-
-        try {
             const notificationResult = await sendContactNotification(payload);
             emailSent = !!notificationResult.sent;
             if (!notificationResult.sent) {
@@ -1268,7 +1403,18 @@ app.post('/api/contact', async (req, res) => {
             }
         } catch (emailError) {
             console.error('Contact email notification error:', emailError);
-            emailWarning = 'Meldingen ble lagret, men e-postvarsel feilet.';
+            emailWarning = 'E-postvarsel feilet.';
+        }
+
+        try {
+            // Setting a timeout for the save operation so it doesn't hang indefinitely 
+            const savePromise = saveContactMessage(payload);
+            const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Firebase save timeout')), 5000));
+            savedMessage = await Promise.race([savePromise, timeoutPromise]);
+            saved = true;
+        } catch (saveError) {
+            console.error('Contact message save error:', saveError);
+            saveWarning = 'Meldingen kunne ikke lagres i dashboardet.';
         }
 
         if (!saved && !emailSent) {

@@ -752,6 +752,42 @@ window.publishPost = async function () {
 
 let contactMessages = [];
 
+window.fetchAnalyticsData = async function () {
+    const usersEl = document.getElementById('ga-users');
+    const viewsEl = document.getElementById('ga-pageviews');
+    const realtimeEl = document.getElementById('ga-realtime');
+
+    if (!usersEl || !viewsEl || !realtimeEl) return;
+
+    // Show loading state
+    usersEl.textContent = '...';
+    viewsEl.textContent = '...';
+    realtimeEl.textContent = '...';
+
+    try {
+        const response = await fetch(`${API_URL}/analytics`);
+        const result = await response.json();
+
+        if (result.status === 'success' || result.status === 'unconfigured') {
+            const data = result.data;
+            usersEl.textContent = data.active7DayUsers || '0';
+            viewsEl.textContent = data.screenPageViews || '0';
+            realtimeEl.textContent = data.activeUsers || '0';
+
+            if (result.status === 'unconfigured') {
+                console.log('[Analytics] Google Analytics er ikke konfigurert i .env ennå.');
+            }
+        } else {
+            throw new Error(result.error || 'Kunne ikke hente analytics');
+        }
+    } catch (error) {
+        console.error('Error fetching analytics:', error);
+        usersEl.textContent = 'Error';
+        viewsEl.textContent = 'Error';
+        realtimeEl.textContent = 'Error';
+    }
+};
+
 window.fetchMessages = async function () {
     const listContainer = document.getElementById('messages-list');
     if (listContainer) {
@@ -1628,6 +1664,11 @@ function setupEventListeners() {
                 // Fetch messages if tab is selected
                 if (section === 'messages') {
                     fetchMessages();
+                }
+
+                // Fetch analytics if tab is selected
+                if (section === 'analytics') {
+                    fetchAnalyticsData();
                 }
             }
         });

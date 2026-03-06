@@ -110,8 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Language Init
-    initLanguage();
+    // Language init moved outside to prevent flash of untranslated content
 
     // Back To Top
     initBackToTopButton();
@@ -193,6 +192,9 @@ function initLanguage() {
     applyLanguage(currentLang);
     updateLangButtons(currentLang);
 }
+
+// Run immediately to avoid flash of untranslated content when switching pages
+initLanguage();
 
 function switchLanguage(lang) {
     currentLang = lang;
