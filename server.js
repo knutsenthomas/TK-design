@@ -909,37 +909,32 @@ app.get('/api/analytics', async (req, res) => {
     }
 
     try {
-        // 1. Get Summary metrics (Users, Pageviews)
-        const [summaryResponse] = await analyticsClient.runReport({
-            property: `properties/${propertyId}`,
-            dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
-            metrics: [
-                { name: 'activeUsers' },
-                { name: 'screenPageViews' }
-            ],
-        });
+        // Run all GA4 reports in parallel for faster response
+        const [[summaryResponse], [pagesResponse], [sourcesResponse]] = await Promise.all([
+            analyticsClient.runReport({
+                property: `properties/${propertyId}`,
+                dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
+                metrics: [{ name: 'activeUsers' }, { name: 'screenPageViews' }],
+            }),
+            analyticsClient.runReport({
+                property: `properties/${propertyId}`,
+                dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
+                dimensions: [{ name: 'pageTitle' }],
+                metrics: [{ name: 'screenPageViews' }],
+                limit: 8,
+                orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }]
+            }),
+            analyticsClient.runReport({
+                property: `properties/${propertyId}`,
+                dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
+                dimensions: [{ name: 'sessionDefaultChannelGroup' }],
+                metrics: [{ name: 'sessions' }],
+                limit: 8,
+                orderBys: [{ metric: { metricName: 'sessions' }, desc: true }]
+            })
+        ]);
 
-        // 2. Get Top Pages (by Views)
-        const [pagesResponse] = await analyticsClient.runReport({
-            property: `properties/${propertyId}`,
-            dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
-            dimensions: [{ name: 'pageTitle' }],
-            metrics: [{ name: 'screenPageViews' }],
-            limit: 8,
-            orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }]
-        });
-
-        // 3. Get Traffic Sources (by Sessions)
-        const [sourcesResponse] = await analyticsClient.runReport({
-            property: `properties/${propertyId}`,
-            dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
-            dimensions: [{ name: 'sessionDefaultChannelGroup' }],
-            metrics: [{ name: 'sessions' }],
-            limit: 8,
-            orderBys: [{ metric: { metricName: 'sessions' }, desc: true }]
-        });
-
-        // 4. Get Real-time users
+        // Get Real-time users (separate, can fail gracefully)
         let activeUsersNow = '0';
         try {
             const [realtimeResponse] = await analyticsClient.runRealtimeReport({
@@ -951,13 +946,11 @@ app.get('/api/analytics', async (req, res) => {
             console.warn('[Analytics] Kunne ikke hente sanntidsdata:', rtErr.message);
         }
 
-        // Format Page Data
         const topPages = (pagesResponse.rows || []).map(row => ({
             title: row.dimensionValues[0].value,
             views: row.metricValues[0].value
         }));
 
-        // Format Source Data
         const trafficSources = (sourcesResponse.rows || []).map(row => ({
             source: row.dimensionValues[0].value,
             sessions: row.metricValues[0].value
