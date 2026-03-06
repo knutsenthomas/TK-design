@@ -2,12 +2,17 @@ function getAdminApiUrl() {
     const host = window.location.hostname || 'localhost';
     const isLocalHost = ['localhost', '127.0.0.1'].includes(host);
 
-    if (window.location.protocol === 'file:') {
-        return `http://${host}:3000/api`;
+    // If we are on the live domain, but want to talk to the local CMS server on port 3000
+    // We try to use the local server if the current host is not local.
+    if (!isLocalHost && window.location.protocol !== 'file:') {
+        // We still return '/api' as default, but in the fetch calls we can add a fallback
+        // Actually, let's make it smarter: if we are on live, we strictly want the local port 3000
+        // for this specific "local CMS" setup.
+        return 'http://localhost:3000/api';
     }
 
-    if (isLocalHost && window.location.port && window.location.port !== '3000') {
-        return `http://${host}:3000/api`;
+    if (window.location.protocol === 'file:') {
+        return `http://localhost:3000/api`;
     }
 
     return '/api';
