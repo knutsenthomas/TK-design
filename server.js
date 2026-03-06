@@ -50,6 +50,16 @@ app.use((req, res, next) => {
     next();
 });
 
+// Detailed Request Logger
+app.use((req, res, next) => {
+    const start = Date.now();
+    res.on('finish', () => {
+        const duration = Date.now() - start;
+        console.log(`[Server] ${req.method} ${req.url} - ${res.statusCode} (${duration}ms) - ${res.get('Content-Type') || 'no-content-type'}`);
+    });
+    next();
+});
+
 async function getFetch() {
     try {
         return require('node-fetch');
