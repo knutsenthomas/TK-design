@@ -2219,6 +2219,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Initial Dashboard Language Update
     updateDashboardLanguage();
 
+    // Populate Debug Banner
+    const debugHost = document.getElementById('debug-host');
+    const debugApi = document.getElementById('debug-api');
+    const debugStatus = document.getElementById('debug-status');
+    if (debugHost) debugHost.textContent = `Host: ${window.location.host}`;
+    if (debugApi) debugApi.textContent = `API: ${API_URL}`;
+
+    // Quick API Check
+    try {
+        const check = await fetch(`${API_URL}/analytics`);
+        if (debugStatus) debugStatus.textContent = `Status: ${check.ok ? 'Connected ✅' : 'Server Error ❌ (' + check.status + ')'}`;
+    } catch (e) {
+        if (debugStatus) debugStatus.textContent = `Status: Connection Failed ❌ (${e.message})`;
+    }
+
     // Setup Unsplash Enter Key
     const unsplashInput = document.getElementById('unsplash-query');
     if (unsplashInput) {
