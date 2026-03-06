@@ -812,12 +812,12 @@ window.fetchMessages = async function () {
 
     try {
         const response = await fetch(`${API_URL}/messages`);
-        if (!response.ok) throw new Error('Kunne ikke hente meldinger');
+        if (!response.ok) throw new Error(`Server svarte med status ${response.status}`);
 
         contactMessages = await response.json();
         renderMessages();
     } catch (error) {
-        console.error('Error fetching messages:', error);
+        console.error('[Messages] Error fetching messages:', error);
         if (listContainer) {
             listContainer.innerHTML = `
                 <div class="empty-state" style="padding: 40px; text-align: center; color: #ef4444;">
