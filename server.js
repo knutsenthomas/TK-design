@@ -96,6 +96,25 @@ function getFirebaseConfig() {
     };
 }
 
+// Diagnostic API (Safe for production, only shows presence of keys)
+app.get('/api/debug-env', (req, res) => {
+    res.json({
+        firebase: {
+            projectId: !!process.env.TK_FIREBASE_PROJECT_ID,
+            clientEmail: !!process.env.TK_FIREBASE_CLIENT_EMAIL,
+            privateKey: !!process.env.TK_FIREBASE_PRIVATE_KEY,
+            privateKeyValid: (process.env.TK_FIREBASE_PRIVATE_KEY || '').includes('BEGIN PRIVATE KEY'),
+        },
+        analytics: {
+            propertyId: !!process.env.GA_PROPERTY_ID,
+            serviceAccount: !!process.env.GOOGLE_SERVICE_ACCOUNT_JSON,
+            clientInitialized: !!analyticsClient
+        },
+        resend: !!process.env.RESEND_API_KEY,
+        gemini: !!process.env.GEMINI_API_KEY
+    });
+});
+
 function getFirebaseWebConfig() {
     const projectId = process.env.TK_FIREBASE_PROJECT_ID || 'tk-design-f43f6';
     const defaultWebConfig = {
