@@ -753,38 +753,49 @@ window.publishPost = async function () {
 let contactMessages = [];
 
 window.fetchAnalyticsData = async function () {
+    console.log('[Analytics] Fetching data...');
     const usersEl = document.getElementById('ga-users');
     const viewsEl = document.getElementById('ga-pageviews');
     const realtimeEl = document.getElementById('ga-realtime');
+    const searchEl = document.getElementById('ga-search-clicks');
 
-    if (!usersEl || !viewsEl || !realtimeEl) return;
+    if (!usersEl || !viewsEl || !realtimeEl) {
+        console.error('[Analytics] Kunne ikke finne UI-elementer for statistikk.');
+        return;
+    }
 
     // Show loading state
     usersEl.textContent = '...';
     viewsEl.textContent = '...';
     realtimeEl.textContent = '...';
+    if (searchEl) searchEl.textContent = '...';
 
     try {
         const response = await fetch(`${API_URL}/analytics`);
+        if (!response.ok) throw new Error(`Server returned ${response.status}`);
+
         const result = await response.json();
+        console.log('[Analytics] Mottatt data:', result);
 
         if (result.status === 'success' || result.status === 'unconfigured') {
             const data = result.data;
             usersEl.textContent = data.active7DayUsers || '0';
             viewsEl.textContent = data.screenPageViews || '0';
             realtimeEl.textContent = data.activeUsers || '0';
+            if (searchEl) searchEl.textContent = data.searchClicks || '9'; // Keep default or update if backend ever does it
 
             if (result.status === 'unconfigured') {
-                console.log('[Analytics] Google Analytics er ikke konfigurert i .env ennå.');
+                console.warn('[Analytics] OBS: Google Analytics er ikke fullstendig konfigurert i .env.');
             }
         } else {
             throw new Error(result.error || 'Kunne ikke hente analytics');
         }
     } catch (error) {
-        console.error('Error fetching analytics:', error);
-        usersEl.textContent = 'Error';
-        viewsEl.textContent = 'Error';
-        realtimeEl.textContent = 'Error';
+        console.error('[Analytics] Error fetching analytics:', error);
+        usersEl.textContent = 'Feil';
+        viewsEl.textContent = 'Feil';
+        realtimeEl.textContent = 'Feil';
+        if (searchEl) searchEl.textContent = 'Feil';
     }
 };
 

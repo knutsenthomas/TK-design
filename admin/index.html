@@ -413,7 +413,10 @@
                 <header>
                     <h1 data-i18n="nav_analytics">Statistikk</h1>
                     <div class="header-actions">
-                        <a href="https://analytics.google.com/analytics/web/#/p000000000/reports/intelligenthome"
+                        <button onclick="fetchAnalyticsData()" class="action-btn" title="Oppdater statistikk">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                        <a href="https://analytics.google.com/analytics/web/#/p479163398/reports/intelligenthome"
                             target="_blank" class="action-btn analytics-header-link" title="Åpne Google Analytics">
                             <i class="fas fa-external-link-alt"></i>
                         </a>
@@ -458,8 +461,7 @@
                         Se detaljerte rapporter om trafikk, brukeradferd, konverteringer og søkeord direkte i Google
                         Analytics.
                     </p>
-                    <a href="https://analytics.google.com" target="_blank" rel="noopener"
-                        class="analytics-hero-link">
+                    <a href="https://analytics.google.com" target="_blank" rel="noopener" class="analytics-hero-link">
                         <i class="fas fa-external-link-alt"></i> Åpne Google Analytics
                     </a>
                 </div>
@@ -977,7 +979,7 @@
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=1.0.1"></script>
     <script type="importmap">
         {
             "imports": {
