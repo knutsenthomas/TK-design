@@ -9,12 +9,8 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { BetaAnalyticsDataClient } = require('@google-analytics/data');
 
 // GA4 Client initialization
-/**
- * To enable GA4 dashboard integration, you need:
- * 1. GA_PROPERTY_ID (found in GA Admin > Property Settings)
- * 2. GOOGLE_SERVICE_ACCOUNT_JSON (JSON key from Google Cloud Service Account)
- */
 let analyticsClient = null;
+let analyticsInitError = null;
 try {
     if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
         const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
@@ -23,8 +19,11 @@ try {
         }
         analyticsClient = new BetaAnalyticsDataClient({ credentials });
         console.log('[Analytics] GA4 Client initialisert med service account.');
+    } else {
+        analyticsInitError = "Missing GOOGLE_SERVICE_ACCOUNT_JSON";
     }
 } catch (err) {
+    analyticsInitError = err.message;
     console.error('[Analytics] Kunne ikke initialisere GA4 client:', err.message);
 }
 
@@ -108,7 +107,8 @@ app.get('/api/debug-env', (req, res) => {
         analytics: {
             propertyId: !!process.env.GA_PROPERTY_ID,
             serviceAccount: !!process.env.GOOGLE_SERVICE_ACCOUNT_JSON,
-            clientInitialized: !!analyticsClient
+            clientInitialized: !!analyticsClient,
+            initError: analyticsInitError
         },
         resend: !!process.env.RESEND_API_KEY,
         gemini: !!process.env.GEMINI_API_KEY
