@@ -947,10 +947,14 @@ app.get('/api/analytics', async (req, res) => {
 
 app.get('/api/messages', async (req, res) => {
     try {
+        console.log('[Messages] Henter konfigurasjon...');
         const { projectId, databaseId, collection } = getFirebaseConfig();
-        const accessToken = await getFirebaseAccessToken();
-        const fetch = await getFetch();
+        console.log('[Messages] Forespørsel til Firebase for prosjekt:', projectId);
 
+        const accessToken = await getFirebaseAccessToken();
+        console.log('[Messages] Tilgangsnøkkel generert.');
+
+        const fetch = await getFetch();
         const response = await fetch(
             `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${encodeURIComponent(databaseId)}/documents/${collection}`,
             {
@@ -962,14 +966,14 @@ app.get('/api/messages', async (req, res) => {
 
         if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(`Firebase read failed: ${response.status} ${errorText}`);
+            console.error('[Messages] Firebase forespørsel feila:', response.status, errorText);
+            throw new Error(`Firebase read failed: ${response.status}`);
         }
 
         const data = await response.json();
         const messages = (data.documents || []).map(doc => {
             const fields = doc.fields || {};
             const item = {};
-            // Flatten Firestore fields
             for (const [key, value] of Object.entries(fields)) {
                 if (value.stringValue !== undefined) item[key] = value.stringValue;
                 else if (value.integerValue !== undefined) item[key] = parseInt(value.integerValue);
@@ -980,9 +984,10 @@ app.get('/api/messages', async (req, res) => {
             return item;
         });
 
+        console.log(`[Messages] Henta ${messages.length} meldinger.`);
         res.json(messages);
     } catch (error) {
-        console.error('Error fetching messages:', error);
+        console.error('[Messages] Kritisk feil ved henting:', error);
         res.status(500).json({ error: 'Kunne ikke hente meldinger.', details: error.message });
     }
 });
