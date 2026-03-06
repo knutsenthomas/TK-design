@@ -38,6 +38,10 @@ const firebaseAccessTokenCache = new Map();
 // Middleware
 app.use(bodyParser.json());
 // Static files moved to end to allow server-side injection
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    next();
+});
 
 // Enable CORS for Live Server
 app.use((req, res, next) => {
@@ -995,7 +999,7 @@ app.get('/api/messages', async (req, res) => {
                     structuredQuery: {
                         from: [{ collectionId: collection }],
                         orderBy: [{
-                            field: { fieldPath: 'timestamp' },
+                            field: { fieldPath: 'created_at' },
                             direction: 'DESCENDING'
                         }]
                     }
@@ -1015,9 +1019,12 @@ app.get('/api/messages', async (req, res) => {
                 id: (doc.document?.name || '').split('/').pop(),
                 name: (fields.name?.stringValue || 'Ukjent'),
                 email: (fields.email?.stringValue || ''),
+                phone: (fields.phone?.stringValue || ''),
+                company: (fields.company?.stringValue || ''),
+                subject: (fields.subject?.stringValue || ''),
                 message: (fields.message?.stringValue || ''),
-                timestamp: (fields.timestamp?.stringValue || fields.timestamp?.timestampValue || ''),
-                archived: fields.archived?.booleanValue || false
+                timestamp: (fields.created_at?.stringValue || fields.timestamp?.stringValue || fields.timestamp?.timestampValue || ''),
+                archived: fields.status?.stringValue === 'archived' || fields.archived?.booleanValue || false
             };
         }).filter(m => m.id);
 
