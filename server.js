@@ -50,16 +50,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// Detailed Request Logger
-app.use((req, res, next) => {
-    const start = Date.now();
-    res.on('finish', () => {
-        const duration = Date.now() - start;
-        console.log(`[Server] ${req.method} ${req.url} - ${res.statusCode} (${duration}ms) - ${res.get('Content-Type') || 'no-content-type'}`);
-    });
-    next();
-});
-
 async function getFetch() {
     try {
         return require('node-fetch');
@@ -957,48 +947,52 @@ app.get('/api/analytics', async (req, res) => {
 
 app.get('/api/messages', async (req, res) => {
     try {
-        console.log('[Messages] Henter konfigurasjon...');
         const { projectId, databaseId, collection } = getFirebaseConfig();
-        console.log('[Messages] Forespørsel til Firebase for prosjekt:', projectId);
-
         const accessToken = await getFirebaseAccessToken();
-        console.log('[Messages] Tilgangsnøkkel generert.');
-
         const fetch = await getFetch();
+
         const response = await fetch(
-            `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${encodeURIComponent(databaseId)}/documents/${collection}`,
+            `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${databaseId}/documents:runQuery`,
             {
+                method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${accessToken}`
-                }
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    structuredQuery: {
+                        from: [{ collectionId: collection }],
+                        orderBy: [{
+                            field: { fieldPath: 'timestamp' },
+                            direction: 'DESCENDING'
+                        }]
+                    }
+                })
             }
         );
 
         if (!response.ok) {
-            const errorText = await response.text();
-            console.error('[Messages] Firebase forespørsel feila:', response.status, errorText);
-            throw new Error(`Firebase read failed: ${response.status}`);
+            const error = await response.text();
+            throw new Error(`Firebase error: ${error}`);
         }
 
         const data = await response.json();
-        const messages = (data.documents || []).map(doc => {
-            const fields = doc.fields || {};
-            const item = {};
-            for (const [key, value] of Object.entries(fields)) {
-                if (value.stringValue !== undefined) item[key] = value.stringValue;
-                else if (value.integerValue !== undefined) item[key] = parseInt(value.integerValue);
-                else if (value.booleanValue !== undefined) item[key] = value.booleanValue;
-                else if (value.timestampValue !== undefined) item[key] = value.timestampValue;
-            }
-            item.id = doc.name.split('/').pop();
-            return item;
-        });
+        const messages = (data || []).map(doc => {
+            const fields = doc.document?.fields || {};
+            return {
+                id: (doc.document?.name || '').split('/').pop(),
+                name: (fields.name?.stringValue || 'Ukjent'),
+                email: (fields.email?.stringValue || ''),
+                message: (fields.message?.stringValue || ''),
+                timestamp: (fields.timestamp?.stringValue || fields.timestamp?.timestampValue || ''),
+                archived: fields.archived?.booleanValue || false
+            };
+        }).filter(m => m.id);
 
-        console.log(`[Messages] Henta ${messages.length} meldinger.`);
         res.json(messages);
     } catch (error) {
-        console.error('[Messages] Kritisk feil ved henting:', error);
-        res.status(500).json({ error: 'Kunne ikke hente meldinger.', details: error.message });
+        console.error('Error fetching messages:', error);
+        res.status(500).json({ error: 'Kunne ikke hente meldinger' });
     }
 });
 
