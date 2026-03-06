@@ -13,7 +13,12 @@ let analyticsClient = null;
 let analyticsInitError = null;
 try {
     if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
-        const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
+        let jsonStr = process.env.GOOGLE_SERVICE_ACCOUNT_JSON.trim();
+        // Strip accidental outer quotes if they exist (common when copying/pasting)
+        if (jsonStr.startsWith("'") && jsonStr.endsWith("'")) jsonStr = jsonStr.slice(1, -1).trim();
+        if (jsonStr.startsWith('"') && jsonStr.endsWith('"')) jsonStr = jsonStr.slice(1, -1).trim();
+
+        const credentials = JSON.parse(jsonStr);
         if (credentials.private_key) {
             credentials.private_key = credentials.private_key.replace(/\\n/g, '\n');
         }
