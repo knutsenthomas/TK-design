@@ -905,23 +905,41 @@ app.get('/api/analytics', async (req, res) => {
     }
 
     try {
-        // 1. Get 7-day metrics
-        const [response] = await analyticsClient.runReport({
+        // 1. Get Summary metrics (Users, Pageviews)
+        const [summaryResponse] = await analyticsClient.runReport({
             property: `properties/${propertyId}`,
             dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
-            dimensions: [],
             metrics: [
                 { name: 'activeUsers' },
                 { name: 'screenPageViews' }
             ],
         });
 
-        // 2. Get Real-time users (using runRealtimeReport)
+        // 2. Get Top Pages (by Views)
+        const [pagesResponse] = await analyticsClient.runReport({
+            property: `properties/${propertyId}`,
+            dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
+            dimensions: [{ name: 'pageTitle' }],
+            metrics: [{ name: 'screenPageViews' }],
+            limit: 8,
+            orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }]
+        });
+
+        // 3. Get Traffic Sources (by Sessions)
+        const [sourcesResponse] = await analyticsClient.runReport({
+            property: `properties/${propertyId}`,
+            dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
+            dimensions: [{ name: 'sessionDefaultChannelGroup' }],
+            metrics: [{ name: 'sessions' }],
+            limit: 8,
+            orderBys: [{ metric: { metricName: 'sessions' }, desc: true }]
+        });
+
+        // 4. Get Real-time users
         let activeUsersNow = '0';
         try {
             const [realtimeResponse] = await analyticsClient.runRealtimeReport({
                 property: `properties/${propertyId}`,
-                dimensions: [],
                 metrics: [{ name: 'activeUsers' }],
             });
             activeUsersNow = realtimeResponse.rows?.[0]?.metricValues?.[0]?.value || '0';
@@ -929,14 +947,28 @@ app.get('/api/analytics', async (req, res) => {
             console.warn('[Analytics] Kunne ikke hente sanntidsdata:', rtErr.message);
         }
 
-        const metrics = response.rows?.[0]?.metricValues || [];
+        // Format Page Data
+        const topPages = (pagesResponse.rows || []).map(row => ({
+            title: row.dimensionValues[0].value,
+            views: row.metricValues[0].value
+        }));
+
+        // Format Source Data
+        const trafficSources = (sourcesResponse.rows || []).map(row => ({
+            source: row.dimensionValues[0].value,
+            sessions: row.metricValues[0].value
+        }));
+
+        const summaryMetrics = summaryResponse.rows?.[0]?.metricValues || [];
 
         res.json({
             status: 'success',
             data: {
-                active7DayUsers: metrics[0]?.value || '0',
-                screenPageViews: metrics[1]?.value || '0',
-                activeUsers: activeUsersNow
+                active7DayUsers: summaryMetrics[0]?.value || '0',
+                screenPageViews: summaryMetrics[1]?.value || '0',
+                activeUsers: activeUsersNow,
+                topPages,
+                trafficSources
             }
         });
     } catch (err) {

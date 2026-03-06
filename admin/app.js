@@ -751,6 +751,10 @@ window.fetchAnalyticsData = async function () {
     const realtimeEl = document.getElementById('ga-realtime');
     const searchEl = document.getElementById('ga-search-clicks');
 
+    // Expansion elements
+    const pagesContainer = document.getElementById('ga-top-pages');
+    const sourcesContainer = document.getElementById('ga-traffic-sources');
+
     if (!usersEl || !viewsEl || !realtimeEl) {
         console.error('[Analytics] Kunne ikke finne UI-elementer for statistikk.');
         return;
@@ -761,6 +765,9 @@ window.fetchAnalyticsData = async function () {
     viewsEl.textContent = '...';
     realtimeEl.textContent = '...';
     if (searchEl) searchEl.textContent = '...';
+
+    if (pagesContainer) pagesContainer.innerHTML = '<div class="analytics-loading-inline"><i class="fas fa-spinner fa-spin"></i> Laster...</div>';
+    if (sourcesContainer) sourcesContainer.innerHTML = '<div class="analytics-loading-inline"><i class="fas fa-spinner fa-spin"></i> Laster...</div>';
 
     try {
         const response = await fetch(`${API_URL}/analytics`);
@@ -774,7 +781,47 @@ window.fetchAnalyticsData = async function () {
             usersEl.textContent = data.active7DayUsers || '0';
             viewsEl.textContent = data.screenPageViews || '0';
             realtimeEl.textContent = data.activeUsers || '0';
-            if (searchEl) searchEl.textContent = data.searchClicks || '9'; // Keep default or update if backend ever does it
+            if (searchEl) searchEl.textContent = data.searchClicks || '9';
+
+            // Render Top Pages
+            if (pagesContainer && data.topPages) {
+                if (data.topPages.length === 0) {
+                    pagesContainer.innerHTML = '<div class="analytics-loading-inline">Ingen data tilgjengelig</div>';
+                } else {
+                    const maxViews = Math.max(...data.topPages.map(p => parseInt(p.views) || 1));
+                    pagesContainer.innerHTML = data.topPages.map(page => `
+                        <div class="analytics-list-item">
+                            <div class="analytics-item-info">
+                                <span class="analytics-item-label" title="${page.title}">${page.title}</span>
+                                <div class="analytics-item-bar">
+                                    <div class="analytics-item-progress" style="width: ${(parseInt(page.views) / maxViews) * 100}%"></div>
+                                </div>
+                            </div>
+                            <span class="analytics-item-value">${page.views}</span>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // Render Traffic Sources
+            if (sourcesContainer && data.trafficSources) {
+                if (data.trafficSources.length === 0) {
+                    sourcesContainer.innerHTML = '<div class="analytics-loading-inline">Ingen data tilgjengelig</div>';
+                } else {
+                    const maxSessions = Math.max(...data.trafficSources.map(s => parseInt(s.sessions) || 1));
+                    sourcesContainer.innerHTML = data.trafficSources.map(source => `
+                        <div class="analytics-list-item">
+                            <div class="analytics-item-info">
+                                <span class="analytics-item-label">${source.source}</span>
+                                <div class="analytics-item-bar">
+                                    <div class="analytics-item-progress" style="width: ${(parseInt(source.sessions) / maxSessions) * 100}%"></div>
+                                </div>
+                            </div>
+                            <span class="analytics-item-value">${source.sessions}</span>
+                        </div>
+                    `).join('');
+                }
+            }
 
             if (result.status === 'unconfigured') {
                 console.warn('[Analytics] OBS: Google Analytics er ikke fullstendig konfigurert i .env.');
@@ -788,6 +835,8 @@ window.fetchAnalyticsData = async function () {
         viewsEl.textContent = 'Feil';
         realtimeEl.textContent = 'Feil';
         if (searchEl) searchEl.textContent = 'Feil';
+        if (pagesContainer) pagesContainer.innerHTML = '<div class="analytics-loading-inline">Kunne ikke hente data</div>';
+        if (sourcesContainer) sourcesContainer.innerHTML = '<div class="analytics-loading-inline">Kunne ikke hente data</div>';
     }
 };
 

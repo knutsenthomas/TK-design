@@ -2309,6 +2309,121 @@ body.admin-dashboard-refresh .analytics-meta-note {
     font-size: 0.88rem;
 }
 
+/* Analytics Expansion Styles */
+.analytics-detail-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.analytics-list-card {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+}
+
+.analytics-list-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+    padding-bottom: 12px;
+}
+
+.analytics-list-head h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.analytics-list-subtitle {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.analytics-list-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.analytics-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 10px;
+    transition: all 0.2s;
+    font-size: 0.94rem;
+}
+
+.analytics-list-item:hover {
+    background: #f8fafc;
+}
+
+.analytics-item-label {
+    color: #334155;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 280px;
+}
+
+.analytics-item-value {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    color: var(--primary-color);
+    background: rgba(255, 106, 27, 0.05);
+    padding: 2px 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.analytics-item-bar {
+    height: 4px;
+    background: #f1f5f9;
+    border-radius: 2px;
+    margin-top: 4px;
+    overflow: hidden;
+    position: relative;
+    width: 60px;
+}
+
+.analytics-item-progress {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: var(--primary-color);
+    border-radius: 2px;
+    opacity: 0.3;
+}
+
+.analytics-loading-inline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 40px;
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 900px) {
+    .analytics-detail-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 body.admin-dashboard-refresh .studio-header,
 body.admin-dashboard-refresh .editor-toolbar {
     background: rgba(255, 255, 255, 0.94);
