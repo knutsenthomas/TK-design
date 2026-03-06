@@ -2,7 +2,8 @@
     "global": {
         "siteTitle": "TK-design",
         "separator": "|",
-        "defaultKeywords": "design, portfolio, webutvikling, grafisk design"
+        "defaultKeywords": "design, portfolio, webutvikling, grafisk design",
+        "googleAnalyticsId": "G-5RZVDEBBYM"
     },
     "pages": {
         "index.html": {
