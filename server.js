@@ -1244,10 +1244,43 @@ app.get(['/', '/index.html', '/blog.html', '/project-details.html', '/blog-detai
     const siteTitle = siteTitleRaw === 'TK Design Studio' ? 'TK-design' : siteTitleRaw;
     const finalTitle = title ? `${title} ${globalSeo.separator || '|'} ${siteTitle}` : siteTitle;
 
-    fs.readFile(path.join(__dirname, reqFile), 'utf8', (err, html) => {
+    fs.readFile(path.join(__dirname, reqFile), 'utf8', async (err, html) => {
         if (err) return res.status(404).send('Page not found');
 
-        let injectedHtml = html
+        // --- Server-Side Translation Injection ---
+        let lang = 'no'; // Default
+        const cookies = req.headers.cookie || '';
+        const langMatch = cookies.match(/site_lang=(en|no)/);
+        if (langMatch) lang = langMatch[1];
+
+        let translatedHtml = html;
+        try {
+            const translations = await readSiteDataWithFallback('content', readDashboardContent);
+            const langData = translations[lang];
+
+            if (langData) {
+                // Regex to find elements with data-i18n attribute
+                // It looks for tags like <span data-i18n="nav.home">Any Content</span>
+                // and replaces "Any Content" with the translated value.
+                translatedHtml = html.replace(/<([^>]+data-i18n="([^"]+)"[^>]*)>([\s\S]*?)<\/\s*([a-zA-Z0-9]+)\s*>/g, (match, openingTag, key, oldContent, tagName) => {
+                    const keys = key.split('.');
+                    let text = langData;
+                    for (const k of keys) {
+                        text = text ? text[k] : null;
+                    }
+
+                    if (text && typeof text === 'string') {
+                        // Keep the opening tag exactly as it is (with the data-i18n attribute)
+                        return `<${openingTag}>${text}</${tagName}>`;
+                    }
+                    return match;
+                });
+            }
+        } catch (e) {
+            console.error('Error during server-side translation:', e);
+        }
+
+        let injectedHtml = translatedHtml
             .replace(/<title>[\s\S]*?<\/title>/i, `<title>${finalTitle}</title>`)
             .replace(/<meta\s+name="description"\s+content="[\s\S]*?">/i, `<meta name="description" content="${description}">`)
             .replace(/<meta\s+name="keywords"\s+content="[\s\S]*?">/i, `<meta name="keywords" content="${keywords}">`)

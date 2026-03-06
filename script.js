@@ -183,9 +183,16 @@ function initTestimonialSlider() {
 
 // --- LANGUAGE SWITCHER LOGIC ---
 
+// Helper to get cookie
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
 // Default to Norwegian as requested by user ("Oversett hele siden til norsk")
-// storedLang -> 'no' or 'en'
-let currentLang = localStorage.getItem('site_lang') || 'no';
+// priority: cookie -> localStorage -> default 'no'
+let currentLang = getCookie('site_lang') || localStorage.getItem('site_lang') || 'no';
 
 function initLanguage() {
     // Apply key translations
@@ -199,6 +206,8 @@ initLanguage();
 function switchLanguage(lang) {
     currentLang = lang;
     localStorage.setItem('site_lang', lang);
+    // Set cookie for server-side detection (expires in 1 year)
+    document.cookie = `site_lang=${lang}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
     applyLanguage(lang);
     updateLangButtons(lang);
 }
