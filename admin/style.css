@@ -2342,6 +2342,10 @@ body.admin-dashboard-refresh .analytics-meta-note {
     gap: 10px;
 }
 
+.analytics-list-head h3 i {
+    color: var(--primary-color);
+}
+
 .analytics-list-subtitle {
     font-size: 0.82rem;
     color: #94a3b8;
