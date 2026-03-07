@@ -1136,10 +1136,11 @@ header h1 {
 /* --- Image Picker Modal --- */
 .image-picker-container {
     background: white;
-    border-radius: 16px;
-    width: 90%;
-    max-width: 900px;
-    max-height: 90vh;
+    border-radius: 0;
+    width: 100%;
+    max-width: none;
+    height: 100vh;
+    max-height: 100vh;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -1185,7 +1186,7 @@ header h1 {
 }
 
 .image-picker-content {
-    padding: 30px;
+    padding: 20px 24px 24px;
     overflow-y: auto;
     flex: 1;
 }
@@ -1220,8 +1221,8 @@ header h1 {
 
 .unsplash-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 12px;
 }
 
 .unsplash-image-card {
