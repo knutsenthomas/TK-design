@@ -1209,6 +1209,10 @@ app.get('/sitemap.xml', async (req, res) => {
 // Server-Side Meta Injection
 app.get(['/', '/index.html', '/blog.html', '/project-details.html', '/blog-details.html', '/contact.html'], async (req, res) => {
     let reqFile = req.path === '/' ? 'index.html' : req.path.substring(1);
+    let lang = 'no';
+    const cookies = req.headers.cookie || '';
+    const langMatch = cookies.match(/site_lang=(en|no)/);
+    if (langMatch) lang = langMatch[1];
 
     let seoData = { global: {}, pages: {} };
     try {
@@ -1226,9 +1230,16 @@ app.get(['/', '/index.html', '/blog.html', '/project-details.html', '/blog-detai
             const posts = await readSiteDataWithFallback('posts', readBlogPosts);
             const post = posts.find(p => p.id == req.query.id);
             if (post) {
-                title = post.seoTitle || post.title;
-                description = post.seoDesc || (post.content ? post.content.replace(/<[^>]*>/g, '').substring(0, 160) : '');
-                keywords = post.seoKeywords || globalSeo.defaultKeywords || '';
+                const isEn = lang === 'en';
+                const postTitle = isEn ? (post.titleEn || post.title) : post.title;
+                const postContent = isEn ? (post.contentEn || post.content) : post.content;
+                const postSeoTitle = isEn ? (post.seoTitleEn || post.seoTitle) : post.seoTitle;
+                const postSeoDesc = isEn ? (post.seoDescEn || post.seoDesc) : post.seoDesc;
+                const postSeoKeywords = isEn ? (post.seoKeywordsEn || post.seoKeywords) : post.seoKeywords;
+
+                title = postSeoTitle || postTitle;
+                description = postSeoDesc || (postContent ? stripHtmlToText(postContent).substring(0, 160) : '');
+                keywords = postSeoKeywords || globalSeo.defaultKeywords || '';
             }
         } catch (e) { console.error('Error fetching post for SEO:', e); }
     }
@@ -1248,12 +1259,6 @@ app.get(['/', '/index.html', '/blog.html', '/project-details.html', '/blog-detai
 
     fs.readFile(path.join(__dirname, reqFile), 'utf8', async (err, html) => {
         if (err) return res.status(404).send('Page not found');
-
-        // --- Server-Side Translation Injection ---
-        let lang = 'no'; // Default
-        const cookies = req.headers.cookie || '';
-        const langMatch = cookies.match(/site_lang=(en|no)/);
-        if (langMatch) lang = langMatch[1];
 
         let translatedHtml = html;
         try {
@@ -1517,6 +1522,130 @@ async function getGeminiGenerateContentModels(apiKey = '') {
     return geminiModelListCache.models;
 }
 
+function stripGeminiCodeFence(text = '') {
+    return String(text || '')
+        .replace(/^```(?:json|html|markdown)?\s*/i, '')
+        .replace(/\s*```$/i, '')
+        .trim();
+}
+
+function parseGeminiJsonPayload(text = '') {
+    const cleaned = stripGeminiCodeFence(text);
+    const candidates = [cleaned];
+    const objectMatch = cleaned.match(/\{[\s\S]*\}/);
+    if (objectMatch) {
+        candidates.push(objectMatch[0]);
+    }
+
+    for (const candidate of candidates) {
+        if (!candidate) continue;
+        try {
+            const parsed = JSON.parse(candidate);
+            if (parsed && typeof parsed === 'object') {
+                return parsed;
+            }
+        } catch (error) {
+            // Try next parsing candidate.
+        }
+    }
+
+    return null;
+}
+
+function normalizeKeywordString(value = '') {
+    if (Array.isArray(value)) {
+        return value
+            .map((item) => String(item || '').trim())
+            .filter(Boolean)
+            .join(', ');
+    }
+
+    return String(value || '')
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean)
+        .join(', ');
+}
+
+function stripHtmlToText(html = '') {
+    return String(html || '')
+        .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+        .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function truncateText(text = '', maxLength = 160) {
+    const normalized = String(text || '').replace(/\s+/g, ' ').trim();
+    if (!normalized) return '';
+    if (normalized.length <= maxLength) return normalized;
+    return `${normalized.slice(0, Math.max(0, maxLength - 3)).trim()}...`;
+}
+
+async function runGeminiGenerateContent(parts = []) {
+    const geminiApiKey = String(process.env.GEMINI_API_KEY || '').trim();
+    if (!geminiApiKey) {
+        const keyError = new Error('Set GEMINI_API_KEY in server environment variables.');
+        keyError.code = 'gemini_api_key_missing';
+        throw keyError;
+    }
+
+    const preferredModel = normalizeGeminiModelName(process.env.GEMINI_MODEL || 'gemini-2.0-flash');
+    const discoveredModels = await getGeminiGenerateContentModels(geminiApiKey);
+    const modelCandidates = getGeminiModelCandidates(preferredModel, discoveredModels);
+
+    if (modelCandidates.length === 0) {
+        const noModelError = new Error('No Gemini model candidates available.');
+        noModelError.code = 'gemini_model_unavailable';
+        throw noModelError;
+    }
+
+    let selectedModel = '';
+    let text = '';
+    let lastModelErrorMessage = '';
+
+    for (const candidate of modelCandidates) {
+        try {
+            const model = genAI.getGenerativeModel({ model: candidate });
+            const result = await model.generateContent({
+                contents: [{ role: 'user', parts }]
+            });
+            const response = await result.response;
+            const candidateText = stripGeminiCodeFence(response.text() || '');
+
+            if (!candidateText) {
+                throw new Error('Gemini returned empty content.');
+            }
+
+            selectedModel = candidate;
+            text = candidateText;
+            break;
+        } catch (candidateError) {
+            if (isGeminiModelNotFoundError(candidateError)) {
+                lastModelErrorMessage = String(candidateError?.message || '');
+                console.warn(`[Gemini] Model ${candidate} unavailable. Trying next candidate...`);
+                continue;
+            }
+
+            throw candidateError;
+        }
+    }
+
+    if (!selectedModel || !text) {
+        const unavailableError = new Error(
+            `Ingen støttet Gemini-modell tilgjengelig for generateContent. Prøvde: ${modelCandidates.join(', ')}.${lastModelErrorMessage ? ` Siste feil: ${lastModelErrorMessage}` : ''}`
+        );
+        unavailableError.code = 'gemini_model_unavailable';
+        throw unavailableError;
+    }
+
+    return {
+        model: selectedModel,
+        text
+    };
+}
+
 // API: Generate Blog Content with Gemini AI
 app.post('/api/generate-content', aiAttachmentMiddleware, async (req, res) => {
     try {
@@ -1525,13 +1654,12 @@ app.post('/api/generate-content', aiAttachmentMiddleware, async (req, res) => {
         const length = String(req.body.length || 'medium').trim();
         const existingDraft = String(req.body.existingDraft || '').trim();
         const attachments = Array.isArray(req.files) ? req.files : [];
-        const geminiApiKey = String(process.env.GEMINI_API_KEY || '').trim();
 
         if (!topic && !existingDraft && attachments.length === 0) {
             return res.status(400).json({ error: 'Prompt, draft or attachment is required' });
         }
 
-        if (!geminiApiKey) {
+        if (!String(process.env.GEMINI_API_KEY || '').trim()) {
             return res.status(500).json({
                 error: 'Gemini API key is missing',
                 details: 'Set GEMINI_API_KEY in server environment variables.'
@@ -1609,64 +1737,12 @@ app.post('/api/generate-content', aiAttachmentMiddleware, async (req, res) => {
             });
         });
 
-        const preferredModel = normalizeGeminiModelName(process.env.GEMINI_MODEL || 'gemini-2.0-flash');
-        const discoveredModels = await getGeminiGenerateContentModels(geminiApiKey);
-        const modelCandidates = getGeminiModelCandidates(preferredModel, discoveredModels);
-
-        if (modelCandidates.length === 0) {
-            const noModelError = new Error('No Gemini model candidates available.');
-            noModelError.code = 'gemini_model_unavailable';
-            throw noModelError;
-        }
-
-        let selectedModel = '';
-        let text = '';
-        let lastModelErrorMessage = '';
-
-        for (const candidate of modelCandidates) {
-            try {
-                const model = genAI.getGenerativeModel({ model: candidate });
-                const result = await model.generateContent({
-                    contents: [{ role: 'user', parts }]
-                });
-                const response = await result.response;
-                let candidateText = String(response.text() || '').trim();
-
-                candidateText = candidateText
-                    .replace(/^```html\s*/i, '')
-                    .replace(/^```\s*/i, '')
-                    .replace(/\s*```$/i, '')
-                    .trim();
-
-                if (!candidateText) {
-                    throw new Error('Gemini returned empty content.');
-                }
-
-                selectedModel = candidate;
-                text = candidateText;
-                break;
-            } catch (candidateError) {
-                if (isGeminiModelNotFoundError(candidateError)) {
-                    lastModelErrorMessage = String(candidateError?.message || '');
-                    console.warn(`[Gemini] Model ${candidate} unavailable. Trying next candidate...`);
-                    continue;
-                }
-
-                throw candidateError;
-            }
-        }
-
-        if (!selectedModel || !text) {
-            const unavailableError = new Error(
-                `Ingen støttet Gemini-modell tilgjengelig for generateContent. Prøvde: ${modelCandidates.join(', ')}.${lastModelErrorMessage ? ` Siste feil: ${lastModelErrorMessage}` : ''}`
-            );
-            unavailableError.code = 'gemini_model_unavailable';
-            throw unavailableError;
-        }
+        const aiResult = await runGeminiGenerateContent(parts);
+        const text = stripGeminiCodeFence(aiResult.text);
 
         res.json({
             content: text,
-            model: selectedModel,
+            model: aiResult.model,
             attachmentCount: attachments.length
         });
     } catch (error) {
@@ -1674,6 +1750,14 @@ app.post('/api/generate-content', aiAttachmentMiddleware, async (req, res) => {
         const errorCode = String(error?.code || '');
         const errorMessage = String(error?.message || '');
         const refererBlocked = /API_KEY_HTTP_REFERRER_BLOCKED|Requests from referer <empty> are blocked/i.test(errorMessage);
+
+        if (errorCode === 'gemini_api_key_missing') {
+            return res.status(500).json({
+                error: 'Gemini API key is missing',
+                code: 'gemini_api_key_missing',
+                details: 'Set GEMINI_API_KEY in server environment variables.'
+            });
+        }
 
         if (errorCode === 'gemini_model_unavailable') {
             return res.status(500).json({
@@ -1692,6 +1776,157 @@ app.post('/api/generate-content', aiAttachmentMiddleware, async (req, res) => {
         }
 
         res.status(500).json({ error: 'Failed to generate content', details: errorMessage || 'Unknown Gemini error' });
+    }
+});
+
+// API: Generate blog SEO (NO) and translation (EN)
+app.post('/api/blog/ai-enrich', async (req, res) => {
+    try {
+        const title = String(req.body?.title || '').trim();
+        const content = String(req.body?.content || '').trim();
+        const excerpt = String(req.body?.excerpt || '').trim();
+        const category = String(req.body?.category || '').trim();
+        const seoTitle = String(req.body?.seoTitle || '').trim();
+        const seoDesc = String(req.body?.seoDesc || '').trim();
+        const seoKeywords = normalizeKeywordString(req.body?.seoKeywords || '');
+
+        if (!title) {
+            return res.status(400).json({ error: 'Title is required' });
+        }
+
+        if (!content) {
+            return res.status(400).json({ error: 'Content is required' });
+        }
+
+        if (!String(process.env.GEMINI_API_KEY || '').trim()) {
+            return res.status(500).json({
+                error: 'Gemini API key is missing',
+                details: 'Set GEMINI_API_KEY in server environment variables.'
+            });
+        }
+
+        const plainNoContent = stripHtmlToText(content);
+        const fallbackNoExcerpt = excerpt || truncateText(plainNoContent, 220);
+        const prompt = [
+            'Du er en senior SEO-spesialist og en profesjonell oversetter (norsk -> engelsk).',
+            'Du skal analysere et norsk blogginnlegg og returnere SEO-data og full engelsk versjon.',
+            'Svar KUN med gyldig JSON. Ingen markdown, ingen forklaringer.',
+            'JSON-formatet må være:',
+            '{',
+            '  "seo": {',
+            '    "title": "Norsk SEO-tittel (maks 65 tegn)",',
+            '    "description": "Norsk metabeskrivelse (maks 160 tegn)",',
+            '    "keywords": ["nøkkelord1", "nøkkelord2", "nøkkelord3"]',
+            '  },',
+            '  "translation": {',
+            '    "title": "Engelsk tittel",',
+            '    "excerpt": "Engelsk utdrag (1-2 setninger)",',
+            '    "category": "Engelsk kategori",',
+            '    "contentHtml": "Full engelsk HTML med samme struktur som input",',
+            '    "seoTitle": "English SEO title (max 65 chars)",',
+            '    "seoDescription": "English meta description (max 160 chars)",',
+            '    "seoKeywords": ["keyword1", "keyword2", "keyword3"]',
+            '  }',
+            '}',
+            'Krav:',
+            '- contentHtml må være gyldig HTML uten kodeblokker.',
+            '- Behold semantisk struktur (<h2>, <h3>, <p>, <ul>, <li>, <blockquote>) fra originalen.',
+            '- Ikke legg til fakta som ikke finnes i innholdet.',
+            '- SEO-tittel og beskrivelse skal være konkrete og klikkvennlige.',
+            '',
+            `Norsk tittel: ${title}`,
+            `Norsk kategori: ${category || 'Generelt'}`,
+            `Norsk utdrag: ${fallbackNoExcerpt || '(mangler)'}`,
+            `Eksisterende SEO-tittel: ${seoTitle || '(mangler)'}`,
+            `Eksisterende SEO-beskrivelse: ${seoDesc || '(mangler)'}`,
+            `Eksisterende SEO-nøkkelord: ${seoKeywords || '(mangler)'}`,
+            '',
+            'Norsk HTML-innhold:',
+            content
+        ].join('\n');
+
+        const aiResult = await runGeminiGenerateContent([{ text: prompt }]);
+        const parsed = parseGeminiJsonPayload(aiResult.text);
+
+        if (!parsed) {
+            throw new Error('Gemini returned invalid JSON payload for blog SEO/translation.');
+        }
+
+        const parsedSeo = parsed.seo || {};
+        const parsedTranslation = parsed.translation || parsed.english || {};
+
+        const normalizedSeoTitle = String(parsedSeo.title || parsedSeo.seoTitle || '').trim();
+        const normalizedSeoDesc = String(parsedSeo.description || parsedSeo.seoDescription || '').trim();
+        const normalizedSeoKeywords = normalizeKeywordString(parsedSeo.keywords || parsedSeo.seoKeywords || '');
+
+        const translatedTitle = String(parsedTranslation.title || '').trim();
+        const translatedExcerptRaw = String(parsedTranslation.excerpt || '').trim();
+        const translatedCategory = String(parsedTranslation.category || '').trim();
+        const translatedContentHtml = stripGeminiCodeFence(
+            parsedTranslation.contentHtml || parsedTranslation.content || parsedTranslation.html || ''
+        );
+        const translatedSeoTitle = String(parsedTranslation.seoTitle || '').trim();
+        const translatedSeoDesc = String(parsedTranslation.seoDescription || parsedTranslation.seoDesc || '').trim();
+        const translatedSeoKeywords = normalizeKeywordString(parsedTranslation.seoKeywords || parsedTranslation.keywords || '');
+
+        if (!translatedContentHtml) {
+            throw new Error('Gemini returned empty English content.');
+        }
+
+        const translatedPlainText = stripHtmlToText(translatedContentHtml);
+        const translatedExcerpt = translatedExcerptRaw || truncateText(translatedPlainText, 220);
+
+        res.json({
+            seo: {
+                title: normalizedSeoTitle || seoTitle || title,
+                description: normalizedSeoDesc || seoDesc || truncateText(plainNoContent, 160),
+                keywords: normalizedSeoKeywords || seoKeywords
+            },
+            translation: {
+                title: translatedTitle || title,
+                excerpt: translatedExcerpt,
+                category: translatedCategory || category || 'General',
+                content: translatedContentHtml,
+                seoTitle: translatedSeoTitle || translatedTitle || title,
+                seoDesc: translatedSeoDesc || truncateText(translatedPlainText, 160),
+                seoKeywords: translatedSeoKeywords
+            },
+            model: aiResult.model
+        });
+    } catch (error) {
+        console.error('Gemini Blog Enrichment Error:', error);
+        const errorCode = String(error?.code || '');
+        const errorMessage = String(error?.message || '');
+        const refererBlocked = /API_KEY_HTTP_REFERRER_BLOCKED|Requests from referer <empty> are blocked/i.test(errorMessage);
+
+        if (errorCode === 'gemini_api_key_missing') {
+            return res.status(500).json({
+                error: 'Gemini API key is missing',
+                code: 'gemini_api_key_missing',
+                details: 'Set GEMINI_API_KEY in server environment variables.'
+            });
+        }
+
+        if (errorCode === 'gemini_model_unavailable') {
+            return res.status(500).json({
+                error: 'No supported Gemini model available',
+                code: 'gemini_model_unavailable',
+                details: errorMessage || 'Server could not find a Gemini model that supports generateContent.'
+            });
+        }
+
+        if (refererBlocked) {
+            return res.status(500).json({
+                error: 'Gemini key blocked by HTTP referrer restrictions',
+                code: 'gemini_api_key_http_referrer_blocked',
+                details: 'Gemini-kallet går fra server (uten referer). Bruk en servernøkkel uten HTTP-referrer-restriksjon, men med API-restriksjon til Generative Language API.'
+            });
+        }
+
+        res.status(500).json({
+            error: 'Failed to enrich post with AI',
+            details: errorMessage || 'Unknown Gemini error'
+        });
     }
 });
 

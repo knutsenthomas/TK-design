@@ -321,6 +321,10 @@ function normalizeAdminErrorMessage(error, fallbackMessage) {
         return 'Gemini-modellen i serveren er ikke tilgjengelig. Sett GEMINI_MODEL til en gyldig modell (f.eks. gemini-2.0-flash), eller la serveren bruke automatisk fallback.';
     }
 
+    if (/Failed to enrich post with AI|Gemini returned invalid JSON payload|Gemini returned empty English content/i.test(rawMessage)) {
+        return 'Gemini klarte ikke å generere SEO/oversettelse i riktig format. Prøv igjen med en litt tydeligere tittel eller kortere innhold.';
+    }
+
     return rawMessage;
 }
 
@@ -661,6 +665,20 @@ function getNextPostId() {
     }, 0) + 1;
 }
 
+function normalizeKeywordCsv(value = '') {
+    return String(value || '')
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean)
+        .join(', ');
+}
+
+function stripHtmlToPlainText(html = '') {
+    const temp = document.createElement('div');
+    temp.innerHTML = html || '';
+    return String(temp.textContent || temp.innerText || '').replace(/\s+/g, ' ').trim();
+}
+
 function buildPostPayload() {
     const title = document.getElementById('post-title')?.value.trim();
     if (!title) {
@@ -683,15 +701,95 @@ function buildPostPayload() {
         image: document.getElementById('post-image')?.value || 'img/blog/bblog1.png',
         excerpt: document.getElementById('post-excerpt')?.value.trim() || '',
         content: content || '<p>Nytt innlegg uten innhold.</p>',
-        seoTitle: document.getElementById('post-seo-title')?.value.trim() || title,
+        seoTitle: document.getElementById('post-seo-title')?.value.trim() || '',
         seoDesc: document.getElementById('post-seo-desc')?.value.trim() || '',
-        seoKeywords: document.getElementById('post-seo-keywords')?.value.trim() || '',
+        seoKeywords: normalizeKeywordCsv(document.getElementById('post-seo-keywords')?.value || ''),
         link: `blog-details.html?id=${postId}`
     };
 }
 
+async function requestAiSeoAndTranslation(postPayload) {
+    const response = await fetch(`${API_URL}/blog/ai-enrich`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            title: postPayload.title,
+            content: postPayload.content,
+            excerpt: postPayload.excerpt,
+            category: postPayload.category,
+            seoTitle: postPayload.seoTitle,
+            seoDesc: postPayload.seoDesc,
+            seoKeywords: postPayload.seoKeywords
+        })
+    });
+
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        throw new Error(payload?.details || payload?.error || `AI-feil (${response.status})`);
+    }
+
+    return payload;
+}
+
+function mergeAiEnhancementsIntoPost(postPayload, aiPayload, { forceSeo = false } = {}) {
+    const mergedPayload = { ...postPayload };
+    const aiSeo = aiPayload?.seo || {};
+    const aiTranslation = aiPayload?.translation || {};
+
+    const generatedSeoTitle = String(aiSeo.title || '').trim();
+    const generatedSeoDesc = String(aiSeo.description || '').trim();
+    const generatedSeoKeywords = normalizeKeywordCsv(aiSeo.keywords || '');
+    const shouldUpdateSeo = forceSeo || !mergedPayload.seoTitle || !mergedPayload.seoDesc || !mergedPayload.seoKeywords;
+
+    if (shouldUpdateSeo) {
+        mergedPayload.seoTitle = generatedSeoTitle || mergedPayload.seoTitle || mergedPayload.title;
+        mergedPayload.seoDesc = generatedSeoDesc || mergedPayload.seoDesc || '';
+        mergedPayload.seoKeywords = generatedSeoKeywords || mergedPayload.seoKeywords || '';
+    } else {
+        mergedPayload.seoTitle = mergedPayload.seoTitle || mergedPayload.title;
+        mergedPayload.seoKeywords = normalizeKeywordCsv(mergedPayload.seoKeywords);
+    }
+
+    const translatedTitle = String(aiTranslation.title || '').trim();
+    const translatedExcerpt = String(aiTranslation.excerpt || '').trim();
+    const translatedCategory = String(aiTranslation.category || '').trim();
+    const translatedContent = String(aiTranslation.content || '').trim();
+    const translatedSeoTitle = String(aiTranslation.seoTitle || '').trim();
+    const translatedSeoDesc = String(aiTranslation.seoDesc || '').trim();
+    const translatedSeoKeywords = normalizeKeywordCsv(aiTranslation.seoKeywords || '');
+    const translatedFallbackExcerpt = stripHtmlToPlainText(translatedContent).slice(0, 220).trim();
+
+    mergedPayload.titleEn = translatedTitle || mergedPayload.title;
+    mergedPayload.excerptEn = translatedExcerpt || translatedFallbackExcerpt || mergedPayload.excerpt || '';
+    mergedPayload.categoryEn = translatedCategory || mergedPayload.category || 'General';
+    mergedPayload.contentEn = translatedContent || mergedPayload.content;
+    mergedPayload.seoTitleEn = translatedSeoTitle || mergedPayload.titleEn;
+    mergedPayload.seoDescEn = translatedSeoDesc || mergedPayload.excerptEn || '';
+    mergedPayload.seoKeywordsEn = translatedSeoKeywords || normalizeKeywordCsv(mergedPayload.seoKeywordsEn || '');
+    mergedPayload.aiLocalizedAt = new Date().toISOString();
+
+    return mergedPayload;
+}
+
+function applySeoValuesToForm(postPayload) {
+    const seoTitleInput = document.getElementById('post-seo-title');
+    const seoDescInput = document.getElementById('post-seo-desc');
+    const seoKeywordsInput = document.getElementById('post-seo-keywords');
+
+    if (seoTitleInput) seoTitleInput.value = postPayload.seoTitle || '';
+    if (seoDescInput) seoDescInput.value = postPayload.seoDesc || '';
+    if (seoKeywordsInput) seoKeywordsInput.value = postPayload.seoKeywords || '';
+}
+
 async function upsertCurrentPost(successMessage) {
-    const postPayload = buildPostPayload();
+    const isNewPost = !currentEditingId;
+    const basePayload = buildPostPayload();
+    const existingPost = blogData.find((post) => Number(post.id) === Number(basePayload.id));
+    const seededPayload = existingPost ? { ...existingPost, ...basePayload } : basePayload;
+    const aiPayload = await requestAiSeoAndTranslation(seededPayload);
+    const postPayload = mergeAiEnhancementsIntoPost(seededPayload, aiPayload, { forceSeo: isNewPost });
+    applySeoValuesToForm(postPayload);
+
     const existingIndex = blogData.findIndex((post) => Number(post.id) === Number(postPayload.id));
 
     if (existingIndex >= 0) {
@@ -708,6 +806,59 @@ async function upsertCurrentPost(successMessage) {
         variant: 'success'
     });
 }
+
+window.generateSeoForCurrentDraft = async function () {
+    if (aiSeoInFlight) return;
+
+    let basePayload;
+    try {
+        basePayload = buildPostPayload();
+    } catch (error) {
+        await showAdminNotice(
+            normalizeAdminErrorMessage(error, 'Skriv minst en tittel før SEO-generering.'),
+            {
+                title: 'Mangler data',
+                variant: 'warning'
+            }
+        );
+        return;
+    }
+
+    const generateBtn = document.getElementById('ai-generate-seo-btn');
+    const originalBtnContent = generateBtn ? generateBtn.innerHTML : '';
+
+    if (generateBtn) {
+        generateBtn.disabled = true;
+        generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Genererer SEO...';
+    }
+
+    aiSeoInFlight = true;
+    try {
+        const aiPayload = await requestAiSeoAndTranslation(basePayload);
+        const mergedPayload = mergeAiEnhancementsIntoPost(basePayload, aiPayload, { forceSeo: true });
+        applySeoValuesToForm(mergedPayload);
+
+        await showAdminNotice('SEO-feltene er oppdatert med forslag fra Gemini.', {
+            title: 'SEO generert',
+            variant: 'success'
+        });
+    } catch (error) {
+        console.error('Error generating SEO with AI:', error);
+        await showAdminNotice(
+            normalizeAdminErrorMessage(error, 'Det oppstod en feil ved SEO-generering.'),
+            {
+                title: 'SEO-generering feilet',
+                variant: 'danger'
+            }
+        );
+    } finally {
+        aiSeoInFlight = false;
+        if (generateBtn) {
+            generateBtn.disabled = false;
+            generateBtn.innerHTML = originalBtnContent;
+        }
+    }
+};
 
 window.savePost = async function () {
     try {
@@ -1514,6 +1665,7 @@ let unsplashSearchState = {
 };
 let aiContextFiles = [];
 let aiGenerationInFlight = false;
+let aiSeoInFlight = false;
 
 function sanitizeStorageFileName(fileName = 'image') {
     return String(fileName)
@@ -1739,6 +1891,7 @@ function resetAiAssistantState(options = {}) {
 
     aiContextFiles = [];
     aiGenerationInFlight = false;
+    aiSeoInFlight = false;
     renderAiContextFileList();
 
     const fileInput = document.getElementById('ai-context-files');

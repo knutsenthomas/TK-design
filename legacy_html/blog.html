@@ -259,13 +259,31 @@
             return (temp.textContent || temp.innerText || '').replace(/\s+/g, ' ').trim();
         }
 
+        function getLocalizedPost(post) {
+            const isEn = typeof currentLang !== 'undefined' && currentLang === 'en';
+            return {
+                ...post,
+                title: isEn ? (post.titleEn || post.title) : post.title,
+                excerpt: isEn ? (post.excerptEn || post.excerpt) : post.excerpt,
+                content: isEn ? (post.contentEn || post.content) : post.content,
+                category: isEn ? (post.categoryEn || post.category) : post.category,
+                seoDesc: isEn ? (post.seoDescEn || post.seoDesc) : post.seoDesc
+            };
+        }
+
         function buildPostSummary(post) {
-            const fromSeo = (post.seoDesc || '').trim();
+            const localizedPost = getLocalizedPost(post);
+            const fromExcerpt = (localizedPost.excerpt || '').trim();
+            if (fromExcerpt) {
+                return fromExcerpt;
+            }
+
+            const fromSeo = (localizedPost.seoDesc || '').trim();
             if (fromSeo) {
                 return fromSeo;
             }
 
-            const plainText = stripHtml(post.content);
+            const plainText = stripHtml(localizedPost.content);
             if (!plainText) {
                 return '';
             }
@@ -275,6 +293,7 @@
 
         function renderBlogSpotlight(posts) {
             const post = posts[0];
+            const localizedPost = post ? getLocalizedPost(post) : null;
             const title = document.getElementById('blogFeaturedTitle');
             const summary = document.getElementById('blogFeaturedSummary');
             const category = document.getElementById('blogFeaturedCategory');
@@ -282,7 +301,7 @@
             const link = document.getElementById('blogFeaturedLink');
             const linkText = document.getElementById('blogFeaturedLinkText');
 
-            if (!post) {
+            if (!localizedPost) {
                 if (title) {
                     title.textContent = getBlogPageText('empty');
                 }
@@ -305,19 +324,19 @@
             }
 
             if (title) {
-                title.textContent = post.title;
+                title.textContent = localizedPost.title;
             }
             if (summary) {
-                summary.textContent = buildPostSummary(post);
+                summary.textContent = buildPostSummary(localizedPost);
             }
             if (category) {
-                category.textContent = post.category || 'TK-design';
+                category.textContent = localizedPost.category || 'TK-design';
             }
             if (date) {
-                date.textContent = post.date || '-';
+                date.textContent = localizedPost.date || '-';
             }
             if (link) {
-                link.href = post.link || `blog-details.html?id=${post.id}`;
+                link.href = localizedPost.link || `blog-details.html?id=${localizedPost.id}`;
             }
             if (linkText) {
                 linkText.textContent = getBlogPageText('open_post');
@@ -329,7 +348,8 @@
             const totalTopics = document.getElementById('blogTotalTopics');
             const latestUpdate = document.getElementById('blogLatestUpdate');
 
-            const topicCount = new Set(posts.map((post) => post.category).filter(Boolean)).size;
+            const topicCount = new Set(posts.map((post) => getLocalizedPost(post).category).filter(Boolean)).size;
+            const latestDate = posts[0] ? (getLocalizedPost(posts[0]).date || posts[0].date) : '-';
 
             if (totalPosts) {
                 totalPosts.textContent = String(posts.length);
@@ -338,7 +358,7 @@
                 totalTopics.textContent = String(topicCount);
             }
             if (latestUpdate) {
-                latestUpdate.textContent = posts[0] && posts[0].date ? posts[0].date : '-';
+                latestUpdate.textContent = latestDate || '-';
             }
         }
 
@@ -358,19 +378,20 @@
             }
 
             grid.innerHTML = posts.map((post) => {
-                const url = post.link || `blog-details.html?id=${post.id}`;
+                const localizedPost = getLocalizedPost(post);
+                const url = localizedPost.link || `blog-details.html?id=${localizedPost.id}`;
                 return `
                     <article class="blog-list-card">
                         <a href="${url}" class="blog-list-image">
-                            <img src="${post.image}" alt="${post.title}">
+                            <img src="${localizedPost.image}" alt="${localizedPost.title}">
                         </a>
                         <div class="blog-list-card-body">
                             <div class="blog-list-card-meta">
-                                <span class="blog-list-chip">${post.category || 'TK-design'}</span>
-                                <span>${post.date || ''}</span>
+                                <span class="blog-list-chip">${localizedPost.category || 'TK-design'}</span>
+                                <span>${localizedPost.date || ''}</span>
                             </div>
-                            <h3><a href="${url}">${post.title}</a></h3>
-                            <p>${buildPostSummary(post)}</p>
+                            <h3><a href="${url}">${localizedPost.title}</a></h3>
+                            <p>${buildPostSummary(localizedPost)}</p>
                             <a href="${url}" class="award-link blog-list-link">
                                 <span>${getBlogPageText('open_post')}</span>
                                 <i class="fas fa-arrow-right"></i>

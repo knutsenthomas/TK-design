@@ -358,13 +358,33 @@
             return plainText ? [plainText] : [];
         }
 
+        function getLocalizedPost(post) {
+            const isEn = typeof currentLang !== 'undefined' && currentLang === 'en';
+            return {
+                ...post,
+                title: isEn ? (post.titleEn || post.title) : post.title,
+                excerpt: isEn ? (post.excerptEn || post.excerpt) : post.excerpt,
+                content: isEn ? (post.contentEn || post.content) : post.content,
+                category: isEn ? (post.categoryEn || post.category) : post.category,
+                seoTitle: isEn ? (post.seoTitleEn || post.seoTitle || post.titleEn || post.title) : (post.seoTitle || post.title),
+                seoDesc: isEn ? (post.seoDescEn || post.seoDesc || post.excerptEn || post.excerpt || '') : (post.seoDesc || post.excerpt || ''),
+                seoKeywords: isEn ? (post.seoKeywordsEn || post.seoKeywords || '') : (post.seoKeywords || '')
+            };
+        }
+
         function buildSummary(post) {
-            const fromSeo = (post.seoDesc || '').trim();
+            const localizedPost = getLocalizedPost(post);
+            const fromExcerpt = (localizedPost.excerpt || '').trim();
+            if (fromExcerpt) {
+                return fromExcerpt;
+            }
+
+            const fromSeo = (localizedPost.seoDesc || '').trim();
             if (fromSeo) {
                 return fromSeo;
             }
 
-            const [firstParagraph] = extractParagraphs(post.content);
+            const [firstParagraph] = extractParagraphs(localizedPost.content);
             if (!firstParagraph) {
                 return '';
             }
@@ -373,14 +393,16 @@
         }
 
         function estimateReadingTime(post) {
-            const wordCount = stripHtml(post.content).split(/\s+/).filter(Boolean).length;
+            const localizedPost = getLocalizedPost(post);
+            const wordCount = stripHtml(localizedPost.content).split(/\s+/).filter(Boolean).length;
             const minutes = Math.max(1, Math.ceil(wordCount / 180));
             return `${minutes} min`;
         }
 
         function updateShareLinks(post) {
             const url = encodeURIComponent(window.location.href);
-            const title = encodeURIComponent(post.title || 'TK-design');
+            const localizedPost = getLocalizedPost(post);
+            const title = encodeURIComponent(localizedPost.title || 'TK-design');
 
             const shareFacebook = document.getElementById('shareFacebook');
             const shareLinkedIn = document.getElementById('shareLinkedIn');
@@ -405,7 +427,8 @@
                 return;
             }
 
-            const paragraphs = extractParagraphs(post.content).slice(0, 3);
+            const localizedPost = getLocalizedPost(post);
+            const paragraphs = extractParagraphs(localizedPost.content).slice(0, 3);
             if (!paragraphs.length) {
                 outlineList.innerHTML = `<li>${getBlogRuntimeText().notFound}</li>`;
                 return;
@@ -423,12 +446,13 @@
                 return;
             }
 
-            const keywordTags = (post.seoKeywords || '')
+            const localizedPost = getLocalizedPost(post);
+            const keywordTags = (localizedPost.seoKeywords || '')
                 .split(',')
                 .map((keyword) => keyword.trim())
                 .filter(Boolean);
 
-            const tags = [post.category, ...keywordTags].filter(Boolean).slice(0, 6);
+            const tags = [localizedPost.category, ...keywordTags].filter(Boolean).slice(0, 6);
             tagList.innerHTML = tags.map((tag) => `<li>${tag}</li>`).join('');
         }
 
@@ -444,13 +468,16 @@
                 return;
             }
 
-            recentContainer.innerHTML = otherPosts.map((post) => `
+            recentContainer.innerHTML = otherPosts.map((post) => {
+                const localizedPost = getLocalizedPost(post);
+                return `
                 <a href="/blog-details?id=${post.id}" class="blog-recent-link">
-                    <span>${post.category || 'TK-design'}</span>
-                    <strong>${post.title}</strong>
-                    <em>${post.date || ''}</em>
+                    <span>${localizedPost.category || 'TK-design'}</span>
+                    <strong>${localizedPost.title}</strong>
+                    <em>${localizedPost.date || ''}</em>
                 </a>
-            `).join('');
+            `;
+            }).join('');
         }
 
         function renderPostNavigation(activePost) {
@@ -466,19 +493,22 @@
             const nextLink = document.getElementById('nextPostLink');
             const prevName = document.getElementById('prevPostName');
             const nextName = document.getElementById('nextPostName');
+            const localizedPrev = getLocalizedPost(prevPost);
+            const localizedNext = getLocalizedPost(nextPost);
 
             if (prevLink && prevName) {
                 prevLink.href = `blog-details.html?id=${prevPost.id}`;
-                prevName.textContent = prevPost.title;
+                prevName.textContent = localizedPrev.title;
             }
 
             if (nextLink && nextName) {
                 nextLink.href = `blog-details.html?id=${nextPost.id}`;
-                nextName.textContent = nextPost.title;
+                nextName.textContent = localizedNext.title;
             }
         }
 
         function renderPost(post) {
+            const localizedPost = getLocalizedPost(post);
             const summary = buildSummary(post);
             const readingTime = estimateReadingTime(post);
 
@@ -498,7 +528,7 @@
             const contentContainer = document.getElementById('blog-content-container');
 
             if (title) {
-                title.textContent = post.title;
+                title.textContent = localizedPost.title;
             }
 
             if (summaryEl) {
@@ -506,11 +536,11 @@
             }
 
             if (breadcrumb) {
-                breadcrumb.textContent = post.title;
+                breadcrumb.textContent = localizedPost.title;
             }
 
             if (previewTitle) {
-                previewTitle.textContent = post.title;
+                previewTitle.textContent = localizedPost.title;
             }
 
             if (previewLead) {
@@ -518,11 +548,11 @@
             }
 
             if (categoryValue) {
-                categoryValue.textContent = post.category || 'TK-design';
+                categoryValue.textContent = localizedPost.category || 'TK-design';
             }
 
             if (dateValue) {
-                dateValue.textContent = post.date || '';
+                dateValue.textContent = localizedPost.date || '';
             }
 
             if (authorValue) {
@@ -530,11 +560,11 @@
             }
 
             if (overviewCategory) {
-                overviewCategory.textContent = post.category || 'TK-design';
+                overviewCategory.textContent = localizedPost.category || 'TK-design';
             }
 
             if (overviewDate) {
-                overviewDate.textContent = post.date || '';
+                overviewDate.textContent = localizedPost.date || '';
             }
 
             if (overviewAuthor) {
@@ -546,15 +576,15 @@
             }
 
             if (detailImage) {
-                detailImage.src = post.image || 'img/blog/bblog1.png';
-                detailImage.alt = post.title;
+                detailImage.src = localizedPost.image || 'img/blog/bblog1.png';
+                detailImage.alt = localizedPost.title;
             }
 
             if (contentContainer) {
-                contentContainer.innerHTML = post.content || `<p>${getBlogRuntimeText().notFound}</p>`;
+                contentContainer.innerHTML = localizedPost.content || `<p>${getBlogRuntimeText().notFound}</p>`;
             }
 
-            document.title = `${post.seoTitle || post.title} | tk-design`;
+            document.title = `${localizedPost.seoTitle || localizedPost.title} | tk-design`;
             renderTags(post);
             renderOutline(post);
             renderRecentPosts(post);
