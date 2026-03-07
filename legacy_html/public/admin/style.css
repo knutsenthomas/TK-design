@@ -1252,6 +1252,36 @@ header h1 {
     opacity: 1;
 }
 
+.unsplash-load-more {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    margin-top: 8px;
+}
+
+.unsplash-load-more-btn {
+    border: 1px solid #d1d5db;
+    background: #fff;
+    color: #1f2937;
+    padding: 10px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.unsplash-load-more-btn:hover:not(:disabled) {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: #fff7ed;
+}
+
+.unsplash-load-more-btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
 /* AI Generator Panel */
 .ai-generator-panel {
     padding: 10px 0;

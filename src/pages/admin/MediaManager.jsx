@@ -14,6 +14,8 @@ import {
     Copy
 } from 'lucide-react';
 
+const UNSPLASH_PAGE_SIZE = 24;
+
 const normalizeUnsplashResults = (payload) => {
     if (Array.isArray(payload?.images)) {
         return payload.images
@@ -57,6 +59,9 @@ const MediaManager = () => {
     const [unsplashQuery, setUnsplashQuery] = useState('');
     const [unsplashResults, setUnsplashResults] = useState([]);
     const [unsplashLoading, setUnsplashLoading] = useState(false);
+    const [unsplashLoadingMore, setUnsplashLoadingMore] = useState(false);
+    const [unsplashPage, setUnsplashPage] = useState(0);
+    const [unsplashTotal, setUnsplashTotal] = useState(0);
 
     useEffect(() => {
         fetchMedia();
@@ -78,24 +83,67 @@ const MediaManager = () => {
 
     const searchUnsplash = async (e) => {
         if (e) e.preventDefault();
-        if (!unsplashQuery.trim()) return;
+        const query = unsplashQuery.trim();
+        if (!query) return;
 
         setUnsplashLoading(true);
         try {
-            const response = await fetch(`/api/unsplash/search?query=${encodeURIComponent(unsplashQuery)}`);
+            const response = await fetch(
+                `/api/unsplash/search?query=${encodeURIComponent(query)}&page=1&per_page=${UNSPLASH_PAGE_SIZE}`
+            );
             const payload = await response.json().catch(() => ({}));
 
             if (!response.ok) {
                 throw new Error(payload?.details || payload?.error || `Unsplash-søk feilet (${response.status})`);
             }
 
-            setUnsplashResults(normalizeUnsplashResults(payload));
+            const images = normalizeUnsplashResults(payload);
+            setUnsplashResults(images);
+            setUnsplashPage(1);
+            setUnsplashTotal(Number(payload?.total) || images.length);
         } catch (error) {
             console.error('Unsplash fetch error:', error);
             setNotice({ type: 'error', message: error.message || 'Kunne ikke kontakte Unsplash-tjenesten.' });
             setTimeout(() => setNotice(null), 5000);
         } finally {
             setUnsplashLoading(false);
+        }
+    };
+
+    const loadMoreUnsplash = async () => {
+        const query = unsplashQuery.trim();
+        if (!query || unsplashLoading || unsplashLoadingMore) return;
+
+        const nextPage = unsplashPage + 1;
+        if (nextPage <= 1) return;
+
+        setUnsplashLoadingMore(true);
+        try {
+            const response = await fetch(
+                `/api/unsplash/search?query=${encodeURIComponent(query)}&page=${nextPage}&per_page=${UNSPLASH_PAGE_SIZE}`
+            );
+            const payload = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(payload?.details || payload?.error || `Unsplash-søk feilet (${response.status})`);
+            }
+
+            const images = normalizeUnsplashResults(payload);
+            setUnsplashResults((prev) => {
+                const mergedById = new Map(prev.map((item) => [item.id, item]));
+                images.forEach((item) => mergedById.set(item.id, item));
+                return Array.from(mergedById.values());
+            });
+            setUnsplashPage(nextPage);
+            if (payload?.total) {
+                setUnsplashTotal(Number(payload.total));
+            }
+        } catch (error) {
+            console.error('Unsplash load more error:', error);
+            setNotice({ type: 'error', message: error.message || 'Kunne ikke hente flere bilder.' });
+            setTimeout(() => setNotice(null), 5000);
+        } finally {
+            setUnsplashLoadingMore(false);
         }
     };
 
@@ -143,6 +191,7 @@ const MediaManager = () => {
     const filteredMedia = media.filter(item =>
         item.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
+    const hasMoreUnsplashResults = unsplashResults.length > 0 && unsplashResults.length < unsplashTotal;
 
     if (loading) {
         return (
@@ -256,26 +305,39 @@ const MediaManager = () => {
                                 <p className="font-bold">{unsplashLoading ? 'Søker på Unsplash...' : 'Søk for å finne bilder på Unsplash'}</p>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                                {unsplashResults.map((img) => (
-                                    <motion.div
-                                        key={img.id}
-                                        onClick={() => setSelectedImage({
-                                            name: img.description || 'Unsplash-bilde',
-                                            url: img.url,
-                                            size: 0,
-                                            isUnsplash: true,
-                                            attribution: `Foto av ${img.photographer} på Unsplash`,
-                                            photographerUrl: img.photographerUrl
-                                        })}
-                                        className="group relative aspect-square rounded-2xl overflow-hidden cursor-pointer border border-gray-100 bg-gray-50"
-                                    >
-                                        <img src={img.thumb} alt={img.description || 'Unsplash-bilde'} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                                        <div className="absolute inset-0 bg-brand/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
-                                            <p className="text-[8px] text-white font-bold truncate">av {img.photographer}</p>
-                                        </div>
-                                    </motion.div>
-                                ))}
+                            <div className="space-y-6">
+                                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                                    {unsplashResults.map((img) => (
+                                        <motion.div
+                                            key={img.id}
+                                            onClick={() => setSelectedImage({
+                                                name: img.description || 'Unsplash-bilde',
+                                                url: img.url,
+                                                size: 0,
+                                                isUnsplash: true,
+                                                attribution: `Foto av ${img.photographer} på Unsplash`,
+                                                photographerUrl: img.photographerUrl
+                                            })}
+                                            className="group relative aspect-square rounded-2xl overflow-hidden cursor-pointer border border-gray-100 bg-gray-50"
+                                        >
+                                            <img src={img.thumb} alt={img.description || 'Unsplash-bilde'} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                            <div className="absolute inset-0 bg-brand/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
+                                                <p className="text-[8px] text-white font-bold truncate">av {img.photographer}</p>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                                {hasMoreUnsplashResults && (
+                                    <div className="flex justify-center">
+                                        <button
+                                            onClick={loadMoreUnsplash}
+                                            disabled={unsplashLoadingMore}
+                                            className="px-6 py-3 rounded-xl border border-gray-200 font-bold text-gray-700 hover:border-brand hover:text-brand transition-all disabled:opacity-50"
+                                        >
+                                            {unsplashLoadingMore ? 'Laster flere...' : 'Vis flere bilder'}
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         )
                     )}

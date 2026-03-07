@@ -1384,13 +1384,19 @@ app.post('/api/generate-content', async (req, res) => {
 app.get('/api/unsplash/search', async (req, res) => {
     console.log(`[Unsplash] Mottok søkeforespørsel: "${req.query.query}" (Page: ${req.query.page})`);
     try {
-        const { query, page = 1, per_page = 12 } = req.query;
+        const query = String(req.query.query || '').trim();
+        const requestedPage = Number.parseInt(req.query.page, 10);
+        const requestedPerPage = Number.parseInt(req.query.per_page, 10);
+        const page = Number.isFinite(requestedPage) && requestedPage > 0 ? requestedPage : 1;
+        const perPage = Number.isFinite(requestedPerPage) && requestedPerPage > 0
+            ? Math.min(requestedPerPage, 30)
+            : 24;
 
         if (!query) {
             return res.status(400).json({ error: 'Search query is required' });
         }
 
-        const unsplashUrl = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&page=${page}&per_page=${per_page}`;
+        const unsplashUrl = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&page=${page}&per_page=${perPage}`;
 
         const fetch = (await import('node-fetch')).default;
         const accessKey = String(process.env.UNSPLASH_ACCESS_KEY || '').trim();
@@ -1434,7 +1440,7 @@ app.get('/api/unsplash/search', async (req, res) => {
             downloadUrl: img.links.download_location
         }));
 
-        res.json({ images, total: data.total });
+        res.json({ images, total: data.total, page, perPage });
     } catch (error) {
         console.error('Unsplash API Error:', error);
         res.status(500).json({ error: 'Failed to search images', details: error.message });

@@ -1755,6 +1755,13 @@ function setupEventListeners() {
 let currentEditingId = null;
 let selectedImageUrl = null;
 let selectedUploadFile = null;
+const UNSPLASH_RESULTS_PER_PAGE = 24;
+let unsplashSearchState = {
+    query: '',
+    page: 0,
+    total: 0,
+    inFlight: false
+};
 
 function sanitizeStorageFileName(fileName = 'image') {
     return String(fileName)
@@ -2064,6 +2071,7 @@ window.closeImagePicker = function () {
     if (modal) modal.style.display = 'none';
     selectedImageUrl = null;
     selectedUploadFile = null;
+    unsplashSearchState = { query: '', page: 0, total: 0, inFlight: false };
     const preview = document.getElementById('upload-preview');
     if (preview) preview.style.display = 'none';
     const fileInput = document.getElementById('blog-image-input');
@@ -2121,10 +2129,29 @@ window.insertUploadedImage = async function () {
     }
 };
 
-window.searchUnsplash = async function () {
+function appendUnsplashLoadMore(resultsContainer) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'unsplash-load-more';
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'unsplash-load-more-btn';
+    button.textContent = 'Vis flere bilder';
+    button.addEventListener('click', async () => {
+        button.disabled = true;
+        button.textContent = 'Laster...';
+        await window.searchUnsplash({ loadMore: true });
+    });
+
+    wrapper.appendChild(button);
+    resultsContainer.appendChild(wrapper);
+}
+
+window.searchUnsplash = async function (options = {}) {
     const queryInput = document.getElementById('unsplash-query');
     const results = document.getElementById('unsplash-results');
     const query = queryInput?.value?.trim();
+    const loadMore = Boolean(options?.loadMore);
 
     if (!results) return;
 
@@ -2136,10 +2163,24 @@ window.searchUnsplash = async function () {
         return;
     }
 
-    results.innerHTML = '<p class="media-loading-state">Laster bilder...</p>';
+    if (unsplashSearchState.inFlight) return;
+
+    const isSameQuery = unsplashSearchState.query === query;
+    const nextPage = loadMore && isSameQuery ? unsplashSearchState.page + 1 : 1;
+
+    if (!loadMore) {
+        results.innerHTML = '<p class="media-loading-state">Laster bilder...</p>';
+    } else {
+        const currentLoadMore = results.querySelector('.unsplash-load-more');
+        if (currentLoadMore) currentLoadMore.remove();
+    }
+
+    unsplashSearchState.inFlight = true;
 
     try {
-        const response = await fetch(`${API_URL}/unsplash/search?query=${encodeURIComponent(query)}`);
+        const response = await fetch(
+            `${API_URL}/unsplash/search?query=${encodeURIComponent(query)}&page=${nextPage}&per_page=${UNSPLASH_RESULTS_PER_PAGE}`
+        );
         const payload = await response.json();
 
         if (!response.ok) {
@@ -2148,12 +2189,15 @@ window.searchUnsplash = async function () {
 
         const images = Array.isArray(payload?.images) ? payload.images : [];
 
-        if (!images.length) {
+        if (!images.length && nextPage === 1) {
             results.innerHTML = '<p class="media-loading-state">Ingen bilder funnet for dette søket.</p>';
+            unsplashSearchState = { query, page: 0, total: Number(payload?.total) || 0, inFlight: false };
             return;
         }
 
-        results.innerHTML = '';
+        if (nextPage === 1) {
+            results.innerHTML = '';
+        }
 
         images.forEach((image) => {
             const card = document.createElement('button');
@@ -2166,14 +2210,34 @@ window.searchUnsplash = async function () {
             card.addEventListener('click', () => window.insertUnsplashImage(image.full || image.url));
             results.appendChild(card);
         });
+
+        unsplashSearchState.query = query;
+        unsplashSearchState.page = nextPage;
+        unsplashSearchState.total = Number(payload?.total) || unsplashSearchState.total;
+
+        const loadedCards = results.querySelectorAll('.unsplash-image-card').length;
+        const hasMore = loadedCards < unsplashSearchState.total && images.length > 0;
+
+        if (hasMore) {
+            appendUnsplashLoadMore(results);
+        } else if (loadMore && images.length === 0) {
+            await showAdminNotice('Du har sett alle bildene for dette søket.', {
+                title: 'Ingen flere treff',
+                variant: 'warning'
+            });
+        }
     } catch (error) {
         console.error('Error searching Unsplash:', error);
-        results.innerHTML = '';
+        if (!loadMore) {
+            results.innerHTML = '';
+        }
         const errorMsg = error.message || 'Ukjent feil';
         await showAdminNotice(`Kunne ikke hente bilder fra Unsplash: ${errorMsg}`, {
             title: 'Bildesøk feilet',
             variant: 'danger'
         });
+    } finally {
+        unsplashSearchState.inFlight = false;
     }
 };
 
