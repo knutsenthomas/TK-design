@@ -321,6 +321,10 @@ function normalizeAdminErrorMessage(error, fallbackMessage) {
         return 'Server mangler TK_FIREBASE_CLIENT_EMAIL eller TK_FIREBASE_PRIVATE_KEY. Sjekk at .env er satt opp riktig.';
     }
 
+    if (/API_KEY_HTTP_REFERRER_BLOCKED|Requests from referer <empty> are blocked|gemini_api_key_http_referrer_blocked/i.test(rawMessage)) {
+        return 'Gemini-nøkkelen er blokkert av referrer-regler. Gå til Google Cloud/API Keys og bruk en servernøkkel uten HTTP-referrer-restriksjon (API-restriksjon kan fortsatt være Generative Language API).';
+    }
+
     return rawMessage;
 }
 

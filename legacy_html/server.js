@@ -1530,7 +1530,18 @@ app.post('/api/generate-content', aiAttachmentMiddleware, async (req, res) => {
         });
     } catch (error) {
         console.error('Gemini API Error:', error);
-        res.status(500).json({ error: 'Failed to generate content', details: error.message });
+        const errorMessage = String(error?.message || '');
+        const refererBlocked = /API_KEY_HTTP_REFERRER_BLOCKED|Requests from referer <empty> are blocked/i.test(errorMessage);
+
+        if (refererBlocked) {
+            return res.status(500).json({
+                error: 'Gemini key blocked by HTTP referrer restrictions',
+                code: 'gemini_api_key_http_referrer_blocked',
+                details: 'Gemini-kallet går fra server (uten referer). Bruk en servernøkkel uten HTTP-referrer-restriksjon, men med API-restriksjon til Generative Language API.'
+            });
+        }
+
+        res.status(500).json({ error: 'Failed to generate content', details: errorMessage || 'Unknown Gemini error' });
     }
 });
 
