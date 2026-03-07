@@ -3,7 +3,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    PenNib,
+    PenTool,
     Plus,
     Search,
     Trash2,
@@ -217,7 +217,7 @@ const BlogManager = () => {
                             <header className="h-20 border-b border-gray-100 px-8 flex items-center justify-between shrink-0">
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 bg-orange-50 text-brand rounded-xl flex items-center justify-center">
-                                        <PenNib className="w-5 h-5" />
+                                        <PenTool className="w-5 h-5" />
                                     </div>
                                     <h2 className="text-xl font-bold text-gray-900">
                                         {editingPost.id ? 'Rediger innlegg' : 'Nytt innlegg'}

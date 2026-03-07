@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Home,
-    PenNib,
+    PenTool,
     Layout,
     Palette,
     Search,
@@ -30,7 +30,7 @@ const AdminLayout = () => {
     const menuItems = [
         { name: 'Dashbord', icon: Home, path: '/admin/dashboard' },
         { name: 'Sideinnhold', icon: Layout, path: '/admin/content' },
-        { name: 'Blogg', icon: PenNib, path: '/admin/blog' },
+        { name: 'Blogg', icon: PenTool, path: '/admin/blog' },
         { name: 'Design', icon: Palette, path: '/admin/design' },
         { name: 'SEO', icon: Search, path: '/admin/seo' },
         { name: 'Media', icon: Image, path: '/admin/media' },
