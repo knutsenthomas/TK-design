@@ -118,7 +118,11 @@ app.get('/api/debug-env', (req, res) => {
         },
         resend: !!process.env.RESEND_API_KEY,
         gemini: !!process.env.GEMINI_API_KEY,
-        unsplash: !!String(process.env.UNSPLASH_ACCESS_KEY || '').trim()
+        unsplash: !!String(process.env.UNSPLASH_ACCESS_KEY || '').trim(),
+        social: {
+            webhook: !!String(process.env.SOCIAL_WEBHOOK_URL || '').trim(),
+            webhookSecret: !!String(process.env.SOCIAL_WEBHOOK_SECRET || '').trim()
+        }
     });
 });
 
@@ -2178,6 +2182,225 @@ app.get('/api/unsplash/search', async (req, res) => {
     } catch (error) {
         console.error('Unsplash API Error:', error);
         res.status(500).json({ error: 'Failed to search images', details: error.message });
+    }
+});
+
+function getSiteBaseUrl(req) {
+    const configured = String(process.env.SITE_URL || '').trim().replace(/\/+$/, '');
+    if (configured) {
+        return configured;
+    }
+
+    const forwardedHost = String(req.get('x-forwarded-host') || '').split(',')[0].trim();
+    const directHost = String(req.get('host') || '').trim();
+    const host = forwardedHost || directHost;
+
+    if (!host) {
+        return '';
+    }
+
+    const forwardedProto = String(req.get('x-forwarded-proto') || '').split(',')[0].trim();
+    const protocol = forwardedProto || req.protocol || 'https';
+    return `${protocol}://${host}`;
+}
+
+function resolveAbsolutePostUrl(linkValue, req, fallbackPostId) {
+    const siteBaseUrl = getSiteBaseUrl(req);
+    const fallbackPath = Number.isFinite(Number(fallbackPostId))
+        ? `/blog-details?id=${Number(fallbackPostId)}`
+        : '/blog';
+    const rawLink = String(linkValue || '').trim();
+    const candidate = rawLink || fallbackPath;
+
+    try {
+        if (/^https?:\/\//i.test(candidate)) {
+            return candidate;
+        }
+        if (!siteBaseUrl) {
+            return candidate.startsWith('/') ? candidate : `/${candidate}`;
+        }
+        return new URL(candidate.startsWith('/') ? candidate : `/${candidate}`, siteBaseUrl).toString();
+    } catch (error) {
+        return siteBaseUrl ? `${siteBaseUrl}${fallbackPath}` : fallbackPath;
+    }
+}
+
+function normalizeHashtagToken(value = '') {
+    return String(value || '')
+        .trim()
+        .toLowerCase()
+        .normalize('NFKD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, ' ')
+        .trim()
+        .replace(/\s+/g, '');
+}
+
+function buildPostHashtags(post = {}, maxTags = 6) {
+    const sourceTags = Array.isArray(post.tags) ? post.tags : [];
+    const sourceKeywords = String(post.seoKeywords || '')
+        .split(',')
+        .map((value) => value.trim())
+        .filter(Boolean);
+    const sourceCategories = Array.isArray(post.categories)
+        ? post.categories
+        : [post.category];
+
+    const merged = [...sourceCategories, ...sourceTags, ...sourceKeywords];
+    const uniqueTags = [];
+    const seen = new Set();
+
+    merged.forEach((entry) => {
+        const token = normalizeHashtagToken(entry);
+        if (!token || seen.has(token)) return;
+        seen.add(token);
+        uniqueTags.push(`#${token}`);
+    });
+
+    return uniqueTags.slice(0, maxTags);
+}
+
+function truncateForSocial(text = '', limit = 220) {
+    const normalized = String(text || '').replace(/\s+/g, ' ').trim();
+    if (normalized.length <= limit) return normalized;
+    return `${normalized.slice(0, Math.max(0, limit - 1)).trim()}…`;
+}
+
+function buildSocialAutopostPayload(post = {}, req) {
+    const postId = Number(post.id);
+    const postUrl = resolveAbsolutePostUrl(post.link, req, postId);
+    const titleNo = String(post.title || '').trim();
+    const titleEn = String(post.titleEn || '').trim();
+    const excerptNo = String(post.excerpt || '').trim();
+    const excerptEn = String(post.excerptEn || '').trim();
+    const hashtags = buildPostHashtags(post);
+    const shortUrl = postUrl || '/blog';
+
+    const noCaption = [
+        titleNo ? `Nytt innlegg: ${titleNo}` : 'Nytt blogginnlegg',
+        excerptNo ? truncateForSocial(excerptNo, 180) : '',
+        shortUrl,
+        hashtags.join(' ')
+    ].filter(Boolean).join('\n\n');
+
+    const enCaption = [
+        titleEn ? `New post: ${titleEn}` : (titleNo ? `New post: ${titleNo}` : 'New blog post'),
+        excerptEn ? truncateForSocial(excerptEn, 180) : '',
+        shortUrl,
+        hashtags.join(' ')
+    ].filter(Boolean).join('\n\n');
+
+    return {
+        event: 'blog.published',
+        sentAt: new Date().toISOString(),
+        source: 'tk-design-admin',
+        site: getSiteBaseUrl(req),
+        post: {
+            id: Number.isFinite(postId) ? postId : null,
+            title: titleNo,
+            titleEn: titleEn || titleNo,
+            excerpt: excerptNo,
+            excerptEn: excerptEn || excerptNo,
+            category: String(post.category || '').trim(),
+            categories: Array.isArray(post.categories) ? post.categories : [],
+            tags: Array.isArray(post.tags) ? post.tags : [],
+            date: String(post.date || '').trim(),
+            dateIso: String(post.dateIso || '').trim(),
+            author: String(post.author || '').trim(),
+            image: String(post.image || '').trim(),
+            url: shortUrl,
+            link: String(post.link || '').trim()
+        },
+        social: {
+            hashtags,
+            captions: {
+                no: noCaption,
+                en: enCaption
+            }
+        }
+    };
+}
+
+app.post('/api/social/autopost', async (req, res) => {
+    try {
+        const webhookUrl = String(process.env.SOCIAL_WEBHOOK_URL || '').trim();
+        if (!webhookUrl) {
+            return res.status(200).json({
+                sent: false,
+                code: 'social_webhook_not_configured',
+                details: 'Set SOCIAL_WEBHOOK_URL to enable social auto-post.'
+            });
+        }
+
+        const incomingPost = req.body?.post && typeof req.body.post === 'object'
+            ? req.body.post
+            : req.body;
+        const title = String(incomingPost?.title || '').trim();
+        if (!title) {
+            return res.status(400).json({ error: 'Post title is required' });
+        }
+
+        const payload = buildSocialAutopostPayload(incomingPost, req);
+        const body = JSON.stringify(payload);
+        const webhookSecret = String(process.env.SOCIAL_WEBHOOK_SECRET || '').trim();
+        const requestedTimeout = Number.parseInt(process.env.SOCIAL_WEBHOOK_TIMEOUT_MS, 10);
+        const timeoutMs = Number.isFinite(requestedTimeout)
+            ? Math.max(1000, Math.min(requestedTimeout, 20000))
+            : 8000;
+
+        const headers = {
+            'Content-Type': 'application/json',
+            'User-Agent': 'tk-design-social-autopost'
+        };
+
+        if (webhookSecret) {
+            const signature = crypto
+                .createHmac('sha256', webhookSecret)
+                .update(body)
+                .digest('hex');
+            headers['X-TK-Signature'] = signature;
+        }
+
+        const fetch = await getFetch();
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), timeoutMs);
+        let response;
+
+        try {
+            response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers,
+                body,
+                signal: controller.signal
+            });
+        } finally {
+            clearTimeout(timeout);
+        }
+
+        if (!response.ok) {
+            const responseBody = await response.text();
+            return res.status(502).json({
+                sent: false,
+                error: 'Social webhook failed',
+                details: `Webhook responded with ${response.status}. ${responseBody.slice(0, 300)}`
+            });
+        }
+
+        return res.status(200).json({ sent: true });
+    } catch (error) {
+        if (error?.name === 'AbortError') {
+            return res.status(504).json({
+                sent: false,
+                error: 'Social webhook timed out'
+            });
+        }
+
+        console.error('Social auto-post error:', error);
+        return res.status(500).json({
+            sent: false,
+            error: 'Failed to trigger social auto-post',
+            details: error.message
+        });
     }
 });
 

@@ -93,3 +93,23 @@ Merk:
 - E-post/passord-innlogging må også være aktivert i Firebase Authentication hvis du vil bruke vanlig admin-login.
 - Admin-profilfelt lagres i Firestore under `adminProfiles/{uid}`.
 - Profilbilder lagres i Firebase Storage. Hvis du vil at opplastede avatarer skal kunne vises direkte, må Storage-reglene tillate lesing for de filene du bruker.
+
+## 7. SoMe auto-post ved publisering (Make/Zapier/Buffer)
+
+Når du trykker **Publiser** i bloggeditoren kan serveren nå sende et webhook-kall automatisk.
+
+Legg til i `.env`:
+
+```env
+SOCIAL_WEBHOOK_URL=https://hook.eu1.make.com/xxxxxxxxxxxxxxxx
+SOCIAL_WEBHOOK_SECRET=valgfri_hemmlig_nokkel
+SOCIAL_WEBHOOK_TIMEOUT_MS=8000
+SITE_URL=https://www.tk-design.no
+```
+
+Merk:
+
+- `SOCIAL_WEBHOOK_URL` er webhook-endepunktet ditt (for eksempel fra Make eller Zapier).
+- `SOCIAL_WEBHOOK_SECRET` er valgfri. Hvis satt, sender serveren en signatur i header `X-TK-Signature` (HMAC SHA-256).
+- `SITE_URL` brukes for å bygge absolutte lenker i payloaden.
+- Hvis webhook ikke er satt, publiseres innlegget fortsatt normalt uten SoMe-feil.

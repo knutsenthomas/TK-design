@@ -1316,7 +1316,40 @@ async function enrichPostInBackground(postPayload) {
     }
 }
 
-async function upsertCurrentPost(successMessage) {
+async function triggerSocialAutopost(postPayload) {
+    try {
+        const response = await fetch(`${API_URL}/social/autopost`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ post: postPayload })
+        });
+        const payload = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            const details = payload?.details || payload?.error || `SoMe-feil (${response.status})`;
+            await showAdminNotice(`Innlegget er publisert, men SoMe-autopost feilet: ${details}`, {
+                title: 'SoMe autopost feilet',
+                variant: 'warning'
+            });
+            return;
+        }
+
+        if (payload?.sent === false) {
+            console.info('[SoMe] Autopost er ikke aktivert:', payload?.details || payload?.code || 'not_configured');
+            return;
+        }
+
+        console.info('[SoMe] Autopost trigget.');
+    } catch (error) {
+        console.warn('Social autopost request failed:', error);
+        await showAdminNotice('Innlegget er publisert, men kunne ikke sende SoMe-autopost.', {
+            title: 'SoMe autopost feilet',
+            variant: 'warning'
+        });
+    }
+}
+
+async function upsertCurrentPost(successMessage, options = {}) {
     const basePayload = buildPostPayload();
     const existingPost = blogData.find((post) => Number(post.id) === Number(basePayload.id));
     const postPayload = existingPost ? { ...existingPost, ...basePayload } : basePayload;
@@ -1331,6 +1364,10 @@ async function upsertCurrentPost(successMessage) {
         title: 'Innlegg oppdatert',
         variant: 'success'
     });
+
+    if (options?.triggerSocialAutopost) {
+        void triggerSocialAutopost(postPayload);
+    }
 
     if (shouldAutoEnrichPost(postPayload)) {
         void enrichPostInBackground(postPayload);
@@ -1408,7 +1445,7 @@ window.savePost = async function () {
 
 window.publishPost = async function () {
     try {
-        await upsertCurrentPost('Innlegg publisert.');
+        await upsertCurrentPost('Innlegg publisert.', { triggerSocialAutopost: true });
     } catch (error) {
         console.error('Error publishing post:', error);
         await showAdminNotice(
