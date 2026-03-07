@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@theme {
+    --color-brand: #1B4965;
+    --color-brand-dark: #14374d;
+    --color-brand-light: #e0f2fe;
+
+    --font-primary: "Manrope", sans-serif;
+    --font-display: "Space Grotesk", sans-serif;
+}
+
+:root {
+    --clr-base: #1B4965;
+    --theme-bg: #F9FAFB;
+}
+
+body {
+    @apply bg-[#F9FAFB] text-gray-600 antialiased;
+    font-family: var(--font-primary);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-display);
+}
