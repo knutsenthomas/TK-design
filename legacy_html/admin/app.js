@@ -41,6 +41,7 @@ const sectionTranslations = {
     }
 };
 
+console.log('[DEBUG] Loading legacy_html/admin/app.js');
 const adminTranslations = {
     'no': {
         'nav_home': 'Hjem',
@@ -2168,7 +2169,8 @@ window.searchUnsplash = async function () {
     } catch (error) {
         console.error('Error searching Unsplash:', error);
         results.innerHTML = '';
-        await showAdminNotice('Kunne ikke hente bilder fra Unsplash akkurat nå.', {
+        const errorMsg = error.message || 'Ukjent feil';
+        await showAdminNotice(`Kunne ikke hente bilder fra Unsplash: ${errorMsg}`, {
             title: 'Bildesøk feilet',
             variant: 'danger'
         });

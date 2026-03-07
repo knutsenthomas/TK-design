@@ -1381,6 +1381,7 @@ app.post('/api/generate-content', async (req, res) => {
 
 // API: Search Unsplash Images
 app.get('/api/unsplash/search', async (req, res) => {
+    console.log(`[Unsplash] Mottok søkeforespørsel: "${req.query.query}" (Page: ${req.query.page})`);
     try {
         const { query, page = 1, per_page = 12 } = req.query;
 
@@ -1391,14 +1392,22 @@ app.get('/api/unsplash/search', async (req, res) => {
         const unsplashUrl = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&page=${page}&per_page=${per_page}`;
 
         const fetch = (await import('node-fetch')).default;
+        const accessKey = process.env.UNSPLASH_ACCESS_KEY;
+
+        console.log(`[Unsplash] Bruker API-nøkkel som starter med: ${accessKey ? accessKey.substring(0, 4) + '...' : 'MANGLER'}`);
+
         const response = await fetch(unsplashUrl, {
             headers: {
-                'Authorization': `Client-ID ${process.env.UNSPLASH_ACCESS_KEY}`
+                'Authorization': `Client-ID ${accessKey}`,
+                'Accept-Version': 'v1',
+                'User-Agent': 'tk-design-studio'
             }
         });
 
         if (!response.ok) {
-            throw new Error(`Unsplash API error: ${response.statusText}`);
+            const errorBody = await response.text();
+            console.error(`[Unsplash] API-feil (${response.status}): ${errorBody}`);
+            throw new Error(`Unsplash API error: ${response.status} ${response.statusText}`);
         }
 
         const data = await response.json();
