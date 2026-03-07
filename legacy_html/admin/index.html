@@ -840,10 +840,50 @@
                     </div>
 
                     <div id="panel-apps" class="settings-content main-panel-view" style="display: none;">
-                        <div class="empty-state">
-                            <i class="fas fa-th-large"></i>
-                            <p>Legg til funksjonalitet med apper.</p>
-                            <button class="setup-btn">Se App Market</button>
+                        <div class="ai-generator-panel">
+                            <div class="setting-group">
+                                <label for="ai-prompt-input">Prompt / Oppgave</label>
+                                <textarea id="ai-prompt-input" rows="4"
+                                    placeholder="Beskriv hva innlegget skal handle om, målgruppe, vinkel og mål."></textarea>
+                            </div>
+
+                            <div class="ai-generator-grid">
+                                <div class="setting-group">
+                                    <label for="ai-tone-select">Tone</label>
+                                    <select id="ai-tone-select">
+                                        <option value="professional">Profesjonell</option>
+                                        <option value="friendly">Vennlig</option>
+                                        <option value="expert">Ekspert</option>
+                                        <option value="persuasive">Overbevisende</option>
+                                    </select>
+                                </div>
+                                <div class="setting-group">
+                                    <label for="ai-length-select">Lengde</label>
+                                    <select id="ai-length-select">
+                                        <option value="short">Kort</option>
+                                        <option value="medium" selected>Middels</option>
+                                        <option value="long">Lang</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="setting-group">
+                                <label for="ai-context-files">Vedlegg (bilder/PDF/TXT/MD)</label>
+                                <input type="file" id="ai-context-files" accept="image/*,.pdf,.txt,.md" multiple>
+                                <p class="ai-help-text">Opptil 6 filer. Maks 12MB per fil.</p>
+                                <div id="ai-context-file-list" class="ai-context-file-list"></div>
+                            </div>
+
+                            <label class="ai-checkbox-row">
+                                <input type="checkbox" id="ai-include-draft" checked>
+                                <span>Bruk eksisterende tekst i editoren som ekstra kontekst</span>
+                            </label>
+
+                            <button id="ai-generate-btn" class="ai-generate-btn" onclick="generateBlogDraftWithAi()">
+                                <i class="fas fa-robot"></i> Generer utkast med Gemini
+                            </button>
+                            <p class="ai-help-text">Generert innhold settes direkte inn i editoren. Gå alltid over
+                                teksten før publisering.</p>
                         </div>
                     </div>
 

@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const multer = require('multer');
 const functions = require('firebase-functions');
 require('dotenv').config();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
@@ -1347,33 +1348,186 @@ app.get(['/admin/custom-style.css', '/custom-style.css'], async (req, res) => {
     }
 });
 
-// API: Generate Blog Content with Gemini AI
-app.post('/api/generate-content', async (req, res) => {
-    try {
-        const { topic, tone = 'professional', length = 'medium' } = req.body;
+const AI_ATTACHMENT_LIMITS = {
+    fileSize: 12 * 1024 * 1024,
+    files: 6
+};
 
-        if (!topic) {
-            return res.status(400).json({ error: 'Topic is required' });
+const aiAttachmentUpload = multer({
+    storage: multer.memoryStorage(),
+    limits: AI_ATTACHMENT_LIMITS
+});
+
+const aiAttachmentMiddleware = (req, res, next) => {
+    aiAttachmentUpload.array('contextFiles', AI_ATTACHMENT_LIMITS.files)(req, res, (error) => {
+        if (!error) {
+            return next();
         }
 
-        // Configure length
+        if (error.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).json({
+                error: 'Attachment too large',
+                details: `Each attachment must be <= ${Math.round(AI_ATTACHMENT_LIMITS.fileSize / (1024 * 1024))} MB.`
+            });
+        }
+
+        if (error.code === 'LIMIT_FILE_COUNT') {
+            return res.status(400).json({
+                error: 'Too many attachments',
+                details: `You can attach up to ${AI_ATTACHMENT_LIMITS.files} files.`
+            });
+        }
+
+        return res.status(400).json({
+            error: 'Invalid multipart request',
+            details: error.message
+        });
+    });
+};
+
+function inferMimeTypeFromFileName(fileName = '') {
+    const ext = path.extname(String(fileName || '').toLowerCase());
+    if (ext === '.pdf') return 'application/pdf';
+    if (ext === '.png') return 'image/png';
+    if (ext === '.jpg' || ext === '.jpeg') return 'image/jpeg';
+    if (ext === '.webp') return 'image/webp';
+    if (ext === '.gif') return 'image/gif';
+    if (ext === '.txt') return 'text/plain';
+    if (ext === '.md') return 'text/markdown';
+    return 'application/octet-stream';
+}
+
+function normalizeAiAttachmentMimeType(file = {}) {
+    const rawMime = String(file.mimetype || '').trim().toLowerCase();
+    if (rawMime && rawMime !== 'application/octet-stream') {
+        return rawMime;
+    }
+
+    return inferMimeTypeFromFileName(file.originalname);
+}
+
+function isSupportedAiAttachmentMimeType(mimeType = '') {
+    if (!mimeType) return false;
+    if (mimeType.startsWith('image/')) return true;
+    if (mimeType === 'application/pdf') return true;
+    if (mimeType === 'text/plain' || mimeType === 'text/markdown') return true;
+    return false;
+}
+
+// API: Generate Blog Content with Gemini AI
+app.post('/api/generate-content', aiAttachmentMiddleware, async (req, res) => {
+    try {
+        const topic = String(req.body.topic || req.body.prompt || '').trim();
+        const tone = String(req.body.tone || 'professional').trim();
+        const length = String(req.body.length || 'medium').trim();
+        const existingDraft = String(req.body.existingDraft || '').trim();
+        const attachments = Array.isArray(req.files) ? req.files : [];
+
+        if (!topic && !existingDraft && attachments.length === 0) {
+            return res.status(400).json({ error: 'Prompt, draft or attachment is required' });
+        }
+
+        if (!String(process.env.GEMINI_API_KEY || '').trim()) {
+            return res.status(500).json({
+                error: 'Gemini API key is missing',
+                details: 'Set GEMINI_API_KEY in server environment variables.'
+            });
+        }
+
+        const invalidAttachment = attachments.find((file) => {
+            const mimeType = normalizeAiAttachmentMimeType(file);
+            return !isSupportedAiAttachmentMimeType(mimeType);
+        });
+
+        if (invalidAttachment) {
+            return res.status(400).json({
+                error: 'Unsupported attachment type',
+                details: `${invalidAttachment.originalname} is not supported. Use image, PDF, TXT or MD.`
+            });
+        }
+
         const lengthMap = {
-            short: '2-3 paragraphs',
-            medium: '4-6 paragraphs',
-            long: '8-10 paragraphs'
+            short: 'kort (ca. 2-3 avsnitt)',
+            medium: 'middels (ca. 4-6 avsnitt)',
+            long: 'lang (ca. 8-10 avsnitt)'
         };
 
-        const prompt = `Write a ${tone} blog post about "${topic}". 
-        Length: ${lengthMap[length] || lengthMap.medium}.
-        Format the content with proper HTML tags including <h2>, <h3>, <p>, <ul>, <li> where appropriate.
-        Make it engaging, informative, and SEO-friendly.`;
+        const promptSections = [
+            'Du er en erfaren norsk innholdsforfatter.',
+            `Tema/brief: ${topic || 'Bruk vedleggene som grunnlag og foreslå en tydelig vinkling.'}`,
+            `Tone: ${tone || 'professional'}`,
+            `Lengde: ${lengthMap[length] || lengthMap.medium}`,
+            'Skriv kun gyldig HTML uten markdown-kodeblokker.',
+            'Bruk semantiske tagger som <h2>, <h3>, <p>, <ul>, <li>, og eventuelt <blockquote>.',
+            'Inkluder en tydelig ingress, nyttige mellomtitler og en konkret avslutning.',
+            'Språk: Norsk bokmål.'
+        ];
 
-        const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
-        const result = await model.generateContent(prompt);
+        if (existingDraft) {
+            promptSections.push('Ta hensyn til eksisterende utkast, behold nyttige poeng, og forbedre struktur/språk.');
+        }
+
+        if (attachments.length > 0) {
+            promptSections.push(`Bruk vedlagte filer som kontekst. Antall vedlegg: ${attachments.length}.`);
+        }
+
+        const parts = [{ text: promptSections.join('\n\n') }];
+
+        if (existingDraft) {
+            parts.push({
+                text: `Eksisterende utkast:\n${existingDraft}`
+            });
+        }
+
+        attachments.forEach((file) => {
+            const mimeType = normalizeAiAttachmentMimeType(file);
+
+            if (mimeType.startsWith('text/')) {
+                const textContent = file.buffer.toString('utf8');
+                const truncatedText = textContent.length > 60000
+                    ? `${textContent.slice(0, 60000)}\n\n[Truncated due to size]`
+                    : textContent;
+
+                parts.push({
+                    text: `Vedlagt fil (${file.originalname}):\n${truncatedText}`
+                });
+                return;
+            }
+
+            parts.push({
+                text: `Vedlagt fil: ${file.originalname}`
+            });
+            parts.push({
+                inlineData: {
+                    mimeType,
+                    data: file.buffer.toString('base64')
+                }
+            });
+        });
+
+        const modelName = String(process.env.GEMINI_MODEL || 'gemini-1.5-flash').trim() || 'gemini-1.5-flash';
+        const model = genAI.getGenerativeModel({ model: modelName });
+        const result = await model.generateContent({
+            contents: [{ role: 'user', parts }]
+        });
         const response = await result.response;
-        const text = response.text();
+        let text = response.text().trim();
 
-        res.json({ content: text });
+        text = text
+            .replace(/^```html\s*/i, '')
+            .replace(/^```\s*/i, '')
+            .replace(/\s*```$/i, '')
+            .trim();
+
+        if (!text) {
+            throw new Error('Gemini returned empty content.');
+        }
+
+        res.json({
+            content: text,
+            model: modelName,
+            attachmentCount: attachments.length
+        });
     } catch (error) {
         console.error('Gemini API Error:', error);
         res.status(500).json({ error: 'Failed to generate content', details: error.message });

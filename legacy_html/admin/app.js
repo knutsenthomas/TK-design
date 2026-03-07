@@ -529,7 +529,7 @@ window.switchPanel = function (btn, panelType) {
         if (panelMonetize) panelMonetize.style.display = 'block';
 
     } else if (panelType === 'apps') {
-        if (headerTitle) headerTitle.textContent = 'Apper';
+        if (headerTitle) headerTitle.textContent = 'AI Skrivehjelp';
         const panelApps = document.getElementById('panel-apps');
         if (panelApps) panelApps.style.display = 'block';
 
@@ -1756,12 +1756,16 @@ let currentEditingId = null;
 let selectedImageUrl = null;
 let selectedUploadFile = null;
 const UNSPLASH_RESULTS_PER_PAGE = 24;
+const AI_MAX_CONTEXT_FILES = 6;
+const AI_MAX_CONTEXT_FILE_SIZE = 12 * 1024 * 1024;
 let unsplashSearchState = {
     query: '',
     page: 0,
     total: 0,
     inFlight: false
 };
+let aiContextFiles = [];
+let aiGenerationInFlight = false;
 
 function sanitizeStorageFileName(fileName = 'image') {
     return String(fileName)
@@ -1923,15 +1927,240 @@ const editorContainerWrapper = document.getElementById('editor-container-wrapper
 function openModal() {
     dashboardContainer.style.display = 'none';
     editorContainerWrapper.style.display = 'flex';
+    resetAiAssistantState({ clearPrompt: true });
 }
 
 function closeModal() {
     editorContainerWrapper.style.display = 'none';
     dashboardContainer.style.display = 'flex';
     currentEditingId = null;
+    resetAiAssistantState({ clearPrompt: true });
 }
 
 window.closeEditor = closeModal; // Alias
+
+function formatFileSize(bytes = 0) {
+    if (!Number.isFinite(bytes) || bytes <= 0) return '0 B';
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function isSupportedAiContextFile(file) {
+    if (!file) return false;
+    const mime = String(file.type || '').toLowerCase();
+    const ext = String(file.name || '').toLowerCase().split('.').pop();
+
+    if (mime.startsWith('image/')) return true;
+    if (mime === 'application/pdf') return true;
+    if (mime === 'text/plain' || mime === 'text/markdown') return true;
+    if (['pdf', 'png', 'jpg', 'jpeg', 'webp', 'gif', 'txt', 'md'].includes(ext)) return true;
+
+    return false;
+}
+
+function renderAiContextFileList() {
+    const listContainer = document.getElementById('ai-context-file-list');
+    if (!listContainer) return;
+
+    listContainer.innerHTML = '';
+
+    aiContextFiles.forEach((file, index) => {
+        const chip = document.createElement('div');
+        chip.className = 'ai-context-file-chip';
+
+        const name = document.createElement('span');
+        name.className = 'name';
+        name.textContent = `${file.name} (${formatFileSize(file.size)})`;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.title = 'Fjern vedlegg';
+        removeBtn.setAttribute('aria-label', `Fjern ${file.name}`);
+        removeBtn.textContent = '×';
+        removeBtn.addEventListener('click', () => window.removeAiContextFile(index));
+
+        chip.appendChild(name);
+        chip.appendChild(removeBtn);
+        listContainer.appendChild(chip);
+    });
+}
+
+function resetAiAssistantState(options = {}) {
+    const { clearPrompt = false } = options;
+
+    aiContextFiles = [];
+    aiGenerationInFlight = false;
+    renderAiContextFileList();
+
+    const fileInput = document.getElementById('ai-context-files');
+    if (fileInput) fileInput.value = '';
+
+    if (clearPrompt) {
+        const promptInput = document.getElementById('ai-prompt-input');
+        if (promptInput) promptInput.value = '';
+
+        const toneSelect = document.getElementById('ai-tone-select');
+        if (toneSelect) toneSelect.value = 'professional';
+
+        const lengthSelect = document.getElementById('ai-length-select');
+        if (lengthSelect) lengthSelect.value = 'medium';
+
+        const includeDraft = document.getElementById('ai-include-draft');
+        if (includeDraft) includeDraft.checked = true;
+    }
+}
+
+window.removeAiContextFile = function (index) {
+    if (index < 0 || index >= aiContextFiles.length) return;
+    aiContextFiles.splice(index, 1);
+    renderAiContextFileList();
+};
+
+async function addAiContextFiles(fileList) {
+    const incomingFiles = Array.from(fileList || []);
+    if (!incomingFiles.length) return;
+
+    const rejectedFiles = [];
+    let skippedByLimit = 0;
+
+    incomingFiles.forEach((file) => {
+        if (!isSupportedAiContextFile(file)) {
+            rejectedFiles.push(`${file.name} (kun bilde/PDF/TXT/MD)`);
+            return;
+        }
+
+        if (file.size > AI_MAX_CONTEXT_FILE_SIZE) {
+            rejectedFiles.push(`${file.name} (maks ${Math.round(AI_MAX_CONTEXT_FILE_SIZE / (1024 * 1024))}MB)`);
+            return;
+        }
+
+        const duplicate = aiContextFiles.some((existing) =>
+            existing.name === file.name &&
+            existing.size === file.size &&
+            existing.lastModified === file.lastModified
+        );
+
+        if (duplicate) return;
+
+        if (aiContextFiles.length >= AI_MAX_CONTEXT_FILES) {
+            skippedByLimit += 1;
+            return;
+        }
+
+        aiContextFiles.push(file);
+    });
+
+    renderAiContextFileList();
+
+    if (rejectedFiles.length > 0) {
+        await showAdminNotice(`Noen vedlegg ble avvist:\n${rejectedFiles.join('\n')}`, {
+            title: 'Ugyldige vedlegg',
+            variant: 'warning'
+        });
+    }
+
+    if (skippedByLimit > 0) {
+        await showAdminNotice(`Du kan legge ved maks ${AI_MAX_CONTEXT_FILES} filer per generering.`, {
+            title: 'Vedleggsgrense nådd',
+            variant: 'warning'
+        });
+    }
+}
+
+window.generateBlogDraftWithAi = async function () {
+    if (aiGenerationInFlight) return;
+
+    const promptInput = document.getElementById('ai-prompt-input');
+    const toneSelect = document.getElementById('ai-tone-select');
+    const lengthSelect = document.getElementById('ai-length-select');
+    const includeDraftCheckbox = document.getElementById('ai-include-draft');
+    const generateBtn = document.getElementById('ai-generate-btn');
+
+    const topic = String(promptInput?.value || '').trim();
+    const tone = String(toneSelect?.value || 'professional');
+    const length = String(lengthSelect?.value || 'medium');
+    const includeDraft = Boolean(includeDraftCheckbox?.checked);
+    const existingDraft = includeDraft && quill ? String(quill.root?.innerHTML || '').trim() : '';
+
+    if (!topic && !existingDraft && aiContextFiles.length === 0) {
+        await showAdminNotice('Skriv en prompt, legg ved filer, eller bruk eksisterende utkast som kontekst.', {
+            title: 'Mangler input',
+            variant: 'warning'
+        });
+        return;
+    }
+
+    const originalBtnContent = generateBtn ? generateBtn.innerHTML : '';
+    if (generateBtn) {
+        generateBtn.disabled = true;
+        generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Genererer...';
+    }
+    aiGenerationInFlight = true;
+
+    try {
+        const formData = new FormData();
+        if (topic) formData.append('topic', topic);
+        formData.append('tone', tone);
+        formData.append('length', length);
+        if (existingDraft) formData.append('existingDraft', existingDraft);
+        aiContextFiles.forEach((file) => {
+            formData.append('contextFiles', file, file.name);
+        });
+
+        const response = await fetch(`${API_URL}/generate-content`, {
+            method: 'POST',
+            body: formData
+        });
+        const payload = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            throw new Error(payload?.details || payload?.error || `AI-feil (${response.status})`);
+        }
+
+        const generatedContent = String(payload?.content || '').trim();
+        if (!generatedContent) {
+            throw new Error('Gemini returnerte tom tekst.');
+        }
+
+        if (quill) {
+            quill.root.innerHTML = generatedContent;
+            quill.focus();
+            const endPos = Math.max(0, (quill.getLength?.() || 1) - 1);
+            quill.setSelection(endPos, 0, Quill.sources.SILENT);
+        }
+
+        const excerptInput = document.getElementById('post-excerpt');
+        if (excerptInput && !String(excerptInput.value || '').trim()) {
+            const tempNode = document.createElement('div');
+            tempNode.innerHTML = generatedContent;
+            const plainText = String(tempNode.textContent || '').replace(/\s+/g, ' ').trim();
+            if (plainText) {
+                excerptInput.value = plainText.slice(0, 220);
+            }
+        }
+
+        await showAdminNotice('Utkast er generert og satt inn i editoren.', {
+            title: 'Gemini ferdig',
+            variant: 'success'
+        });
+    } catch (error) {
+        console.error('Error generating AI draft:', error);
+        await showAdminNotice(
+            normalizeAdminErrorMessage(error, 'Det oppstod en feil ved generering med Gemini.'),
+            {
+                title: 'AI-generering feilet',
+                variant: 'danger'
+            }
+        );
+    } finally {
+        aiGenerationInFlight = false;
+        if (generateBtn) {
+            generateBtn.disabled = false;
+            generateBtn.innerHTML = originalBtnContent;
+        }
+    }
+};
 
 // Insert Tools
 window.insertDivider = function () {
@@ -2335,6 +2564,26 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
+
+    const aiContextInput = document.getElementById('ai-context-files');
+    if (aiContextInput) {
+        aiContextInput.addEventListener('change', async (event) => {
+            await addAiContextFiles(event.target.files);
+            aiContextInput.value = '';
+        });
+    }
+
+    const aiPromptInput = document.getElementById('ai-prompt-input');
+    if (aiPromptInput) {
+        aiPromptInput.addEventListener('keydown', async (event) => {
+            if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+                event.preventDefault();
+                await window.generateBlogDraftWithAi();
+            }
+        });
+    }
+
+    renderAiContextFileList();
 
     const blogImageInput = document.getElementById('blog-image-input');
     const uploadPreview = document.getElementById('upload-preview');
