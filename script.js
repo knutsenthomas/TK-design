@@ -1,13 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Header Scroll Effect
     const header = document.querySelector('.header');
+    let ticking = false;
     window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+                ticking = false;
+            });
+            ticking = true;
         }
-    });
+    }, { passive: true });
 
     // Tab Logic
     const tabBtns = document.querySelectorAll('.tab-btn');
@@ -127,11 +134,18 @@ function initBackToTopButton() {
     button.setAttribute('aria-label', 'Tilbake til toppen');
     button.innerHTML = '<span aria-hidden="true">↑</span>';
 
+    let bttTicking = false;
     const toggleVisibility = () => {
-        if (window.scrollY > 320) {
-            button.classList.add('visible');
-        } else {
-            button.classList.remove('visible');
+        if (!bttTicking) {
+            window.requestAnimationFrame(() => {
+                if (window.scrollY > 320) {
+                    button.classList.add('visible');
+                } else {
+                    button.classList.remove('visible');
+                }
+                bttTicking = false;
+            });
+            bttTicking = true;
         }
     };
 
@@ -144,7 +158,7 @@ function initBackToTopButton() {
 
     window.addEventListener('scroll', toggleVisibility, { passive: true });
     document.body.appendChild(button);
-    toggleVisibility();
+    toggleVisibility(); // Run once on init
 }
 
 function initTestimonialSlider() {
