@@ -14,6 +14,36 @@ import {
     Copy
 } from 'lucide-react';
 
+const normalizeUnsplashResults = (payload) => {
+    if (Array.isArray(payload?.images)) {
+        return payload.images
+            .map((img) => ({
+                id: img.id,
+                url: img.full || img.url || '',
+                thumb: img.small || img.thumb || img.url || '',
+                description: img.description || img.alt || '',
+                photographer: img.photographer || 'Unsplash',
+                photographerUrl: img.photographerUrl || ''
+            }))
+            .filter((img) => img.url && img.thumb);
+    }
+
+    if (Array.isArray(payload?.results)) {
+        return payload.results
+            .map((img) => ({
+                id: img.id,
+                url: img?.urls?.full || img?.urls?.regular || '',
+                thumb: img?.urls?.small || img?.urls?.thumb || img?.urls?.regular || '',
+                description: img.alt_description || img.description || '',
+                photographer: img?.user?.name || 'Unsplash',
+                photographerUrl: img?.user?.links?.html || ''
+            }))
+            .filter((img) => img.url && img.thumb);
+    }
+
+    return [];
+};
+
 const MediaManager = () => {
     const [media, setMedia] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -53,18 +83,16 @@ const MediaManager = () => {
         setUnsplashLoading(true);
         try {
             const response = await fetch(`/api/unsplash/search?query=${encodeURIComponent(unsplashQuery)}`);
-            if (response.ok) {
-                const data = await response.json();
-                setUnsplashResults(data.results || []);
-            } else {
-                const errorData = await response.json();
-                console.error('Unsplash error:', errorData);
-                setNotice({ type: 'error', message: 'Unsplash-søk feilet. Sjekk API-nøkkel.' });
-                setTimeout(() => setNotice(null), 5000);
+            const payload = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(payload?.details || payload?.error || `Unsplash-søk feilet (${response.status})`);
             }
+
+            setUnsplashResults(normalizeUnsplashResults(payload));
         } catch (error) {
             console.error('Unsplash fetch error:', error);
-            setNotice({ type: 'error', message: 'Kunne ikke kontakte Unsplash-tjenesten.' });
+            setNotice({ type: 'error', message: error.message || 'Kunne ikke kontakte Unsplash-tjenesten.' });
             setTimeout(() => setNotice(null), 5000);
         } finally {
             setUnsplashLoading(false);
@@ -233,17 +261,18 @@ const MediaManager = () => {
                                     <motion.div
                                         key={img.id}
                                         onClick={() => setSelectedImage({
-                                            name: img.alt_description || 'Unsplash Image',
-                                            url: img.urls.regular,
+                                            name: img.description || 'Unsplash-bilde',
+                                            url: img.url,
                                             size: 0,
                                             isUnsplash: true,
-                                            attribution: `Photo by ${img.user.name} on Unsplash`
+                                            attribution: `Foto av ${img.photographer} på Unsplash`,
+                                            photographerUrl: img.photographerUrl
                                         })}
                                         className="group relative aspect-square rounded-2xl overflow-hidden cursor-pointer border border-gray-100 bg-gray-50"
                                     >
-                                        <img src={img.urls.small} alt={img.alt_description} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                        <img src={img.thumb} alt={img.description || 'Unsplash-bilde'} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                                         <div className="absolute inset-0 bg-brand/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
-                                            <p className="text-[8px] text-white font-bold truncate">av {img.user.name}</p>
+                                            <p className="text-[8px] text-white font-bold truncate">av {img.photographer}</p>
                                         </div>
                                     </motion.div>
                                 ))}

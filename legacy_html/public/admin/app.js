@@ -1900,10 +1900,10 @@ window.searchUnsplash = async function () {
             card.type = 'button';
             card.className = 'unsplash-image-card';
             card.innerHTML = `
-                <img src="${image.thumb}" alt="${image.alt || 'Unsplash bilde'}">
-                <span class="photographer">Unsplash</span>
+                <img src="${image.thumb}" alt="${image.alt || image.description || 'Unsplash bilde'}">
+                <span class="photographer">av ${image.photographer || 'Unsplash'}</span>
             `;
-            card.addEventListener('click', () => window.insertUnsplashImage(image.full));
+            card.addEventListener('click', () => window.insertUnsplashImage(image.full || image.url));
             results.appendChild(card);
         });
     } catch (error) {

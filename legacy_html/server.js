@@ -116,7 +116,8 @@ app.get('/api/debug-env', (req, res) => {
             initError: analyticsInitError
         },
         resend: !!process.env.RESEND_API_KEY,
-        gemini: !!process.env.GEMINI_API_KEY
+        gemini: !!process.env.GEMINI_API_KEY,
+        unsplash: !!String(process.env.UNSPLASH_ACCESS_KEY || '').trim()
     });
 });
 
@@ -1392,9 +1393,16 @@ app.get('/api/unsplash/search', async (req, res) => {
         const unsplashUrl = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&page=${page}&per_page=${per_page}`;
 
         const fetch = (await import('node-fetch')).default;
-        const accessKey = process.env.UNSPLASH_ACCESS_KEY;
+        const accessKey = String(process.env.UNSPLASH_ACCESS_KEY || '').trim();
 
-        console.log(`[Unsplash] Bruker API-nøkkel som starter med: ${accessKey ? accessKey.substring(0, 4) + '...' : 'MANGLER'}`);
+        if (!accessKey) {
+            console.error('[Unsplash] UNSPLASH_ACCESS_KEY mangler.');
+            return res.status(500).json({
+                error: 'Unsplash is not configured on server',
+                code: 'unsplash_not_configured',
+                details: 'Set UNSPLASH_ACCESS_KEY in server environment variables.'
+            });
+        }
 
         const response = await fetch(unsplashUrl, {
             headers: {
@@ -1415,8 +1423,11 @@ app.get('/api/unsplash/search', async (req, res) => {
         // Format response to include only necessary data
         const images = data.results.map(img => ({
             id: img.id,
+            full: img.urls.full || img.urls.regular,
             url: img.urls.regular,
+            small: img.urls.small,
             thumb: img.urls.thumb,
+            alt: img.alt_description || img.description || '',
             description: img.description || img.alt_description,
             photographer: img.user.name,
             photographerUrl: img.user.links.html,
