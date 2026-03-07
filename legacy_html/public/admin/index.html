@@ -553,12 +553,13 @@
                             <label>Vis forsidebilde <i class="far fa-question-circle info-icon"
                                     title="Vis bildet øverst i innlegget"></i></label>
                             <label class="switch">
-                                <input type="checkbox" checked>
+                                <input type="checkbox" id="post-show-featured-image-toggle" checked>
                                 <span class="slider round"></span>
                             </label>
                         </div>
-                        <div class="image-upload-area" style="margin-top: 10px;">
-                            <div class="upload-placeholder">
+                        <div class="image-upload-area" id="post-featured-image-area" role="button" tabindex="0"
+                            aria-label="Velg forsidebilde" style="margin-top: 10px;">
+                            <div class="upload-placeholder" id="post-featured-image-placeholder">
                                 <i class="fas fa-plus"></i>
                             </div>
                         </div>
@@ -595,9 +596,11 @@
                     <div class="setting-group">
                         <div class="label-row">
                             <label>Relaterte innlegg <i class="far fa-question-circle info-icon"></i></label>
-                            <span class="char-count">0/3</span>
+                            <span class="char-count" id="related-post-count">0/3</span>
                         </div>
-                        <button class="add-related-btn"><i class="fas fa-plus"></i> Velg innlegg</button>
+                        <button type="button" id="select-related-posts-btn" class="add-related-btn"
+                            onclick="toggleRelatedPostsPicker()"><i class="fas fa-plus"></i> Velg innlegg</button>
+                        <div id="related-posts-picker" class="related-posts-picker" style="display: none;"></div>
                     </div>
 
                     <hr class="divider">
@@ -606,7 +609,7 @@
                         <div class="toggle-row">
                             <label>Angi som fremhevet innlegg <i class="far fa-question-circle info-icon"></i></label>
                             <label class="switch">
-                                <input type="checkbox">
+                                <input type="checkbox" id="post-featured-toggle">
                                 <span class="slider round"></span>
                             </label>
                         </div>
@@ -617,7 +620,7 @@
                             <label>Tillat å kommentere dette innlegget <i
                                     class="far fa-question-circle info-icon"></i></label>
                             <label class="switch">
-                                <input type="checkbox" checked>
+                                <input type="checkbox" id="post-comments-toggle" checked>
                                 <span class="slider round"></span>
                             </label>
                         </div>

@@ -588,6 +588,7 @@ window.openEditModal = function (index) {
     document.getElementById('post-title').value = post.title;
     document.getElementById('post-author').value = post.author || 'Admin';
     setCurrentTaxonomyState(post);
+    setCurrentGeneralSettingsState(post);
     renderPostTaxonomyEditors();
 
     const dateInput = document.getElementById('post-date');
@@ -961,6 +962,122 @@ function setCurrentTaxonomyState(post = {}) {
     syncTaxonomyCounters();
 }
 
+function normalizeRelatedPostIds(value = [], maxItems = POST_MAX_RELATED) {
+    const source = Array.isArray(value) ? value : String(value || '').split(',');
+    const normalized = [];
+    const seen = new Set();
+
+    source.forEach((item) => {
+        const id = Number(String(item || '').trim());
+        if (!Number.isFinite(id) || id <= 0) return;
+        if (seen.has(id)) return;
+        seen.add(id);
+        normalized.push(id);
+    });
+
+    return normalized.slice(0, maxItems);
+}
+
+function getCurrentRelatedPosts() {
+    const activePostId = Number(currentEditingId);
+    return (Array.isArray(blogData) ? blogData : [])
+        .filter((post) => Number(post.id) !== activePostId)
+        .map((post) => ({
+            id: Number(post.id),
+            title: String(post.title || `Innlegg ${post.id}`),
+            date: String(post.date || '')
+        }))
+        .filter((post) => Number.isFinite(post.id));
+}
+
+function syncRelatedPostsUi() {
+    const countEl = document.getElementById('related-post-count');
+    if (countEl) {
+        countEl.textContent = `${currentRelatedPostIds.length}/${POST_MAX_RELATED}`;
+    }
+
+    const picker = document.getElementById('related-posts-picker');
+    if (!picker) return;
+
+    const posts = getCurrentRelatedPosts();
+    const selectedPosts = currentRelatedPostIds
+        .map((id) => posts.find((post) => post.id === id))
+        .filter(Boolean);
+
+    const chipsHtml = selectedPosts.length
+        ? selectedPosts.map((post) => `
+            <div class="related-post-chip">
+                <span>${escapeHtmlForUi(post.title)}</span>
+                <button type="button" onclick="toggleRelatedPostSelection(${post.id})" aria-label="Fjern relatert innlegg">×</button>
+            </div>
+        `).join('')
+        : '<p class="empty-state">Ingen relaterte innlegg valgt.</p>';
+
+    const optionsHtml = posts.length
+        ? posts.map((post) => `
+            <label class="related-post-option">
+                <input type="checkbox" ${currentRelatedPostIds.includes(post.id) ? 'checked' : ''} onchange="toggleRelatedPostSelection(${post.id})">
+                <span>${escapeHtmlForUi(post.title)}</span>
+            </label>
+        `).join('')
+        : '<p class="empty-state">Ingen andre innlegg tilgjengelig ennå.</p>';
+
+    picker.innerHTML = `
+        <div class="related-post-chip-list">${chipsHtml}</div>
+        <div class="related-post-options">${optionsHtml}</div>
+    `;
+}
+
+window.toggleRelatedPostsPicker = function () {
+    const picker = document.getElementById('related-posts-picker');
+    if (!picker) return;
+
+    const isOpen = picker.style.display === 'block';
+    picker.style.display = isOpen ? 'none' : 'block';
+    if (!isOpen) {
+        syncRelatedPostsUi();
+    }
+};
+
+window.toggleRelatedPostSelection = function (postId) {
+    const numericId = Number(postId);
+    if (!Number.isFinite(numericId)) return;
+
+    const existingIndex = currentRelatedPostIds.indexOf(numericId);
+    if (existingIndex >= 0) {
+        currentRelatedPostIds.splice(existingIndex, 1);
+        syncRelatedPostsUi();
+        return;
+    }
+
+    if (currentRelatedPostIds.length >= POST_MAX_RELATED) {
+        showAdminNotice(`Du kan velge maks ${POST_MAX_RELATED} relaterte innlegg.`, {
+            title: 'Maks antall nådd',
+            variant: 'warning'
+        });
+        syncRelatedPostsUi();
+        return;
+    }
+
+    currentRelatedPostIds.push(numericId);
+    syncRelatedPostsUi();
+};
+
+function setCurrentGeneralSettingsState(post = {}) {
+    const relatedIds = normalizeRelatedPostIds(post.relatedPostIds || post.relatedPosts || []);
+    currentRelatedPostIds = relatedIds;
+
+    const showFeaturedImageToggle = document.getElementById('post-show-featured-image-toggle');
+    const featuredToggle = document.getElementById('post-featured-toggle');
+    const commentsToggle = document.getElementById('post-comments-toggle');
+
+    if (showFeaturedImageToggle) showFeaturedImageToggle.checked = post.showFeaturedImage !== false;
+    if (featuredToggle) featuredToggle.checked = Boolean(post.isFeatured);
+    if (commentsToggle) commentsToggle.checked = post.allowComments !== false;
+
+    syncRelatedPostsUi();
+}
+
 function buildAiSourceSignature(postPayload = {}) {
     return [
         String(postPayload.title || '').trim(),
@@ -1009,6 +1126,10 @@ function buildPostPayload() {
     const seoKeywordsFromField = normalizeKeywordCsv(document.getElementById('post-seo-keywords')?.value || '');
     const detailSummary = document.getElementById('post-detail-summary')?.value.trim() || '';
     const detailOutline = normalizeOutlineItems(document.getElementById('post-detail-outline')?.value || '');
+    const relatedPostIds = normalizeRelatedPostIds(currentRelatedPostIds);
+    const showFeaturedImage = document.getElementById('post-show-featured-image-toggle')?.checked !== false;
+    const isFeatured = Boolean(document.getElementById('post-featured-toggle')?.checked);
+    const allowComments = document.getElementById('post-comments-toggle')?.checked !== false;
 
     return {
         id: postId,
@@ -1027,6 +1148,11 @@ function buildPostPayload() {
         seoKeywords: seoKeywordsFromField || normalizeKeywordCsv(tags.join(', ')),
         detailSummary,
         detailOutline,
+        relatedPostIds,
+        relatedPosts: relatedPostIds,
+        showFeaturedImage,
+        isFeatured,
+        allowComments,
         link: `blog-details.html?id=${postId}`
     };
 }
@@ -2056,6 +2182,7 @@ const AI_MAX_CONTEXT_FILES = 6;
 const AI_MAX_CONTEXT_FILE_SIZE = 12 * 1024 * 1024;
 const POST_MAX_CATEGORIES = 6;
 const POST_MAX_TAGS = 20;
+const POST_MAX_RELATED = 3;
 let unsplashSearchState = {
     query: '',
     page: 0,
@@ -2064,10 +2191,14 @@ let unsplashSearchState = {
 };
 let currentPostCategories = ['Generelt'];
 let currentPostTags = [];
+let currentRelatedPostIds = [];
 let aiContextFiles = [];
 let aiGenerationInFlight = false;
 let aiSeoInFlight = false;
 const aiEnrichmentInFlight = new Map();
+const IMAGE_PICKER_TARGET_EDITOR = 'editor';
+const IMAGE_PICKER_TARGET_FEATURED = 'featured';
+let imagePickerTarget = IMAGE_PICKER_TARGET_EDITOR;
 
 function sanitizeStorageFileName(fileName = 'image') {
     return String(fileName)
@@ -2122,13 +2253,37 @@ function insertImageIntoEditor(imageUrl) {
     quill.setSelection(insertIndex + 1, Quill.sources.SILENT);
 }
 
-function updatePostImageField(imageUrl) {
+function renderFeaturedImagePreview(imageUrl = '') {
+    const previewArea = document.getElementById('post-featured-image-area');
+    const placeholder = document.getElementById('post-featured-image-placeholder');
+    if (!previewArea || !placeholder) return;
+
+    const normalizedUrl = String(imageUrl || '').trim();
+    const hasCustomImage = normalizedUrl && !/img\/blog\/bblog1\.png$/i.test(normalizedUrl);
+
+    if (!hasCustomImage) {
+        previewArea.classList.remove('has-image');
+        placeholder.innerHTML = '<i class="fas fa-plus"></i>';
+        return;
+    }
+
+    previewArea.classList.add('has-image');
+    placeholder.innerHTML = `
+        <img src="${escapeHtmlForUi(normalizedUrl)}" alt="Forsidebilde">
+        <span class="featured-image-overlay">Bytt bilde</span>
+    `;
+}
+
+function updatePostImageField(imageUrl, options = {}) {
     const postImageInput = document.getElementById('post-image');
     if (!postImageInput || !imageUrl) return;
+    const { force = false } = options;
 
-    if (!postImageInput.value || /img\/blog\/bblog1\.png$/i.test(postImageInput.value)) {
+    if (force || !postImageInput.value || /img\/blog\/bblog1\.png$/i.test(postImageInput.value)) {
         postImageInput.value = imageUrl;
     }
+
+    renderFeaturedImagePreview(postImageInput.value);
 }
 
 function renderMediaLibraryItem(imageUrl, label = 'Nytt bilde') {
@@ -2230,6 +2385,8 @@ function openModal() {
     dashboardContainer.style.display = 'none';
     editorContainerWrapper.style.display = 'flex';
     renderPostTaxonomyEditors();
+    syncRelatedPostsUi();
+    renderFeaturedImagePreview(document.getElementById('post-image')?.value || '');
     switchSettingsTab('generelt');
     resetAiAssistantState({ clearPrompt: true });
 }
@@ -2240,7 +2397,11 @@ function closeModal() {
     currentEditingId = null;
     currentPostCategories = ['Generelt'];
     currentPostTags = [];
+    currentRelatedPostIds = [];
     syncTaxonomyCounters();
+    syncRelatedPostsUi();
+    const relatedPicker = document.getElementById('related-posts-picker');
+    if (relatedPicker) relatedPicker.style.display = 'none';
     resetAiAssistantState({ clearPrompt: true });
 }
 
@@ -2586,7 +2747,11 @@ window.insertVideo = function () {
 
 
 // Image Picker Integration
-window.openImagePicker = function () {
+window.openImagePicker = function (target = IMAGE_PICKER_TARGET_EDITOR) {
+    imagePickerTarget = target === IMAGE_PICKER_TARGET_FEATURED
+        ? IMAGE_PICKER_TARGET_FEATURED
+        : IMAGE_PICKER_TARGET_EDITOR;
+
     const modal = document.getElementById('image-picker-modal');
     if (modal) modal.style.display = 'flex';
 
@@ -2606,6 +2771,7 @@ window.openImagePicker = function () {
 window.closeImagePicker = function () {
     const modal = document.getElementById('image-picker-modal');
     if (modal) modal.style.display = 'none';
+    imagePickerTarget = IMAGE_PICKER_TARGET_EDITOR;
     selectedImageUrl = null;
     selectedUploadFile = null;
     unsplashSearchState = { query: '', page: 0, total: 0, inFlight: false };
@@ -2623,7 +2789,7 @@ window.insertImage = function () {
     // We will use the picker if available, else prompt
     const modal = document.getElementById('image-picker-modal');
     if (modal) {
-        window.openImagePicker();
+        window.openImagePicker(IMAGE_PICKER_TARGET_EDITOR);
     } else {
         const url = prompt('Skriv inn bilde URL:');
         if (url && quill) {
@@ -2645,15 +2811,21 @@ window.insertUploadedImage = async function () {
 
     try {
         const imageUrl = await uploadFileToFirebaseStorage(selectedUploadFile, 'blog');
+        const isFeaturedPicker = imagePickerTarget === IMAGE_PICKER_TARGET_FEATURED;
         selectedImageUrl = imageUrl;
-        insertImageIntoEditor(imageUrl);
-        updatePostImageField(imageUrl);
+        if (!isFeaturedPicker) {
+            insertImageIntoEditor(imageUrl);
+        }
+        updatePostImageField(imageUrl, { force: isFeaturedPicker });
         renderMediaLibraryItem(imageUrl, selectedUploadFile.name || 'Bloggbilde');
         closeImagePicker();
-        await showAdminNotice('Bildet er lastet opp og satt inn i innlegget.', {
-            title: 'Bilde satt inn',
-            variant: 'success'
-        });
+        await showAdminNotice(
+            isFeaturedPicker ? 'Forsidebildet er oppdatert.' : 'Bildet er lastet opp og satt inn i innlegget.',
+            {
+                title: isFeaturedPicker ? 'Forsidebilde oppdatert' : 'Bilde satt inn',
+                variant: 'success'
+            }
+        );
     } catch (error) {
         console.error('Error uploading blog image:', error);
         await showAdminNotice(
@@ -2781,14 +2953,17 @@ window.searchUnsplash = async function (options = {}) {
 window.insertUnsplashImage = async function (imageUrl) {
     if (!imageUrl) return;
 
+    const isFeaturedPicker = imagePickerTarget === IMAGE_PICKER_TARGET_FEATURED;
     selectedImageUrl = imageUrl;
-    insertImageIntoEditor(imageUrl);
-    updatePostImageField(imageUrl);
+    if (!isFeaturedPicker) {
+        insertImageIntoEditor(imageUrl);
+    }
+    updatePostImageField(imageUrl, { force: isFeaturedPicker });
     renderMediaLibraryItem(imageUrl, 'Unsplash-bilde');
     closeImagePicker();
 
-    await showAdminNotice('Bildet er satt inn i innlegget.', {
-        title: 'Bilde satt inn',
+    await showAdminNotice(isFeaturedPicker ? 'Forsidebildet er oppdatert.' : 'Bildet er satt inn i innlegget.', {
+        title: isFeaturedPicker ? 'Forsidebilde oppdatert' : 'Bilde satt inn',
         variant: 'success'
     });
 };
@@ -2893,6 +3068,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     renderAiContextFileList();
 
+    const featuredImageArea = document.getElementById('post-featured-image-area');
+    if (featuredImageArea) {
+        featuredImageArea.addEventListener('click', () => window.openImagePicker(IMAGE_PICKER_TARGET_FEATURED));
+        featuredImageArea.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                window.openImagePicker(IMAGE_PICKER_TARGET_FEATURED);
+            }
+        });
+    }
+    renderFeaturedImagePreview(document.getElementById('post-image')?.value || '');
+
     const blogImageInput = document.getElementById('blog-image-input');
     const uploadPreview = document.getElementById('upload-preview');
     const previewImage = document.getElementById('preview-image');
@@ -2926,6 +3113,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             const defaultAuthor = currentUser?.user_metadata?.full_name || 'Admin';
             document.getElementById('post-author').value = defaultAuthor;
             setCurrentTaxonomyState({ category: 'Generelt', categories: ['Generelt'], tags: [] });
+            setCurrentGeneralSettingsState({
+                relatedPostIds: [],
+                showFeaturedImage: true,
+                isFeatured: false,
+                allowComments: true
+            });
             renderPostTaxonomyEditors();
             const dateInput = document.getElementById('post-date');
             if (dateInput) dateInput.value = getTodayIsoDate();

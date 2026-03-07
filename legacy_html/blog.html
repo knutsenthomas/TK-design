@@ -292,7 +292,7 @@
         }
 
         function renderBlogSpotlight(posts) {
-            const post = posts[0];
+            const post = posts.find((item) => Boolean(item?.isFeatured)) || posts[0];
             const localizedPost = post ? getLocalizedPost(post) : null;
             const title = document.getElementById('blogFeaturedTitle');
             const summary = document.getElementById('blogFeaturedSummary');

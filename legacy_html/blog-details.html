@@ -203,6 +203,11 @@
                                 </div>
                             </section>
 
+                            <section class="blog-side-card" id="blogCommentsCard">
+                                <h2 id="blogCommentsTitle">Kommentarer</h2>
+                                <p id="blogCommentsStatus">Laster inn innhold...</p>
+                            </section>
+
                             <section class="blog-side-card">
                                 <h2 data-i18n="blog_details.recent_title">Flere innlegg</h2>
                                 <div class="blog-recent-list" id="blogRecentPosts">
@@ -298,13 +303,19 @@
                 loading: 'Laster inn innhold...',
                 notFound: 'Innlegget ble ikke funnet.',
                 loadError: 'Det oppstod en feil ved lasting av innlegget.',
-                recentEmpty: 'Ingen flere innlegg tilgjengelig.'
+                recentEmpty: 'Ingen flere innlegg tilgjengelig.',
+                commentsTitle: 'Kommentarer',
+                commentsEnabled: 'Kommentarer er aktivert for dette innlegget.',
+                commentsDisabled: 'Kommentarer er deaktivert for dette innlegget.'
             },
             en: {
                 loading: 'Loading content...',
                 notFound: 'The post was not found.',
                 loadError: 'There was a problem loading the post.',
-                recentEmpty: 'No additional posts available.'
+                recentEmpty: 'No additional posts available.',
+                commentsTitle: 'Comments',
+                commentsEnabled: 'Comments are enabled for this post.',
+                commentsDisabled: 'Comments are disabled for this post.'
             }
         };
 
@@ -495,7 +506,21 @@
                 return;
             }
 
-            const otherPosts = blogPosts.filter((post) => post.id !== activePost.id).slice(0, 3);
+            const relatedIds = (Array.isArray(activePost.relatedPostIds) ? activePost.relatedPostIds : activePost.relatedPosts || [])
+                .map((id) => Number(id))
+                .filter((id) => Number.isFinite(id));
+
+            const explicitRelatedPosts = relatedIds
+                .map((id) => blogPosts.find((post) => Number(post.id) === id))
+                .filter((post, index, list) => {
+                    if (!post) return false;
+                    if (Number(post.id) === Number(activePost.id)) return false;
+                    return list.findIndex((item) => Number(item?.id) === Number(post.id)) === index;
+                });
+
+            const otherPosts = explicitRelatedPosts.length
+                ? explicitRelatedPosts.slice(0, 3)
+                : blogPosts.filter((post) => Number(post.id) !== Number(activePost.id)).slice(0, 3);
             if (!otherPosts.length) {
                 recentContainer.innerHTML = `<p>${getBlogRuntimeText().recentEmpty}</p>`;
                 return;
@@ -557,8 +582,13 @@
             const overviewDate = document.getElementById('blogOverviewDate');
             const overviewAuthor = document.getElementById('blogOverviewAuthor');
             const overviewReading = document.getElementById('blogReadingTime');
+            const detailMedia = document.querySelector('.blog-article-media');
             const detailImage = document.getElementById('blogDetailImage');
             const contentContainer = document.getElementById('blog-content-container');
+            const commentsTitle = document.getElementById('blogCommentsTitle');
+            const commentsStatus = document.getElementById('blogCommentsStatus');
+            const showFeaturedImage = post.showFeaturedImage !== false;
+            const runtimeText = getBlogRuntimeText();
 
             if (title) {
                 title.textContent = localizedPost.title;
@@ -608,13 +638,27 @@
                 overviewReading.textContent = readingTime;
             }
 
-            if (detailImage) {
+            if (detailMedia) {
+                detailMedia.style.display = showFeaturedImage ? '' : 'none';
+            }
+
+            if (detailImage && showFeaturedImage) {
                 detailImage.src = localizedPost.image || 'img/blog/bblog1.png';
                 detailImage.alt = localizedPost.title;
             }
 
             if (contentContainer) {
                 contentContainer.innerHTML = localizedPost.content || `<p>${getBlogRuntimeText().notFound}</p>`;
+            }
+
+            if (commentsTitle) {
+                commentsTitle.textContent = runtimeText.commentsTitle;
+            }
+
+            if (commentsStatus) {
+                commentsStatus.textContent = post.allowComments === false
+                    ? runtimeText.commentsDisabled
+                    : runtimeText.commentsEnabled;
             }
 
             document.title = `${localizedPost.seoTitle || localizedPost.title} | tk-design`;
@@ -631,6 +675,7 @@
             const contentContainer = document.getElementById('blog-content-container');
             const outlineList = document.getElementById('blogOutlineList');
             const recentContainer = document.getElementById('blogRecentPosts');
+            const commentsStatus = document.getElementById('blogCommentsStatus');
 
             if (title) {
                 title.textContent = message;
@@ -650,6 +695,10 @@
 
             if (recentContainer) {
                 recentContainer.innerHTML = `<p>${message}</p>`;
+            }
+
+            if (commentsStatus) {
+                commentsStatus.textContent = message;
             }
         }
 
