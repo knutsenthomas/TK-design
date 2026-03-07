@@ -1567,6 +1567,21 @@ function normalizeKeywordString(value = '') {
         .join(', ');
 }
 
+function normalizeOutlineList(value = [], maxItems = 6) {
+    const source = Array.isArray(value) ? value : String(value || '').split('\n');
+    return source
+        .map((item) => String(item || '').replace(/^[\-*]\s*/, '').replace(/\s+/g, ' ').trim())
+        .filter(Boolean)
+        .slice(0, maxItems);
+}
+
+function extractOutlineFallback(text = '', maxItems = 3) {
+    const normalizedText = String(text || '').replace(/\s+/g, ' ').trim();
+    if (!normalizedText) return [];
+    const rawItems = normalizedText.split(/[.!?]\s+/);
+    return normalizeOutlineList(rawItems, maxItems);
+}
+
 function stripHtmlToText(html = '') {
     return String(html || '')
         .replace(/<style[\s\S]*?<\/style>/gi, ' ')
@@ -1818,6 +1833,14 @@ app.post('/api/blog/ai-enrich', async (req, res) => {
             '    "description": "Norsk metabeskrivelse (maks 160 tegn)",',
             '    "keywords": ["nøkkelord1", "nøkkelord2", "nøkkelord3"]',
             '  },',
+            '  "summary": {',
+            '    "no": "Norsk sammendrag for hero (1-2 setninger)",',
+            '    "en": "English hero summary (1-2 sentences)"',
+            '  },',
+            '  "outline": {',
+            '    "no": ["Norsk punkt 1", "Norsk punkt 2", "Norsk punkt 3"],',
+            '    "en": ["English point 1", "English point 2", "English point 3"]',
+            '  },',
             '  "translation": {',
             '    "title": "Engelsk tittel",',
             '    "excerpt": "Engelsk utdrag (1-2 setninger)",',
@@ -1833,6 +1856,8 @@ app.post('/api/blog/ai-enrich', async (req, res) => {
             '- Behold semantisk struktur (<h2>, <h3>, <p>, <ul>, <li>, <blockquote>) fra originalen.',
             '- Ikke legg til fakta som ikke finnes i innholdet.',
             '- SEO-tittel og beskrivelse skal være konkrete og klikkvennlige.',
+            '- summary.no og summary.en skal være korte og konkrete.',
+            '- outline.no og outline.en skal ha 3-5 korte punkter.',
             '',
             `Norsk tittel: ${title}`,
             `Norsk kategori: ${category || 'Generelt'}`,
@@ -1853,11 +1878,17 @@ app.post('/api/blog/ai-enrich', async (req, res) => {
         }
 
         const parsedSeo = parsed.seo || {};
+        const parsedSummary = parsed.summary || {};
+        const parsedOutline = parsed.outline || {};
         const parsedTranslation = parsed.translation || parsed.english || {};
 
         const normalizedSeoTitle = String(parsedSeo.title || parsedSeo.seoTitle || '').trim();
         const normalizedSeoDesc = String(parsedSeo.description || parsedSeo.seoDescription || '').trim();
         const normalizedSeoKeywords = normalizeKeywordString(parsedSeo.keywords || parsedSeo.seoKeywords || '');
+        const normalizedSummaryNo = String(parsedSummary.no || parsed.summaryNo || '').trim();
+        const normalizedSummaryEn = String(parsedSummary.en || parsed.summaryEn || '').trim();
+        const normalizedOutlineNo = normalizeOutlineList(parsedOutline.no || parsed.outlineNo || []);
+        const normalizedOutlineEn = normalizeOutlineList(parsedOutline.en || parsed.outlineEn || []);
 
         const translatedTitle = String(parsedTranslation.title || '').trim();
         const translatedExcerptRaw = String(parsedTranslation.excerpt || '').trim();
@@ -1868,6 +1899,8 @@ app.post('/api/blog/ai-enrich', async (req, res) => {
         const translatedSeoTitle = String(parsedTranslation.seoTitle || '').trim();
         const translatedSeoDesc = String(parsedTranslation.seoDescription || parsedTranslation.seoDesc || '').trim();
         const translatedSeoKeywords = normalizeKeywordString(parsedTranslation.seoKeywords || parsedTranslation.keywords || '');
+        const translatedSummary = String(parsedTranslation.summary || '').trim();
+        const translatedOutline = normalizeOutlineList(parsedTranslation.outline || []);
 
         if (!translatedContentHtml) {
             throw new Error('Gemini returned empty English content.');
@@ -1875,12 +1908,22 @@ app.post('/api/blog/ai-enrich', async (req, res) => {
 
         const translatedPlainText = stripHtmlToText(translatedContentHtml);
         const translatedExcerpt = translatedExcerptRaw || truncateText(translatedPlainText, 220);
+        const fallbackOutlineNo = extractOutlineFallback(plainNoContent, 3);
+        const fallbackOutlineEn = extractOutlineFallback(translatedPlainText, 3);
 
         res.json({
             seo: {
                 title: normalizedSeoTitle || seoTitle || title,
                 description: normalizedSeoDesc || seoDesc || truncateText(plainNoContent, 160),
                 keywords: normalizedSeoKeywords || seoKeywords
+            },
+            summary: {
+                no: normalizedSummaryNo || fallbackNoExcerpt,
+                en: normalizedSummaryEn || translatedSummary || translatedExcerpt
+            },
+            outline: {
+                no: normalizedOutlineNo.length ? normalizedOutlineNo : fallbackOutlineNo,
+                en: normalizedOutlineEn.length ? normalizedOutlineEn : (translatedOutline.length ? translatedOutline : fallbackOutlineEn)
             },
             translation: {
                 title: translatedTitle || title,

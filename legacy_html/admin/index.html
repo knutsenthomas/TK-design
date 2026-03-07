@@ -834,6 +834,17 @@
                             </button>
                             <p class="ai-help-text">SEO kan genereres automatisk med Gemini før lagring/publisering. Du kan redigere feltene etterpå.</p>
                         </div>
+                        <div class="setting-group">
+                            <label>Detaljside sammendrag (valgfritt)</label>
+                            <textarea id="post-detail-summary" rows="3" placeholder="Overstyr automatisk sammendrag for toppen av innlegget."
+                                style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"></textarea>
+                        </div>
+                        <div class="setting-group">
+                            <label>Kort oversikt punkter (valgfritt)</label>
+                            <textarea id="post-detail-outline" rows="5" placeholder="Ett punkt per linje. Tomt felt bruker automatisk Gemini-forslag."
+                                style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"></textarea>
+                            <p class="ai-help-text">Hvis disse feltene er tomme, vises auto-generert innhold fra Gemini/innlegget.</p>
+                        </div>
                     </div>
 
                     <!-- Other Panels (Monetize, Apps, Translate) -->

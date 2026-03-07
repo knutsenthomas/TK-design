@@ -610,6 +610,7 @@ window.openEditModal = function (index) {
     document.getElementById('post-seo-title').value = post.seoTitle || '';
     document.getElementById('post-seo-desc').value = post.seoDesc || '';
     document.getElementById('post-seo-keywords').value = post.seoKeywords || '';
+    applyBlogDetailValuesToForm(post);
 
     if (quill) quill.root.innerHTML = post.content || '';
 
@@ -684,6 +685,18 @@ function normalizeKeywordCsv(value = '') {
         .map((item) => item.trim())
         .filter(Boolean)
         .join(', ');
+}
+
+function normalizeOutlineItems(value = [], maxItems = 6) {
+    const source = Array.isArray(value) ? value : String(value || '').split('\n');
+    return source
+        .map((item) => String(item || '').replace(/^[\-*]\s*/, '').replace(/\s+/g, ' ').trim())
+        .filter(Boolean)
+        .slice(0, maxItems);
+}
+
+function formatOutlineItemsForInput(value = []) {
+    return normalizeOutlineItems(value, 20).join('\n');
 }
 
 function stripHtmlToPlainText(html = '') {
@@ -974,9 +987,18 @@ function shouldAutoEnrichPost(postPayload = {}) {
         || !String(postPayload.contentEn || '').trim()
         || !String(postPayload.seoTitleEn || '').trim()
         || !String(postPayload.seoDescEn || '').trim();
+    const missingDetailSuggestions = !String(postPayload.autoSummary || '').trim()
+        || !Array.isArray(postPayload.autoOutline)
+        || postPayload.autoOutline.length === 0
+        || !String(postPayload.autoSummaryEn || '').trim()
+        || !Array.isArray(postPayload.autoOutlineEn)
+        || postPayload.autoOutlineEn.length === 0;
     const signature = buildAiSourceSignature(postPayload);
 
-    return missingNorwegianSeo || missingEnglishVersion || String(postPayload.aiSourceSignature || '') !== signature;
+    return missingNorwegianSeo
+        || missingEnglishVersion
+        || missingDetailSuggestions
+        || String(postPayload.aiSourceSignature || '') !== signature;
 }
 
 function buildPostPayload() {
@@ -993,6 +1015,8 @@ function buildPostPayload() {
     const tags = [...currentPostTags];
     const primaryCategory = categories[0] || 'Generelt';
     const seoKeywordsFromField = normalizeKeywordCsv(document.getElementById('post-seo-keywords')?.value || '');
+    const detailSummary = document.getElementById('post-detail-summary')?.value.trim() || '';
+    const detailOutline = normalizeOutlineItems(document.getElementById('post-detail-outline')?.value || '');
 
     return {
         id: postId,
@@ -1009,6 +1033,8 @@ function buildPostPayload() {
         seoTitle: document.getElementById('post-seo-title')?.value.trim() || '',
         seoDesc: document.getElementById('post-seo-desc')?.value.trim() || '',
         seoKeywords: seoKeywordsFromField || normalizeKeywordCsv(tags.join(', ')),
+        detailSummary,
+        detailOutline,
         link: `blog-details.html?id=${postId}`
     };
 }
@@ -1039,6 +1065,8 @@ async function requestAiSeoAndTranslation(postPayload) {
 function mergeAiEnhancementsIntoPost(postPayload, aiPayload, { forceSeo = false } = {}) {
     const mergedPayload = { ...postPayload };
     const aiSeo = aiPayload?.seo || {};
+    const aiSummary = aiPayload?.summary || {};
+    const aiOutline = aiPayload?.outline || {};
     const aiTranslation = aiPayload?.translation || {};
 
     const generatedSeoTitle = String(aiSeo.title || '').trim();
@@ -1063,6 +1091,10 @@ function mergeAiEnhancementsIntoPost(postPayload, aiPayload, { forceSeo = false 
     const translatedSeoDesc = String(aiTranslation.seoDesc || '').trim();
     const translatedSeoKeywords = normalizeKeywordCsv(aiTranslation.seoKeywords || '');
     const translatedFallbackExcerpt = stripHtmlToPlainText(translatedContent).slice(0, 220).trim();
+    const generatedSummaryNo = String(aiSummary.no || aiPayload?.overviewNo || '').trim();
+    const generatedSummaryEn = String(aiSummary.en || aiTranslation.summary || '').trim();
+    const generatedOutlineNo = normalizeOutlineItems(aiOutline.no || aiPayload?.outlineNo || []);
+    const generatedOutlineEn = normalizeOutlineItems(aiOutline.en || aiTranslation.outline || []);
 
     mergedPayload.titleEn = translatedTitle || mergedPayload.title;
     mergedPayload.excerptEn = translatedExcerpt || translatedFallbackExcerpt || mergedPayload.excerpt || '';
@@ -1071,6 +1103,10 @@ function mergeAiEnhancementsIntoPost(postPayload, aiPayload, { forceSeo = false 
     mergedPayload.seoTitleEn = translatedSeoTitle || mergedPayload.titleEn;
     mergedPayload.seoDescEn = translatedSeoDesc || mergedPayload.excerptEn || '';
     mergedPayload.seoKeywordsEn = translatedSeoKeywords || normalizeKeywordCsv(mergedPayload.seoKeywordsEn || '');
+    if (generatedSummaryNo) mergedPayload.autoSummary = generatedSummaryNo;
+    if (generatedSummaryEn) mergedPayload.autoSummaryEn = generatedSummaryEn;
+    if (generatedOutlineNo.length) mergedPayload.autoOutline = generatedOutlineNo;
+    if (generatedOutlineEn.length) mergedPayload.autoOutlineEn = generatedOutlineEn;
     mergedPayload.aiLocalizedAt = new Date().toISOString();
 
     return mergedPayload;
@@ -1084,6 +1120,18 @@ function applySeoValuesToForm(postPayload) {
     if (seoTitleInput) seoTitleInput.value = postPayload.seoTitle || '';
     if (seoDescInput) seoDescInput.value = postPayload.seoDesc || '';
     if (seoKeywordsInput) seoKeywordsInput.value = postPayload.seoKeywords || '';
+}
+
+function applyBlogDetailValuesToForm(postPayload = {}) {
+    const summaryInput = document.getElementById('post-detail-summary');
+    const outlineInput = document.getElementById('post-detail-outline');
+    const summaryValue = String(postPayload.detailSummary || postPayload.autoSummary || '').trim();
+    const outlineSource = Array.isArray(postPayload.detailOutline) && postPayload.detailOutline.length
+        ? postPayload.detailOutline
+        : (Array.isArray(postPayload.autoOutline) ? postPayload.autoOutline : []);
+
+    if (summaryInput) summaryInput.value = summaryValue;
+    if (outlineInput) outlineInput.value = formatOutlineItemsForInput(outlineSource);
 }
 
 async function persistPostPayload(postPayload) {
@@ -1148,6 +1196,7 @@ async function upsertCurrentPost(successMessage) {
     const postPayload = existingPost ? { ...existingPost, ...basePayload } : basePayload;
 
     applySeoValuesToForm(postPayload);
+    applyBlogDetailValuesToForm(postPayload);
     await persistPostPayload(postPayload);
 
     currentEditingId = postPayload.id;
@@ -1192,9 +1241,10 @@ window.generateSeoForCurrentDraft = async function () {
         const aiPayload = await requestAiSeoAndTranslation(basePayload);
         const mergedPayload = mergeAiEnhancementsIntoPost(basePayload, aiPayload, { forceSeo: true });
         applySeoValuesToForm(mergedPayload);
+        applyBlogDetailValuesToForm(mergedPayload);
 
-        await showAdminNotice('SEO-feltene er oppdatert med forslag fra Gemini.', {
-            title: 'SEO generert',
+        await showAdminNotice('SEO og detaljforslag er oppdatert med Gemini.', {
+            title: 'Forslag generert',
             variant: 'success'
         });
     } catch (error) {
@@ -3145,6 +3195,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('post-seo-title').value = '';
             document.getElementById('post-seo-desc').value = '';
             document.getElementById('post-seo-keywords').value = '';
+            const detailSummaryInput = document.getElementById('post-detail-summary');
+            const detailOutlineInput = document.getElementById('post-detail-outline');
+            if (detailSummaryInput) detailSummaryInput.value = '';
+            if (detailOutlineInput) detailOutlineInput.value = '';
             if (quill) quill.setText('');
             openModal();
         });

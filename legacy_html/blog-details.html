@@ -358,8 +358,25 @@
             return plainText ? [plainText] : [];
         }
 
+        function normalizeOutlineItems(value = [], maxItems = 6) {
+            const source = Array.isArray(value) ? value : String(value || '').split('\n');
+            return source
+                .map((item) => String(item || '').replace(/^[\-*]\s*/, '').replace(/\s+/g, ' ').trim())
+                .filter(Boolean)
+                .slice(0, maxItems);
+        }
+
         function getLocalizedPost(post) {
             const isEn = typeof currentLang !== 'undefined' && currentLang === 'en';
+            const detailSummaryNo = String(post.detailSummary || post.customSummary || '').trim();
+            const detailSummaryEn = String(post.detailSummaryEn || '').trim();
+            const autoSummaryNo = String(post.autoSummary || '').trim();
+            const autoSummaryEn = String(post.autoSummaryEn || '').trim();
+            const detailOutlineNo = normalizeOutlineItems(post.detailOutline || post.customOutline || []);
+            const detailOutlineEn = normalizeOutlineItems(post.detailOutlineEn || []);
+            const autoOutlineNo = normalizeOutlineItems(post.autoOutline || []);
+            const autoOutlineEn = normalizeOutlineItems(post.autoOutlineEn || []);
+
             return {
                 ...post,
                 title: isEn ? (post.titleEn || post.title) : post.title,
@@ -368,12 +385,25 @@
                 category: isEn ? (post.categoryEn || post.category) : post.category,
                 seoTitle: isEn ? (post.seoTitleEn || post.seoTitle || post.titleEn || post.title) : (post.seoTitle || post.title),
                 seoDesc: isEn ? (post.seoDescEn || post.seoDesc || post.excerptEn || post.excerpt || '') : (post.seoDesc || post.excerpt || ''),
-                seoKeywords: isEn ? (post.seoKeywordsEn || post.seoKeywords || '') : (post.seoKeywords || '')
+                seoKeywords: isEn ? (post.seoKeywordsEn || post.seoKeywords || '') : (post.seoKeywords || ''),
+                detailSummary: isEn
+                    ? (detailSummaryEn || autoSummaryEn || detailSummaryNo || autoSummaryNo || '')
+                    : (detailSummaryNo || autoSummaryNo || ''),
+                detailOutline: isEn
+                    ? (detailOutlineEn.length
+                        ? detailOutlineEn
+                        : (autoOutlineEn.length ? autoOutlineEn : (detailOutlineNo.length ? detailOutlineNo : autoOutlineNo)))
+                    : (detailOutlineNo.length ? detailOutlineNo : autoOutlineNo)
             };
         }
 
         function buildSummary(post) {
             const localizedPost = getLocalizedPost(post);
+            const fromManualOrAi = (localizedPost.detailSummary || '').trim();
+            if (fromManualOrAi) {
+                return fromManualOrAi;
+            }
+
             const fromExcerpt = (localizedPost.excerpt || '').trim();
             if (fromExcerpt) {
                 return fromExcerpt;
@@ -428,14 +458,17 @@
             }
 
             const localizedPost = getLocalizedPost(post);
-            const paragraphs = extractParagraphs(localizedPost.content).slice(0, 3);
-            if (!paragraphs.length) {
+            const customOutline = normalizeOutlineItems(localizedPost.detailOutline || [], 5);
+            const fallbackParagraphs = extractParagraphs(localizedPost.content).slice(0, 3);
+            const sourceItems = customOutline.length ? customOutline : fallbackParagraphs;
+
+            if (!sourceItems.length) {
                 outlineList.innerHTML = `<li>${getBlogRuntimeText().notFound}</li>`;
                 return;
             }
 
-            outlineList.innerHTML = paragraphs.map((paragraph) => {
-                const shortText = paragraph.length > 120 ? `${paragraph.slice(0, 117)}...` : paragraph;
+            outlineList.innerHTML = sourceItems.map((item) => {
+                const shortText = item.length > 120 ? `${item.slice(0, 117)}...` : item;
                 return `<li>${shortText}</li>`;
             }).join('');
         }
