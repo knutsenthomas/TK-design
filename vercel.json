@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "installCommand": "npm install --prefix legacy_html",
   "builds": [
     {
       "src": "legacy_html/server.js",
