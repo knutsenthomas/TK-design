@@ -1414,6 +1414,109 @@ function isSupportedAiAttachmentMimeType(mimeType = '') {
     return false;
 }
 
+const GEMINI_DEFAULT_MODEL_CANDIDATES = [
+    'gemini-2.0-flash',
+    'gemini-2.0-flash-lite',
+    'gemini-1.5-flash-latest',
+    'gemini-1.5-pro-latest',
+    'gemini-1.5-flash'
+];
+
+const GEMINI_MODEL_LIST_CACHE_TTL_MS = 30 * 60 * 1000;
+const geminiModelListCache = {
+    expiresAt: 0,
+    models: []
+};
+
+function normalizeGeminiModelName(modelName = '') {
+    return String(modelName || '').trim().replace(/^models\//i, '');
+}
+
+function isGeminiModelNotFoundError(error) {
+    const message = String(error?.message || error || '');
+    return /\b404\b|is not found for API version|not supported for generateContent|models?\/[a-z0-9._:-]+\s+is not found/i.test(message);
+}
+
+function getGeminiModelCandidates(preferredModel = '', discoveredModels = []) {
+    const envFallbackModels = String(process.env.GEMINI_FALLBACK_MODELS || '')
+        .split(',')
+        .map((model) => normalizeGeminiModelName(model))
+        .filter(Boolean);
+
+    const mergedCandidates = [
+        normalizeGeminiModelName(preferredModel),
+        ...(Array.isArray(discoveredModels) ? discoveredModels : []).map((model) => normalizeGeminiModelName(model)),
+        ...envFallbackModels,
+        ...GEMINI_DEFAULT_MODEL_CANDIDATES
+    ];
+
+    const seen = new Set();
+    const uniqueCandidates = [];
+
+    mergedCandidates.forEach((model) => {
+        const normalized = normalizeGeminiModelName(model);
+        if (!normalized || seen.has(normalized)) {
+            return;
+        }
+        seen.add(normalized);
+        uniqueCandidates.push(normalized);
+    });
+
+    return uniqueCandidates.slice(0, 20);
+}
+
+async function listGeminiGenerateContentModels(apiKey = '') {
+    const key = String(apiKey || '').trim();
+    if (!key) return [];
+
+    try {
+        const fetch = await getFetch();
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(key)}`, {
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            const body = await response.text().catch(() => '');
+            console.warn(`[Gemini] Could not list models (${response.status}): ${body.slice(0, 300)}`);
+            return [];
+        }
+
+        const payload = await response.json().catch(() => ({}));
+        const availableModels = Array.isArray(payload?.models) ? payload.models : [];
+
+        return availableModels
+            .filter((model) => {
+                const methods = Array.isArray(model?.supportedGenerationMethods)
+                    ? model.supportedGenerationMethods
+                    : [];
+                return methods.includes('generateContent');
+            })
+            .map((model) => normalizeGeminiModelName(model?.name))
+            .filter((modelName) => /^gemini/i.test(modelName));
+    } catch (error) {
+        console.warn('[Gemini] Failed to fetch model list:', error?.message || error);
+        return [];
+    }
+}
+
+async function getGeminiGenerateContentModels(apiKey = '') {
+    const now = Date.now();
+    if (geminiModelListCache.expiresAt > now && geminiModelListCache.models.length > 0) {
+        return geminiModelListCache.models;
+    }
+
+    const discoveredModels = await listGeminiGenerateContentModels(apiKey);
+    if (discoveredModels.length > 0) {
+        geminiModelListCache.models = discoveredModels;
+        geminiModelListCache.expiresAt = now + GEMINI_MODEL_LIST_CACHE_TTL_MS;
+        return discoveredModels;
+    }
+
+    return geminiModelListCache.models;
+}
+
 // API: Generate Blog Content with Gemini AI
 app.post('/api/generate-content', aiAttachmentMiddleware, async (req, res) => {
     try {
@@ -1422,12 +1525,13 @@ app.post('/api/generate-content', aiAttachmentMiddleware, async (req, res) => {
         const length = String(req.body.length || 'medium').trim();
         const existingDraft = String(req.body.existingDraft || '').trim();
         const attachments = Array.isArray(req.files) ? req.files : [];
+        const geminiApiKey = String(process.env.GEMINI_API_KEY || '').trim();
 
         if (!topic && !existingDraft && attachments.length === 0) {
             return res.status(400).json({ error: 'Prompt, draft or attachment is required' });
         }
 
-        if (!String(process.env.GEMINI_API_KEY || '').trim()) {
+        if (!geminiApiKey) {
             return res.status(500).json({
                 error: 'Gemini API key is missing',
                 details: 'Set GEMINI_API_KEY in server environment variables.'
@@ -1505,33 +1609,79 @@ app.post('/api/generate-content', aiAttachmentMiddleware, async (req, res) => {
             });
         });
 
-        const modelName = String(process.env.GEMINI_MODEL || 'gemini-1.5-flash').trim() || 'gemini-1.5-flash';
-        const model = genAI.getGenerativeModel({ model: modelName });
-        const result = await model.generateContent({
-            contents: [{ role: 'user', parts }]
-        });
-        const response = await result.response;
-        let text = response.text().trim();
+        const preferredModel = normalizeGeminiModelName(process.env.GEMINI_MODEL || 'gemini-2.0-flash');
+        const discoveredModels = await getGeminiGenerateContentModels(geminiApiKey);
+        const modelCandidates = getGeminiModelCandidates(preferredModel, discoveredModels);
 
-        text = text
-            .replace(/^```html\s*/i, '')
-            .replace(/^```\s*/i, '')
-            .replace(/\s*```$/i, '')
-            .trim();
+        if (modelCandidates.length === 0) {
+            const noModelError = new Error('No Gemini model candidates available.');
+            noModelError.code = 'gemini_model_unavailable';
+            throw noModelError;
+        }
 
-        if (!text) {
-            throw new Error('Gemini returned empty content.');
+        let selectedModel = '';
+        let text = '';
+        let lastModelErrorMessage = '';
+
+        for (const candidate of modelCandidates) {
+            try {
+                const model = genAI.getGenerativeModel({ model: candidate });
+                const result = await model.generateContent({
+                    contents: [{ role: 'user', parts }]
+                });
+                const response = await result.response;
+                let candidateText = String(response.text() || '').trim();
+
+                candidateText = candidateText
+                    .replace(/^```html\s*/i, '')
+                    .replace(/^```\s*/i, '')
+                    .replace(/\s*```$/i, '')
+                    .trim();
+
+                if (!candidateText) {
+                    throw new Error('Gemini returned empty content.');
+                }
+
+                selectedModel = candidate;
+                text = candidateText;
+                break;
+            } catch (candidateError) {
+                if (isGeminiModelNotFoundError(candidateError)) {
+                    lastModelErrorMessage = String(candidateError?.message || '');
+                    console.warn(`[Gemini] Model ${candidate} unavailable. Trying next candidate...`);
+                    continue;
+                }
+
+                throw candidateError;
+            }
+        }
+
+        if (!selectedModel || !text) {
+            const unavailableError = new Error(
+                `Ingen støttet Gemini-modell tilgjengelig for generateContent. Prøvde: ${modelCandidates.join(', ')}.${lastModelErrorMessage ? ` Siste feil: ${lastModelErrorMessage}` : ''}`
+            );
+            unavailableError.code = 'gemini_model_unavailable';
+            throw unavailableError;
         }
 
         res.json({
             content: text,
-            model: modelName,
+            model: selectedModel,
             attachmentCount: attachments.length
         });
     } catch (error) {
         console.error('Gemini API Error:', error);
+        const errorCode = String(error?.code || '');
         const errorMessage = String(error?.message || '');
         const refererBlocked = /API_KEY_HTTP_REFERRER_BLOCKED|Requests from referer <empty> are blocked/i.test(errorMessage);
+
+        if (errorCode === 'gemini_model_unavailable') {
+            return res.status(500).json({
+                error: 'No supported Gemini model available',
+                code: 'gemini_model_unavailable',
+                details: errorMessage || 'Server could not find a Gemini model that supports generateContent.'
+            });
+        }
 
         if (refererBlocked) {
             return res.status(500).json({

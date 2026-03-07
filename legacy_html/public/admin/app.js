@@ -317,6 +317,10 @@ function normalizeAdminErrorMessage(error, fallbackMessage) {
         return 'Gemini-nøkkelen er blokkert av referrer-regler. Gå til Google Cloud/API Keys og bruk en servernøkkel uten HTTP-referrer-restriksjon (API-restriksjon kan fortsatt være Generative Language API).';
     }
 
+    if (/gemini_model_unavailable|is not found for API version|not supported for generateContent|No supported Gemini model available/i.test(rawMessage)) {
+        return 'Gemini-modellen i serveren er ikke tilgjengelig. Sett GEMINI_MODEL til en gyldig modell (f.eks. gemini-2.0-flash), eller la serveren bruke automatisk fallback.';
+    }
+
     return rawMessage;
 }
 
