@@ -587,8 +587,13 @@ window.openEditModal = function (index) {
 
     document.getElementById('post-title').value = post.title;
     document.getElementById('post-author').value = post.author || 'Admin';
-    document.getElementById('post-category').value = post.category || 'Generelt';
-    document.getElementById('post-date').value = post.date;
+    setCurrentTaxonomyState(post);
+    renderPostTaxonomyEditors();
+
+    const dateInput = document.getElementById('post-date');
+    if (dateInput) {
+        dateInput.value = resolvePostDateIso(post);
+    }
     document.getElementById('post-image').value = post.image;
     const excerptInput = document.getElementById('post-excerpt');
     if (excerptInput) excerptInput.value = post.excerpt || '';
@@ -679,6 +684,293 @@ function stripHtmlToPlainText(html = '') {
     return String(temp.textContent || temp.innerText || '').replace(/\s+/g, ' ').trim();
 }
 
+function getTodayIsoDate() {
+    const now = new Date();
+    const local = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+    return local.toISOString().slice(0, 10);
+}
+
+function normalizeIsoDate(value = '') {
+    const raw = String(value || '').trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(raw)) return '';
+    return raw;
+}
+
+function parseNorwegianDateToIso(value = '') {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+
+    const monthMap = {
+        januar: '01',
+        februar: '02',
+        mars: '03',
+        april: '04',
+        mai: '05',
+        juni: '06',
+        juli: '07',
+        august: '08',
+        september: '09',
+        oktober: '10',
+        november: '11',
+        desember: '12'
+    };
+
+    const numericMatch = raw.match(/^(\d{1,2})[.\-/](\d{1,2})[.\-/](\d{4})$/);
+    if (numericMatch) {
+        const day = numericMatch[1].padStart(2, '0');
+        const month = numericMatch[2].padStart(2, '0');
+        const year = numericMatch[3];
+        return `${year}-${month}-${day}`;
+    }
+
+    const norwegianMatch = raw.toLowerCase().match(/^(\d{1,2})\.\s*([a-zæøå]+)\s+(\d{4})$/i);
+    if (norwegianMatch) {
+        const day = norwegianMatch[1].padStart(2, '0');
+        const monthName = norwegianMatch[2];
+        const month = monthMap[monthName];
+        const year = norwegianMatch[3];
+        if (month) {
+            return `${year}-${month}-${day}`;
+        }
+    }
+
+    return '';
+}
+
+function resolvePostDateIso(post = {}) {
+    const directIso = normalizeIsoDate(post.dateIso || post.date);
+    if (directIso) {
+        return directIso;
+    }
+
+    const parsedNoDate = parseNorwegianDateToIso(post.date);
+    if (parsedNoDate) {
+        return parsedNoDate;
+    }
+
+    const parsedDate = new Date(String(post.date || '').trim());
+    if (Number.isFinite(parsedDate.getTime())) {
+        return parsedDate.toISOString().slice(0, 10);
+    }
+
+    return getTodayIsoDate();
+}
+
+function formatDateForPost(isoDate = '') {
+    const normalized = normalizeIsoDate(isoDate) || getTodayIsoDate();
+    const dateObj = new Date(`${normalized}T12:00:00`);
+    if (!Number.isFinite(dateObj.getTime())) {
+        return new Date().toLocaleDateString('no-NO', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
+
+    return new Intl.DateTimeFormat('no-NO', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    }).format(dateObj);
+}
+
+function escapeHtmlForUi(value = '') {
+    return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function normalizeTaxonomyValue(value = '') {
+    return String(value || '').replace(/\s+/g, ' ').trim();
+}
+
+function dedupeTaxonomyValues(values = []) {
+    const deduped = [];
+    const seen = new Set();
+
+    (Array.isArray(values) ? values : []).forEach((value) => {
+        const normalized = normalizeTaxonomyValue(value);
+        if (!normalized) return;
+        const key = normalized.toLowerCase();
+        if (seen.has(key)) return;
+        seen.add(key);
+        deduped.push(normalized);
+    });
+
+    return deduped;
+}
+
+function syncPrimaryCategoryField() {
+    const hiddenCategoryInput = document.getElementById('post-category');
+    if (hiddenCategoryInput) {
+        hiddenCategoryInput.value = currentPostCategories[0] || 'Generelt';
+    }
+}
+
+function syncTaxonomyCounters() {
+    const buttons = document.querySelectorAll('.settings-tabs .tab-btn');
+    const categoryCounter = buttons[1]?.querySelector('.counter');
+    const tagCounter = buttons[2]?.querySelector('.counter');
+
+    if (categoryCounter) categoryCounter.textContent = String(currentPostCategories.length || 0);
+    if (tagCounter) tagCounter.textContent = String(currentPostTags.length || 0);
+}
+
+function renderPostTaxonomyEditors() {
+    const categoryPane = document.getElementById('tab-kategorier');
+    const tagPane = document.getElementById('tab-tagger');
+
+    if (categoryPane) {
+        const categoryChips = currentPostCategories.length
+            ? currentPostCategories.map((category, index) => `
+                <div class="taxonomy-chip">
+                    <span>${escapeHtmlForUi(category)}${index === 0 ? ' <em class="taxonomy-primary-badge">Hoved</em>' : ''}</span>
+                    <button type="button" onclick="removePostCategory(${index})" aria-label="Fjern kategori">×</button>
+                </div>
+            `).join('')
+            : '<p class="empty-state">Ingen kategorier ennå.</p>';
+
+        categoryPane.innerHTML = `
+            <div class="taxonomy-panel">
+                <p class="taxonomy-help-text">Legg til en eller flere kategorier. Første kategori brukes som hovedkategori.</p>
+                <div class="taxonomy-input-row">
+                    <input type="text" id="post-category-input" placeholder="F.eks Webdesign">
+                    <button type="button" class="action-btn" onclick="addPostCategory()">Legg til</button>
+                </div>
+                <div class="taxonomy-chip-list">${categoryChips}</div>
+            </div>
+        `;
+    }
+
+    if (tagPane) {
+        const tagChips = currentPostTags.length
+            ? currentPostTags.map((tag, index) => `
+                <div class="taxonomy-chip">
+                    <span>#${escapeHtmlForUi(tag)}</span>
+                    <button type="button" onclick="removePostTag(${index})" aria-label="Fjern tagg">×</button>
+                </div>
+            `).join('')
+            : '<p class="empty-state">Ingen tagger ennå.</p>';
+
+        tagPane.innerHTML = `
+            <div class="taxonomy-panel">
+                <p class="taxonomy-help-text">Tagger brukes til filtrering og interne søk.</p>
+                <div class="taxonomy-input-row">
+                    <input type="text" id="post-tag-input" placeholder="F.eks SEO">
+                    <button type="button" class="action-btn" onclick="addPostTag()">Legg til</button>
+                </div>
+                <div class="taxonomy-chip-list">${tagChips}</div>
+            </div>
+        `;
+    }
+
+    const categoryInput = document.getElementById('post-category-input');
+    if (categoryInput) {
+        categoryInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                window.addPostCategory();
+            }
+        });
+    }
+
+    const tagInput = document.getElementById('post-tag-input');
+    if (tagInput) {
+        tagInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                window.addPostTag();
+            }
+        });
+    }
+
+    syncPrimaryCategoryField();
+    syncTaxonomyCounters();
+}
+
+window.addPostCategory = function () {
+    const input = document.getElementById('post-category-input');
+    if (!input) return;
+
+    const normalized = normalizeTaxonomyValue(input.value);
+    if (!normalized) return;
+
+    const merged = dedupeTaxonomyValues([...currentPostCategories, normalized]).slice(0, POST_MAX_CATEGORIES);
+    currentPostCategories = merged.length ? merged : ['Generelt'];
+    input.value = '';
+    renderPostTaxonomyEditors();
+};
+
+window.removePostCategory = function (index) {
+    if (!Number.isInteger(index) || index < 0 || index >= currentPostCategories.length) return;
+    currentPostCategories.splice(index, 1);
+    if (!currentPostCategories.length) {
+        currentPostCategories = ['Generelt'];
+    }
+    renderPostTaxonomyEditors();
+};
+
+window.addPostTag = function () {
+    const input = document.getElementById('post-tag-input');
+    if (!input) return;
+
+    const normalized = normalizeTaxonomyValue(input.value).replace(/^#/, '');
+    if (!normalized) return;
+
+    currentPostTags = dedupeTaxonomyValues([...currentPostTags, normalized]).slice(0, POST_MAX_TAGS);
+    input.value = '';
+    renderPostTaxonomyEditors();
+};
+
+window.removePostTag = function (index) {
+    if (!Number.isInteger(index) || index < 0 || index >= currentPostTags.length) return;
+    currentPostTags.splice(index, 1);
+    renderPostTaxonomyEditors();
+};
+
+function setCurrentTaxonomyState(post = {}) {
+    const categories = dedupeTaxonomyValues([
+        ...(Array.isArray(post.categories) ? post.categories : []),
+        post.category
+    ]);
+
+    currentPostCategories = categories.length ? categories.slice(0, POST_MAX_CATEGORIES) : ['Generelt'];
+
+    const tagCandidates = Array.isArray(post.tags) && post.tags.length
+        ? post.tags
+        : normalizeKeywordCsv(post.seoKeywords || '').split(',');
+
+    currentPostTags = dedupeTaxonomyValues(tagCandidates).slice(0, POST_MAX_TAGS);
+    syncPrimaryCategoryField();
+    syncTaxonomyCounters();
+}
+
+function buildAiSourceSignature(postPayload = {}) {
+    return [
+        String(postPayload.title || '').trim(),
+        String(postPayload.excerpt || '').trim(),
+        String(postPayload.category || '').trim(),
+        String(postPayload.content || '').trim()
+    ].join('||');
+}
+
+function shouldAutoEnrichPost(postPayload = {}) {
+    const missingNorwegianSeo = !String(postPayload.seoTitle || '').trim()
+        || !String(postPayload.seoDesc || '').trim()
+        || !String(postPayload.seoKeywords || '').trim();
+    const missingEnglishVersion = !String(postPayload.titleEn || '').trim()
+        || !String(postPayload.excerptEn || '').trim()
+        || !String(postPayload.contentEn || '').trim()
+        || !String(postPayload.seoTitleEn || '').trim()
+        || !String(postPayload.seoDescEn || '').trim();
+    const signature = buildAiSourceSignature(postPayload);
+
+    return missingNorwegianSeo || missingEnglishVersion || String(postPayload.aiSourceSignature || '') !== signature;
+}
+
 function buildPostPayload() {
     const title = document.getElementById('post-title')?.value.trim();
     if (!title) {
@@ -687,23 +979,28 @@ function buildPostPayload() {
 
     const postId = currentEditingId || getNextPostId();
     const content = quill ? quill.root.innerHTML.trim() : '';
+    const dateInput = document.getElementById('post-date');
+    const dateIso = normalizeIsoDate(dateInput?.value) || getTodayIsoDate();
+    const categories = currentPostCategories.length ? [...currentPostCategories] : ['Generelt'];
+    const tags = [...currentPostTags];
+    const primaryCategory = categories[0] || 'Generelt';
+    const seoKeywordsFromField = normalizeKeywordCsv(document.getElementById('post-seo-keywords')?.value || '');
 
     return {
         id: postId,
         title,
         author: document.getElementById('post-author')?.value || 'Admin',
-        category: document.getElementById('post-category')?.value || 'Generelt',
-        date: document.getElementById('post-date')?.value || new Date().toLocaleDateString('no-NO', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        }),
+        category: primaryCategory,
+        categories,
+        tags,
+        dateIso,
+        date: formatDateForPost(dateIso),
         image: document.getElementById('post-image')?.value || 'img/blog/bblog1.png',
         excerpt: document.getElementById('post-excerpt')?.value.trim() || '',
         content: content || '<p>Nytt innlegg uten innhold.</p>',
         seoTitle: document.getElementById('post-seo-title')?.value.trim() || '',
         seoDesc: document.getElementById('post-seo-desc')?.value.trim() || '',
-        seoKeywords: normalizeKeywordCsv(document.getElementById('post-seo-keywords')?.value || ''),
+        seoKeywords: seoKeywordsFromField || normalizeKeywordCsv(tags.join(', ')),
         link: `blog-details.html?id=${postId}`
     };
 }
@@ -781,16 +1078,9 @@ function applySeoValuesToForm(postPayload) {
     if (seoKeywordsInput) seoKeywordsInput.value = postPayload.seoKeywords || '';
 }
 
-async function upsertCurrentPost(successMessage) {
-    const isNewPost = !currentEditingId;
-    const basePayload = buildPostPayload();
-    const existingPost = blogData.find((post) => Number(post.id) === Number(basePayload.id));
-    const seededPayload = existingPost ? { ...existingPost, ...basePayload } : basePayload;
-    const aiPayload = await requestAiSeoAndTranslation(seededPayload);
-    const postPayload = mergeAiEnhancementsIntoPost(seededPayload, aiPayload, { forceSeo: isNewPost });
-    applySeoValuesToForm(postPayload);
-
+async function persistPostPayload(postPayload) {
     const existingIndex = blogData.findIndex((post) => Number(post.id) === Number(postPayload.id));
+    const previousSnapshot = Array.isArray(blogData) ? blogData.map((post) => ({ ...post })) : [];
 
     if (existingIndex >= 0) {
         blogData[existingIndex] = postPayload;
@@ -798,13 +1088,70 @@ async function upsertCurrentPost(successMessage) {
         blogData.unshift(postPayload);
     }
 
-    await saveBlogPosts();
+    try {
+        await saveBlogPosts();
+    } catch (error) {
+        blogData = previousSnapshot;
+        throw error;
+    }
+}
+
+async function enrichPostInBackground(postPayload) {
+    const postId = Number(postPayload.id);
+    if (!Number.isFinite(postId)) return;
+
+    const signature = buildAiSourceSignature(postPayload);
+    const existingSignature = aiEnrichmentInFlight.get(postId);
+    if (existingSignature === signature) {
+        return;
+    }
+
+    aiEnrichmentInFlight.set(postId, signature);
+
+    try {
+        const aiPayload = await requestAiSeoAndTranslation(postPayload);
+        if (aiEnrichmentInFlight.get(postId) !== signature) {
+            return;
+        }
+
+        const currentIndex = blogData.findIndex((post) => Number(post.id) === postId);
+        if (currentIndex === -1) return;
+
+        const currentPost = blogData[currentIndex];
+        const forceSeo = !String(currentPost.seoTitle || '').trim()
+            || !String(currentPost.seoDesc || '').trim()
+            || !String(currentPost.seoKeywords || '').trim();
+        const mergedPayload = mergeAiEnhancementsIntoPost(currentPost, aiPayload, { forceSeo });
+        mergedPayload.aiSourceSignature = signature;
+
+        await persistPostPayload(mergedPayload);
+    } catch (error) {
+        console.warn('Background AI enrichment failed:', error);
+    } finally {
+        if (aiEnrichmentInFlight.get(postId) === signature) {
+            aiEnrichmentInFlight.delete(postId);
+        }
+    }
+}
+
+async function upsertCurrentPost(successMessage) {
+    const basePayload = buildPostPayload();
+    const existingPost = blogData.find((post) => Number(post.id) === Number(basePayload.id));
+    const postPayload = existingPost ? { ...existingPost, ...basePayload } : basePayload;
+
+    applySeoValuesToForm(postPayload);
+    await persistPostPayload(postPayload);
+
     currentEditingId = postPayload.id;
     closeModal();
     await showAdminNotice(successMessage, {
         title: 'Innlegg oppdatert',
         variant: 'success'
     });
+
+    if (shouldAutoEnrichPost(postPayload)) {
+        void enrichPostInBackground(postPayload);
+    }
 }
 
 window.generateSeoForCurrentDraft = async function () {
@@ -1657,15 +2004,20 @@ let selectedUploadFile = null;
 const UNSPLASH_RESULTS_PER_PAGE = 24;
 const AI_MAX_CONTEXT_FILES = 6;
 const AI_MAX_CONTEXT_FILE_SIZE = 12 * 1024 * 1024;
+const POST_MAX_CATEGORIES = 6;
+const POST_MAX_TAGS = 20;
 let unsplashSearchState = {
     query: '',
     page: 0,
     total: 0,
     inFlight: false
 };
+let currentPostCategories = ['Generelt'];
+let currentPostTags = [];
 let aiContextFiles = [];
 let aiGenerationInFlight = false;
 let aiSeoInFlight = false;
+const aiEnrichmentInFlight = new Map();
 
 function sanitizeStorageFileName(fileName = 'image') {
     return String(fileName)
@@ -1827,6 +2179,8 @@ const editorContainerWrapper = document.getElementById('editor-container-wrapper
 function openModal() {
     dashboardContainer.style.display = 'none';
     editorContainerWrapper.style.display = 'flex';
+    renderPostTaxonomyEditors();
+    switchSettingsTab('generelt');
     resetAiAssistantState({ clearPrompt: true });
 }
 
@@ -1834,6 +2188,9 @@ function closeModal() {
     editorContainerWrapper.style.display = 'none';
     dashboardContainer.style.display = 'flex';
     currentEditingId = null;
+    currentPostCategories = ['Generelt'];
+    currentPostTags = [];
+    syncTaxonomyCounters();
     resetAiAssistantState({ clearPrompt: true });
 }
 
@@ -2518,8 +2875,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('post-title').value = '';
             const defaultAuthor = currentUser?.user_metadata?.full_name || 'Admin';
             document.getElementById('post-author').value = defaultAuthor;
-            document.getElementById('post-category').value = 'Generelt';
-            document.getElementById('post-date').value = new Date().toLocaleDateString('no-NO', { year: 'numeric', month: 'long', day: 'numeric' });
+            setCurrentTaxonomyState({ category: 'Generelt', categories: ['Generelt'], tags: [] });
+            renderPostTaxonomyEditors();
+            const dateInput = document.getElementById('post-date');
+            if (dateInput) dateInput.value = getTodayIsoDate();
             document.getElementById('post-image').value = 'img/blog/bblog1.png';
             const excerptInput = document.getElementById('post-excerpt');
             if (excerptInput) excerptInput.value = '';

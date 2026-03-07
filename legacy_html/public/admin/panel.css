@@ -283,6 +283,16 @@ input:checked+.slider:before {
     font-size: 14px;
 }
 
+.input-with-icon input[type="date"] {
+    padding-right: 12px;
+    color-scheme: light;
+}
+
+.input-with-icon input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.75;
+}
+
 /* Author Select */
 .author-select {
     display: flex;
@@ -367,4 +377,100 @@ textarea {
 
 .toggle-row label {
     margin: 0;
+}
+
+/* Taxonomy editors (Kategorier/Tagger) */
+.taxonomy-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.taxonomy-help-text {
+    margin: 0;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.taxonomy-input-row {
+    display: flex;
+    gap: 8px;
+}
+
+.taxonomy-input-row input {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: #334155;
+}
+
+.taxonomy-input-row input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+}
+
+.taxonomy-input-row .action-btn {
+    white-space: nowrap;
+    padding: 0 14px;
+}
+
+.taxonomy-chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.taxonomy-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border: 1px solid #dbe3ee;
+    border-radius: 999px;
+    background: #f8fafc;
+    font-size: 13px;
+    color: #334155;
+}
+
+.taxonomy-chip button {
+    width: 20px;
+    height: 20px;
+    border: none;
+    border-radius: 50%;
+    background: #e2e8f0;
+    color: #475569;
+    cursor: pointer;
+    line-height: 1;
+    font-size: 14px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.taxonomy-chip button:hover {
+    background: #cbd5e1;
+}
+
+.taxonomy-primary-badge {
+    font-style: normal;
+    font-size: 11px;
+    font-weight: 600;
+    color: #1e40af;
+    background: #dbeafe;
+    border-radius: 999px;
+    padding: 2px 6px;
+    margin-left: 6px;
+}
+
+.tab-pane .empty-state {
+    text-align: left;
+    padding: 16px 0;
+    margin: 0;
+    font-size: 13px;
 }
