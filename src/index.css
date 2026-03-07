@@ -27,3 +27,51 @@ h5,
 h6 {
     font-family: var(--font-display);
 }
+
+/* Custom Quill Styles */
+.quill-editor .ql-toolbar.ql-snow {
+    border: none !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    padding: 12px 24px !important;
+    background: #fff !important;
+}
+
+.quill-editor .ql-container.ql-snow {
+    border: none !important;
+    font-family: var(--font-primary) !important;
+    font-size: 16px !important;
+    min-height: 400px;
+}
+
+.quill-editor .ql-editor {
+    padding: 24px !important;
+    line-height: 1.8 !important;
+    color: #374151 !important;
+}
+
+.quill-editor .ql-editor.ql-blank::before {
+    left: 24px !important;
+    color: #cbd5e1 !important;
+    font-style: normal !important;
+}
+
+/* Custom labels for the header dropdown */
+.quill-editor .ql-snow .ql-picker.ql-header .ql-picker-label::before,
+.quill-editor .ql-snow .ql-picker.ql-header .ql-picker-item::before {
+    content: 'Brødtekst' !important;
+}
+
+.quill-editor .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="1"]::before,
+.quill-editor .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="1"]::before {
+    content: 'Overskrift 1' !important;
+}
+
+.quill-editor .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="2"]::before,
+.quill-editor .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="2"]::before {
+    content: 'Overskrift 2' !important;
+}
+
+.quill-editor .ql-snow .ql-picker.ql-header .ql-picker-label[data-value="3"]::before,
+.quill-editor .ql-snow .ql-picker.ql-header .ql-picker-item[data-value="3"]::before {
+    content: 'Overskrift 3' !important;
+}

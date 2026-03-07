@@ -1873,7 +1873,8 @@ body.admin-dashboard-refresh .admin-brand-chip .brand-dot {
 body.admin-dashboard-refresh .breadcrumb {
     display: inline-flex;
     align-items: center;
-    gap: 0;
+    gap: 8px;
+    /* Added gap */
     padding: 9px 14px;
     margin: 0;
     min-height: auto;
@@ -1888,10 +1889,16 @@ body.admin-dashboard-refresh .breadcrumb-item {
     font-weight: 700;
     letter-spacing: -0.02em;
     color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 body.admin-dashboard-refresh .breadcrumb-item:not(:last-child)::after {
-    content: none;
+    content: '/';
+    /* Added separator */
+    opacity: 0.3;
+    font-weight: 400;
 }
 
 body.admin-dashboard-refresh .language-switcher-header {

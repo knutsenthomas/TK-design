@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     PenNib,
@@ -265,13 +267,25 @@ const BlogManager = () => {
                                 </div>
 
                                 <div className="space-y-4">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 block ml-1">Brødtekst (HTML)</label>
-                                    <textarea
-                                        className="w-full min-h-[300px] p-6 bg-gray-50 rounded-[2rem] border-none outline-none text-gray-700 font-medium leading-relaxed resize-none focus:bg-white focus:ring-4 focus:ring-brand/5 transition-all"
-                                        value={editingPost.content}
-                                        onChange={(e) => setEditingPost({ ...editingPost, content: e.target.value })}
-                                        placeholder="Skriv ditt innhold her..."
-                                    />
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 block ml-1">Brødtekst</label>
+                                    <div className="rounded-[2rem] overflow-hidden border border-gray-100 bg-gray-50 focus-within:bg-white focus-within:ring-4 focus-within:ring-brand/5 transition-all">
+                                        <ReactQuill
+                                            theme="snow"
+                                            value={editingPost.content}
+                                            onChange={(content) => setEditingPost({ ...editingPost, content })}
+                                            placeholder="Skriv ditt innhold her..."
+                                            modules={{
+                                                toolbar: [
+                                                    [{ 'header': [1, 2, 3, false] }],
+                                                    ['bold', 'italic', 'underline', 'strike'],
+                                                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                                                    ['link', 'image', 'video'],
+                                                    ['clean']
+                                                ],
+                                            }}
+                                            className="quill-editor"
+                                        />
+                                    </div>
                                 </div>
 
                                 <div className="pt-8 border-t border-gray-50 space-y-6">
