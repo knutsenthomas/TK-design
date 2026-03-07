@@ -1973,11 +1973,115 @@ app.post('/api/blog/ai-enrich', async (req, res) => {
     }
 });
 
+const UNSPLASH_QUERY_SYNONYMS = {
+    bilde: 'image',
+    bilder: 'images',
+    foto: 'photo',
+    fotografi: 'photography',
+    nettside: 'website',
+    hjemmeside: 'website',
+    webside: 'website',
+    webdesign: 'web design',
+    design: 'design',
+    markedsforing: 'marketing',
+    markedsføring: 'marketing',
+    sosiale: 'social',
+    medier: 'media',
+    kontor: 'office',
+    bedrift: 'business',
+    butikk: 'store',
+    kunde: 'customer',
+    team: 'team',
+    reise: 'travel',
+    natur: 'nature',
+    mat: 'food',
+    teknologi: 'technology',
+    kunstig: 'artificial',
+    intelligens: 'intelligence'
+};
+
+function normalizeUnsplashQuery(value = '') {
+    return String(value || '')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function transliterateUnsplashQuery(value = '') {
+    const normalized = normalizeUnsplashQuery(value);
+    return normalized.normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
+}
+
+function buildUnsplashQueryVariants(rawQuery = '') {
+    const variants = [];
+    const seen = new Set();
+    const base = normalizeUnsplashQuery(rawQuery);
+
+    const pushVariant = (candidate) => {
+        const value = normalizeUnsplashQuery(candidate);
+        const key = value.toLowerCase();
+        if (!value || seen.has(key)) return;
+        seen.add(key);
+        variants.push(value);
+    };
+
+    pushVariant(base);
+
+    const transliterated = transliterateUnsplashQuery(base);
+    if (transliterated && transliterated.toLowerCase() !== base.toLowerCase()) {
+        pushVariant(transliterated);
+    }
+
+    const tokens = base
+        .split(/[\s,;|/]+/)
+        .map((token) => token.trim())
+        .filter((token) => token.length >= 2);
+
+    if (tokens.length > 1) {
+        pushVariant(tokens.slice(0, 3).join(' '));
+    }
+
+    const translatedTokens = tokens.map((token) => {
+        const tokenKey = token.toLowerCase();
+        return UNSPLASH_QUERY_SYNONYMS[tokenKey] || token;
+    });
+
+    if (translatedTokens.length) {
+        pushVariant(translatedTokens.join(' '));
+        if (translatedTokens.length > 1) {
+            pushVariant(translatedTokens.slice(0, 3).join(' '));
+        }
+    }
+
+    tokens.forEach((token) => pushVariant(token));
+    translatedTokens.forEach((token) => pushVariant(token));
+
+    return variants.slice(0, 6);
+}
+
+async function fetchUnsplashSearchPage({ fetchImpl, accessKey, query, page, perPage }) {
+    const unsplashUrl = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&page=${page}&per_page=${perPage}`;
+    const response = await fetchImpl(unsplashUrl, {
+        headers: {
+            Authorization: `Client-ID ${accessKey}`,
+            'Accept-Version': 'v1',
+            'User-Agent': 'tk-design-studio'
+        }
+    });
+
+    if (!response.ok) {
+        const errorBody = await response.text();
+        console.error(`[Unsplash] API-feil (${response.status}) for query "${query}": ${errorBody}`);
+        throw new Error(`Unsplash API error: ${response.status} ${response.statusText}`);
+    }
+
+    return response.json();
+}
+
 // API: Search Unsplash Images
 app.get('/api/unsplash/search', async (req, res) => {
     console.log(`[Unsplash] Mottok søkeforespørsel: "${req.query.query}" (Page: ${req.query.page})`);
     try {
-        const query = String(req.query.query || '').trim();
+        const query = normalizeUnsplashQuery(req.query.query || '');
         const requestedPage = Number.parseInt(req.query.page, 10);
         const requestedPerPage = Number.parseInt(req.query.per_page, 10);
         const page = Number.isFinite(requestedPage) && requestedPage > 0 ? requestedPage : 1;
@@ -1988,8 +2092,6 @@ app.get('/api/unsplash/search', async (req, res) => {
         if (!query) {
             return res.status(400).json({ error: 'Search query is required' });
         }
-
-        const unsplashUrl = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&page=${page}&per_page=${perPage}`;
 
         const fetch = (await import('node-fetch')).default;
         const accessKey = String(process.env.UNSPLASH_ACCESS_KEY || '').trim();
@@ -2003,24 +2105,56 @@ app.get('/api/unsplash/search', async (req, res) => {
             });
         }
 
-        const response = await fetch(unsplashUrl, {
-            headers: {
-                'Authorization': `Client-ID ${accessKey}`,
-                'Accept-Version': 'v1',
-                'User-Agent': 'tk-design-studio'
-            }
-        });
+        const queryVariants = buildUnsplashQueryVariants(query);
+        const collected = [];
+        const seenIds = new Set();
+        const tokenCount = query.split(/\s+/).filter(Boolean).length;
+        let selectedTotal = 0;
+        let fallbackUsed = false;
+        let effectiveQuery = queryVariants[0] || query;
 
-        if (!response.ok) {
-            const errorBody = await response.text();
-            console.error(`[Unsplash] API-feil (${response.status}): ${errorBody}`);
-            throw new Error(`Unsplash API error: ${response.status} ${response.statusText}`);
+        for (let index = 0; index < queryVariants.length; index += 1) {
+            const candidateQuery = queryVariants[index];
+            const remaining = perPage - collected.length;
+            if (remaining <= 0) break;
+
+            const data = await fetchUnsplashSearchPage({
+                fetchImpl: fetch,
+                accessKey,
+                query: candidateQuery,
+                page,
+                perPage: remaining
+            });
+
+            const results = Array.isArray(data?.results) ? data.results : [];
+            if (index === 0) {
+                selectedTotal = Number(data?.total) || 0;
+                effectiveQuery = candidateQuery;
+            }
+
+            results.forEach((img) => {
+                if (!img?.id || seenIds.has(img.id)) return;
+                seenIds.add(img.id);
+                collected.push(img);
+            });
+
+            if (index === 0) {
+                const shouldTryFallback = results.length === 0
+                    || (tokenCount > 1 && results.length < Math.min(8, perPage));
+                if (!shouldTryFallback) {
+                    break;
+                }
+                fallbackUsed = true;
+                continue;
+            }
+
+            if (collected.length >= perPage) {
+                break;
+            }
         }
 
-        const data = await response.json();
-
         // Format response to include only necessary data
-        const images = data.results.map(img => ({
+        const images = collected.map((img) => ({
             id: img.id,
             full: img.urls.full || img.urls.regular,
             url: img.urls.regular,
@@ -2033,7 +2167,14 @@ app.get('/api/unsplash/search', async (req, res) => {
             downloadUrl: img.links.download_location
         }));
 
-        res.json({ images, total: data.total, page, perPage });
+        res.json({
+            images,
+            total: Math.max(selectedTotal, images.length),
+            page,
+            perPage,
+            searchQuery: effectiveQuery,
+            fallbackUsed
+        });
     } catch (error) {
         console.error('Unsplash API Error:', error);
         res.status(500).json({ error: 'Failed to search images', details: error.message });
