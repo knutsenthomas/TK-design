@@ -4785,11 +4785,12 @@ body.homepage-refresh .mobile-nav {
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    /* Midtstill innhold horisontalt */
-    /* Unngå at lenkene strekkes ut til bunnen */
-    padding: 65px 24px 15px;
+    /* Midtstill innhold horisontalt med mer luft under header på mobil */
+    padding:
+        max(90px, calc(env(safe-area-inset-top, 0px) + 74px))
+        24px
+        max(22px, calc(env(safe-area-inset-bottom, 0px) + 14px));
     overflow-y: auto;
-    /* Tillat scrolling hvis innholdet er for stort */
     text-align: center;
 }
 
@@ -4801,10 +4802,8 @@ body.mobile-menu-active .header {
 body.homepage-refresh .mobile-nav ul {
     display: flex;
     flex-direction: column;
-    gap: 6px !important;
-    /* Enda mer kompakt avstand */
-    margin: 15px 0;
-    /* Fast avstand i stedet for auto */
+    gap: 8px !important;
+    margin: clamp(18px, 4vh, 40px) 0 0;
     padding: 0;
     list-style: none;
 }
@@ -4826,14 +4825,13 @@ body.homepage-refresh .mobile-nav a {
 
 body.homepage-refresh .mobile-menu-footer {
     width: 100%;
-    margin-top: 15px;
-    padding-top: 15px;
+    margin-top: auto;
+    padding-top: 18px;
     border-top: 1px solid rgba(17, 38, 60, 0.08);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 12px !important;
-    /* Mer kompakt footer */
     text-align: center;
 }
 
