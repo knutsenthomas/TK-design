@@ -1,0 +1,39 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "legacy_html/server.js",
+            "use": "@vercel/node",
+            "config": {
+                "includeFiles": [
+                    "legacy_html/index.html",
+                    "legacy_html/blog.html",
+                    "legacy_html/blog-details.html",
+                    "legacy_html/contact.html",
+                    "legacy_html/project-details.html",
+                    "legacy_html/service-details.html",
+                    "legacy_html/privacy.html",
+                    "legacy_html/accessibility.html",
+                    "legacy_html/style.css",
+                    "legacy_html/script.js",
+                    "legacy_html/translations.js",
+                    "legacy_html/manifest.json",
+                    "legacy_html/sw.js",
+                    "legacy_html/robots.txt",
+                    "legacy_html/sitemap.xml",
+                    "legacy_html/admin/**",
+                    "legacy_html/data/**",
+                    "legacy_html/img/**",
+                    "legacy_html/js/**",
+                    "legacy_html/public/**"
+                ]
+            }
+        }
+    ],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "legacy_html/server.js"
+        }
+    ]
+}
