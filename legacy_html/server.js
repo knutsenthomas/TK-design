@@ -1184,18 +1184,22 @@ app.get('/sitemap.xml', async (req, res) => {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
 
         for (const page of Object.keys((seoConfig && seoConfig.pages) || {})) {
+            const normalizedPage = String(page || '').replace(/^\/+/, '');
+            const cleanPage = normalizedPage === 'index.html'
+                ? ''
+                : normalizedPage.replace(/\.html$/i, '');
             xml += `
     <url>
-        <loc>${baseUrl}/${page}</loc>
+        <loc>${baseUrl}${cleanPage ? `/${cleanPage}` : ''}</loc>
         <changefreq>weekly</changefreq>
-        <priority>${page === 'index.html' ? '1.0' : '0.8'}</priority>
+        <priority>${cleanPage === '' ? '1.0' : '0.8'}</priority>
     </url>`;
         }
 
         (posts || []).forEach((post) => {
             xml += `
     <url>
-        <loc>${baseUrl}/blog-details.html?id=${post.id}</loc>
+        <loc>${baseUrl}/blog-details?id=${post.id}</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>`;
@@ -1210,9 +1214,41 @@ app.get('/sitemap.xml', async (req, res) => {
     }
 });
 
-// Server-Side Meta Injection
-app.get(['/', '/index.html', '/blog.html', '/project-details.html', '/blog-details.html', '/contact.html'], async (req, res) => {
-    let reqFile = req.path === '/' ? 'index.html' : req.path.substring(1);
+// Server-Side Meta Injection + clean URL redirects
+const pageRouteMap = {
+    '/': 'index.html',
+    '/blog': 'blog.html',
+    '/project-details': 'project-details.html',
+    '/blog-details': 'blog-details.html',
+    '/contact': 'contact.html',
+    '/service-details': 'service-details.html',
+    '/privacy': 'privacy.html',
+    '/accessibility': 'accessibility.html'
+};
+
+const legacyRedirectMap = {
+    '/index.html': '/',
+    '/blog.html': '/blog',
+    '/project-details.html': '/project-details',
+    '/blog-details.html': '/blog-details',
+    '/contact.html': '/contact',
+    '/service-details.html': '/service-details',
+    '/privacy.html': '/privacy',
+    '/accessibility.html': '/accessibility'
+};
+
+app.get([...Object.keys(pageRouteMap), ...Object.keys(legacyRedirectMap)], async (req, res) => {
+    const redirectTarget = legacyRedirectMap[req.path];
+    if (redirectTarget) {
+        const qs = Object.keys(req.query).length ? `?${new URLSearchParams(req.query).toString()}` : '';
+        return res.redirect(301, `${redirectTarget}${qs}`);
+    }
+
+    const reqFile = pageRouteMap[req.path];
+    if (!reqFile) {
+        return res.status(404).send('Page not found');
+    }
+
     let lang = 'no';
     const cookies = req.headers.cookie || '';
     const langMatch = cookies.match(/site_lang=(en|no)/);

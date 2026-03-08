@@ -44,7 +44,7 @@
 
     <header class="header">
         <div class="container nav-container">
-            <a href="/#home" class="logo" aria-label="tk-design">
+            <a href="/" class="logo" aria-label="tk-design">
                 <span class="logo-icon">
                     <img src="img/logo/d.png" alt="tk-design logo">
                 </span>
@@ -52,11 +52,11 @@
             </a>
             <nav class="nav-desktop">
                 <ul>
-                    <li><a href="/#home" data-i18n="nav.home">Home</a></li>
-                    <li><a href="/#about" data-i18n="nav.about">About</a></li>
-                    <li><a href="/#services" data-i18n="nav.services">Services</a></li>
-                    <li><a href="/#projects" data-i18n="nav.portfolio">Portfolio</a></li>
-                    <li><a href="/#testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
+                    <li><a href="/" data-i18n="nav.home">Home</a></li>
+                    <li><a href="/?section=about" data-i18n="nav.about">About</a></li>
+                    <li><a href="/?section=services" data-i18n="nav.services">Services</a></li>
+                    <li><a href="/?section=projects" data-i18n="nav.portfolio">Portfolio</a></li>
+                    <li><a href="/?section=testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
                     <li><a href="/blog" class="is-current" data-i18n="nav.blog">Blog</a></li>
                     <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
                 </ul>
@@ -73,11 +73,11 @@
     <div class="mobile-menu-overlay">
         <nav class="mobile-nav">
             <ul>
-                <li><a href="/#home" data-i18n="nav.home">Home</a></li>
-                <li><a href="/#about" data-i18n="nav.about">About</a></li>
-                <li><a href="/#services" data-i18n="nav.services">Services</a></li>
-                <li><a href="/#projects" data-i18n="nav.portfolio">Portfolio</a></li>
-                <li><a href="/#testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
+                <li><a href="/" data-i18n="nav.home">Home</a></li>
+                <li><a href="/?section=about" data-i18n="nav.about">About</a></li>
+                <li><a href="/?section=services" data-i18n="nav.services">Services</a></li>
+                <li><a href="/?section=projects" data-i18n="nav.portfolio">Portfolio</a></li>
+                <li><a href="/?section=testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
                 <li><a href="/blog" class="is-current" data-i18n="nav.blog">Blog</a></li>
                 <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
             </ul>
@@ -110,13 +110,13 @@
                             synlighet.
                         </p>
                         <div class="blog-list-actions">
-                            <a href="index.html" class="primary-cta" data-i18n="blog_page.back_home">Tilbake til
+                            <a href="/" class="primary-cta" data-i18n="blog_page.back_home">Tilbake til
                                 forsiden</a>
                             <a href="/contact" class="blog-list-secondary" data-i18n="blog_page.contact_cta">Trenger du
                                 hjelp?</a>
                         </div>
                         <ul class="breadcrumb">
-                            <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+                            <li><a href="/" data-i18n="nav.home">Home</a></li>
                             <li data-i18n="nav.blog">Blog</li>
                         </ul>
                     </div>
@@ -208,7 +208,7 @@
 
             <div class="flex flex-wrap justify-between items-center"
                 style="border-top: 1px solid var(--clr-border); padding-top: 30px;">
-                <p><span data-i18n="footer.copyright">Copyright © 2026</span> <a href="index.html"
+                <p><span data-i18n="footer.copyright">Copyright © 2026</span> <a href="/"
                         style="color: var(--clr-base);">tk-design</a> <span data-i18n="footer.rights">All rights
                         reserved.</span></p>
                 <div class="flex gap-4">
@@ -315,7 +315,7 @@
                     date.textContent = '-';
                 }
                 if (link) {
-                    link.href = 'blog.html';
+                    link.href = '/blog';
                 }
                 if (linkText) {
                     linkText.textContent = getBlogPageText('open_post');
@@ -336,7 +336,7 @@
                 date.textContent = localizedPost.date || '-';
             }
             if (link) {
-                link.href = localizedPost.link || `blog-details.html?id=${localizedPost.id}`;
+                link.href = localizedPost.link || `/blog-details?id=${localizedPost.id}`;
             }
             if (linkText) {
                 linkText.textContent = getBlogPageText('open_post');
@@ -379,7 +379,7 @@
 
             grid.innerHTML = posts.map((post) => {
                 const localizedPost = getLocalizedPost(post);
-                const url = localizedPost.link || `blog-details.html?id=${localizedPost.id}`;
+                const url = localizedPost.link || `/blog-details?id=${localizedPost.id}`;
                 return `
                     <article class="blog-list-card">
                         <a href="${url}" class="blog-list-image">

@@ -30,7 +30,7 @@
 
     <header class="header">
         <div class="container nav-container">
-            <a href="/#home" class="logo" aria-label="tk-design">
+            <a href="/" class="logo" aria-label="tk-design">
                 <span class="logo-icon">
                     <img src="img/logo/d.png" alt="tk-design logo">
                 </span>
@@ -38,11 +38,11 @@
             </a>
             <nav class="nav-desktop">
                 <ul>
-                    <li><a href="/#home" data-i18n="nav.home">Home</a></li>
-                    <li><a href="/#about" data-i18n="nav.about">About</a></li>
-                    <li><a href="/#services" data-i18n="nav.services">Services</a></li>
-                    <li><a href="/#projects" data-i18n="nav.portfolio">Portfolio</a></li>
-                    <li><a href="/#testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
+                    <li><a href="/" data-i18n="nav.home">Home</a></li>
+                    <li><a href="/?section=about" data-i18n="nav.about">About</a></li>
+                    <li><a href="/?section=services" data-i18n="nav.services">Services</a></li>
+                    <li><a href="/?section=projects" data-i18n="nav.portfolio">Portfolio</a></li>
+                    <li><a href="/?section=testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
                     <li><a href="/blog" data-i18n="nav.blog">Blog</a></li>
                     <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
                 </ul>
@@ -59,11 +59,11 @@
     <div class="mobile-menu-overlay">
         <nav class="mobile-nav">
             <ul>
-                <li><a href="/#home" data-i18n="nav.home">Home</a></li>
-                <li><a href="/#about" data-i18n="nav.about">About</a></li>
-                <li><a href="/#services" data-i18n="nav.services">Services</a></li>
-                <li><a href="/#projects" data-i18n="nav.portfolio">Portfolio</a></li>
-                <li><a href="/#testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
+                <li><a href="/" data-i18n="nav.home">Home</a></li>
+                <li><a href="/?section=about" data-i18n="nav.about">About</a></li>
+                <li><a href="/?section=services" data-i18n="nav.services">Services</a></li>
+                <li><a href="/?section=projects" data-i18n="nav.portfolio">Portfolio</a></li>
+                <li><a href="/?section=testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
                 <li><a href="/blog" data-i18n="nav.blog">Blog</a></li>
                 <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
             </ul>
@@ -95,15 +95,15 @@
                             kvalitet og enkel kundekontakt.
                         </p>
                         <div class="project-page-actions">
-                            <a href="/#projects" class="primary-cta" data-i18n="project_details.back_to_projects">
+                            <a href="/?section=projects" class="primary-cta" data-i18n="project_details.back_to_projects">
                                 Tilbake til prosjekter
                             </a>
                             <a href="https://www.kudosregnskap.no" class="project-page-secondary" id="projectActionLink"
                                 target="_blank" rel="nofollow noopener noreferrer">Besøk nettsiden</a>
                         </div>
                         <ul class="breadcrumb">
-                            <li><a href="index.html" data-i18n="nav.home">Home</a></li>
-                            <li><a href="/#projects" data-i18n="nav.portfolio">Portfolio</a></li>
+                            <li><a href="/" data-i18n="nav.home">Home</a></li>
+                            <li><a href="/?section=projects" data-i18n="nav.portfolio">Portfolio</a></li>
                             <li id="projectBreadcrumb">Kudos Regnskap AS</li>
                         </ul>
                     </div>
@@ -211,7 +211,7 @@
                                 <strong id="prevProjectName">Vedlikehold og videreutvikling</strong>
                             </div>
                         </a>
-                        <a href="/#projects" class="grid-view project-grid-view" aria-label="Tilbake til prosjekter">
+                        <a href="/?section=projects" class="grid-view project-grid-view" aria-label="Tilbake til prosjekter">
                             <i class="fas fa-th"></i>
                         </a>
                         <a href="/project-details?project=hkm" class="project-nav-link next-project"
@@ -258,7 +258,7 @@
 
             <div class="flex flex-wrap justify-between items-center"
                 style="border-top: 1px solid var(--clr-border); padding-top: 30px;">
-                <p><span data-i18n="footer.copyright">Copyright © 2026</span> <a href="index.html"
+                <p><span data-i18n="footer.copyright">Copyright © 2026</span> <a href="/"
                         style="color: var(--clr-base);">tk-design</a> <span data-i18n="footer.rights">All rights
                         reserved.</span></p>
                 <div class="flex gap-4">
@@ -821,7 +821,7 @@
                     actionLink.target = '_blank';
                     actionLink.rel = 'noopener noreferrer';
                 } else {
-                    actionLink.href = 'index.html#contact';
+                    actionLink.href = '/contact';
                     actionLink.textContent = labels.fallback;
                     actionLink.removeAttribute('target');
                     actionLink.removeAttribute('rel');
@@ -839,8 +839,8 @@
             const prevName = document.getElementById('prevProjectName');
             const nextName = document.getElementById('nextProjectName');
 
-            if (prevLink) prevLink.href = `project-details.html?project=${prevKey}`;
-            if (nextLink) nextLink.href = `project-details.html?project=${nextKey}`;
+            if (prevLink) prevLink.href = `/project-details?project=${prevKey}`;
+            if (nextLink) nextLink.href = `/project-details?project=${nextKey}`;
             if (prevName) prevName.textContent = prevProject.title;
             if (nextName) nextName.textContent = nextProject.title;
 

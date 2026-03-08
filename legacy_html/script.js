@@ -119,9 +119,86 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Language init moved outside to prevent flash of untranslated content
 
+    // Keep homepage URL clean while still supporting section navigation
+    initHomepageSectionRouting();
+
     // Back To Top
     initBackToTopButton();
 });
+
+function initHomepageSectionRouting() {
+    const isHomepage = document.body && document.body.id === 'home';
+    const sectionLinks = document.querySelectorAll('a[href*="?section="]');
+
+    const scrollToSection = (section, behavior = 'smooth') => {
+        if (!isHomepage) return false;
+
+        if (!section || section === 'home') {
+            window.scrollTo({ top: 0, behavior });
+            return true;
+        }
+
+        const target = document.getElementById(section);
+        if (!target) return false;
+
+        const header = document.querySelector('.header');
+        const headerOffset = header ? header.offsetHeight + 12 : 0;
+        const top = Math.max(target.getBoundingClientRect().top + window.scrollY - headerOffset, 0);
+        window.scrollTo({ top, behavior });
+        return true;
+    };
+
+    const clearHomepageUrl = () => {
+        if (!isHomepage || !window.history || typeof window.history.replaceState !== 'function') return;
+        if (window.location.pathname === '/index.html' || window.location.search || window.location.hash) {
+            window.history.replaceState({}, '', '/');
+        }
+    };
+
+    sectionLinks.forEach((link) => {
+        let section = '';
+        try {
+            const url = new URL(link.getAttribute('href') || '', window.location.origin);
+            section = (url.searchParams.get('section') || '').trim();
+        } catch (error) {
+            section = '';
+        }
+
+        if (!section || !isHomepage) return;
+
+        link.addEventListener('click', (event) => {
+            event.preventDefault();
+            if (scrollToSection(section, 'smooth')) {
+                clearHomepageUrl();
+            }
+        });
+    });
+
+    if (!isHomepage) {
+        return;
+    }
+
+    let initialSection = '';
+    const querySection = new URLSearchParams(window.location.search).get('section');
+    if (querySection) {
+        initialSection = querySection.trim();
+    } else if (window.location.hash) {
+        initialSection = window.location.hash.replace('#', '').trim();
+    }
+
+    if (initialSection) {
+        window.requestAnimationFrame(() => {
+            if (scrollToSection(initialSection, 'auto')) {
+                clearHomepageUrl();
+            }
+        });
+        return;
+    }
+
+    if (window.location.pathname === '/index.html') {
+        clearHomepageUrl();
+    }
+}
 
 function initBackToTopButton() {
     if (document.querySelector('.back-to-top-btn')) {
