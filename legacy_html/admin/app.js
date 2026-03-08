@@ -1624,15 +1624,15 @@ function renderMessages() {
         if (msg.status === 'archived') item.style.opacity = '0.6';
 
         item.innerHTML = `
-            <div class="blog-title">
+            <div class="blog-title message-author">
                 <div style="font-weight: 700;">${msg.name || 'Anonym'}</div>
                 <div style="font-size: 12px; color: var(--text-muted); font-weight: 400;">${msg.email || ''}</div>
             </div>
-            <div class="blog-meta" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 400px;">
+            <div class="blog-meta message-preview">
                 ${msg.message || ''}
             </div>
-            <div class="blog-meta">${dateStr}</div>
-            <div style="text-align: right;">
+            <div class="blog-meta message-date">${dateStr}</div>
+            <div class="message-actions">
                 <button class="action-btn" onclick="viewMessage('${msg.id}')" title="Vis">
                     <i class="fas fa-eye"></i>
                 </button>
@@ -2402,6 +2402,16 @@ function updateHeaderActions(section) {
     }
 }
 
+function setActiveSection(section) {
+    document.querySelectorAll('.nav-btn[data-tab]').forEach((button) => {
+        button.classList.toggle('active', button.dataset.tab === section);
+    });
+}
+
+function closeMobileSidebarMenu() {
+    document.body.classList.remove('mobile-sidebar-open');
+}
+
 function setupEventListeners() {
     const langBtns = document.querySelectorAll('.lang-btn');
     langBtns.forEach(btn => {
@@ -2419,14 +2429,20 @@ function setupEventListeners() {
         });
     });
 
-    const navBtns = document.querySelectorAll('.nav-btn');
+    const navBtns = document.querySelectorAll('.nav-btn[data-tab]');
     const tabContents = document.querySelectorAll('.tab-content');
+    const initialActiveSection =
+        document.querySelector('.sidebar .nav-btn.active[data-tab]')?.dataset.tab ||
+        document.querySelector('.nav-btn.active[data-tab]')?.dataset.tab ||
+        'home';
+
+    setActiveSection(initialActiveSection);
+
     navBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             if (btn.dataset.tab) {
                 const section = btn.dataset.tab;
-                navBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
+                setActiveSection(section);
                 tabContents.forEach(content => content.classList.remove('active'));
                 const targetTab = document.getElementById(`${section}-tab`);
                 if (targetTab) targetTab.classList.add('active');
@@ -2442,8 +2458,42 @@ function setupEventListeners() {
                 if (section === 'analytics') {
                     fetchAnalyticsData();
                 }
+
+                if (window.innerWidth <= 900) {
+                    closeMobileSidebarMenu();
+                }
             }
         });
+    });
+
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+    const mobileMenuClose = document.getElementById('mobile-menu-close');
+    const mobileSidebarOverlay = document.getElementById('mobile-sidebar-overlay');
+
+    if (mobileMenuToggle) {
+        mobileMenuToggle.addEventListener('click', () => {
+            document.body.classList.toggle('mobile-sidebar-open');
+        });
+    }
+
+    if (mobileMenuClose) {
+        mobileMenuClose.addEventListener('click', closeMobileSidebarMenu);
+    }
+
+    if (mobileSidebarOverlay) {
+        mobileSidebarOverlay.addEventListener('click', closeMobileSidebarMenu);
+    }
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeMobileSidebarMenu();
+        }
+    });
+
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 900) {
+            closeMobileSidebarMenu();
+        }
     });
 
     // Color Inputs
@@ -3607,10 +3657,28 @@ function setupProfileEventListeners() {
     // User Menu Dropdown Toggle
     const userBtn = document.getElementById('user-menu-btn');
     const userDropdown = document.getElementById('user-dropdown');
+    const settingsBtn = document.getElementById('profile-settings-btn');
+    const modal = document.getElementById('profile-modal');
+    const closeBtn = document.getElementById('close-profile-modal');
+
+    const openProfileModal = () => {
+        if (modal) {
+            modal.style.display = 'flex';
+            // Move modal to body to ensure it's on top if not already
+            if (modal.parentElement !== document.body) {
+                document.body.appendChild(modal);
+            }
+        }
+        if (userDropdown) userDropdown.classList.remove('active');
+    };
 
     if (userBtn && userDropdown) {
         userBtn.addEventListener('click', (e) => {
             e.stopPropagation();
+            if (window.innerWidth <= 900) {
+                openProfileModal();
+                return;
+            }
             userDropdown.classList.toggle('active');
         });
 
@@ -3637,21 +3705,8 @@ function setupProfileEventListeners() {
     if (logoutBtnDropdown) logoutBtnDropdown.addEventListener('click', handleLogout);
 
     // Profile Settings Modal
-    const settingsBtn = document.getElementById('profile-settings-btn');
-    const modal = document.getElementById('profile-modal');
-    const closeBtn = document.getElementById('close-profile-modal');
-
     if (settingsBtn) {
-        settingsBtn.addEventListener('click', () => {
-            if (modal) {
-                modal.style.display = 'flex';
-                // Move modal to body to ensure it's on top if not already
-                if (modal.parentElement !== document.body) {
-                    document.body.appendChild(modal);
-                }
-            }
-            if (userDropdown) userDropdown.classList.remove('active');
-        });
+        settingsBtn.addEventListener('click', openProfileModal);
     }
 
     if (closeBtn && modal) {

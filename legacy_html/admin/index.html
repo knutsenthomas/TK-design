@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>tk-design Admin</title>
-    <link rel="stylesheet" href="/admin/style.css?v=47">
+    <link rel="stylesheet" href="/admin/style.css?v=58">
     <link rel="stylesheet" href="/admin/panel.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -26,6 +26,9 @@
     <!-- Modern Admin Header -->
     <header class="admin-header">
         <div class="header-left">
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Åpne meny">
+                <i class="fas fa-bars"></i>
+            </button>
             <button class="back-btn" onclick="navigateBack()" style="display: none;">
                 <i class="fas fa-arrow-left"></i> Tilbake
             </button>
@@ -74,6 +77,7 @@
             </div>
         </div>
     </header>
+    <div class="mobile-sidebar-overlay" id="mobile-sidebar-overlay" aria-hidden="true"></div>
 
     <div class="admin-wrapper">
         <div id="dashboard-container" class="admin-container">
@@ -81,6 +85,9 @@
             <aside class="sidebar">
                 <div class="logo">
                     <h2 class="sidebar-menu-title" data-i18n="sidebar_menu">Meny</h2>
+                    <button class="mobile-sidebar-close" id="mobile-menu-close" aria-label="Lukk meny">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
                 <nav>
                     <button class="nav-btn active" data-tab="home" data-i18n="nav_home"><i class="fas fa-home"></i>
@@ -535,6 +542,18 @@
                     </div>
                 </div>
             </main>
+
+            <nav class="mobile-footer-nav" aria-label="Mobil bunnmeny">
+                <button class="nav-btn mobile-footer-btn active" data-tab="home" data-i18n="nav_home">
+                    <i class="fas fa-house"></i> Hjem
+                </button>
+                <button class="nav-btn mobile-footer-btn" data-tab="blog" data-i18n="nav_blog">
+                    <i class="fas fa-pen-nib"></i> Blogg
+                </button>
+                <button class="nav-btn mobile-footer-btn" data-tab="messages" data-i18n="nav_messages">
+                    <i class="fas fa-envelope"></i> Meldinger
+                </button>
+            </nav>
         </div>
 
         <!-- Blog Editor "Studio" Modal (Now separated) -->
@@ -1075,7 +1094,7 @@
             </div>
         </div>
 
-        <script src="/admin/app.js?v=1.0.8"></script>
+        <script src="/admin/app.js?v=1.0.11"></script>
         <script type="importmap">
         {
             "imports": {
