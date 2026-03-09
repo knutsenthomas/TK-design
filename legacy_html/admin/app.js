@@ -550,6 +550,9 @@ window.switchPanel = function (btn, panelType) {
         if (headerTitle) headerTitle.textContent = 'Oversettelse';
         const panelTranslate = document.getElementById('panel-translate');
         if (panelTranslate) panelTranslate.style.display = 'block';
+        if (typeof window.switchTranslateTab === 'function') {
+            window.switchTranslateTab('no');
+        }
     }
 }
 
@@ -567,6 +570,18 @@ window.switchSettingsTab = function (tabName) {
     document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
     const targetPane = document.getElementById(`tab-${tabName}`);
     if (targetPane) targetPane.classList.add('active');
+}
+
+window.switchTranslateTab = function (lang) {
+    const buttons = document.querySelectorAll('#panel-translate .translate-tab-btn');
+    buttons.forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.translateTab === lang);
+    });
+
+    const paneNo = document.getElementById('translate-tab-no');
+    const paneEn = document.getElementById('translate-tab-en');
+    if (paneNo) paneNo.style.display = lang === 'no' ? 'block' : 'none';
+    if (paneEn) paneEn.style.display = lang === 'en' ? 'block' : 'none';
 }
 
 window.toggleSettingsPanel = function () {
@@ -613,6 +628,7 @@ window.openEditModal = function (index) {
     document.getElementById('post-seo-desc').value = post.seoDesc || '';
     document.getElementById('post-seo-keywords').value = post.seoKeywords || '';
     applyBlogDetailValuesToForm(post);
+    applyEnglishValuesToForm(post);
 
     if (quill) quill.root.innerHTML = post.content || '';
 
@@ -705,6 +721,30 @@ function stripHtmlToPlainText(html = '') {
     const temp = document.createElement('div');
     temp.innerHTML = html || '';
     return String(temp.textContent || temp.innerText || '').replace(/\s+/g, ' ').trim();
+}
+
+function normalizeManualHtmlContent(value = '') {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+
+    if (/<[a-z][\s\S]*>/i.test(raw)) {
+        return raw;
+    }
+
+    const paragraphs = raw
+        .split(/\n{2,}/)
+        .map((paragraph) => paragraph.trim())
+        .filter(Boolean);
+
+    if (!paragraphs.length) return '';
+
+    return paragraphs.map((paragraph) => {
+        const escapedLines = paragraph
+            .split('\n')
+            .map((line) => escapeHtmlForUi(line))
+            .join('<br>');
+        return `<p>${escapedLines}</p>`;
+    }).join('');
 }
 
 function getTodayIsoDate() {
@@ -1133,8 +1173,12 @@ function buildPostPayload() {
     const tags = [...currentPostTags];
     const primaryCategory = categories[0] || 'Generelt';
     const seoKeywordsFromField = normalizeKeywordCsv(document.getElementById('post-seo-keywords')?.value || '');
+    const seoKeywordsEnFromField = normalizeKeywordCsv(document.getElementById('post-seo-keywords-en')?.value || '');
     const detailSummary = document.getElementById('post-detail-summary')?.value.trim() || '';
     const detailOutline = normalizeOutlineItems(document.getElementById('post-detail-outline')?.value || '');
+    const detailSummaryEn = document.getElementById('post-detail-summary-en')?.value.trim() || '';
+    const detailOutlineEn = normalizeOutlineItems(document.getElementById('post-detail-outline-en')?.value || '');
+    const manualContentEn = normalizeManualHtmlContent(document.getElementById('post-content-en')?.value || '');
     const relatedPostIds = normalizeRelatedPostIds(currentRelatedPostIds);
     const showFeaturedImage = document.getElementById('post-show-featured-image-toggle')?.checked !== false;
     const isFeatured = Boolean(document.getElementById('post-featured-toggle')?.checked);
@@ -1152,11 +1196,20 @@ function buildPostPayload() {
         image: document.getElementById('post-image')?.value || 'img/blog/bblog1.png',
         excerpt: document.getElementById('post-excerpt')?.value.trim() || '',
         content: content || '<p>Nytt innlegg uten innhold.</p>',
+        titleEn: document.getElementById('post-title-en')?.value.trim() || '',
+        excerptEn: document.getElementById('post-excerpt-en')?.value.trim() || '',
+        categoryEn: document.getElementById('post-category-en')?.value.trim() || '',
+        contentEn: manualContentEn,
         seoTitle: document.getElementById('post-seo-title')?.value.trim() || '',
         seoDesc: document.getElementById('post-seo-desc')?.value.trim() || '',
         seoKeywords: seoKeywordsFromField || normalizeKeywordCsv(tags.join(', ')),
+        seoTitleEn: document.getElementById('post-seo-title-en')?.value.trim() || '',
+        seoDescEn: document.getElementById('post-seo-desc-en')?.value.trim() || '',
+        seoKeywordsEn: seoKeywordsEnFromField,
         detailSummary,
         detailOutline,
+        detailSummaryEn,
+        detailOutlineEn,
         relatedPostIds,
         relatedPosts: relatedPostIds,
         showFeaturedImage,
@@ -1261,6 +1314,32 @@ function applyBlogDetailValuesToForm(postPayload = {}) {
     if (outlineInput) outlineInput.value = formatOutlineItemsForInput(outlineSource);
 }
 
+function applyEnglishValuesToForm(postPayload = {}) {
+    const titleInput = document.getElementById('post-title-en');
+    const excerptInput = document.getElementById('post-excerpt-en');
+    const categoryInput = document.getElementById('post-category-en');
+    const contentInput = document.getElementById('post-content-en');
+    const seoTitleInput = document.getElementById('post-seo-title-en');
+    const seoDescInput = document.getElementById('post-seo-desc-en');
+    const seoKeywordsInput = document.getElementById('post-seo-keywords-en');
+    const detailSummaryInput = document.getElementById('post-detail-summary-en');
+    const detailOutlineInput = document.getElementById('post-detail-outline-en');
+
+    if (titleInput) titleInput.value = postPayload.titleEn || '';
+    if (excerptInput) excerptInput.value = postPayload.excerptEn || '';
+    if (categoryInput) categoryInput.value = postPayload.categoryEn || '';
+    if (contentInput) contentInput.value = postPayload.contentEn || '';
+    if (seoTitleInput) seoTitleInput.value = postPayload.seoTitleEn || '';
+    if (seoDescInput) seoDescInput.value = postPayload.seoDescEn || '';
+    if (seoKeywordsInput) seoKeywordsInput.value = postPayload.seoKeywordsEn || '';
+    if (detailSummaryInput) detailSummaryInput.value = String(postPayload.detailSummaryEn || postPayload.autoSummaryEn || '').trim();
+
+    const outlineSource = Array.isArray(postPayload.detailOutlineEn) && postPayload.detailOutlineEn.length
+        ? postPayload.detailOutlineEn
+        : (Array.isArray(postPayload.autoOutlineEn) ? postPayload.autoOutlineEn : []);
+    if (detailOutlineInput) detailOutlineInput.value = formatOutlineItemsForInput(outlineSource);
+}
+
 async function persistPostPayload(postPayload) {
     const existingIndex = blogData.findIndex((post) => Number(post.id) === Number(postPayload.id));
     const previousSnapshot = Array.isArray(blogData) ? blogData.map((post) => ({ ...post })) : [];
@@ -1357,6 +1436,7 @@ async function upsertCurrentPost(successMessage, options = {}) {
 
     applySeoValuesToForm(postPayload);
     applyBlogDetailValuesToForm(postPayload);
+    applyEnglishValuesToForm(postPayload);
     await persistPostPayload(postPayload);
 
     currentEditingId = postPayload.id;
@@ -1406,6 +1486,7 @@ window.generateSeoForCurrentDraft = async function () {
         const mergedPayload = mergeAiEnhancementsIntoPost(basePayload, aiPayload, { forceSeo: true });
         applySeoValuesToForm(mergedPayload);
         applyBlogDetailValuesToForm(mergedPayload);
+        applyEnglishValuesToForm(mergedPayload);
 
         await showAdminNotice('SEO og detaljforslag er oppdatert med Gemini.', {
             title: 'Forslag generert',
@@ -1465,6 +1546,7 @@ window.translateCurrentDraftWithAi = async function () {
 
         applySeoValuesToForm(mergedPayload);
         applyBlogDetailValuesToForm(mergedPayload);
+        applyEnglishValuesToForm(mergedPayload);
         await persistPostPayload(mergedPayload);
         currentEditingId = mergedPayload.id;
 
@@ -3543,6 +3625,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             const detailOutlineInput = document.getElementById('post-detail-outline');
             if (detailSummaryInput) detailSummaryInput.value = '';
             if (detailOutlineInput) detailOutlineInput.value = '';
+            applyEnglishValuesToForm({});
+            if (typeof window.switchTranslateTab === 'function') {
+                window.switchTranslateTab('no');
+            }
             if (quill) quill.setText('');
             openModal();
         });

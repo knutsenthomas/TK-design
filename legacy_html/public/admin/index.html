@@ -767,10 +767,90 @@
                 </div>
 
                 <div id="panel-translate" class="settings-content main-panel-view" style="display: none;">
-                    <div class="empty-state">
-                        <i class="fas fa-globe"></i>
-                        <p>Oversett blogginnleggene dine til flere språk.</p>
-                        <button id="ai-translate-btn" class="setup-btn" onclick="translateCurrentDraftWithAi()">Start oversettelse</button>
+                    <div class="settings-tabs" style="padding: 0; margin-bottom: 14px; gap: 18px;">
+                        <button type="button" class="tab-btn translate-tab-btn active" data-translate-tab="no"
+                            onclick="switchTranslateTab('no')">Norsk</button>
+                        <button type="button" class="tab-btn translate-tab-btn" data-translate-tab="en"
+                            onclick="switchTranslateTab('en')">English</button>
+                    </div>
+
+                    <div id="translate-tab-no" class="translate-tab-pane">
+                        <div class="setting-group">
+                            <label>Automatisk oversettelse</label>
+                            <p class="ai-help-text" style="margin-top: 0;">
+                                Bruk knappen for å generere engelsk tittel, utdrag, innhold og SEO automatisk med
+                                Gemini.
+                            </p>
+                            <button id="ai-translate-btn" class="setup-btn"
+                                onclick="translateCurrentDraftWithAi()">Start oversettelse</button>
+                        </div>
+                    </div>
+
+                    <div id="translate-tab-en" class="translate-tab-pane" style="display: none;">
+                        <div class="setting-group">
+                            <label>Engelsk tittel</label>
+                            <input type="text" id="post-title-en"
+                                style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"
+                                placeholder="English post title">
+                        </div>
+
+                        <div class="setting-group">
+                            <label>Engelsk kategori</label>
+                            <input type="text" id="post-category-en"
+                                style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"
+                                placeholder="Category in English">
+                        </div>
+
+                        <div class="setting-group">
+                            <label>Engelsk utdrag</label>
+                            <textarea id="post-excerpt-en" rows="3"
+                                style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"
+                                placeholder="English excerpt"></textarea>
+                        </div>
+
+                        <div class="setting-group">
+                            <label>Engelsk innhold (HTML eller ren tekst)</label>
+                            <textarea id="post-content-en" rows="10"
+                                style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"
+                                placeholder="<p>English content...</p>"></textarea>
+                            <p class="ai-help-text">Ren tekst blir lagret som avsnitt. HTML støttes hvis du vil styre
+                                formatering selv.</p>
+                        </div>
+
+                        <div class="setting-group">
+                            <label>Engelsk SEO-tittel</label>
+                            <input type="text" id="post-seo-title-en"
+                                style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"
+                                placeholder="SEO title in English">
+                        </div>
+
+                        <div class="setting-group">
+                            <label>Engelsk SEO-beskrivelse</label>
+                            <textarea id="post-seo-desc-en" rows="3"
+                                style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"
+                                placeholder="SEO description in English"></textarea>
+                        </div>
+
+                        <div class="setting-group">
+                            <label>Engelske SEO-nøkkelord</label>
+                            <input type="text" id="post-seo-keywords-en"
+                                style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"
+                                placeholder="web design, seo, content">
+                        </div>
+
+                        <div class="setting-group">
+                            <label>Detaljside sammendrag (EN)</label>
+                            <textarea id="post-detail-summary-en" rows="3"
+                                style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"
+                                placeholder="Optional custom summary for English detail page"></textarea>
+                        </div>
+
+                        <div class="setting-group">
+                            <label>Kort oversikt punkter (EN)</label>
+                            <textarea id="post-detail-outline-en" rows="5"
+                                style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"
+                                placeholder="One bullet per line"></textarea>
+                        </div>
                     </div>
                 </div>
             </aside>
@@ -932,7 +1012,7 @@
         </div>
     </div>
 
-    <script src="app.js?v=1.0.11"></script>
+    <script src="app.js?v=1.0.12"></script>
     <script type="importmap">
         {
             "imports": {
