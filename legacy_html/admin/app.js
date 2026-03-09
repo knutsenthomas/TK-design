@@ -1468,7 +1468,7 @@ window.translateCurrentDraftWithAi = async function () {
         await persistPostPayload(mergedPayload);
         currentEditingId = mergedPayload.id;
 
-        await renderBlogPosts();
+        renderBlogList();
         await showAdminNotice('Oversettelse er generert og lagret for innlegget.', {
             title: 'Oversettelse ferdig',
             variant: 'success'
