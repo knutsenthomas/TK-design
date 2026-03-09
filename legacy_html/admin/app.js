@@ -491,6 +491,7 @@ window.switchPanel = function (btn, panelType) {
     // 2. Update Panel UI
     const panel = document.getElementById('settings-panel');
     if (!panel) return console.error('Settings panel not found');
+    panel.style.display = '';
 
     const headerTitle = panel.querySelector('.settings-header h2');
     const tabsContainer = panel.querySelector('.settings-tabs');
@@ -570,13 +571,13 @@ window.switchSettingsTab = function (tabName) {
 
 window.toggleSettingsPanel = function () {
     const panel = document.getElementById('settings-panel');
-    if (panel) {
-        if (panel.style.display === 'none') {
-            panel.style.display = 'flex';
-        } else {
-            panel.style.display = 'none';
-        }
-    }
+    if (!panel) return;
+
+    // Keep visibility controlled by the "open" class.
+    // Inline display:none prevents the panel from opening again via sidebar buttons.
+    panel.style.display = '';
+    panel.classList.remove('open');
+    document.querySelectorAll('.sidebar-icon-btn').forEach(btn => btn.classList.remove('active'));
 }
 
 // Global reference for image insert helper
