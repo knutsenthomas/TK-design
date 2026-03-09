@@ -1421,6 +1421,68 @@ window.generateSeoForCurrentDraft = async function () {
     }
 };
 
+window.translateCurrentDraftWithAi = async function () {
+    if (aiTranslateInFlight) return;
+
+    let basePayload;
+    try {
+        basePayload = buildPostPayload();
+    } catch (error) {
+        await showAdminNotice(
+            normalizeAdminErrorMessage(error, 'Skriv minst en tittel før oversettelse.'),
+            {
+                title: 'Mangler data',
+                variant: 'warning'
+            }
+        );
+        return;
+    }
+
+    const existingPost = blogData.find((post) => Number(post.id) === Number(basePayload.id));
+    const sourcePayload = existingPost ? { ...existingPost, ...basePayload } : basePayload;
+
+    const translateBtn = document.getElementById('ai-translate-btn');
+    const originalBtnContent = translateBtn ? translateBtn.innerHTML : '';
+
+    if (translateBtn) {
+        translateBtn.disabled = true;
+        translateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Oversetter...';
+    }
+
+    aiTranslateInFlight = true;
+    try {
+        const aiPayload = await requestAiSeoAndTranslation(sourcePayload);
+        const mergedPayload = mergeAiEnhancementsIntoPost(sourcePayload, aiPayload, { forceSeo: false });
+        mergedPayload.aiSourceSignature = buildAiSourceSignature(sourcePayload);
+
+        applySeoValuesToForm(mergedPayload);
+        applyBlogDetailValuesToForm(mergedPayload);
+        await persistPostPayload(mergedPayload);
+        currentEditingId = mergedPayload.id;
+
+        await renderBlogPosts();
+        await showAdminNotice('Oversettelse er generert og lagret for innlegget.', {
+            title: 'Oversettelse ferdig',
+            variant: 'success'
+        });
+    } catch (error) {
+        console.error('Error generating translation with AI:', error);
+        await showAdminNotice(
+            normalizeAdminErrorMessage(error, 'Det oppstod en feil ved oversettelse.'),
+            {
+                title: 'Oversettelse feilet',
+                variant: 'danger'
+            }
+        );
+    } finally {
+        aiTranslateInFlight = false;
+        if (translateBtn) {
+            translateBtn.disabled = false;
+            translateBtn.innerHTML = originalBtnContent;
+        }
+    }
+};
+
 window.savePost = async function () {
     try {
         await upsertCurrentPost('Innlegg lagret.');
@@ -2233,6 +2295,7 @@ let currentRelatedPostIds = [];
 let aiContextFiles = [];
 let aiGenerationInFlight = false;
 let aiSeoInFlight = false;
+let aiTranslateInFlight = false;
 const aiEnrichmentInFlight = new Map();
 const IMAGE_PICKER_TARGET_EDITOR = 'editor';
 const IMAGE_PICKER_TARGET_FEATURED = 'featured';
