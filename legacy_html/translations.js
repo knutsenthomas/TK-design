@@ -307,22 +307,25 @@ const translations = {
             loading: "Loading content..."
         },
         service_details: {
-            banner_title: "Web UI/UX Design",
-            breadcrumb: "Service Details",
+            banner_title: "UI/UX Design",
+            breadcrumb: "Service details",
             sidebar_title: "All Services",
+            back_to_overview: "Back to service overview",
             sidebar_items: {
                 uiux: "UI/UX Design",
                 web_dev: "Web Development",
                 digital_marketing: "Digital Marketing",
                 branding: "Branding"
             },
-            content_title: "We believe in Client satisfaction",
-            content_p1: "Sorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.",
-            feature_1_title: "User Research",
-            feature_1_desc: "Understanding the user needs and pain points.",
-            feature_2_title: "Prototyping",
-            feature_2_desc: "Building interactive mockups to test flows.",
-            content_p2: "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."
+            content_title: "Design and implementation that creates measurable results",
+            content_p1: "We combine strategy, design and execution so your website supports both communication and business goals.",
+            feature_1_title: "Insight and direction",
+            feature_1_desc: "Clear understanding of audience, goals and priorities before design starts.",
+            feature_2_title: "Execution and follow-up",
+            feature_2_desc: "Practical delivery with clear milestones and quality in every step.",
+            feature_3_title: "Long-term value",
+            feature_3_desc: "Solutions built for growth, maintenance and continuous improvement.",
+            content_p2: "The result is a website and digital profile that feels professional, performs better and is easier to build on over time."
         }
     },
     no: {
@@ -633,22 +636,25 @@ const translations = {
             loading: "Laster inn innhold..."
         },
         service_details: {
-            banner_title: "Web UI/UX Design",
+            banner_title: "UI/UX-design",
             breadcrumb: "Tjenestedetaljer",
             sidebar_title: "Alle Tjenester",
+            back_to_overview: "Tilbake til tjenesteoversikt",
             sidebar_items: {
                 uiux: "UI/UX-design",
                 web_dev: "Webutvikling",
                 digital_marketing: "Digital Markedsføring",
                 branding: "Merkevarebygging"
             },
-            content_title: "Vi tror på kundetilfredshet",
-            content_p1: "Sorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.",
-            feature_1_title: "Brukerundersøkelser",
-            feature_1_desc: "Forstå brukerens behov og smertepunkter.",
-            feature_2_title: "Prototyping",
-            feature_2_desc: "Bygge interaktive modeller for å teste flyt.",
-            content_p2: "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."
+            content_title: "Design og gjennomføring som gir målbar effekt",
+            content_p1: "Vi kombinerer strategi, design og praktisk gjennomføring slik at nettsiden støtter både kommunikasjon og forretningsmål.",
+            feature_1_title: "Innsikt og retning",
+            feature_1_desc: "Tydelig forståelse av målgruppe, mål og prioriteringer før designarbeidet starter.",
+            feature_2_title: "Gjennomføring og oppfølging",
+            feature_2_desc: "Praktisk leveranse med klare milepæler og kvalitet i alle steg.",
+            feature_3_title: "Varig verdi",
+            feature_3_desc: "Løsninger bygget for vekst, vedlikehold og videre forbedring.",
+            content_p2: "Resultatet er en nettside og digital profil som oppleves profesjonell, presterer bedre og er enklere å bygge videre på over tid."
         }
     }
 };

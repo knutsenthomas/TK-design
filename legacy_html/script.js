@@ -301,6 +301,7 @@ function switchLanguage(lang) {
     document.cookie = `site_lang=${lang}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
     applyLanguage(lang);
     updateLangButtons(lang);
+    document.dispatchEvent(new CustomEvent('languagechange', { detail: { lang } }));
 }
 
 function applyLanguage(lang) {

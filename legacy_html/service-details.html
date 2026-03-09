@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="no">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Service Details | Matias</title>
-    <meta name="description" content="">
+    <title>Tjenester | tk-design</title>
+    <meta name="description"
+        content="Tjenester fra TK-design: UI/UX-design, webutvikling, digital markedsføring og merkevarebygging.">
     <meta name="keywords" content="">
-    <link rel="stylesheet" href="style.css?v=43">
+    <link rel="stylesheet" href="style.css?v=45">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" href="img/logo/d.png">
@@ -81,89 +82,121 @@
 
     <main>
         <!-- Page Banner -->
-        <section class="page-banner">
+        <section class="page-banner service-page-banner">
             <div class="container">
-                <div class="page-banner-content text-center">
-                    <h1 class="section-title" style="font-size: 60px;" data-i18n="service_details.banner_title">Web
-                        UI/UX Design</h1>
-                    <ul class="breadcrumb justify-center">
-                        <li><a href="/" data-i18n="nav.home">Home</a></li>
-                        <li><a href="/?section=services" data-i18n="nav.services">Services</a></li>
-                        <li data-i18n="service_details.breadcrumb">Service Details</li>
-                    </ul>
+                <div class="service-page-hero">
+                    <div class="service-page-copy">
+                        <span class="section-subtitle-lines" id="serviceEyebrow">Tjeneste</span>
+                        <h1 class="section-title service-page-title" id="serviceBannerTitle">UI/UX-design</h1>
+                        <p class="service-page-summary" id="serviceBannerSummary">
+                            Strategisk design av struktur, innhold og brukerflyt som gjør nettsiden enklere å bruke og
+                            lettere å forstå.
+                        </p>
+                        <ul class="breadcrumb">
+                            <li><a href="/" data-i18n="nav.home">Home</a></li>
+                            <li><a href="/?section=services" data-i18n="nav.services">Services</a></li>
+                            <li id="serviceBreadcrumb">UI/UX-design</li>
+                        </ul>
+                    </div>
+                    <div class="service-page-spotlight" aria-hidden="true">
+                        <span class="service-page-spotlight-badge">TK-design</span>
+                        <h2 id="serviceSpotlightTitle">Design som skaper tydelig retning</h2>
+                        <p id="serviceSpotlightText">Vi bygger tjenester med tydelig struktur, klare prioriteringer og
+                            målbar effekt.</p>
+                        <ul class="service-page-spotlight-list" id="serviceSpotlightList">
+                            <li>Brukeropplevelse først</li>
+                            <li>Konkrete leveranser</li>
+                            <li>Tilpasset din bedrift</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Service Details Content -->
         <section class="service-details-area pb_120">
             <div class="container">
-                <div class="flex flex-wrap gap-10">
-                    <!-- Sidebar -->
-                    <div style="flex: 0.3; min-width: 300px;">
-                        <div class="service-sidebar" style="background: #1a1a1a; padding: 30px; border-radius: 10px;">
-                            <h3 style="margin-bottom: 20px;" data-i18n="service_details.sidebar_title">All Services</h3>
-                            <ul style="list-style: none; padding: 0;">
-                                <li style="margin-bottom: 15px;"><a href="/?section=services"
-                                        style="color: var(--clr-base); display: flex; justify-content: space-between;"><span
-                                            data-i18n="service_details.sidebar_items.uiux">UI/UX
-                                            Design</span> <i class="fas fa-arrow-right"></i></a></li>
-                                <li style="margin-bottom: 15px;"><a href="/?section=services"
-                                        style="color: #fff; display: flex; justify-content: space-between;"><span
-                                            data-i18n="service_details.sidebar_items.web_dev">Web
-                                            Development</span> <i class="fas fa-arrow-right"></i></a></li>
-                                <li style="margin-bottom: 15px;"><a href="/?section=services"
-                                        style="color: #fff; display: flex; justify-content: space-between;"><span
-                                            data-i18n="service_details.sidebar_items.digital_marketing">Digital
-                                            Marketing</span> <i class="fas fa-arrow-right"></i></a></li>
-                                <li style="margin-bottom: 15px;"><a href="/?section=services"
-                                        style="color: #fff; display: flex; justify-content: space-between;"><span
-                                            data-i18n="service_details.sidebar_items.branding">Branding</span> <i
-                                            class="fas fa-arrow-right"></i></a></li>
-                            </ul>
-                        </div>
-                    </div>
+                <div class="service-details-shell">
+                    <aside class="service-sidebar-card">
+                        <h3 data-i18n="service_details.sidebar_title">Alle tjenester</h3>
+                        <ul class="service-sidebar-list">
+                            <li>
+                                <a href="/service-details?service=uiux" class="service-sidebar-link" data-service="uiux">
+                                    <span class="service-sidebar-label">UI/UX-design</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/service-details?service=web_dev" class="service-sidebar-link"
+                                    data-service="web_dev">
+                                    <span class="service-sidebar-label">Webutvikling</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/service-details?service=digital_marketing" class="service-sidebar-link"
+                                    data-service="digital_marketing">
+                                    <span class="service-sidebar-label">Digital markedsføring</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/service-details?service=branding" class="service-sidebar-link"
+                                    data-service="branding">
+                                    <span class="service-sidebar-label">Merkevarebygging</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                        <a href="/?section=services" class="service-sidebar-back">
+                            <i class="fas fa-th-large"></i>
+                            <span data-i18n="service_details.back_to_overview">Tilbake til tjenesteoversikt</span>
+                        </a>
+                    </aside>
 
-                    <!-- Main Content -->
-                    <div style="flex: 0.7;">
-                        <div class="service-details-content">
-                            <img src="img/project/pro3.png" alt="Service"
-                                style="width: 100%; border-radius: 20px; margin-bottom: 30px;">
-
-                            <h2 style="font-size: 30px; margin-bottom: 20px;" data-i18n="service_details.content_title">
-                                We believe in Client satisfaction</h2>
-                            <p class="mb-30" style="color: #bbb; line-height: 1.8;"
-                                data-i18n="service_details.content_p1">
-                                Sorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                                incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida.
-                                Risus commodo viverra maecenas accumsan lacus vel facilisis.
+                    <article class="service-detail-card">
+                        <figure class="service-detail-media">
+                            <img src="img/project/pro3.png" alt="Tjenesteillustrasjon" id="serviceDetailImage">
+                        </figure>
+                        <div class="service-detail-copy">
+                            <span class="service-detail-tag" id="serviceDetailTag">Brukeropplevelse</span>
+                            <h2 id="serviceDetailTitle">Design som gir bedre flyt og tydelig kommunikasjon</h2>
+                            <p class="service-detail-lead" id="serviceDetailLead">
+                                Vi planlegger struktur, navigasjon og innhold slik at besøkende raskt finner riktig
+                                informasjon og forstår hva du tilbyr.
+                            </p>
+                            <p class="service-detail-body" id="serviceDetailBody">
+                                Arbeidet kombinerer analyse, konsept og visuell retning. Resultatet er en løsning som
+                                styrker merkevaren og gir en mer effektiv kundereise.
                             </p>
 
-                            <div class="flex flex-wrap gap-6 my-5">
-                                <div class="service-feature"
-                                    style="flex: 1; background: #1a1a1a; padding: 20px; border-radius: 10px;">
-                                    <h4 style="color: #fff; margin-bottom: 10px;"
-                                        data-i18n="service_details.feature_1_title">User Research</h4>
-                                    <p style="color: #999;" data-i18n="service_details.feature_1_desc">Understanding the
-                                        user needs and pain points.</p>
-                                </div>
-                                <div class="service-feature"
-                                    style="flex: 1; background: #1a1a1a; padding: 20px; border-radius: 10px;">
-                                    <h4 style="color: #fff; margin-bottom: 10px;"
-                                        data-i18n="service_details.feature_2_title">Prototyping</h4>
-                                    <p style="color: #999;" data-i18n="service_details.feature_2_desc">Building
-                                        interactive mockups to test flows.</p>
-                                </div>
+                            <div class="service-feature-grid">
+                                <article class="service-feature-card">
+                                    <h3 id="serviceFeature1Title">Brukerinnsikt</h3>
+                                    <p id="serviceFeature1Desc">Kartlegging av behov, målgruppe og prioriterte
+                                        handlinger.</p>
+                                </article>
+                                <article class="service-feature-card">
+                                    <h3 id="serviceFeature2Title">Struktur og flyt</h3>
+                                    <p id="serviceFeature2Desc">Tydelig informasjonsarkitektur med fokus på enkel
+                                        navigasjon.</p>
+                                </article>
+                                <article class="service-feature-card">
+                                    <h3 id="serviceFeature3Title">Prototyper</h3>
+                                    <p id="serviceFeature3Desc">Klikkbare utkast som testes før publisering.</p>
+                                </article>
                             </div>
 
-                            <p class="mb-30" style="color: #bbb; line-height: 1.8;"
-                                data-i18n="service_details.content_p2">
-                                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-                                mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit
-                                voluptatem accusantium doloremque laudantium.
-                            </p>
+                            <div class="service-deliverables-card">
+                                <h3 id="serviceDeliverablesTitle">Typiske leveranser</h3>
+                                <ul class="service-deliverables-list" id="serviceDeliverablesList">
+                                    <li>Informasjonsarkitektur</li>
+                                    <li>Interaksjonsdesign</li>
+                                    <li>Designsystem</li>
+                                    <li>Klikkbar prototype</li>
+                                </ul>
+                            </div>
                         </div>
-                    </div>
+                    </article>
                 </div>
             </div>
         </section>
@@ -194,7 +227,7 @@
                         rel="nofollow noopener noreferrer">Instagram <i class="fas fa-arrow-right"></i></a>
                     <a href="https://www.linkedin.com/in/thomas-knutsen-a6aa2793/" class="social-link" target="_blank"
                         rel="nofollow noopener noreferrer">LinkedIn <i class="fas fa-arrow-right"></i></a>
-                    
+
                 </div>
             </div>
 
@@ -215,6 +248,285 @@
     <script src="translations.js"></script>
     <script src="script.js"></script>
     <script src="js/cookies.js"></script>
+    <script>
+        const SERVICE_DETAILS_CONTENT = {
+            no: {
+                uiux: {
+                    menuLabel: "UI/UX-design",
+                    bannerTitle: "UI/UX-design",
+                    summary: "Strategisk design av struktur, innhold og brukerflyt som gjør nettsiden enklere å bruke og lettere å forstå.",
+                    tag: "Brukeropplevelse",
+                    title: "Design som gir bedre flyt og tydelig kommunikasjon",
+                    lead: "Vi planlegger struktur, navigasjon og innhold slik at besøkende raskt finner riktig informasjon og forstår hva du tilbyr.",
+                    body: "Arbeidet kombinerer analyse, konsept og visuell retning. Resultatet er en løsning som styrker merkevaren og gir en mer effektiv kundereise.",
+                    spotlightTitle: "Design som skaper tydelig retning",
+                    spotlightText: "Vi bygger tjenester med tydelig struktur, klare prioriteringer og målbar effekt.",
+                    spotlightList: ["Brukeropplevelse først", "Konkrete leveranser", "Tilpasset din bedrift"],
+                    features: [
+                        { title: "Brukerinnsikt", desc: "Kartlegging av behov, målgruppe og prioriterte handlinger." },
+                        { title: "Struktur og flyt", desc: "Tydelig informasjonsarkitektur med fokus på enkel navigasjon." },
+                        { title: "Prototyper", desc: "Klikkbare utkast som testes før publisering." }
+                    ],
+                    deliverablesTitle: "Typiske leveranser",
+                    deliverables: ["Informasjonsarkitektur", "Interaksjonsdesign", "Designsystem", "Klikkbar prototype"],
+                    image: "img/project/pro3.png",
+                    metaDescription: "UI/UX-design fra TK-design med fokus på struktur, brukerreise og tydelig innhold."
+                },
+                web_dev: {
+                    menuLabel: "Webutvikling",
+                    bannerTitle: "Webutvikling",
+                    summary: "Skreddersydd utvikling av raske, stabile og mobilvennlige nettsider bygget for videre vekst.",
+                    tag: "Teknisk kvalitet",
+                    title: "Robust utvikling med fokus på ytelse og drift",
+                    lead: "Vi bygger løsninger med ren kode, god struktur og tydelig oppsett slik at nettstedet er enkelt å videreutvikle over tid.",
+                    body: "Leveransen inkluderer teknisk optimalisering, responsivt oppsett og kvalitetssikring før publisering. Du får en nettside som fungerer godt i praksis, ikke bare i demo.",
+                    spotlightTitle: "Utvikling som tåler hverdagen",
+                    spotlightText: "Teknisk gjennomføring med fokus på fart, stabilitet og enkel vedlikehold.",
+                    spotlightList: ["Mobil først", "Rask lastetid", "Stabil drift"],
+                    features: [
+                        { title: "Responsiv bygging", desc: "Tilpasset desktop, nettbrett og mobil uten kompromiss." },
+                        { title: "Ytelsesoptimalisering", desc: "Optimaliserte filer, bilder og struktur for raskere side." },
+                        { title: "Kvalitetssikring", desc: "Testing av funksjoner, navigasjon og brukerflyt før lansering." }
+                    ],
+                    deliverablesTitle: "Typiske leveranser",
+                    deliverables: ["Frontend-utvikling", "Responsiv tilpasning", "Teknisk QA", "Lanseringsstøtte"],
+                    image: "img/project/pro1.png",
+                    metaDescription: "Webutvikling fra TK-design med responsiv kode, ytelsesfokus og trygg lansering."
+                },
+                digital_marketing: {
+                    menuLabel: "Digital markedsføring",
+                    bannerTitle: "Digital markedsføring",
+                    summary: "Målrettet innhold og tiltak som styrker synlighet, trafikk og henvendelser fra riktige kunder.",
+                    tag: "Synlighet",
+                    title: "Konkrete tiltak for bedre rekkevidde og respons",
+                    lead: "Vi setter opp en tydelig plan for innhold, kanaler og budskap slik at markedsføringen støtter salgsmålene dine.",
+                    body: "Fokuset er praktisk gjennomføring: hva som skal publiseres, hvor ofte og hvordan resultatene følges opp. Du får retning, ikke bare forslag.",
+                    spotlightTitle: "Markedsføring med tydelig retning",
+                    spotlightText: "Fra plan til publisering med fokus på målbar effekt.",
+                    spotlightList: ["Kanalvalg", "Innholdsplan", "Kontinuerlig oppfølging"],
+                    features: [
+                        { title: "Kanalstrategi", desc: "Valg av riktige kanaler basert på målgruppe og kapasitet." },
+                        { title: "Innholdsproduksjon", desc: "Tekst og innhold som bygger tillit og skaper handling." },
+                        { title: "Effektmåling", desc: "Enkle målepunkter og løpende forbedring av tiltak." }
+                    ],
+                    deliverablesTitle: "Typiske leveranser",
+                    deliverables: ["Markedsplan", "Innholdskalender", "Kampanjeforslag", "Rapportering"],
+                    image: "img/project/pro2.png",
+                    metaDescription: "Digital markedsføring fra TK-design med kanalstrategi, innholdsplan og oppfølging."
+                },
+                branding: {
+                    menuLabel: "Merkevarebygging",
+                    bannerTitle: "Merkevarebygging",
+                    summary: "Et tydelig visuelt og språklig uttrykk som gjør det enklere for kunder å forstå og huske bedriften din.",
+                    tag: "Identitet",
+                    title: "Bygg en tydelig merkevare med gjenkjennelig uttrykk",
+                    lead: "Vi definerer hvordan bedriften fremstår visuelt og språklig, slik at kommunikasjonen blir mer konsistent i alle kanaler.",
+                    body: "Arbeidet gir deg et mer helhetlig uttrykk på nettside, i innhold og i markedsføring. Det styrker tillit og gjør merkevaren lettere å kjenne igjen.",
+                    spotlightTitle: "En tydelig identitet over tid",
+                    spotlightText: "Merkevarebygging som skaper gjenkjenning og troverdighet.",
+                    spotlightList: ["Visuell retning", "Tone of voice", "Konsekvent uttrykk"],
+                    features: [
+                        { title: "Posisjonering", desc: "Klare budskap om hva som skiller deg fra konkurrentene." },
+                        { title: "Visuell retning", desc: "Farger, typografi og uttrykk som støtter merkevaren." },
+                        { title: "Kommunikasjonsramme", desc: "Prinsipper for innhold som holder uttrykket samlet." }
+                    ],
+                    deliverablesTitle: "Typiske leveranser",
+                    deliverables: ["Merkevareplattform", "Visuell retning", "Budskapsrammeverk", "Praktisk guide"],
+                    image: "img/project/pro4.png",
+                    metaDescription: "Merkevarebygging fra TK-design med visuell retning, tydelig budskap og helhetlig uttrykk."
+                }
+            },
+            en: {
+                uiux: {
+                    menuLabel: "UI/UX Design",
+                    bannerTitle: "UI/UX Design",
+                    summary: "Strategic design of structure, content and user flow that makes the website easier to use and easier to understand.",
+                    tag: "User experience",
+                    title: "Design that improves flow and clarity",
+                    lead: "We plan structure, navigation and content so visitors quickly find relevant information and understand what you offer.",
+                    body: "The work combines analysis, concept and visual direction. The result is a solution that strengthens your brand and improves the customer journey.",
+                    spotlightTitle: "Design with clear direction",
+                    spotlightText: "We build services with clear structure, priorities and measurable impact.",
+                    spotlightList: ["User experience first", "Concrete deliverables", "Tailored to your business"],
+                    features: [
+                        { title: "User insight", desc: "Mapping needs, audience and prioritized actions." },
+                        { title: "Structure and flow", desc: "Clear information architecture focused on simple navigation." },
+                        { title: "Prototypes", desc: "Clickable drafts that are tested before launch." }
+                    ],
+                    deliverablesTitle: "Typical deliverables",
+                    deliverables: ["Information architecture", "Interaction design", "Design system", "Clickable prototype"],
+                    image: "img/project/pro3.png",
+                    metaDescription: "UI/UX design from TK-design focused on structure, user journeys and clear content."
+                },
+                web_dev: {
+                    menuLabel: "Web Development",
+                    bannerTitle: "Web Development",
+                    summary: "Tailored development of fast, stable and mobile-friendly websites built for long-term growth.",
+                    tag: "Technical quality",
+                    title: "Robust development focused on performance and reliability",
+                    lead: "We build solutions with clean code and clear structure so the website is easy to maintain and improve over time.",
+                    body: "Delivery includes technical optimization, responsive setup and quality assurance before launch. You get a website that works in practice, not only in demos.",
+                    spotlightTitle: "Development that handles real usage",
+                    spotlightText: "Technical execution with focus on speed, stability and maintainability.",
+                    spotlightList: ["Mobile first", "Fast load time", "Stable operations"],
+                    features: [
+                        { title: "Responsive build", desc: "Adapted to desktop, tablet and mobile without compromise." },
+                        { title: "Performance optimization", desc: "Optimized assets and structure for a faster site." },
+                        { title: "Quality assurance", desc: "Testing of functions, navigation and user flows before release." }
+                    ],
+                    deliverablesTitle: "Typical deliverables",
+                    deliverables: ["Frontend development", "Responsive implementation", "Technical QA", "Launch support"],
+                    image: "img/project/pro1.png",
+                    metaDescription: "Web development from TK-design with responsive code, performance focus and safe launch."
+                },
+                digital_marketing: {
+                    menuLabel: "Digital Marketing",
+                    bannerTitle: "Digital Marketing",
+                    summary: "Targeted content and actions that improve visibility, traffic and inbound leads from relevant customers.",
+                    tag: "Visibility",
+                    title: "Concrete actions for better reach and response",
+                    lead: "We set a clear plan for content, channels and messaging so marketing supports your business goals.",
+                    body: "The focus is practical execution: what to publish, how often and how to follow up results. You get direction, not just ideas.",
+                    spotlightTitle: "Marketing with a clear plan",
+                    spotlightText: "From planning to publishing with focus on measurable impact.",
+                    spotlightList: ["Channel choices", "Content plan", "Continuous follow-up"],
+                    features: [
+                        { title: "Channel strategy", desc: "Selecting the right channels based on audience and capacity." },
+                        { title: "Content production", desc: "Text and content that build trust and trigger action." },
+                        { title: "Impact tracking", desc: "Simple metrics and continuous improvement of activities." }
+                    ],
+                    deliverablesTitle: "Typical deliverables",
+                    deliverables: ["Marketing plan", "Content calendar", "Campaign proposals", "Reporting"],
+                    image: "img/project/pro2.png",
+                    metaDescription: "Digital marketing from TK-design with channel strategy, content planning and follow-up."
+                },
+                branding: {
+                    menuLabel: "Brand Building",
+                    bannerTitle: "Brand Building",
+                    summary: "A clear visual and verbal identity that makes it easier for customers to understand and remember your business.",
+                    tag: "Identity",
+                    title: "Build a clear brand with a recognizable expression",
+                    lead: "We define how your business appears visually and verbally so communication stays consistent across channels.",
+                    body: "The work gives you a stronger and more coherent expression across website, content and marketing. It builds trust and improves recognition.",
+                    spotlightTitle: "A clear identity over time",
+                    spotlightText: "Brand building that creates recognition and credibility.",
+                    spotlightList: ["Visual direction", "Tone of voice", "Consistent expression"],
+                    features: [
+                        { title: "Positioning", desc: "Clear messaging about what differentiates you from competitors." },
+                        { title: "Visual direction", desc: "Colors, typography and visual choices aligned to your brand." },
+                        { title: "Communication framework", desc: "Practical principles that keep expression consistent." }
+                    ],
+                    deliverablesTitle: "Typical deliverables",
+                    deliverables: ["Brand platform", "Visual direction", "Messaging framework", "Practical guide"],
+                    image: "img/project/pro4.png",
+                    metaDescription: "Brand building from TK-design with visual direction, clear messaging and coherent identity."
+                }
+            }
+        };
+
+        function getSelectedServiceKey() {
+            const params = new URLSearchParams(window.location.search);
+            const requested = (params.get("service") || "").trim();
+            return SERVICE_DETAILS_CONTENT.no[requested] ? requested : "uiux";
+        }
+
+        function getServiceLang() {
+            const htmlLang = (document.documentElement.lang || "").trim();
+            if (htmlLang === "en" || htmlLang === "no") {
+                return htmlLang;
+            }
+
+            const cookieMatch = document.cookie.match(/(?:^|;\s*)site_lang=(en|no)(?:;|$)/);
+            if (cookieMatch && cookieMatch[1]) return cookieMatch[1];
+
+            const storedLang = localStorage.getItem("site_lang");
+            return storedLang === "en" ? "en" : "no";
+        }
+
+        function renderServiceDetails() {
+            const lang = getServiceLang();
+            const serviceKey = getSelectedServiceKey();
+            const localizedSet = SERVICE_DETAILS_CONTENT[lang] || SERVICE_DETAILS_CONTENT.no;
+            const data = localizedSet[serviceKey] || localizedSet.uiux;
+
+            const ids = {
+                bannerTitle: "serviceBannerTitle",
+                bannerSummary: "serviceBannerSummary",
+                breadcrumb: "serviceBreadcrumb",
+                spotlightTitle: "serviceSpotlightTitle",
+                spotlightText: "serviceSpotlightText",
+                spotlightList: "serviceSpotlightList",
+                image: "serviceDetailImage",
+                tag: "serviceDetailTag",
+                title: "serviceDetailTitle",
+                lead: "serviceDetailLead",
+                body: "serviceDetailBody",
+                feature1Title: "serviceFeature1Title",
+                feature1Desc: "serviceFeature1Desc",
+                feature2Title: "serviceFeature2Title",
+                feature2Desc: "serviceFeature2Desc",
+                feature3Title: "serviceFeature3Title",
+                feature3Desc: "serviceFeature3Desc",
+                deliverablesTitle: "serviceDeliverablesTitle",
+                deliverablesList: "serviceDeliverablesList"
+            };
+
+            const setText = (id, value) => {
+                const el = document.getElementById(id);
+                if (el && value) el.textContent = value;
+            };
+
+            setText(ids.bannerTitle, data.bannerTitle);
+            setText(ids.bannerSummary, data.summary);
+            setText(ids.breadcrumb, data.bannerTitle);
+            setText(ids.spotlightTitle, data.spotlightTitle);
+            setText(ids.spotlightText, data.spotlightText);
+            setText(ids.tag, data.tag);
+            setText(ids.title, data.title);
+            setText(ids.lead, data.lead);
+            setText(ids.body, data.body);
+            setText(ids.feature1Title, data.features[0].title);
+            setText(ids.feature1Desc, data.features[0].desc);
+            setText(ids.feature2Title, data.features[1].title);
+            setText(ids.feature2Desc, data.features[1].desc);
+            setText(ids.feature3Title, data.features[2].title);
+            setText(ids.feature3Desc, data.features[2].desc);
+            setText(ids.deliverablesTitle, data.deliverablesTitle);
+
+            const spotlightList = document.getElementById(ids.spotlightList);
+            if (spotlightList) {
+                spotlightList.innerHTML = data.spotlightList.map((item) => `<li>${item}</li>`).join("");
+            }
+
+            const deliverablesList = document.getElementById(ids.deliverablesList);
+            if (deliverablesList) {
+                deliverablesList.innerHTML = data.deliverables.map((item) => `<li>${item}</li>`).join("");
+            }
+
+            const detailImage = document.getElementById(ids.image);
+            if (detailImage) {
+                detailImage.src = data.image;
+                detailImage.alt = data.bannerTitle;
+            }
+
+            document.querySelectorAll(".service-sidebar-link").forEach((link) => {
+                const key = link.getAttribute("data-service");
+                const currentData = localizedSet[key] || localizedSet.uiux;
+                const label = link.querySelector(".service-sidebar-label");
+                if (label && currentData) label.textContent = currentData.menuLabel;
+                link.classList.toggle("is-active", key === serviceKey);
+            });
+
+            document.title = `${data.bannerTitle} | tk-design`;
+            const metaDescription = document.querySelector('meta[name="description"]');
+            if (metaDescription && data.metaDescription) {
+                metaDescription.setAttribute("content", data.metaDescription);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", renderServiceDetails);
+        document.addEventListener("languagechange", renderServiceDetails);
+    </script>
     <script type="importmap">
         {
             "imports": {
