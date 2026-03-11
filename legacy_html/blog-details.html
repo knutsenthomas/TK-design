@@ -109,8 +109,6 @@
                     <div class="blog-page-preview" aria-hidden="true">
                         <div class="blog-preview-shell">
                             <span class="blog-preview-badge" data-i18n="blog_details.preview_label">Utvalgt innlegg</span>
-                            <h2 id="blogPreviewTitle">TK-design</h2>
-                            <p id="blogPreviewLead">Praktiske råd, tydelige valg og innhold som er lett å bruke videre.</p>
                             <div class="blog-preview-stats">
                                 <div class="blog-preview-stat">
                                     <span data-i18n="blog_details.category_label">Kategori</span>
@@ -161,9 +159,6 @@
 
                             <div class="blog-article-head">
                                 <span class="section-subtitle-lines" data-i18n="blog_details.content_title">Innhold</span>
-                                <p data-i18n="blog_details.content_intro">
-                                    Praktiske råd og tydelige poeng, skrevet så det er lett å ta videre i egen bedrift.
-                                </p>
                             </div>
 
                             <div class="blog-rich-content" id="blog-content-container">
@@ -573,8 +568,6 @@
             const title = document.getElementById('blogDetailTitle');
             const summaryEl = document.getElementById('blogDetailSummary');
             const breadcrumb = document.getElementById('blogDetailBreadcrumb');
-            const previewTitle = document.getElementById('blogPreviewTitle');
-            const previewLead = document.getElementById('blogPreviewLead');
             const categoryValue = document.getElementById('blogCategoryValue');
             const dateValue = document.getElementById('blogDateValue');
             const authorValue = document.getElementById('blogAuthorValue');
@@ -600,14 +593,6 @@
 
             if (breadcrumb) {
                 breadcrumb.textContent = localizedPost.title;
-            }
-
-            if (previewTitle) {
-                previewTitle.textContent = localizedPost.title;
-            }
-
-            if (previewLead) {
-                previewLead.textContent = summary;
             }
 
             if (categoryValue) {
