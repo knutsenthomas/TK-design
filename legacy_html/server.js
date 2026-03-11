@@ -2535,6 +2535,48 @@ function truncateForSocial(text = '', limit = 220) {
     return `${normalized.slice(0, Math.max(0, limit - 1)).trim()}…`;
 }
 
+function firstNonEmptyString(values = []) {
+    for (const value of values) {
+        const normalized = String(value || '').trim();
+        if (normalized) {
+            return normalized;
+        }
+    }
+    return '';
+}
+
+function resolveSocialExcerpt(post = {}, language = 'no') {
+    const isEnglish = String(language || '').toLowerCase() === 'en';
+    const primaryHtml = isEnglish
+        ? String(post.contentEn || '').trim()
+        : String(post.content || '').trim();
+    const fallbackHtml = isEnglish
+        ? String(post.content || '').trim()
+        : String(post.contentEn || '').trim();
+    const contentExcerpt = firstNonEmptyString([
+        stripHtmlToText(primaryHtml),
+        stripHtmlToText(fallbackHtml)
+    ]);
+
+    if (isEnglish) {
+        return firstNonEmptyString([
+            post.excerptEn,
+            post.excerpt,
+            post.detailSummaryEn,
+            post.detailSummary,
+            contentExcerpt
+        ]);
+    }
+
+    return firstNonEmptyString([
+        post.excerpt,
+        post.detailSummary,
+        post.excerptEn,
+        post.detailSummaryEn,
+        contentExcerpt
+    ]);
+}
+
 function resolveWebhookHost(webhookUrl = '') {
     try {
         return new URL(String(webhookUrl || '').trim()).host || '';
@@ -2556,8 +2598,8 @@ function buildSocialAutopostPayload(post = {}, req) {
     const socialImage = resolveSocialImage(post, req);
     const titleNo = String(post.title || '').trim();
     const titleEn = String(post.titleEn || '').trim();
-    const excerptNo = String(post.excerpt || '').trim();
-    const excerptEn = String(post.excerptEn || '').trim();
+    const excerptNo = resolveSocialExcerpt(post, 'no');
+    const excerptEn = resolveSocialExcerpt(post, 'en');
     const hashtags = buildPostHashtags(post);
     const shortUrl = postUrl || '/blog';
 
