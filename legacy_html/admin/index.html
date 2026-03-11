@@ -124,7 +124,7 @@
                 <div id="home-tab" class="tab-content active">
                     <header>
                         <h1 data-i18n="welcome">Velkommen tilbake, Thomas</h1>
-                        <button class="save-btn" onclick="document.querySelector('[data-tab=\'blog\']').click()"
+                        <button class="save-btn" onclick="startNewPost()"
                             data-i18n="new_post">+ Nytt
                             Innlegg</button>
                     </header>
@@ -254,7 +254,7 @@
                 <div id="blog-tab" class="tab-content">
                     <header>
                         <h1 data-i18n="blog_overview">Bloggoversikt</h1>
-                        <button class="save-btn" onclick="openModal()" data-i18n="new_post"><i class="fas fa-plus"></i>
+                        <button class="save-btn" onclick="startNewPost()" data-i18n="new_post"><i class="fas fa-plus"></i>
                             Nytt
                             Innlegg</button>
                     </header>

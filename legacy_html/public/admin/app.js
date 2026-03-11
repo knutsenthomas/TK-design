@@ -2581,6 +2581,50 @@ function openModal() {
     resetAiAssistantState({ clearPrompt: true });
 }
 
+function resetPostEditorForNewPost() {
+    currentEditingId = null;
+
+    const defaultAuthor = currentUser?.user_metadata?.full_name || 'Admin';
+    const dateInput = document.getElementById('post-date');
+    const excerptInput = document.getElementById('post-excerpt');
+    const detailSummaryInput = document.getElementById('post-detail-summary');
+    const detailOutlineInput = document.getElementById('post-detail-outline');
+    const relatedPicker = document.getElementById('related-posts-picker');
+
+    document.getElementById('post-title').value = '';
+    document.getElementById('post-author').value = defaultAuthor;
+    if (dateInput) dateInput.value = getTodayIsoDate();
+    document.getElementById('post-image').value = 'img/blog/bblog1.png';
+    if (excerptInput) excerptInput.value = '';
+    document.getElementById('post-seo-title').value = '';
+    document.getElementById('post-seo-desc').value = '';
+    document.getElementById('post-seo-keywords').value = '';
+    if (detailSummaryInput) detailSummaryInput.value = '';
+    if (detailOutlineInput) detailOutlineInput.value = '';
+
+    setCurrentTaxonomyState({ category: 'Generelt', categories: ['Generelt'], tags: [] });
+    setCurrentGeneralSettingsState({
+        relatedPostIds: [],
+        showFeaturedImage: true,
+        isFeatured: false,
+        allowComments: true
+    });
+    renderPostTaxonomyEditors();
+    syncRelatedPostsUi();
+    if (relatedPicker) relatedPicker.style.display = 'none';
+    applyEnglishValuesToForm({});
+    if (typeof window.switchTranslateTab === 'function') {
+        window.switchTranslateTab('no');
+    }
+    if (quill) quill.setText('');
+    renderFeaturedImagePreview(document.getElementById('post-image')?.value || '');
+}
+
+window.startNewPost = function () {
+    resetPostEditorForNewPost();
+    openModal();
+};
+
 function closeModal() {
     editorContainerWrapper.style.display = 'none';
     dashboardContainer.style.display = 'flex';
@@ -3297,38 +3341,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Modal Events
     const addPostBtn = document.getElementById('add-post-btn');
     if (addPostBtn) {
-        addPostBtn.addEventListener('click', () => {
-            currentEditingId = null;
-            document.getElementById('post-title').value = '';
-            const defaultAuthor = currentUser?.user_metadata?.full_name || 'Admin';
-            document.getElementById('post-author').value = defaultAuthor;
-            setCurrentTaxonomyState({ category: 'Generelt', categories: ['Generelt'], tags: [] });
-            setCurrentGeneralSettingsState({
-                relatedPostIds: [],
-                showFeaturedImage: true,
-                isFeatured: false,
-                allowComments: true
-            });
-            renderPostTaxonomyEditors();
-            const dateInput = document.getElementById('post-date');
-            if (dateInput) dateInput.value = getTodayIsoDate();
-            document.getElementById('post-image').value = 'img/blog/bblog1.png';
-            const excerptInput = document.getElementById('post-excerpt');
-            if (excerptInput) excerptInput.value = '';
-            document.getElementById('post-seo-title').value = '';
-            document.getElementById('post-seo-desc').value = '';
-            document.getElementById('post-seo-keywords').value = '';
-            const detailSummaryInput = document.getElementById('post-detail-summary');
-            const detailOutlineInput = document.getElementById('post-detail-outline');
-            if (detailSummaryInput) detailSummaryInput.value = '';
-            if (detailOutlineInput) detailOutlineInput.value = '';
-            applyEnglishValuesToForm({});
-            if (typeof window.switchTranslateTab === 'function') {
-                window.switchTranslateTab('no');
-            }
-            if (quill) quill.setText('');
-            openModal();
-        });
+        addPostBtn.addEventListener('click', () => window.startNewPost());
     }
 
     const savePostBtn = document.getElementById('save-post-btn'); // For old logic if exists?
