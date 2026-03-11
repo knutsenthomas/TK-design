@@ -146,6 +146,27 @@ function escapeHtml(value = '') {
         .replace(/'/g, '&#39;');
 }
 
+function upsertHeadMetaTag(html = '', attrName = 'name', attrValue = '', content = '') {
+    const safeAttrName = String(attrName || '').trim();
+    const safeAttrValue = String(attrValue || '').trim();
+    if (!safeAttrName || !safeAttrValue) return String(html || '');
+
+    const safeContent = escapeHtml(content || '');
+    const tag = `<meta ${safeAttrName}="${safeAttrValue}" content="${safeContent}">`;
+    const regex = new RegExp(`<meta\\s+${safeAttrName}="${safeAttrValue}"\\s+content="[\\s\\S]*?">`, 'i');
+    const input = String(html || '');
+
+    if (regex.test(input)) {
+        return input.replace(regex, tag);
+    }
+
+    if (input.includes('</head>')) {
+        return input.replace('</head>', `${tag}\n</head>`);
+    }
+
+    return `${input}\n${tag}`;
+}
+
 function serializeInlineJson(value) {
     return JSON.stringify(value).replace(/</g, '\\u003c');
 }
@@ -1374,6 +1395,17 @@ app.get([...Object.keys(PAGE_ROUTE_MAP), ...Object.keys(LEGACY_REDIRECT_MAP)], a
     let title = '';
     let description = '';
     let keywords = '';
+    let ogUrl = '';
+    let ogImage = '';
+    let ogType = 'website';
+
+    const siteBaseUrl = getSiteBaseUrl(req);
+    try {
+        const requestUrl = String(req.originalUrl || req.url || req.path || '/').trim();
+        ogUrl = siteBaseUrl ? new URL(requestUrl || '/', siteBaseUrl).toString() : '';
+    } catch (error) {
+        ogUrl = '';
+    }
 
     // Specialized Logic for Blog Details
     if (reqFile === 'blog-details.html' && req.query.id) {
@@ -1391,6 +1423,17 @@ app.get([...Object.keys(PAGE_ROUTE_MAP), ...Object.keys(LEGACY_REDIRECT_MAP)], a
                 title = postSeoTitle || postTitle;
                 description = postSeoDesc || (postContent ? stripHtmlToText(postContent).substring(0, 160) : '');
                 keywords = postSeoKeywords || globalSeo.defaultKeywords || '';
+                ogType = 'article';
+
+                const resolvedPostUrl = resolveAbsolutePostUrl(post.link, req, post.id);
+                if (resolvedPostUrl) {
+                    ogUrl = resolvedPostUrl;
+                }
+
+                const socialImage = resolveSocialImage(post, req);
+                if (socialImage.absolute) {
+                    ogImage = socialImage.absolute;
+                }
             }
         } catch (e) { console.error('Error fetching post for SEO:', e); }
     }
@@ -1407,6 +1450,10 @@ app.get([...Object.keys(PAGE_ROUTE_MAP), ...Object.keys(LEGACY_REDIRECT_MAP)], a
     const siteTitleRaw = (globalSeo.siteTitle || '').trim();
     const siteTitle = siteTitleRaw === 'TK Design Studio' ? 'TK-design' : siteTitleRaw;
     const finalTitle = title ? `${title} ${globalSeo.separator || '|'} ${siteTitle}` : siteTitle;
+    if (!ogImage) {
+        const configuredLogo = String(globalSeo.logoImage || '').trim();
+        ogImage = resolveAbsoluteAssetUrl(configuredLogo || 'img/logo/d.png', req);
+    }
 
     fs.readFile(path.join(__dirname, reqFile), 'utf8', async (err, html) => {
         if (err) return res.status(404).send('Page not found');
@@ -1439,11 +1486,23 @@ app.get([...Object.keys(PAGE_ROUTE_MAP), ...Object.keys(LEGACY_REDIRECT_MAP)], a
         }
 
         let injectedHtml = translatedHtml
-            .replace(/<title>[\s\S]*?<\/title>/i, `<title>${finalTitle}</title>`)
-            .replace(/<meta\s+name="description"\s+content="[\s\S]*?">/i, `<meta name="description" content="${description}">`)
-            .replace(/<meta\s+name="keywords"\s+content="[\s\S]*?">/i, `<meta name="keywords" content="${keywords}">`)
-            .replace(/<meta\s+property="og:title"\s+content="[\s\S]*?">/i, `<meta property="og:title" content="${finalTitle}">`)
-            .replace(/<meta\s+property="og:description"\s+content="[\s\S]*?">/i, `<meta property="og:description" content="${description}">`);
+            .replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(finalTitle)}</title>`);
+
+        injectedHtml = upsertHeadMetaTag(injectedHtml, 'name', 'description', description);
+        injectedHtml = upsertHeadMetaTag(injectedHtml, 'name', 'keywords', keywords);
+        injectedHtml = upsertHeadMetaTag(injectedHtml, 'property', 'og:title', finalTitle);
+        injectedHtml = upsertHeadMetaTag(injectedHtml, 'property', 'og:description', description);
+        injectedHtml = upsertHeadMetaTag(injectedHtml, 'property', 'og:type', ogType);
+        injectedHtml = upsertHeadMetaTag(injectedHtml, 'name', 'twitter:title', finalTitle);
+        injectedHtml = upsertHeadMetaTag(injectedHtml, 'name', 'twitter:description', description);
+        injectedHtml = upsertHeadMetaTag(injectedHtml, 'name', 'twitter:card', ogImage ? 'summary_large_image' : 'summary');
+        if (ogUrl) {
+            injectedHtml = upsertHeadMetaTag(injectedHtml, 'property', 'og:url', ogUrl);
+        }
+        if (ogImage) {
+            injectedHtml = upsertHeadMetaTag(injectedHtml, 'property', 'og:image', ogImage);
+            injectedHtml = upsertHeadMetaTag(injectedHtml, 'name', 'twitter:image', ogImage);
+        }
 
         const brandingConfig = {
             logoText: String(globalSeo.logoText || '').trim(),
