@@ -171,6 +171,17 @@ function serializeInlineJson(value) {
     return JSON.stringify(value).replace(/</g, '\\u003c');
 }
 
+function getCustomStyleHref() {
+    const basePath = '/custom-style.css';
+    try {
+        const stat = fs.statSync(getAdminCustomStyleFilePath());
+        const version = Math.floor(stat.mtimeMs);
+        return `${basePath}?v=${version}`;
+    } catch (error) {
+        return basePath;
+    }
+}
+
 function toBase64Url(input) {
     const base64 = Buffer.isBuffer(input)
         ? input.toString('base64')
@@ -1045,26 +1056,79 @@ app.post('/api/content', async (req, res) => {
 
 // API: Save Style (CSS Variables & Fonts)
 app.post('/api/style', async (req, res) => {
-    const { cssVariables, fontUrl, fontFamily } = req.body;
+    const {
+        cssVariables,
+        fontUrl,
+        fontUrls,
+        fontFamily,
+        fontBodyFamily,
+        fontHeadingFamily
+    } = req.body;
 
     let cssContent = '';
+    const rootVariables = {};
+    const refreshVariables = {};
 
-    // 1. Add Font Import if present
-    if (fontUrl) {
-        cssContent += `@import url('${fontUrl}');\n`;
-    }
-
-    // 2. Add Root Variables
-    cssContent += `:root {\n`;
+    // 1. Add Font imports (deduplicated)
+    const incomingFontUrls = Array.isArray(fontUrls)
+        ? fontUrls
+        : [fontUrl].filter(Boolean);
+    const uniqueFontUrls = [...new Set(incomingFontUrls
+        .map((item) => String(item || '').trim())
+        .filter(Boolean))];
+    uniqueFontUrls.forEach((url) => {
+        cssContent += `@import url('${url}');\n`;
+    });
 
     if (fontFamily) {
-        cssContent += `    --font-primary: ${fontFamily};\n`;
+        rootVariables['--font-primary'] = fontFamily;
+    }
+    if (fontBodyFamily) {
+        rootVariables['--font-body'] = fontBodyFamily;
+    }
+    if (fontHeadingFamily) {
+        rootVariables['--font-heading'] = fontHeadingFamily;
     }
 
-    for (const [key, value] of Object.entries(cssVariables)) {
+    for (const [key, value] of Object.entries(cssVariables || {})) {
+        const normalizedKey = String(key || '').trim();
+        const normalizedValue = String(value || '').trim();
+        if (!normalizedKey || !normalizedValue) continue;
+
+        if (normalizedKey.startsWith('--refresh-')) {
+            refreshVariables[normalizedKey] = normalizedValue;
+        } else {
+            rootVariables[normalizedKey] = normalizedValue;
+        }
+    }
+
+    // 2. Root variables
+    cssContent += `:root {\n`;
+    for (const [key, value] of Object.entries(rootVariables)) {
         cssContent += `    ${key}: ${value};\n`;
     }
     cssContent += `}\n`;
+
+    // 3. Refresh variables used by the live site
+    cssContent += `body.homepage-refresh {\n`;
+    for (const [key, value] of Object.entries(refreshVariables)) {
+        cssContent += `    ${key}: ${value};\n`;
+    }
+    if (fontBodyFamily) {
+        cssContent += `    font-family: var(--font-body, ${fontBodyFamily});\n`;
+    }
+    cssContent += `}\n`;
+
+    if (fontHeadingFamily) {
+        cssContent += `body.homepage-refresh h1,\n`;
+        cssContent += `body.homepage-refresh h2,\n`;
+        cssContent += `body.homepage-refresh h3,\n`;
+        cssContent += `body.homepage-refresh h4,\n`;
+        cssContent += `body.homepage-refresh h5,\n`;
+        cssContent += `body.homepage-refresh h6 {\n`;
+        cssContent += `    font-family: var(--font-heading, ${fontHeadingFamily});\n`;
+        cssContent += `}\n`;
+    }
 
     try {
         const result = await persistStyleCss(cssContent, writeCustomStyleCss);
@@ -1502,6 +1566,11 @@ app.get([...Object.keys(PAGE_ROUTE_MAP), ...Object.keys(LEGACY_REDIRECT_MAP)], a
         if (ogImage) {
             injectedHtml = upsertHeadMetaTag(injectedHtml, 'property', 'og:image', ogImage);
             injectedHtml = upsertHeadMetaTag(injectedHtml, 'name', 'twitter:image', ogImage);
+        }
+
+        if (!/custom-style\.css/i.test(injectedHtml)) {
+            const customStyleLink = `<link rel="stylesheet" href="${getCustomStyleHref()}">`;
+            injectedHtml = injectedHtml.replace('</head>', `${customStyleLink}\n</head>`);
         }
 
         const brandingConfig = {

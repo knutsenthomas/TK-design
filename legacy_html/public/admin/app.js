@@ -1861,49 +1861,115 @@ function setupLogout() {
     }
 }
 
+const STYLE_COLOR_FIELD_MAP = {
+    'clr-base': '--clr-base',
+    'theme-bg': '--theme-bg',
+    'clr-common-text': '--clr-common-text',
+    'refresh-accent': '--refresh-accent',
+    'refresh-accent-soft': '--refresh-accent-soft',
+    'refresh-heading': '--refresh-heading',
+    'refresh-text': '--refresh-text',
+    'refresh-bg': '--refresh-bg'
+};
+
+const DEFAULT_STYLE_VARIABLES = {
+    '--clr-base': '#6366f1',
+    '--theme-bg': '#f8fafc',
+    '--clr-common-text': '#0f172a',
+    '--refresh-accent': '#ff6a1b',
+    '--refresh-accent-soft': '#fff1e7',
+    '--refresh-heading': '#11263c',
+    '--refresh-text': '#5a697d',
+    '--refresh-bg': '#f3f7fb'
+};
+
+const DEFAULT_BODY_FONT_FAMILY = "'Manrope', sans-serif";
+const DEFAULT_HEADING_FONT_FAMILY = "'Space Grotesk', sans-serif";
+
+function normalizeHexColor(value = '') {
+    const match = String(value).trim().match(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/);
+    if (!match) return '';
+
+    const hex = match[1];
+    if (hex.length === 3) {
+        return `#${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`.toLowerCase();
+    }
+
+    return `#${hex}`.toLowerCase();
+}
+
+function extractCssVariables(cssText = '') {
+    const variables = {};
+    const variablePattern = /(--[a-zA-Z0-9-_]+)\s*:\s*([^;{}]+);/g;
+    let match = variablePattern.exec(cssText);
+    while (match) {
+        variables[match[1].trim()] = match[2].trim();
+        match = variablePattern.exec(cssText);
+    }
+    return variables;
+}
+
+async function fetchCssText(url) {
+    try {
+        const response = await fetch(url, { cache: 'no-store' });
+        if (!response.ok) return '';
+        return await response.text();
+    } catch (error) {
+        console.warn(`Could not load CSS from ${url}:`, error);
+        return '';
+    }
+}
+
+function updateColorInputValue(inputId, colorValue) {
+    const input = document.getElementById(inputId);
+    if (!input || !colorValue) return;
+
+    input.value = colorValue;
+    const valueDisplay = input.parentElement?.querySelector('.color-value');
+    if (valueDisplay) {
+        valueDisplay.textContent = colorValue;
+    }
+}
+
 async function fetchStyles() {
     try {
-        const response = await fetch('custom-style.css');
-        if (!response.ok) throw new Error('Could not load styles');
-        const cssText = await response.text();
+        const [baseCssText, customCssText] = await Promise.all([
+            fetchCssText('/style.css'),
+            fetchCssText('/custom-style.css')
+        ]);
 
-        // Regex to extract variables
-        const baseMatch = cssText.match(/--clr-base:\s*(#[0-9a-fA-F]{6})/);
-        const bgMatch = cssText.match(/--theme-bg:\s*(#[0-9a-fA-F]{6})/);
-        const textMatch = cssText.match(/--clr-common-text:\s*(#[0-9a-fA-F]{6})/);
-
-        if (baseMatch) {
-            const val = baseMatch[1];
-            const input = document.getElementById('clr-base');
-            if (input) {
-                input.value = val;
-                if (input.parentElement.querySelector('.color-value'))
-                    input.parentElement.querySelector('.color-value').textContent = val;
-            }
+        const combinedCssText = `${baseCssText}\n${customCssText}`;
+        if (!combinedCssText.trim()) {
+            throw new Error('Could not load styles');
         }
 
-        if (bgMatch) {
-            const val = bgMatch[1];
-            const input = document.getElementById('theme-bg');
-            if (input) {
-                input.value = val;
-                if (input.parentElement.querySelector('.color-value'))
-                    input.parentElement.querySelector('.color-value').textContent = val;
-            }
+        const cssVariables = {
+            ...DEFAULT_STYLE_VARIABLES,
+            ...extractCssVariables(combinedCssText)
+        };
+
+        for (const [inputId, cssVarName] of Object.entries(STYLE_COLOR_FIELD_MAP)) {
+            const configuredColor = normalizeHexColor(cssVariables[cssVarName]);
+            const fallbackColor = normalizeHexColor(DEFAULT_STYLE_VARIABLES[cssVarName]);
+            updateColorInputValue(inputId, configuredColor || fallbackColor);
         }
 
-        if (textMatch) {
-            const val = textMatch[1];
-            const input = document.getElementById('clr-common-text');
-            if (input) {
-                input.value = val;
-                if (input.parentElement.querySelector('.color-value'))
-                    input.parentElement.querySelector('.color-value').textContent = val;
-            }
-        }
+        const bodyFontValue = String(
+            cssVariables['--font-body'] ||
+            cssVariables['--font-primary'] ||
+            DEFAULT_BODY_FONT_FAMILY
+        ).trim();
+        const headingFontValue = String(
+            cssVariables['--font-heading'] ||
+            DEFAULT_HEADING_FONT_FAMILY
+        ).trim();
 
+        setFontSelectValue(fontBodySelect, bodyFontValue);
+        setFontSelectValue(fontHeadingSelect, headingFontValue);
+        updateFontPreview();
     } catch (error) {
         console.error('Error fetching styles:', error);
+        updateFontPreview();
     }
 }
 
@@ -2184,26 +2250,81 @@ function updateContentData(lang, path, value) {
 }
 
 // Font Selection Logic
-const fontSelect = document.getElementById('font-family-select');
+const fontBodySelect = document.getElementById('font-family-select');
+const fontHeadingSelect = document.getElementById('font-heading-select');
 const fontPreview = document.getElementById('font-preview');
 
-if (fontSelect) {
-    fontSelect.addEventListener('change', (e) => {
-        const option = e.target.options[e.target.selectedIndex];
-        const fontUrl = option.dataset.url;
-        const fontFamily = e.target.value;
-
-        let link = document.getElementById('preview-font-link');
-        if (!link) {
-            link = document.createElement('link');
-            link.id = 'preview-font-link';
-            link.rel = 'stylesheet';
-            document.head.appendChild(link);
-        }
-        link.href = fontUrl;
-        fontPreview.style.fontFamily = fontFamily.replace(/['"]/g, '');
-    });
+function normalizeFontFamilyValue(value = '') {
+    return String(value).trim().replace(/\s+/g, ' ');
 }
+
+function setFontSelectValue(selectElement, fontFamily) {
+    if (!selectElement || !fontFamily) return;
+
+    const normalizedTarget = normalizeFontFamilyValue(fontFamily);
+    const matchingOption = Array.from(selectElement.options).find((option) => {
+        return normalizeFontFamilyValue(option.value) === normalizedTarget;
+    });
+
+    if (matchingOption) {
+        selectElement.value = matchingOption.value;
+    }
+}
+
+function getSelectedFontData(selectElement) {
+    if (!selectElement || selectElement.selectedIndex < 0) {
+        return { family: '', url: '' };
+    }
+
+    const selectedOption = selectElement.options[selectElement.selectedIndex];
+    return {
+        family: selectElement.value,
+        url: String(selectedOption?.dataset?.url || '').trim()
+    };
+}
+
+function applyPreviewFontLink(url, linkId) {
+    if (!url) return;
+
+    let link = document.getElementById(linkId);
+    if (!link) {
+        link = document.createElement('link');
+        link.id = linkId;
+        link.rel = 'stylesheet';
+        document.head.appendChild(link);
+    }
+    link.href = url;
+}
+
+function updateFontPreview() {
+    const bodyFont = getSelectedFontData(fontBodySelect);
+    const headingFont = getSelectedFontData(fontHeadingSelect);
+
+    applyPreviewFontLink(bodyFont.url, 'preview-font-link-body');
+    applyPreviewFontLink(headingFont.url, 'preview-font-link-heading');
+
+    if (!fontPreview) return;
+
+    const bodyFamily = bodyFont.family || DEFAULT_BODY_FONT_FAMILY;
+    const headingFamily = headingFont.family || DEFAULT_HEADING_FONT_FAMILY;
+
+    const headingPreview = fontPreview.querySelector('h1, h2, h3, h4, h5, h6');
+    const bodyPreview = fontPreview.querySelector('p');
+
+    fontPreview.style.fontFamily = bodyFamily;
+    if (headingPreview) headingPreview.style.fontFamily = headingFamily;
+    if (bodyPreview) bodyPreview.style.fontFamily = bodyFamily;
+}
+
+if (fontBodySelect) {
+    fontBodySelect.addEventListener('change', updateFontPreview);
+}
+
+if (fontHeadingSelect) {
+    fontHeadingSelect.addEventListener('change', updateFontPreview);
+}
+
+updateFontPreview();
 
 async function saveChanges() {
     const saveBtn = document.getElementById('save-btn'); // Local definition for safety
@@ -2219,19 +2340,34 @@ async function saveChanges() {
             throw new Error(apiMessage);
         }
 
-        const styleData = {
-            "--clr-base": document.getElementById('clr-base').value,
-            "--theme-bg": document.getElementById('theme-bg').value,
-            "--clr-common-text": document.getElementById('clr-common-text').value
-        };
+        const styleData = {};
+        for (const [inputId, cssVarName] of Object.entries(STYLE_COLOR_FIELD_MAP)) {
+            const inputValue = normalizeHexColor(document.getElementById(inputId)?.value || '');
+            if (inputValue) {
+                styleData[cssVarName] = inputValue;
+            }
+        }
 
-        const fontOption = fontSelect ? fontSelect.options[fontSelect.selectedIndex] : null;
-        const fontData = fontOption ? {
-            fontUrl: fontOption.dataset.url,
-            fontFamily: fontSelect.value
-        } : {};
+        const bodyFontData = getSelectedFontData(fontBodySelect);
+        const headingFontData = getSelectedFontData(fontHeadingSelect);
+        const selectedFontUrls = [...new Set([
+            bodyFontData.url,
+            headingFontData.url
+        ].filter(Boolean))];
 
-        if (styleData["--clr-base"]) {
+        const fontData = {};
+        if (selectedFontUrls.length > 0) {
+            fontData.fontUrls = selectedFontUrls;
+        }
+        if (bodyFontData.family) {
+            fontData.fontBodyFamily = bodyFontData.family;
+            fontData.fontFamily = bodyFontData.family;
+        }
+        if (headingFontData.family) {
+            fontData.fontHeadingFamily = headingFontData.family;
+        }
+
+        if (Object.keys(styleData).length > 0 || Object.keys(fontData).length > 0) {
             const styleResponse = await fetch(`${API_URL}/style`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

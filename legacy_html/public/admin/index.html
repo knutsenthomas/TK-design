@@ -276,16 +276,54 @@
                                 <span class="color-value">#0f172a</span>
                             </div>
                         </div>
+                        <div class="form-group color-group">
+                            <label>Accent (refresh)</label>
+                            <div class="color-wrapper">
+                                <input type="color" id="refresh-accent" name="--refresh-accent">
+                                <span class="color-value">#ff6a1b</span>
+                            </div>
+                        </div>
+                        <div class="form-group color-group">
+                            <label>Lys accent</label>
+                            <div class="color-wrapper">
+                                <input type="color" id="refresh-accent-soft" name="--refresh-accent-soft">
+                                <span class="color-value">#fff1e7</span>
+                            </div>
+                        </div>
+                        <div class="form-group color-group">
+                            <label>Overskriftfarge</label>
+                            <div class="color-wrapper">
+                                <input type="color" id="refresh-heading" name="--refresh-heading">
+                                <span class="color-value">#11263c</span>
+                            </div>
+                        </div>
+                        <div class="form-group color-group">
+                            <label>Brødtekstfarge</label>
+                            <div class="color-wrapper">
+                                <input type="color" id="refresh-text" name="--refresh-text">
+                                <span class="color-value">#5a697d</span>
+                            </div>
+                        </div>
+                        <div class="form-group color-group">
+                            <label>Bakgrunn (refresh)</label>
+                            <div class="color-wrapper">
+                                <input type="color" id="refresh-bg" name="--refresh-bg">
+                                <span class="color-value">#f3f7fb</span>
+                            </div>
+                        </div>
 
                         <!-- Typography -->
                         <div class="form-group"
                             style="grid-column: 1 / -1; margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
-                            <label data-i18n="typography">Skrifttype (Google Fonts)</label>
+                            <label>Brødtekst-font (Google Fonts)</label>
                             <select id="font-family-select" class="form-control"
                                 style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
                                 <option value="'Kanit', sans-serif"
                                     data-url="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap">
                                     Kanit (Standard)</option>
+                                <option value="'Manrope', sans-serif"
+                                    data-url="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
+                                    Manrope (Refresh)</option>
                                 <option value="'Inter', sans-serif"
                                     data-url="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
                                     Inter</option>
@@ -307,6 +345,28 @@
                                 <option value="'Merriweather', serif"
                                     data-url="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap">
                                     Merriweather</option>
+                            </select>
+                            <label style="display:block; margin-top: 12px;">Overskrift-font (Google Fonts)</label>
+                            <select id="font-heading-select" class="form-control"
+                                style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                                <option value="'Space Grotesk', sans-serif"
+                                    data-url="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap">
+                                    Space Grotesk (Standard)</option>
+                                <option value="'Manrope', sans-serif"
+                                    data-url="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
+                                    Manrope</option>
+                                <option value="'Kanit', sans-serif"
+                                    data-url="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap">
+                                    Kanit</option>
+                                <option value="'Inter', sans-serif"
+                                    data-url="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+                                    Inter</option>
+                                <option value="'Montserrat', sans-serif"
+                                    data-url="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap">
+                                    Montserrat</option>
+                                <option value="'Playfair Display', serif"
+                                    data-url="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap">
+                                    Playfair Display</option>
                             </select>
 
                             <div id="font-preview"
