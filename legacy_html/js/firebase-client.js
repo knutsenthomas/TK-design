@@ -112,8 +112,8 @@
     const auth = window.firebase.auth();
     const db = window.firebase.firestore();
     const storage = window.firebase.storage();
-    const AUTH_INIT_TIMEOUT_MS = 12000;
-    const PROFILE_LOAD_TIMEOUT_MS = 1500;
+    const AUTH_INIT_TIMEOUT_MS = 6000;
+    const PROFILE_LOAD_TIMEOUT_MS = 1200;
 
     window.firebaseApp = app;
     window.firebaseAuth = auth;
@@ -192,7 +192,9 @@
     async function getMappedCurrentUser() {
         await persistenceReady;
         await redirectResultReady;
-        await waitForAuthReady();
+        if (!auth.currentUser) {
+            await waitForAuthReady();
+        }
 
         if (!auth.currentUser) {
             return null;

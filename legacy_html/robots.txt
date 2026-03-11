@@ -7,3 +7,6 @@ Disallow: /api/
 
 # Sitemap
 Sitemap: https://tk-design.no/sitemap.xml
+
+# LLM guidance
+# https://tk-design.no/llms.txt

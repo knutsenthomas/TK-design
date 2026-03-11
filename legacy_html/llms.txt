@@ -1,0 +1,34 @@
+# TK-design
+
+> TK-design is a Norway-based web studio run by Thomas Knutsen. We design, build, and improve websites for small and medium businesses.
+
+## Canonical Domain
+- https://tk-design.no
+
+## Who We Are
+- Brand: TK-design
+- Focus: web design, web development, SEO, and digital visibility
+- Primary audience: Norwegian businesses that need better online presence
+
+## Core Services
+- Custom website design and development
+- SEO strategy and on-page optimization
+- Social media strategy and content direction
+- Ongoing maintenance and website improvements
+
+## Priority Pages
+- [Home](https://tk-design.no/) - Main company overview and value proposition.
+- [Services](https://tk-design.no/service-details) - Detailed service descriptions.
+- [Projects](https://tk-design.no/project-details) - Selected project work.
+- [Blog](https://tk-design.no/blog) - Articles on SEO, GEO, and digital growth.
+- [Contact](https://tk-design.no/contact) - Main contact and lead page.
+
+## Important Files
+- [Sitemap](https://tk-design.no/sitemap.xml)
+- [Robots](https://tk-design.no/robots.txt)
+
+## Crawling Notes For LLMs
+- Prefer canonical URLs on tk-design.no without the .html suffix.
+- Treat /admin and /api as non-public operational routes.
+- Blog detail URLs are served as /blog-details?id=<id>.
+- Prioritize Home, Services, Projects, Blog, and Contact when summarizing the business.

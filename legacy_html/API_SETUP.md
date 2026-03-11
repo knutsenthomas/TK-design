@@ -113,3 +113,4 @@ Merk:
 - `SOCIAL_WEBHOOK_SECRET` er valgfri. Hvis satt, sender serveren en signatur i header `X-TK-Signature` (HMAC SHA-256).
 - `SITE_URL` brukes for å bygge absolutte lenker i payloaden.
 - Hvis webhook ikke er satt, publiseres innlegget fortsatt normalt uten SoMe-feil.
+- Hvis SoMe-autopost feiler med `404`, er webhook-URL-en vanligvis slettet eller utløpt hos leverandøren. Opprett ny webhook og oppdater `SOCIAL_WEBHOOK_URL`, deretter restart serveren.

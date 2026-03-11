@@ -1739,11 +1739,15 @@ async function fetchSeo() {
 
 function renderSeoEditor() {
     const siteTitleEl = document.getElementById('seo-site-title');
+    const logoTextEl = document.getElementById('seo-logo-text');
+    const logoImageEl = document.getElementById('seo-logo-image');
     const separatorEl = document.getElementById('seo-separator');
     const keywordsEl = document.getElementById('seo-default-keywords');
     const gaIdEl = document.getElementById('seo-ga-id');
 
     if (siteTitleEl) siteTitleEl.value = seoData.global.siteTitle || '';
+    if (logoTextEl) logoTextEl.value = seoData.global.logoText || '';
+    if (logoImageEl) logoImageEl.value = seoData.global.logoImage || '';
     if (separatorEl) separatorEl.value = seoData.global.separator || '|';
     if (keywordsEl) keywordsEl.value = seoData.global.defaultKeywords || '';
     if (gaIdEl) gaIdEl.value = seoData.global.googleAnalyticsId || '';
@@ -1789,7 +1793,10 @@ async function saveSeo() {
     saveBtn.innerText = 'Lagrer...';
 
     seoData.global = {
+        ...(seoData.global || {}),
         siteTitle: document.getElementById('seo-site-title').value,
+        logoText: document.getElementById('seo-logo-text')?.value?.trim() || '',
+        logoImage: document.getElementById('seo-logo-image')?.value?.trim() || '',
         separator: document.getElementById('seo-separator').value,
         defaultKeywords: document.getElementById('seo-default-keywords').value,
         googleAnalyticsId: document.getElementById('seo-ga-id').value
@@ -3335,6 +3342,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ==========================================
 
 let currentUser = null;
+const SESSION_CHECK_TIMEOUT_MS = 4000;
+const AUTH_STATE_WAIT_TIMEOUT_MS = 2000;
+const SESSION_RETRY_TIMEOUT_MS = 2000;
 
 function withUiTimeout(promise, timeoutMs, fallbackValue = null) {
     return Promise.race([
@@ -3375,7 +3385,7 @@ async function checkAuth() {
 
         const firstSessionResult = await withUiTimeout(
             window.adminAuthClient.auth.getSession(),
-            12000,
+            SESSION_CHECK_TIMEOUT_MS,
             { data: { session: null }, error: new Error('Session check timed out') }
         );
         let session = firstSessionResult?.data?.session || null;
@@ -3402,13 +3412,13 @@ async function checkAuth() {
                         }
                     );
                 }),
-                6000,
+                AUTH_STATE_WAIT_TIMEOUT_MS,
                 null
             );
 
             const retrySessionResult = await withUiTimeout(
                 window.adminAuthClient.auth.getSession(),
-                6000,
+                SESSION_RETRY_TIMEOUT_MS,
                 { data: { session: null }, error: null }
             );
 

@@ -119,6 +119,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Language init moved outside to prevent flash of untranslated content
 
+    // Optional branding overrides from SEO settings
+    applySiteBranding(window.__TK_BRANDING__);
+
     // Keep homepage URL clean while still supporting section navigation
     initHomepageSectionRouting();
 
@@ -340,4 +343,23 @@ function updateLangButtons(lang) {
             btn.classList.remove('active');
         }
     });
+}
+
+function applySiteBranding(brandingConfig) {
+    if (!brandingConfig || typeof brandingConfig !== 'object') return;
+
+    const logoText = String(brandingConfig.logoText || '').trim();
+    const logoImage = String(brandingConfig.logoImage || '').trim();
+
+    if (logoText) {
+        document.querySelectorAll('.logo .logo-text').forEach((node) => {
+            node.textContent = logoText;
+        });
+    }
+
+    if (logoImage) {
+        document.querySelectorAll('.logo .logo-icon img').forEach((node) => {
+            node.src = logoImage;
+        });
+    }
 }

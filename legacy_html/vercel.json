@@ -21,6 +21,7 @@
                     "sw.js",
                     "robots.txt",
                     "sitemap.xml",
+                    "llms.txt",
                     "admin/**",
                     "data/**",
                     "img/**",

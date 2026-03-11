@@ -39,6 +39,75 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const app = express();
 const PORT = 3000;
 const firebaseAccessTokenCache = new Map();
+const firebaseWebConfigCache = {
+    value: null,
+    fetchedAt: 0,
+    inflight: null
+};
+const FIREBASE_WEB_CONFIG_CACHE_MS = 10 * 60 * 1000;
+const PAGE_ROUTE_MAP = {
+    '/': 'index.html',
+    '/blog': 'blog.html',
+    '/project-details': 'project-details.html',
+    '/blog-details': 'blog-details.html',
+    '/contact': 'contact.html',
+    '/service-details': 'service-details.html',
+    '/privacy': 'privacy.html',
+    '/accessibility': 'accessibility.html'
+};
+const LEGACY_REDIRECT_MAP = {
+    '/index.html': '/',
+    '/blog.html': '/blog',
+    '/project-details.html': '/project-details',
+    '/blog-details.html': '/blog-details',
+    '/contact.html': '/contact',
+    '/service-details.html': '/service-details',
+    '/privacy.html': '/privacy',
+    '/accessibility.html': '/accessibility'
+};
+const SEO_GLOBAL_DEFAULTS = {
+    siteTitle: 'TK-design',
+    separator: '|',
+    defaultKeywords: 'design, portfolio, webutvikling, grafisk design',
+    googleAnalyticsId: ''
+};
+const SEO_PAGE_DEFAULTS = {
+    'index.html': {
+        title: 'Hjem',
+        description: 'Portefølje for Thomas Knutsen - Grafisk Designer og Webutvikler.',
+        keywords: 'thomas knutsen, portefølje, hjem'
+    },
+    'blog.html': {
+        title: 'Blogg',
+        description: 'Les mine siste tanker og oppdateringer om design og teknologi.',
+        keywords: 'blogg, design, tech'
+    },
+    'contact.html': {
+        title: 'Kontakt',
+        description: 'Ta kontakt med TK-design for profesjonell nettside, webdesign og SEO.',
+        keywords: 'kontakt webdesigner, bestille nettside, tk-design kontakt'
+    },
+    'service-details.html': {
+        title: 'Tjenester',
+        description: 'Tjenester fra TK-design: UI/UX-design, webutvikling, digital markedsføring og merkevarebygging.',
+        keywords: 'ui ux design, webutvikling, digital markedsføring, merkevarebygging'
+    },
+    'project-details.html': {
+        title: 'Prosjekter',
+        description: 'Utvalgte prosjekter fra TK-design med fokus på design, ytelse og synlighet.',
+        keywords: 'prosjekter, webdesign case, tk-design'
+    },
+    'privacy.html': {
+        title: 'Personvern',
+        description: 'Personvernerklæring for TK-design og hvordan data behandles på nettsiden.',
+        keywords: 'personvern, personvernerklæring, tk-design'
+    },
+    'accessibility.html': {
+        title: 'Tilgjengelighet',
+        description: 'Tilgjengelighetserklæring for TK-design med informasjon om universell utforming.',
+        keywords: 'tilgjengelighet, universell utforming, tilgjengelighetserklæring'
+    }
+};
 
 // Middleware
 app.use(bodyParser.json());
@@ -75,6 +144,10 @@ function escapeHtml(value = '') {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+}
+
+function serializeInlineJson(value) {
+    return JSON.stringify(value).replace(/</g, '\\u003c');
 }
 
 function toBase64Url(input) {
@@ -651,6 +724,32 @@ async function getOrCreateFirebaseWebAppConfig() {
     };
 }
 
+async function getCachedFirebaseWebAppConfig() {
+    const now = Date.now();
+    if (
+        firebaseWebConfigCache.value &&
+        (now - firebaseWebConfigCache.fetchedAt) < FIREBASE_WEB_CONFIG_CACHE_MS
+    ) {
+        return firebaseWebConfigCache.value;
+    }
+
+    if (firebaseWebConfigCache.inflight) {
+        return firebaseWebConfigCache.inflight;
+    }
+
+    firebaseWebConfigCache.inflight = getOrCreateFirebaseWebAppConfig()
+        .then((config) => {
+            firebaseWebConfigCache.value = config;
+            firebaseWebConfigCache.fetchedAt = Date.now();
+            return config;
+        })
+        .finally(() => {
+            firebaseWebConfigCache.inflight = null;
+        });
+
+    return firebaseWebConfigCache.inflight;
+}
+
 async function sendContactNotification(messagePayload) {
     const resendApiKey = process.env.RESEND_API_KEY;
     if (!resendApiKey) {
@@ -843,16 +942,50 @@ function writeBlogPosts(posts) {
     fs.writeFileSync(getPostsFilePath(), JSON.stringify(posts, null, 4), 'utf8');
 }
 
-function readSeoData() {
-    if (!fs.existsSync(getSeoFilePath())) {
-        return { global: {}, pages: {} };
+function normalizeSeoData(seoData) {
+    const parsedSeoData = (seoData && typeof seoData === 'object' && !Array.isArray(seoData))
+        ? seoData
+        : {};
+    const parsedGlobal = (parsedSeoData.global && typeof parsedSeoData.global === 'object' && !Array.isArray(parsedSeoData.global))
+        ? parsedSeoData.global
+        : {};
+    const parsedPages = (parsedSeoData.pages && typeof parsedSeoData.pages === 'object' && !Array.isArray(parsedSeoData.pages))
+        ? parsedSeoData.pages
+        : {};
+    const normalizedPages = {};
+
+    for (const [pageFile, defaults] of Object.entries(SEO_PAGE_DEFAULTS)) {
+        const pageCandidate = parsedPages[pageFile];
+        const pageConfig = (pageCandidate && typeof pageCandidate === 'object' && !Array.isArray(pageCandidate))
+            ? pageCandidate
+            : {};
+
+        normalizedPages[pageFile] = {
+            title: String(pageConfig.title ?? defaults.title ?? '').trim(),
+            description: String(pageConfig.description ?? defaults.description ?? '').trim(),
+            keywords: String(pageConfig.keywords ?? defaults.keywords ?? '').trim()
+        };
     }
 
-    return JSON.parse(fs.readFileSync(getSeoFilePath(), 'utf8'));
+    return {
+        global: {
+            ...SEO_GLOBAL_DEFAULTS,
+            ...parsedGlobal
+        },
+        pages: normalizedPages
+    };
+}
+
+function readSeoData() {
+    if (!fs.existsSync(getSeoFilePath())) {
+        return normalizeSeoData({});
+    }
+
+    return normalizeSeoData(JSON.parse(fs.readFileSync(getSeoFilePath(), 'utf8')));
 }
 
 function writeSeoData(seoData) {
-    fs.writeFileSync(getSeoFilePath(), JSON.stringify(seoData, null, 4), 'utf8');
+    fs.writeFileSync(getSeoFilePath(), JSON.stringify(normalizeSeoData(seoData), null, 4), 'utf8');
 }
 
 function readCustomStyleCss() {
@@ -1152,17 +1285,17 @@ app.post('/api/posts', async (req, res) => {
 // API: Get SEO Data
 app.get('/api/seo', async (req, res) => {
     try {
-        const seoConfig = await readSiteDataWithFallback('seo', readSeoData);
+        const seoConfig = normalizeSeoData(await readSiteDataWithFallback('seo', readSeoData));
         res.json(seoConfig);
     } catch (error) {
         console.error(error);
-        res.json({ global: {}, pages: {} });
+        res.json(normalizeSeoData({}));
     }
 });
 
 // API: Save SEO Data
 app.post('/api/seo', async (req, res) => {
-    const seoData = req.body;
+    const seoData = normalizeSeoData(req.body);
 
     try {
         const result = await persistSiteData('seo', seoData, writeSeoData);
@@ -1176,7 +1309,7 @@ app.post('/api/seo', async (req, res) => {
 // Sitemap Generation
 app.get('/sitemap.xml', async (req, res) => {
     try {
-        const seoConfig = await readSiteDataWithFallback('seo', readSeoData);
+        const seoConfig = normalizeSeoData(await readSiteDataWithFallback('seo', readSeoData));
         const posts = await readSiteDataWithFallback('posts', readBlogPosts);
         const baseUrl = 'https://tk-design.no';
 
@@ -1215,36 +1348,14 @@ app.get('/sitemap.xml', async (req, res) => {
 });
 
 // Server-Side Meta Injection + clean URL redirects
-const pageRouteMap = {
-    '/': 'index.html',
-    '/blog': 'blog.html',
-    '/project-details': 'project-details.html',
-    '/blog-details': 'blog-details.html',
-    '/contact': 'contact.html',
-    '/service-details': 'service-details.html',
-    '/privacy': 'privacy.html',
-    '/accessibility': 'accessibility.html'
-};
-
-const legacyRedirectMap = {
-    '/index.html': '/',
-    '/blog.html': '/blog',
-    '/project-details.html': '/project-details',
-    '/blog-details.html': '/blog-details',
-    '/contact.html': '/contact',
-    '/service-details.html': '/service-details',
-    '/privacy.html': '/privacy',
-    '/accessibility.html': '/accessibility'
-};
-
-app.get([...Object.keys(pageRouteMap), ...Object.keys(legacyRedirectMap)], async (req, res) => {
-    const redirectTarget = legacyRedirectMap[req.path];
+app.get([...Object.keys(PAGE_ROUTE_MAP), ...Object.keys(LEGACY_REDIRECT_MAP)], async (req, res) => {
+    const redirectTarget = LEGACY_REDIRECT_MAP[req.path];
     if (redirectTarget) {
         const qs = Object.keys(req.query).length ? `?${new URLSearchParams(req.query).toString()}` : '';
         return res.redirect(301, `${redirectTarget}${qs}`);
     }
 
-    const reqFile = pageRouteMap[req.path];
+    const reqFile = PAGE_ROUTE_MAP[req.path];
     if (!reqFile) {
         return res.status(404).send('Page not found');
     }
@@ -1256,7 +1367,7 @@ app.get([...Object.keys(pageRouteMap), ...Object.keys(legacyRedirectMap)], async
 
     let seoData = { global: {}, pages: {} };
     try {
-        seoData = await readSiteDataWithFallback('seo', readSeoData);
+        seoData = normalizeSeoData(await readSiteDataWithFallback('seo', readSeoData));
     } catch (e) { }
 
     const globalSeo = seoData.global || {};
@@ -1334,6 +1445,19 @@ app.get([...Object.keys(pageRouteMap), ...Object.keys(legacyRedirectMap)], async
             .replace(/<meta\s+property="og:title"\s+content="[\s\S]*?">/i, `<meta property="og:title" content="${finalTitle}">`)
             .replace(/<meta\s+property="og:description"\s+content="[\s\S]*?">/i, `<meta property="og:description" content="${description}">`);
 
+        const brandingConfig = {
+            logoText: String(globalSeo.logoText || '').trim(),
+            logoImage: String(globalSeo.logoImage || '').trim()
+        };
+
+        if (
+            (brandingConfig.logoText || brandingConfig.logoImage) &&
+            !injectedHtml.includes('window.__TK_BRANDING__')
+        ) {
+            const brandingScript = `<script>window.__TK_BRANDING__ = ${serializeInlineJson(brandingConfig)};</script>`;
+            injectedHtml = injectedHtml.replace('</head>', `${brandingScript}\n</head>`);
+        }
+
         // Inject Google Analytics if ID exists and NOT already in the HTML
         if (globalSeo.googleAnalyticsId && !html.includes(globalSeo.googleAnalyticsId)) {
             const gaScript = `
@@ -1375,11 +1499,11 @@ app.get('/data/posts.json', async (req, res) => {
 
 app.get('/data/seo.json', async (req, res) => {
     try {
-        const seoConfig = await readSiteDataWithFallback('seo', readSeoData);
+        const seoConfig = normalizeSeoData(await readSiteDataWithFallback('seo', readSeoData));
         res.json(seoConfig);
     } catch (error) {
         console.error('Error serving seo.json:', error);
-        res.status(500).json({ global: {}, pages: {} });
+        res.status(500).json(normalizeSeoData({}));
     }
 });
 
@@ -2261,6 +2385,56 @@ function resolveAbsolutePostUrl(linkValue, req, fallbackPostId) {
     }
 }
 
+function resolveAbsoluteAssetUrl(assetValue, req) {
+    const rawAsset = String(assetValue || '').trim();
+    if (!rawAsset) return '';
+
+    if (/^https?:\/\//i.test(rawAsset)) {
+        return rawAsset;
+    }
+
+    if (/^\/\//.test(rawAsset)) {
+        return `https:${rawAsset}`;
+    }
+
+    const siteBaseUrl = getSiteBaseUrl(req);
+    const normalizedAsset = rawAsset.startsWith('/') ? rawAsset : `/${rawAsset}`;
+    if (!siteBaseUrl) {
+        return normalizedAsset;
+    }
+
+    try {
+        return new URL(normalizedAsset, siteBaseUrl).toString();
+    } catch (error) {
+        return '';
+    }
+}
+
+function extractFirstImageSrcFromHtml(htmlValue = '') {
+    const html = String(htmlValue || '');
+    if (!html) return '';
+    const quotedMatch = html.match(/<img[^>]+src\s*=\s*["']([^"']+)["']/i);
+    if (quotedMatch?.[1]) {
+        return String(quotedMatch[1]).trim();
+    }
+    const unquotedMatch = html.match(/<img[^>]+src\s*=\s*([^\s>]+)/i);
+    return unquotedMatch?.[1] ? String(unquotedMatch[1]).trim() : '';
+}
+
+function resolveSocialImage(post = {}, req) {
+    const featuredImageRaw = String(post.image || '').trim();
+    const contentImageRaw = extractFirstImageSrcFromHtml(post.content);
+    const selectedRaw = featuredImageRaw || contentImageRaw;
+    const absolute = resolveAbsoluteAssetUrl(selectedRaw, req);
+
+    return {
+        featuredImageRaw,
+        contentImageRaw,
+        selectedRaw,
+        absolute
+    };
+}
+
 function normalizeHashtagToken(value = '') {
     return String(value || '')
         .trim()
@@ -2302,9 +2476,25 @@ function truncateForSocial(text = '', limit = 220) {
     return `${normalized.slice(0, Math.max(0, limit - 1)).trim()}…`;
 }
 
+function resolveWebhookHost(webhookUrl = '') {
+    try {
+        return new URL(String(webhookUrl || '').trim()).host || '';
+    } catch (error) {
+        return '';
+    }
+}
+
+function summarizeWebhookResponseBody(responseBody = '', limit = 180) {
+    const normalized = String(responseBody || '').replace(/\s+/g, ' ').trim();
+    if (!normalized) return '';
+    if (normalized.length <= limit) return normalized;
+    return `${normalized.slice(0, Math.max(0, limit - 1)).trim()}…`;
+}
+
 function buildSocialAutopostPayload(post = {}, req) {
     const postId = Number(post.id);
     const postUrl = resolveAbsolutePostUrl(post.link, req, postId);
+    const socialImage = resolveSocialImage(post, req);
     const titleNo = String(post.title || '').trim();
     const titleEn = String(post.titleEn || '').trim();
     const excerptNo = String(post.excerpt || '').trim();
@@ -2343,7 +2533,9 @@ function buildSocialAutopostPayload(post = {}, req) {
             date: String(post.date || '').trim(),
             dateIso: String(post.dateIso || '').trim(),
             author: String(post.author || '').trim(),
-            image: String(post.image || '').trim(),
+            image: socialImage.absolute,
+            imageRaw: socialImage.featuredImageRaw,
+            imageFromContent: resolveAbsoluteAssetUrl(socialImage.contentImageRaw, req),
             url: shortUrl,
             link: String(post.link || '').trim()
         },
@@ -2414,11 +2606,26 @@ app.post('/api/social/autopost', async (req, res) => {
         }
 
         if (!response.ok) {
-            const responseBody = await response.text();
+            const responseBody = await response.text().catch(() => '');
+            const webhookHost = resolveWebhookHost(webhookUrl);
+            const hostHint = webhookHost ? ` (${webhookHost})` : '';
+
+            if (response.status === 404) {
+                return res.status(502).json({
+                    sent: false,
+                    error: 'Social webhook failed',
+                    code: 'social_webhook_not_found',
+                    details: `Webhook URL returned 404${hostHint}. The endpoint is likely deleted or inactive. Update SOCIAL_WEBHOOK_URL in server environment variables.`
+                });
+            }
+
+            const providerMessage = summarizeWebhookResponseBody(responseBody);
+            const providerHint = providerMessage ? ` Provider response: ${providerMessage}` : '';
             return res.status(502).json({
                 sent: false,
                 error: 'Social webhook failed',
-                details: `Webhook responded with ${response.status}. ${responseBody.slice(0, 300)}`
+                code: 'social_webhook_http_error',
+                details: `Webhook responded with ${response.status}${hostHint}.${providerHint}`
             });
         }
 
@@ -2569,14 +2776,16 @@ app.post('/api/contact', async (req, res) => {
 
 app.get('/js/firebase-config.js', async (req, res) => {
     try {
-        const config = await getOrCreateFirebaseWebAppConfig();
+        const config = await getCachedFirebaseWebAppConfig();
         res.type('application/javascript');
+        res.setHeader('Cache-Control', 'public, max-age=300');
         res.send(
             `window.__TK_FIREBASE_CONFIG__ = ${JSON.stringify(config, null, 4)};\nwindow.__TK_FIREBASE_CONFIG_ERROR__ = null;`
         );
     } catch (error) {
         const fallbackConfig = getFirebaseWebConfig();
         res.type('application/javascript');
+        res.setHeader('Cache-Control', 'no-store');
         res.send(
             `window.__TK_FIREBASE_CONFIG__ = ${JSON.stringify(fallbackConfig, null, 4)};\nwindow.__TK_FIREBASE_CONFIG_ERROR__ = ${JSON.stringify(hasUsableFirebaseWebConfig(fallbackConfig) ? null : error.message)};`
         );
@@ -2683,6 +2892,12 @@ app.get('/robots.txt', (req, res) => {
     res.setHeader('Content-Type', 'text/plain');
     res.setHeader('Cache-Control', 'public, max-age=86400');
     res.sendFile(path.join(__dirname, 'robots.txt'));
+});
+
+app.get('/llms.txt', (req, res) => {
+    res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.sendFile(path.join(__dirname, 'llms.txt'));
 });
 
 // PWA: Serve manifest and service worker with correct headers

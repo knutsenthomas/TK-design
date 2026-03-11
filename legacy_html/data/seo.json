@@ -16,10 +16,30 @@
             "description": "Les mine siste tanker og oppdateringer om design og teknologi.",
             "keywords": "blogg, design, tech"
         },
-        "portfolio.html": {
-            "title": "Portefølje",
-            "description": "Se mine siste prosjekter og arbeid.",
-            "keywords": "prosjekter, arbeid, showcase"
+        "contact.html": {
+            "title": "Kontakt",
+            "description": "Ta kontakt med TK-design for profesjonell nettside, webdesign og SEO.",
+            "keywords": "kontakt webdesigner, bestille nettside, tk-design kontakt"
+        },
+        "service-details.html": {
+            "title": "Tjenester",
+            "description": "Tjenester fra TK-design: UI/UX-design, webutvikling, digital markedsføring og merkevarebygging.",
+            "keywords": "ui ux design, webutvikling, digital markedsføring, merkevarebygging"
+        },
+        "project-details.html": {
+            "title": "Prosjekter",
+            "description": "Utvalgte prosjekter fra TK-design med fokus på design, ytelse og synlighet.",
+            "keywords": "prosjekter, webdesign case, tk-design"
+        },
+        "privacy.html": {
+            "title": "Personvern",
+            "description": "Personvernerklæring for TK-design og hvordan data behandles på nettsiden.",
+            "keywords": "personvern, personvernerklæring, tk-design"
+        },
+        "accessibility.html": {
+            "title": "Tilgjengelighet",
+            "description": "Tilgjengelighetserklæring for TK-design med informasjon om universell utforming.",
+            "keywords": "tilgjengelighet, universell utforming, tilgjengelighetserklæring"
         }
     }
 }
