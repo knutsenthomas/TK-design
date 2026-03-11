@@ -2604,14 +2604,12 @@ function buildSocialAutopostPayload(post = {}, req) {
     const shortUrl = postUrl || '/blog';
 
     const noCaption = [
-        titleNo ? `Nytt innlegg: ${titleNo}` : 'Nytt blogginnlegg',
         excerptNo ? truncateForSocial(excerptNo, 180) : '',
         shortUrl,
         hashtags.join(' ')
     ].filter(Boolean).join('\n\n');
 
     const enCaption = [
-        titleEn ? `New post: ${titleEn}` : (titleNo ? `New post: ${titleNo}` : 'New blog post'),
         excerptEn ? truncateForSocial(excerptEn, 180) : '',
         shortUrl,
         hashtags.join(' ')
