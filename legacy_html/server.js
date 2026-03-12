@@ -932,12 +932,16 @@ function getCommentsFilePath() {
     return path.join(__dirname, 'data/comments.json');
 }
 
+function getSocialPlannerFilePath() {
+    return path.join(__dirname, 'data/social_planner.json');
+}
+
 function getSeoFilePath() {
     return path.join(__dirname, 'data/seo.json');
 }
 
 function getAdminCustomStyleFilePath() {
-    return path.join(__dirname, 'admin/custom-style.css');
+    return path.join(__dirname, 'public', 'admin', 'custom-style.css');
 }
 
 function parseTranslationsSource(source) {
@@ -1067,6 +1071,449 @@ function readBlogComments() {
 function writeBlogComments(commentsData) {
     const normalizedComments = normalizeCommentsData(commentsData);
     fs.writeFileSync(getCommentsFilePath(), JSON.stringify(normalizedComments, null, 4), 'utf8');
+}
+
+const SOCIAL_PLATFORMS = Object.freeze(['facebook', 'instagram', 'linkedin', 'x', 'tiktok']);
+const SOCIAL_ENTRY_STATUSES = new Set([
+    'draft',
+    'scheduled',
+    'publishing',
+    'published',
+    'partially_published',
+    'failed',
+    'cancelled'
+]);
+const SOCIAL_PLANNER_PERIOD_PRESETS = Object.freeze({
+    '1d': 1,
+    '7d': 7,
+    '14d': 14,
+    '30d': 30,
+    '365d': 365
+});
+
+function normalizeIsoDateTime(value, fallbackIso = new Date().toISOString()) {
+    const candidate = String(value || '').trim();
+    const parsed = new Date(candidate);
+    if (!Number.isFinite(parsed.getTime())) {
+        return String(fallbackIso || new Date().toISOString());
+    }
+    return parsed.toISOString();
+}
+
+function normalizePlannerText(value, maxLength = 5000) {
+    return String(value || '').replace(/\r\n/g, '\n').replace(/\s+\n/g, '\n').trim().slice(0, maxLength);
+}
+
+function normalizePlannerShortText(value, maxLength = 160) {
+    return String(value || '').replace(/\s+/g, ' ').trim().slice(0, maxLength);
+}
+
+function normalizePlannerUrl(value) {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+    if (/^https?:\/\//i.test(raw)) return raw;
+    if (raw.startsWith('//')) return `https:${raw}`;
+    if (raw.startsWith('/')) return raw;
+    return `https://${raw}`;
+}
+
+function normalizePlannerPlatform(value) {
+    const normalized = String(value || '').trim().toLowerCase();
+    return SOCIAL_PLATFORMS.includes(normalized) ? normalized : 'facebook';
+}
+
+function normalizePlannerStatus(value) {
+    const normalized = String(value || '').trim().toLowerCase();
+    return SOCIAL_ENTRY_STATUSES.has(normalized) ? normalized : 'draft';
+}
+
+function createSocialPlannerId(prefix = 'sp') {
+    return `${prefix}_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
+}
+
+function normalizePlannerHashtags(value) {
+    const rawItems = Array.isArray(value)
+        ? value
+        : String(value || '')
+            .split(/[\n, ]+/)
+            .map((item) => item.trim())
+            .filter(Boolean);
+    const seen = new Set();
+    const hashtags = [];
+
+    rawItems.forEach((item) => {
+        let cleaned = String(item || '').trim().toLowerCase();
+        cleaned = cleaned.replace(/^#+/, '').replace(/[^a-z0-9_]+/g, '');
+        if (!cleaned || seen.has(cleaned)) return;
+        seen.add(cleaned);
+        hashtags.push(`#${cleaned}`);
+    });
+
+    return hashtags.slice(0, 20);
+}
+
+function normalizePlannerVariants(value) {
+    const source = (value && typeof value === 'object' && !Array.isArray(value)) ? value : {};
+    const normalized = {};
+
+    SOCIAL_PLATFORMS.forEach((platform) => {
+        normalized[platform] = normalizePlannerText(source[platform] || '', 3000);
+    });
+
+    return normalized;
+}
+
+function createDefaultSocialPlannerData() {
+    const nowIso = new Date().toISOString();
+    return {
+        version: 1,
+        settings: {
+            activeWorkspaceId: 'default'
+        },
+        workspaces: [
+            {
+                id: 'default',
+                name: 'TK-design',
+                timezone: 'Europe/Oslo',
+                createdAt: nowIso,
+                updatedAt: nowIso
+            }
+        ],
+        socialAccounts: [],
+        templates: [
+            {
+                id: createSocialPlannerId('tpl'),
+                workspaceId: 'default',
+                category: 'salg',
+                name: 'Salgskampanje',
+                body: 'Nytt fra oss: {{title}}\n\n{{summary}}\n\nLes mer: {{url}}',
+                createdAt: nowIso,
+                updatedAt: nowIso
+            },
+            {
+                id: createSocialPlannerId('tpl'),
+                workspaceId: 'default',
+                category: 'inspirasjon',
+                name: 'Tips og innsikt',
+                body: '{{hook}}\n\n{{summary}}\n\n#tips #inspirasjon',
+                createdAt: nowIso,
+                updatedAt: nowIso
+            }
+        ],
+        entries: []
+    };
+}
+
+function normalizeSocialPlannerWorkspace(workspace, fallbackId = 'default') {
+    const nowIso = new Date().toISOString();
+    const candidate = (workspace && typeof workspace === 'object' && !Array.isArray(workspace)) ? workspace : {};
+    const id = normalizePlannerShortText(candidate.id || fallbackId, 60) || fallbackId;
+    return {
+        id,
+        name: normalizePlannerShortText(candidate.name || 'Workspace', 100) || 'Workspace',
+        timezone: normalizePlannerShortText(candidate.timezone || 'Europe/Oslo', 60) || 'Europe/Oslo',
+        createdAt: normalizeIsoDateTime(candidate.createdAt, nowIso),
+        updatedAt: normalizeIsoDateTime(candidate.updatedAt, nowIso)
+    };
+}
+
+function normalizeSocialPlannerAccount(account, workspaceIds = new Set(['default'])) {
+    const nowIso = new Date().toISOString();
+    const candidate = (account && typeof account === 'object' && !Array.isArray(account)) ? account : {};
+    const workspaceId = workspaceIds.has(String(candidate.workspaceId || ''))
+        ? String(candidate.workspaceId)
+        : 'default';
+
+    return {
+        id: normalizePlannerShortText(candidate.id || createSocialPlannerId('acct'), 80),
+        workspaceId,
+        platform: normalizePlannerPlatform(candidate.platform),
+        displayName: normalizePlannerShortText(candidate.displayName || '', 120),
+        externalAccountId: normalizePlannerShortText(candidate.externalAccountId || '', 180),
+        status: normalizePlannerShortText(candidate.status || 'active', 30).toLowerCase() || 'active',
+        createdAt: normalizeIsoDateTime(candidate.createdAt, nowIso),
+        updatedAt: normalizeIsoDateTime(candidate.updatedAt, nowIso)
+    };
+}
+
+function normalizeSocialPlannerTemplate(template, workspaceIds = new Set(['default'])) {
+    const nowIso = new Date().toISOString();
+    const candidate = (template && typeof template === 'object' && !Array.isArray(template)) ? template : {};
+    const workspaceId = workspaceIds.has(String(candidate.workspaceId || ''))
+        ? String(candidate.workspaceId)
+        : 'default';
+    const category = normalizePlannerShortText(candidate.category || 'generelt', 40).toLowerCase() || 'generelt';
+
+    return {
+        id: normalizePlannerShortText(candidate.id || createSocialPlannerId('tpl'), 80),
+        workspaceId,
+        category,
+        name: normalizePlannerShortText(candidate.name || 'Template', 120) || 'Template',
+        body: normalizePlannerText(candidate.body || '', 5000),
+        createdAt: normalizeIsoDateTime(candidate.createdAt, nowIso),
+        updatedAt: normalizeIsoDateTime(candidate.updatedAt, nowIso)
+    };
+}
+
+function normalizeSocialPlannerMetrics(metrics) {
+    const source = (metrics && typeof metrics === 'object' && !Array.isArray(metrics)) ? metrics : {};
+    const toInt = (value) => {
+        const parsed = Number.parseInt(value, 10);
+        return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
+    };
+
+    return {
+        likes: toInt(source.likes),
+        comments: toInt(source.comments),
+        shares: toInt(source.shares),
+        reach: toInt(source.reach),
+        clicks: toInt(source.clicks)
+    };
+}
+
+function normalizeSocialPlannerEntry(entry, workspaceIds = new Set(['default']), accountIds = new Set()) {
+    const nowIso = new Date().toISOString();
+    const candidate = (entry && typeof entry === 'object' && !Array.isArray(entry)) ? entry : {};
+    const workspaceId = workspaceIds.has(String(candidate.workspaceId || ''))
+        ? String(candidate.workspaceId)
+        : 'default';
+    const targetAccountIdsRaw = Array.isArray(candidate.targetAccountIds) ? candidate.targetAccountIds : [];
+    const targetAccountIds = [];
+    const seenAccountIds = new Set();
+    targetAccountIdsRaw.forEach((value) => {
+        const id = normalizePlannerShortText(value, 80);
+        if (!id || seenAccountIds.has(id)) return;
+        if (accountIds.size > 0 && !accountIds.has(id)) return;
+        seenAccountIds.add(id);
+        targetAccountIds.push(id);
+    });
+
+    const status = normalizePlannerStatus(candidate.status);
+    const scheduledFor = normalizePlannerText(candidate.scheduledFor || '', 40);
+
+    return {
+        id: normalizePlannerShortText(candidate.id || createSocialPlannerId('entry'), 80),
+        workspaceId,
+        title: normalizePlannerShortText(candidate.title || 'Uten tittel', 180) || 'Uten tittel',
+        masterText: normalizePlannerText(candidate.masterText || '', 6000),
+        variants: normalizePlannerVariants(candidate.variants || {}),
+        hashtags: normalizePlannerHashtags(candidate.hashtags || []),
+        mediaUrl: normalizePlannerUrl(candidate.mediaUrl || ''),
+        linkUrl: normalizePlannerUrl(candidate.linkUrl || ''),
+        targetAccountIds,
+        status,
+        scheduledFor: scheduledFor ? normalizeIsoDateTime(scheduledFor, nowIso) : '',
+        publishedAt: candidate.publishedAt ? normalizeIsoDateTime(candidate.publishedAt, nowIso) : '',
+        createdAt: normalizeIsoDateTime(candidate.createdAt, nowIso),
+        updatedAt: normalizeIsoDateTime(candidate.updatedAt, nowIso),
+        lastError: normalizePlannerText(candidate.lastError || '', 1000),
+        publishLog: Array.isArray(candidate.publishLog)
+            ? candidate.publishLog.slice(-50).map((row) => ({
+                at: normalizeIsoDateTime(row?.at || nowIso, nowIso),
+                accountId: normalizePlannerShortText(row?.accountId || '', 80),
+                platform: normalizePlannerPlatform(row?.platform || 'facebook'),
+                status: normalizePlannerShortText(row?.status || 'unknown', 40),
+                details: normalizePlannerText(row?.details || '', 500)
+            }))
+            : [],
+        metrics: normalizeSocialPlannerMetrics(candidate.metrics || {})
+    };
+}
+
+function normalizeSocialPlannerData(rawData) {
+    const source = (rawData && typeof rawData === 'object' && !Array.isArray(rawData))
+        ? rawData
+        : createDefaultSocialPlannerData();
+    const defaults = createDefaultSocialPlannerData();
+    const rawWorkspaces = Array.isArray(source.workspaces) ? source.workspaces : defaults.workspaces;
+    const workspaceMap = new Map();
+
+    rawWorkspaces.forEach((workspace) => {
+        const normalized = normalizeSocialPlannerWorkspace(workspace);
+        if (!workspaceMap.has(normalized.id)) {
+            workspaceMap.set(normalized.id, normalized);
+        }
+    });
+
+    if (!workspaceMap.has('default')) {
+        workspaceMap.set('default', normalizeSocialPlannerWorkspace(defaults.workspaces[0], 'default'));
+    }
+
+    const workspaces = Array.from(workspaceMap.values());
+    const workspaceIds = new Set(workspaces.map((workspace) => workspace.id));
+
+    const rawAccounts = Array.isArray(source.socialAccounts) ? source.socialAccounts : [];
+    const accountMap = new Map();
+    rawAccounts.forEach((account) => {
+        const normalized = normalizeSocialPlannerAccount(account, workspaceIds);
+        if (normalized.displayName && !accountMap.has(normalized.id)) {
+            accountMap.set(normalized.id, normalized);
+        }
+    });
+    const socialAccounts = Array.from(accountMap.values());
+    const accountIds = new Set(socialAccounts.map((account) => account.id));
+
+    const rawTemplates = Array.isArray(source.templates) ? source.templates : defaults.templates;
+    const templateMap = new Map();
+    rawTemplates.forEach((template) => {
+        const normalized = normalizeSocialPlannerTemplate(template, workspaceIds);
+        if (!templateMap.has(normalized.id)) {
+            templateMap.set(normalized.id, normalized);
+        }
+    });
+    const templates = Array.from(templateMap.values());
+
+    const rawEntries = Array.isArray(source.entries) ? source.entries : [];
+    const entryMap = new Map();
+    rawEntries.forEach((entry) => {
+        const normalized = normalizeSocialPlannerEntry(entry, workspaceIds, accountIds);
+        if (!entryMap.has(normalized.id)) {
+            entryMap.set(normalized.id, normalized);
+        }
+    });
+
+    const entries = Array.from(entryMap.values()).sort((a, b) => {
+        const left = new Date(a.scheduledFor || a.createdAt).getTime();
+        const right = new Date(b.scheduledFor || b.createdAt).getTime();
+        return right - left;
+    });
+
+    const activeWorkspaceIdCandidate = String(source?.settings?.activeWorkspaceId || 'default');
+    const activeWorkspaceId = workspaceIds.has(activeWorkspaceIdCandidate) ? activeWorkspaceIdCandidate : 'default';
+
+    return {
+        version: 1,
+        settings: { activeWorkspaceId },
+        workspaces,
+        socialAccounts,
+        templates,
+        entries
+    };
+}
+
+function readSocialPlannerData() {
+    const filePath = getSocialPlannerFilePath();
+    if (!fs.existsSync(filePath)) {
+        return createDefaultSocialPlannerData();
+    }
+
+    const raw = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    return normalizeSocialPlannerData(raw);
+}
+
+function writeSocialPlannerData(data) {
+    const normalized = normalizeSocialPlannerData(data);
+    fs.writeFileSync(getSocialPlannerFilePath(), JSON.stringify(normalized, null, 4), 'utf8');
+}
+
+function summarizeEntryEngagement(entry) {
+    const metrics = normalizeSocialPlannerMetrics(entry?.metrics || {});
+    return metrics.likes + metrics.comments + metrics.shares + metrics.clicks;
+}
+
+function resolveSocialPlannerDateRange(query = {}) {
+    const periodRaw = String(query.period || '').trim().toLowerCase();
+    const presetDays = SOCIAL_PLANNER_PERIOD_PRESETS[periodRaw] || SOCIAL_PLANNER_PERIOD_PRESETS['7d'];
+    const end = new Date();
+    end.setHours(23, 59, 59, 999);
+    const start = new Date(end);
+    start.setDate(start.getDate() - (presetDays - 1));
+    start.setHours(0, 0, 0, 0);
+
+    if (periodRaw === 'custom') {
+        const startRaw = String(query.startDate || '').trim();
+        const endRaw = String(query.endDate || '').trim();
+        const startCustom = new Date(`${startRaw}T00:00:00`);
+        const endCustom = new Date(`${endRaw}T23:59:59`);
+
+        if (Number.isFinite(startCustom.getTime()) && Number.isFinite(endCustom.getTime()) && startCustom <= endCustom) {
+            return {
+                period: 'custom',
+                start: startCustom,
+                end: endCustom
+            };
+        }
+    }
+
+    return {
+        period: periodRaw in SOCIAL_PLANNER_PERIOD_PRESETS ? periodRaw : '7d',
+        start,
+        end
+    };
+}
+
+function computeSocialPlannerAnalytics(data, range) {
+    const entries = Array.isArray(data?.entries) ? data.entries : [];
+    const publishedEntries = entries.filter((entry) => {
+        if (!entry?.publishedAt) return false;
+        const publishedAt = new Date(entry.publishedAt);
+        if (!Number.isFinite(publishedAt.getTime())) return false;
+        return publishedAt >= range.start && publishedAt <= range.end;
+    });
+
+    const totals = publishedEntries.reduce((acc, entry) => {
+        const metrics = normalizeSocialPlannerMetrics(entry.metrics || {});
+        acc.likes += metrics.likes;
+        acc.comments += metrics.comments;
+        acc.shares += metrics.shares;
+        acc.reach += metrics.reach;
+        acc.clicks += metrics.clicks;
+        return acc;
+    }, { likes: 0, comments: 0, shares: 0, reach: 0, clicks: 0 });
+
+    const dayBuckets = new Map();
+    const hourBuckets = new Map();
+
+    publishedEntries.forEach((entry) => {
+        const publishedAt = new Date(entry.publishedAt);
+        const dayName = publishedAt.toLocaleDateString('no-NO', { weekday: 'long' });
+        const hourKey = publishedAt.getHours();
+        const engagement = summarizeEntryEngagement(entry);
+
+        dayBuckets.set(dayName, (dayBuckets.get(dayName) || 0) + engagement);
+        hourBuckets.set(hourKey, (hourBuckets.get(hourKey) || 0) + engagement);
+    });
+
+    const bestDay = Array.from(dayBuckets.entries())
+        .sort((a, b) => b[1] - a[1])[0]?.[0] || 'Ingen data';
+    const bestHour = Array.from(hourBuckets.entries())
+        .sort((a, b) => b[1] - a[1])[0]?.[0];
+
+    const topEntries = publishedEntries
+        .map((entry) => ({
+            id: entry.id,
+            title: entry.title,
+            status: entry.status,
+            publishedAt: entry.publishedAt,
+            engagement: summarizeEntryEngagement(entry),
+            metrics: normalizeSocialPlannerMetrics(entry.metrics || {})
+        }))
+        .sort((a, b) => b.engagement - a.engagement)
+        .slice(0, 8);
+
+    return {
+        range: {
+            period: range.period,
+            startDate: range.start.toISOString().slice(0, 10),
+            endDate: range.end.toISOString().slice(0, 10)
+        },
+        overview: {
+            publishedPosts: publishedEntries.length,
+            ...totals,
+            bestDay,
+            bestHour: Number.isFinite(bestHour) ? `${String(bestHour).padStart(2, '0')}:00` : 'Ingen data'
+        },
+        topEntries
+    };
+}
+
+function buildSocialPlannerCaption(entry = {}, platform = 'facebook') {
+    const variant = String(entry?.variants?.[platform] || '').trim();
+    const master = String(entry?.masterText || '').trim();
+    const hashtags = Array.isArray(entry?.hashtags) ? entry.hashtags.join(' ') : '';
+    const linkUrl = String(entry?.linkUrl || '').trim();
+
+    return [variant || master, linkUrl, hashtags].filter(Boolean).join('\n\n').trim();
 }
 
 function normalizeSeoData(seoData) {
@@ -2951,6 +3398,1295 @@ function summarizeWebhookResponseBody(responseBody = '', limit = 180) {
     return `${normalized.slice(0, Math.max(0, limit - 1)).trim()}…`;
 }
 
+async function postPayloadToSocialWebhook(payload = {}, options = {}) {
+    const webhookUrl = String(process.env.SOCIAL_WEBHOOK_URL || '').trim();
+    if (!webhookUrl) {
+        return {
+            sent: false,
+            code: 'social_webhook_not_configured',
+            details: 'Set SOCIAL_WEBHOOK_URL to enable social auto-post.',
+            httpStatus: 200
+        };
+    }
+
+    const body = JSON.stringify(payload || {});
+    const webhookSecret = String(process.env.SOCIAL_WEBHOOK_SECRET || '').trim();
+    const requestedTimeout = Number.parseInt(process.env.SOCIAL_WEBHOOK_TIMEOUT_MS, 10);
+    const timeoutMs = Number.isFinite(requestedTimeout)
+        ? Math.max(1000, Math.min(requestedTimeout, 20000))
+        : 8000;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'User-Agent': String(options.userAgent || 'tk-design-social-autopost')
+    };
+
+    if (webhookSecret) {
+        const signature = crypto
+            .createHmac('sha256', webhookSecret)
+            .update(body)
+            .digest('hex');
+        headers['X-TK-Signature'] = signature;
+    }
+
+    try {
+        const fetch = await getFetch();
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), timeoutMs);
+        let response;
+
+        try {
+            response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers,
+                body,
+                signal: controller.signal
+            });
+        } finally {
+            clearTimeout(timeout);
+        }
+
+        if (!response.ok) {
+            const responseBody = await response.text().catch(() => '');
+            const webhookHost = resolveWebhookHost(webhookUrl);
+            const hostHint = webhookHost ? ` (${webhookHost})` : '';
+
+            if (response.status === 404) {
+                return {
+                    sent: false,
+                    error: 'Social webhook failed',
+                    code: 'social_webhook_not_found',
+                    details: `Webhook URL returned 404${hostHint}. The endpoint is likely deleted or inactive. Update SOCIAL_WEBHOOK_URL in server environment variables.`,
+                    httpStatus: 502
+                };
+            }
+
+            const providerMessage = summarizeWebhookResponseBody(responseBody);
+            const providerHint = providerMessage ? ` Provider response: ${providerMessage}` : '';
+            return {
+                sent: false,
+                error: 'Social webhook failed',
+                code: 'social_webhook_http_error',
+                details: `Webhook responded with ${response.status}${hostHint}.${providerHint}`,
+                httpStatus: 502
+            };
+        }
+
+        return {
+            sent: true,
+            httpStatus: 200
+        };
+    } catch (error) {
+        if (error?.name === 'AbortError') {
+            return {
+                sent: false,
+                error: 'Social webhook timed out',
+                code: 'social_webhook_timeout',
+                details: 'Webhook timed out while publishing.',
+                httpStatus: 504
+            };
+        }
+
+        return {
+            sent: false,
+            error: 'Failed to trigger social auto-post',
+            code: 'social_webhook_request_failed',
+            details: String(error?.message || 'Unknown webhook error'),
+            httpStatus: 500
+        };
+    }
+}
+
+async function getSocialPlannerState() {
+    return normalizeSocialPlannerData(await readSiteDataWithFallback('socialPlanner', readSocialPlannerData));
+}
+
+async function saveSocialPlannerState(state) {
+    return persistSiteData('socialPlanner', normalizeSocialPlannerData(state), writeSocialPlannerData);
+}
+
+function resolveSocialPlannerWorkspace(state, workspaceId = '') {
+    const workspaces = Array.isArray(state?.workspaces) ? state.workspaces : [];
+    const targetId = String(workspaceId || state?.settings?.activeWorkspaceId || 'default');
+    return workspaces.find((workspace) => workspace.id === targetId) || workspaces[0] || { id: 'default', name: 'TK-design', timezone: 'Europe/Oslo' };
+}
+
+function normalizeSocialPlannerWorkspaceId(value, fallback = 'default') {
+    const normalized = normalizePlannerShortText(value || fallback, 60)
+        .toLowerCase()
+        .replace(/[^a-z0-9_-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    return normalized || fallback;
+}
+
+function resolveSocialPlannerWorkspaceId(state, requestedWorkspaceId = '') {
+    const workspaces = Array.isArray(state?.workspaces) ? state.workspaces : [];
+    if (workspaces.length === 0) {
+        return 'default';
+    }
+
+    const targetId = String(requestedWorkspaceId || state?.settings?.activeWorkspaceId || workspaces[0].id || 'default');
+    return workspaces.some((workspace) => workspace.id === targetId) ? targetId : workspaces[0].id;
+}
+
+function getSocialPlannerWorkspaceIds(state) {
+    const workspaces = Array.isArray(state?.workspaces) ? state.workspaces : [];
+    return new Set(workspaces.map((workspace) => workspace.id));
+}
+
+function getSocialPlannerAccountIds(state) {
+    const accounts = Array.isArray(state?.socialAccounts) ? state.socialAccounts : [];
+    return new Set(accounts.map((account) => account.id));
+}
+
+function withSocialPlannerMeta(state, workspaceId = '') {
+    const activeWorkspaceId = resolveSocialPlannerWorkspaceId(state, workspaceId);
+    const activeWorkspace = resolveSocialPlannerWorkspace(state, activeWorkspaceId);
+
+    return {
+        ...state,
+        settings: {
+            ...(state?.settings || {}),
+            activeWorkspaceId
+        },
+        activeWorkspace,
+        supports: {
+            platforms: SOCIAL_PLATFORMS.slice(),
+            statuses: Array.from(SOCIAL_ENTRY_STATUSES)
+        }
+    };
+}
+
+function buildSocialPlannerEntryPayload(entry, account, workspace, req) {
+    const safeReq = req || { get: () => '', protocol: 'https' };
+    const siteBase = getSiteBaseUrl(safeReq) || String(process.env.SITE_URL || '').trim();
+    const platform = normalizePlannerPlatform(account?.platform || 'facebook');
+    const caption = buildSocialPlannerCaption(entry, platform);
+    const mediaUrl = normalizePlannerUrl(entry?.mediaUrl || '');
+    const linkUrl = normalizePlannerUrl(entry?.linkUrl || '');
+
+    return {
+        event: 'social.planner.publish',
+        sentAt: new Date().toISOString(),
+        source: 'tk-design-social-planner',
+        site: siteBase,
+        workspace: {
+            id: String(workspace?.id || 'default'),
+            name: String(workspace?.name || 'Workspace')
+        },
+        account: {
+            id: String(account?.id || ''),
+            platform,
+            displayName: String(account?.displayName || ''),
+            externalAccountId: String(account?.externalAccountId || '')
+        },
+        post: {
+            id: String(entry?.id || ''),
+            title: String(entry?.title || ''),
+            caption,
+            hashtags: Array.isArray(entry?.hashtags) ? entry.hashtags : [],
+            mediaUrl,
+            linkUrl,
+            scheduledFor: String(entry?.scheduledFor || ''),
+            status: String(entry?.status || 'draft')
+        }
+    };
+}
+
+async function publishSocialPlannerEntryById(entryId, req, options = {}) {
+    const entryIdNormalized = String(entryId || '').trim();
+    if (!entryIdNormalized) {
+        return { ok: false, httpStatus: 400, error: 'Entry id is required.' };
+    }
+
+    const state = await getSocialPlannerState();
+    const entries = Array.isArray(state.entries) ? state.entries : [];
+    const entryIndex = entries.findIndex((row) => String(row.id) === entryIdNormalized);
+
+    if (entryIndex < 0) {
+        return { ok: false, httpStatus: 404, error: 'Entry not found.' };
+    }
+
+    const entry = entries[entryIndex];
+    const workspace = resolveSocialPlannerWorkspace(state, entry.workspaceId);
+    const accounts = Array.isArray(state.socialAccounts) ? state.socialAccounts : [];
+    const targetAccounts = accounts.filter((account) => entry.targetAccountIds.includes(account.id));
+    const publishLog = Array.isArray(entry.publishLog) ? entry.publishLog.slice(-50) : [];
+
+    if (targetAccounts.length === 0) {
+        entry.status = 'failed';
+        entry.lastError = 'Ingen aktive kontoer er valgt for publisering.';
+        entry.updatedAt = new Date().toISOString();
+        entries[entryIndex] = normalizeSocialPlannerEntry(entry, new Set(state.workspaces.map((w) => w.id)), new Set(accounts.map((a) => a.id)));
+        await saveSocialPlannerState(state);
+        return {
+            ok: false,
+            httpStatus: 400,
+            error: entry.lastError,
+            entry: entries[entryIndex]
+        };
+    }
+
+    entry.status = 'publishing';
+    entry.lastError = '';
+    entry.updatedAt = new Date().toISOString();
+    entries[entryIndex] = entry;
+    await saveSocialPlannerState(state);
+
+    let successCount = 0;
+    let failedCount = 0;
+    let latestError = '';
+    const delivery = [];
+
+    for (const account of targetAccounts) {
+        if (String(account.status || 'active').toLowerCase() !== 'active') {
+            failedCount += 1;
+            const details = `Konto "${account.displayName}" er ikke aktiv.`;
+            latestError = details;
+            publishLog.push({
+                at: new Date().toISOString(),
+                accountId: account.id,
+                platform: account.platform,
+                status: 'failed',
+                details
+            });
+            delivery.push({
+                accountId: account.id,
+                platform: account.platform,
+                sent: false,
+                details
+            });
+            continue;
+        }
+
+        const payload = buildSocialPlannerEntryPayload(entry, account, workspace, req);
+        const webhookResult = await postPayloadToSocialWebhook(payload, {
+            userAgent: 'tk-design-social-planner'
+        });
+
+        if (webhookResult.sent) {
+            successCount += 1;
+            publishLog.push({
+                at: new Date().toISOString(),
+                accountId: account.id,
+                platform: account.platform,
+                status: 'published',
+                details: 'Publisert via webhook'
+            });
+        } else {
+            failedCount += 1;
+            latestError = webhookResult.details || webhookResult.error || 'Publisering feilet.';
+            publishLog.push({
+                at: new Date().toISOString(),
+                accountId: account.id,
+                platform: account.platform,
+                status: 'failed',
+                details: latestError
+            });
+        }
+
+        delivery.push({
+            accountId: account.id,
+            platform: account.platform,
+            sent: !!webhookResult.sent,
+            code: webhookResult.code || '',
+            details: webhookResult.details || ''
+        });
+    }
+
+    if (successCount > 0 && failedCount === 0) {
+        entry.status = 'published';
+        entry.publishedAt = new Date().toISOString();
+        entry.lastError = '';
+    } else if (successCount > 0 && failedCount > 0) {
+        entry.status = 'partially_published';
+        entry.publishedAt = entry.publishedAt || new Date().toISOString();
+        entry.lastError = latestError || 'Delvis publiseringsfeil.';
+    } else {
+        entry.status = options.keepScheduledOnFail ? 'scheduled' : 'failed';
+        entry.lastError = latestError || 'Publisering feilet.';
+    }
+
+    entry.updatedAt = new Date().toISOString();
+    entry.publishLog = publishLog.slice(-50);
+    entries[entryIndex] = normalizeSocialPlannerEntry(entry, new Set(state.workspaces.map((w) => w.id)), new Set(accounts.map((a) => a.id)));
+    const saveResult = await saveSocialPlannerState(state);
+
+    return {
+        ok: successCount > 0,
+        httpStatus: successCount > 0 ? 200 : 502,
+        entry: entries[entryIndex],
+        delivery,
+        saveResult
+    };
+}
+
+let socialPlannerSchedulerInFlight = false;
+let socialPlannerSchedulerInterval = null;
+
+function resolveSocialPlannerSchedulerIntervalMs() {
+    const configured = Number.parseInt(process.env.SOCIAL_PLANNER_SCHEDULER_INTERVAL_MS, 10);
+    if (!Number.isFinite(configured)) {
+        return 60_000;
+    }
+
+    return Math.max(15_000, Math.min(configured, 15 * 60_000));
+}
+
+function createSocialPlannerSchedulerRequestContext() {
+    const siteUrl = String(process.env.SITE_URL || '').trim();
+    let protocol = 'https';
+    let host = '';
+
+    try {
+        const parsed = new URL(siteUrl);
+        protocol = String(parsed.protocol || 'https:').replace(':', '') || 'https';
+        host = parsed.host || '';
+    } catch (error) {
+        // Defaults are used when SITE_URL is not a valid URL.
+    }
+
+    return {
+        protocol,
+        get(headerName = '') {
+            return String(headerName || '').toLowerCase() === 'host' ? host : '';
+        }
+    };
+}
+
+async function runSocialPlannerSchedulerTick(req, options = {}) {
+    if (socialPlannerSchedulerInFlight) {
+        return {
+            ok: false,
+            skipped: true,
+            reason: 'scheduler_in_flight',
+            dueEntries: 0,
+            processed: 0,
+            published: 0,
+            failed: 0,
+            errors: []
+        };
+    }
+
+    socialPlannerSchedulerInFlight = true;
+    let dueEntries = [];
+    let processed = 0;
+    let published = 0;
+    let failed = 0;
+    const errors = [];
+
+    try {
+        const state = await getSocialPlannerState();
+        const now = Date.now();
+        const maxEntriesRaw = Number.parseInt(options?.maxEntries, 10);
+        const maxEntries = Number.isFinite(maxEntriesRaw)
+            ? Math.max(1, Math.min(maxEntriesRaw, 50))
+            : 10;
+
+        dueEntries = (Array.isArray(state.entries) ? state.entries : [])
+            .filter((entry) => entry.status === 'scheduled' && entry.scheduledFor && Number.isFinite(new Date(entry.scheduledFor).getTime()) && new Date(entry.scheduledFor).getTime() <= now)
+            .sort((a, b) => new Date(a.scheduledFor).getTime() - new Date(b.scheduledFor).getTime())
+            .slice(0, maxEntries);
+
+        for (const entry of dueEntries) {
+            try {
+                const publishResult = await publishSocialPlannerEntryById(entry.id, req, { keepScheduledOnFail: false });
+                processed += 1;
+                if (publishResult.ok) {
+                    published += 1;
+                } else {
+                    failed += 1;
+                }
+            } catch (error) {
+                processed += 1;
+                failed += 1;
+                errors.push({
+                    entryId: entry.id,
+                    error: String(error?.message || error)
+                });
+                console.error('[Social Planner] Scheduler publish error:', error);
+            }
+        }
+
+        return {
+            ok: true,
+            skipped: false,
+            dueEntries: dueEntries.length,
+            processed,
+            published,
+            failed,
+            errors
+        };
+    } catch (error) {
+        errors.push({
+            error: String(error?.message || error)
+        });
+        console.error('[Social Planner] Scheduler tick failed:', error);
+        return {
+            ok: false,
+            skipped: false,
+            dueEntries: dueEntries.length,
+            processed,
+            published,
+            failed,
+            errors
+        };
+    } finally {
+        socialPlannerSchedulerInFlight = false;
+    }
+}
+
+function startSocialPlannerSchedulerLoop() {
+    if (socialPlannerSchedulerInterval) {
+        return {
+            started: false,
+            enabled: true,
+            intervalMs: resolveSocialPlannerSchedulerIntervalMs()
+        };
+    }
+
+    const schedulerEnabled = String(process.env.SOCIAL_PLANNER_SCHEDULER_ENABLED || 'true').trim().toLowerCase() !== 'false';
+    if (!schedulerEnabled) {
+        return {
+            started: false,
+            enabled: false,
+            intervalMs: 0
+        };
+    }
+
+    const intervalMs = resolveSocialPlannerSchedulerIntervalMs();
+    const requestContext = createSocialPlannerSchedulerRequestContext();
+    socialPlannerSchedulerInterval = setInterval(() => {
+        runSocialPlannerSchedulerTick(requestContext, { maxEntries: 10 }).catch((error) => {
+            console.error('[Social Planner] Scheduler interval failed:', error);
+        });
+    }, intervalMs);
+
+    if (typeof socialPlannerSchedulerInterval.unref === 'function') {
+        socialPlannerSchedulerInterval.unref();
+    }
+
+    runSocialPlannerSchedulerTick(requestContext, { maxEntries: 10 }).catch((error) => {
+        console.error('[Social Planner] Scheduler warmup failed:', error);
+    });
+
+    return {
+        started: true,
+        enabled: true,
+        intervalMs
+    };
+}
+
+function parseBooleanFlag(value, fallback = false) {
+    const normalized = String(value ?? '').trim().toLowerCase();
+    if (!normalized) {
+        return fallback;
+    }
+    if (['1', 'true', 'yes', 'on'].includes(normalized)) {
+        return true;
+    }
+    if (['0', 'false', 'no', 'off'].includes(normalized)) {
+        return false;
+    }
+    return fallback;
+}
+
+function buildSocialPlannerWorkspaceScopedState(state, workspaceId = '') {
+    const activeWorkspaceId = resolveSocialPlannerWorkspaceId(state, workspaceId);
+    return {
+        ...state,
+        socialAccounts: (Array.isArray(state?.socialAccounts) ? state.socialAccounts : [])
+            .filter((account) => account.workspaceId === activeWorkspaceId),
+        templates: (Array.isArray(state?.templates) ? state.templates : [])
+            .filter((template) => template.workspaceId === activeWorkspaceId),
+        entries: (Array.isArray(state?.entries) ? state.entries : [])
+            .filter((entry) => entry.workspaceId === activeWorkspaceId)
+    };
+}
+
+app.get('/api/social-planner', async (req, res) => {
+    try {
+        const state = await getSocialPlannerState();
+        const requestedWorkspaceId = String(req.query.workspaceId || '').trim();
+        const scope = String(req.query.scope || 'all').trim().toLowerCase();
+        const shouldRunScheduler = parseBooleanFlag(req.query.runScheduler, false);
+
+        let scheduler = null;
+        if (shouldRunScheduler) {
+            scheduler = await runSocialPlannerSchedulerTick(req, {
+                maxEntries: req.query.maxEntries
+            });
+        }
+
+        const workspaceId = resolveSocialPlannerWorkspaceId(state, requestedWorkspaceId);
+        const responseState = scope === 'workspace'
+            ? buildSocialPlannerWorkspaceScopedState(state, workspaceId)
+            : state;
+
+        res.json({
+            success: true,
+            state: withSocialPlannerMeta(responseState, workspaceId),
+            scheduler
+        });
+    } catch (error) {
+        console.error('[Social Planner] Failed to read state:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Kunne ikke hente social planner data.',
+            details: error.message
+        });
+    }
+});
+
+app.put('/api/social-planner', async (req, res) => {
+    const incoming = req.body;
+    if (!incoming || typeof incoming !== 'object' || Array.isArray(incoming)) {
+        return res.status(400).json({
+            success: false,
+            error: 'Ugyldig payload.'
+        });
+    }
+
+    try {
+        const currentState = await getSocialPlannerState();
+        const merged = normalizeSocialPlannerData({
+            ...currentState,
+            ...incoming,
+            settings: {
+                ...(currentState.settings || {}),
+                ...(incoming.settings || {})
+            }
+        });
+        const saveResult = await saveSocialPlannerState(merged);
+        res.json({
+            success: true,
+            state: withSocialPlannerMeta(merged, merged?.settings?.activeWorkspaceId || 'default'),
+            ...saveResult
+        });
+    } catch (error) {
+        console.error('[Social Planner] Failed to save state:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Kunne ikke lagre social planner data.',
+            details: error.message
+        });
+    }
+});
+
+app.patch('/api/social-planner/settings', async (req, res) => {
+    try {
+        const state = await getSocialPlannerState();
+        const activeWorkspaceId = resolveSocialPlannerWorkspaceId(state, req.body?.activeWorkspaceId);
+        state.settings = {
+            ...(state.settings || {}),
+            activeWorkspaceId
+        };
+        const saveResult = await saveSocialPlannerState(state);
+        res.json({
+            success: true,
+            settings: state.settings,
+            ...saveResult
+        });
+    } catch (error) {
+        console.error('[Social Planner] Failed to update settings:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Kunne ikke oppdatere innstillinger.',
+            details: error.message
+        });
+    }
+});
+
+app.post('/api/social-planner/workspaces', async (req, res) => {
+    try {
+        const state = await getSocialPlannerState();
+        state.settings = { ...(state.settings || {}) };
+        state.workspaces = Array.isArray(state.workspaces) ? state.workspaces : [];
+        const nowIso = new Date().toISOString();
+        const workspaceIds = getSocialPlannerWorkspaceIds(state);
+        const name = normalizePlannerShortText(req.body?.name || '', 100);
+        const timezone = normalizePlannerShortText(req.body?.timezone || 'Europe/Oslo', 60) || 'Europe/Oslo';
+        const requestedId = normalizeSocialPlannerWorkspaceId(req.body?.id, '');
+        const fallbackId = createSocialPlannerId('ws');
+        const baseId = requestedId || normalizeSocialPlannerWorkspaceId(name, fallbackId);
+        let uniqueId = baseId;
+        let suffix = 1;
+
+        while (workspaceIds.has(uniqueId)) {
+            const suffixPart = `-${suffix}`;
+            const trimmedBaseId = baseId.slice(0, Math.max(1, 60 - suffixPart.length));
+            uniqueId = `${trimmedBaseId}${suffixPart}`;
+            suffix += 1;
+        }
+
+        const workspace = normalizeSocialPlannerWorkspace({
+            id: uniqueId,
+            name: name || `Workspace ${state.workspaces.length + 1}`,
+            timezone,
+            createdAt: nowIso,
+            updatedAt: nowIso
+        }, uniqueId);
+
+        state.workspaces.push(workspace);
+        if (!state.settings.activeWorkspaceId || parseBooleanFlag(req.body?.setActive, true)) {
+            state.settings.activeWorkspaceId = workspace.id;
+        }
+
+        const saveResult = await saveSocialPlannerState(state);
+        res.status(201).json({
+            success: true,
+            workspace,
+            state: withSocialPlannerMeta(state, state.settings.activeWorkspaceId),
+            ...saveResult
+        });
+    } catch (error) {
+        console.error('[Social Planner] Failed to create workspace:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Kunne ikke opprette workspace.',
+            details: error.message
+        });
+    }
+});
+
+app.patch('/api/social-planner/workspaces/:workspaceId', async (req, res) => {
+    const workspaceId = String(req.params.workspaceId || '').trim();
+    if (!workspaceId) {
+        return res.status(400).json({
+            success: false,
+            error: 'Workspace id mangler.'
+        });
+    }
+
+    try {
+        const state = await getSocialPlannerState();
+        state.settings = { ...(state.settings || {}) };
+        state.workspaces = Array.isArray(state.workspaces) ? state.workspaces : [];
+        const index = state.workspaces.findIndex((workspace) => workspace.id === workspaceId);
+
+        if (index < 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'Workspace finnes ikke.'
+            });
+        }
+
+        const current = state.workspaces[index];
+        const nextWorkspace = normalizeSocialPlannerWorkspace({
+            ...current,
+            name: req.body?.name ?? current.name,
+            timezone: req.body?.timezone ?? current.timezone,
+            updatedAt: new Date().toISOString()
+        }, current.id);
+
+        state.workspaces[index] = nextWorkspace;
+        if (parseBooleanFlag(req.body?.setActive, false)) {
+            state.settings.activeWorkspaceId = nextWorkspace.id;
+        }
+
+        const saveResult = await saveSocialPlannerState(state);
+        res.json({
+            success: true,
+            workspace: nextWorkspace,
+            state: withSocialPlannerMeta(state, state.settings.activeWorkspaceId),
+            ...saveResult
+        });
+    } catch (error) {
+        console.error('[Social Planner] Failed to update workspace:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Kunne ikke oppdatere workspace.',
+            details: error.message
+        });
+    }
+});
+
+app.delete('/api/social-planner/workspaces/:workspaceId', async (req, res) => {
+    const workspaceId = String(req.params.workspaceId || '').trim();
+    if (!workspaceId) {
+        return res.status(400).json({
+            success: false,
+            error: 'Workspace id mangler.'
+        });
+    }
+
+    try {
+        const state = await getSocialPlannerState();
+        state.settings = { ...(state.settings || {}) };
+        state.workspaces = Array.isArray(state.workspaces) ? state.workspaces : [];
+        state.socialAccounts = Array.isArray(state.socialAccounts) ? state.socialAccounts : [];
+        state.templates = Array.isArray(state.templates) ? state.templates : [];
+        state.entries = Array.isArray(state.entries) ? state.entries : [];
+
+        const workspaceIndex = state.workspaces.findIndex((workspace) => workspace.id === workspaceId);
+        if (workspaceIndex < 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'Workspace finnes ikke.'
+            });
+        }
+
+        const [removedWorkspace] = state.workspaces.splice(workspaceIndex, 1);
+        const removedAccountsCount = state.socialAccounts.filter((account) => account.workspaceId === workspaceId).length;
+        const removedTemplatesCount = state.templates.filter((template) => template.workspaceId === workspaceId).length;
+        const removedEntriesCount = state.entries.filter((entry) => entry.workspaceId === workspaceId).length;
+        state.socialAccounts = state.socialAccounts.filter((account) => account.workspaceId !== workspaceId);
+        state.templates = state.templates.filter((template) => template.workspaceId !== workspaceId);
+        state.entries = state.entries.filter((entry) => entry.workspaceId !== workspaceId);
+
+        if (state.workspaces.length === 0) {
+            state.workspaces = createDefaultSocialPlannerData().workspaces;
+        }
+
+        if (!state.workspaces.some((workspace) => workspace.id === state.settings.activeWorkspaceId)) {
+            state.settings.activeWorkspaceId = state.workspaces[0].id;
+        }
+
+        const saveResult = await saveSocialPlannerState(state);
+        res.json({
+            success: true,
+            removedWorkspaceId: removedWorkspace.id,
+            removedAccountsCount,
+            removedTemplatesCount,
+            removedEntriesCount,
+            state: withSocialPlannerMeta(state, state.settings.activeWorkspaceId),
+            ...saveResult
+        });
+    } catch (error) {
+        console.error('[Social Planner] Failed to delete workspace:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Kunne ikke slette workspace.',
+            details: error.message
+        });
+    }
+});
+
+app.post('/api/social-planner/accounts', async (req, res) => {
+    try {
+        const state = await getSocialPlannerState();
+        state.socialAccounts = Array.isArray(state.socialAccounts) ? state.socialAccounts : [];
+        const workspaceId = resolveSocialPlannerWorkspaceId(state, req.body?.workspaceId);
+        const workspaceIds = getSocialPlannerWorkspaceIds(state);
+        const nowIso = new Date().toISOString();
+        let account = normalizeSocialPlannerAccount({
+            id: req.body?.id || createSocialPlannerId('acct'),
+            workspaceId,
+            platform: req.body?.platform,
+            displayName: req.body?.displayName,
+            externalAccountId: req.body?.externalAccountId,
+            status: req.body?.status || 'active',
+            createdAt: nowIso,
+            updatedAt: nowIso
+        }, workspaceIds);
+
+        if (!account.displayName) {
+            return res.status(400).json({
+                success: false,
+                error: 'displayName er påkrevd.'
+            });
+        }
+
+        const accountIds = getSocialPlannerAccountIds(state);
+        if (accountIds.has(account.id)) {
+            account = normalizeSocialPlannerAccount({
+                ...account,
+                id: createSocialPlannerId('acct')
+            }, workspaceIds);
+        }
+
+        state.socialAccounts.push(account);
+        const saveResult = await saveSocialPlannerState(state);
+        res.status(201).json({
+            success: true,
+            account,
+            ...saveResult
+        });
+    } catch (error) {
+        console.error('[Social Planner] Failed to create account:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Kunne ikke opprette konto.',
+            details: error.message
+        });
+    }
+});
+
+app.patch('/api/social-planner/accounts/:accountId', async (req, res) => {
+    const accountId = String(req.params.accountId || '').trim();
+    if (!accountId) {
+        return res.status(400).json({
+            success: false,
+            error: 'Account id mangler.'
+        });
+    }
+
+    try {
+        const state = await getSocialPlannerState();
+        state.socialAccounts = Array.isArray(state.socialAccounts) ? state.socialAccounts : [];
+        const index = state.socialAccounts.findIndex((account) => account.id === accountId);
+        if (index < 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'Konto finnes ikke.'
+            });
+        }
+
+        const current = state.socialAccounts[index];
+        const workspaceId = resolveSocialPlannerWorkspaceId(state, req.body?.workspaceId || current.workspaceId);
+        const workspaceIds = getSocialPlannerWorkspaceIds(state);
+        const nextAccount = normalizeSocialPlannerAccount({
+            ...current,
+            ...req.body,
+            id: current.id,
+            workspaceId,
+            createdAt: current.createdAt,
+            updatedAt: new Date().toISOString()
+        }, workspaceIds);
+
+        if (!nextAccount.displayName) {
+            return res.status(400).json({
+                success: false,
+                error: 'displayName er påkrevd.'
+            });
+        }
+
+        state.socialAccounts[index] = nextAccount;
+        const saveResult = await saveSocialPlannerState(state);
+        res.json({
+            success: true,
+            account: nextAccount,
+            ...saveResult
+        });
+    } catch (error) {
+        console.error('[Social Planner] Failed to update account:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Kunne ikke oppdatere konto.',
+            details: error.message
+        });
+    }
+});
+
+app.delete('/api/social-planner/accounts/:accountId', async (req, res) => {
+    const accountId = String(req.params.accountId || '').trim();
+    if (!accountId) {
+        return res.status(400).json({
+            success: false,
+            error: 'Account id mangler.'
+        });
+    }
+
+    try {
+        const state = await getSocialPlannerState();
+        state.socialAccounts = Array.isArray(state.socialAccounts) ? state.socialAccounts : [];
+        state.entries = Array.isArray(state.entries) ? state.entries : [];
+        const index = state.socialAccounts.findIndex((account) => account.id === accountId);
+        if (index < 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'Konto finnes ikke.'
+            });
+        }
+
+        const [removedAccount] = state.socialAccounts.splice(index, 1);
+        const workspaceIds = getSocialPlannerWorkspaceIds(state);
+        const accountIds = getSocialPlannerAccountIds(state);
+        let updatedEntries = 0;
+
+        state.entries = state.entries.map((entry) => {
+            if (!Array.isArray(entry.targetAccountIds) || !entry.targetAccountIds.includes(accountId)) {
+                return entry;
+            }
+
+            updatedEntries += 1;
+            return normalizeSocialPlannerEntry({
+                ...entry,
+                targetAccountIds: entry.targetAccountIds.filter((id) => id !== accountId),
+                updatedAt: new Date().toISOString()
+            }, workspaceIds, accountIds);
+        });
+
+        const saveResult = await saveSocialPlannerState(state);
+        res.json({
+            success: true,
+            removedAccountId: removedAccount.id,
+            updatedEntries,
+            ...saveResult
+        });
+    } catch (error) {
+        console.error('[Social Planner] Failed to delete account:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Kunne ikke slette konto.',
+            details: error.message
+        });
+    }
+});
+
+app.post('/api/social-planner/templates', async (req, res) => {
+    try {
+        const state = await getSocialPlannerState();
+        state.templates = Array.isArray(state.templates) ? state.templates : [];
+        const workspaceId = resolveSocialPlannerWorkspaceId(state, req.body?.workspaceId);
+        const workspaceIds = getSocialPlannerWorkspaceIds(state);
+        const nowIso = new Date().toISOString();
+        const template = normalizeSocialPlannerTemplate({
+            id: req.body?.id || createSocialPlannerId('tpl'),
+            workspaceId,
+            category: req.body?.category,
+            name: req.body?.name,
+            body: req.body?.body,
+            createdAt: nowIso,
+            updatedAt: nowIso
+        }, workspaceIds);
+
+        state.templates.push(template);
+        const saveResult = await saveSocialPlannerState(state);
+        res.status(201).json({
+            success: true,
+            template,
+            ...saveResult
+        });
+    } catch (error) {
+        console.error('[Social Planner] Failed to create template:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Kunne ikke opprette mal.',
+            details: error.message
+        });
+    }
+});
+
+app.patch('/api/social-planner/templates/:templateId', async (req, res) => {
+    const templateId = String(req.params.templateId || '').trim();
+    if (!templateId) {
+        return res.status(400).json({
+            success: false,
+            error: 'Template id mangler.'
+        });
+    }
+
+    try {
+        const state = await getSocialPlannerState();
+        state.templates = Array.isArray(state.templates) ? state.templates : [];
+        const index = state.templates.findIndex((template) => template.id === templateId);
+        if (index < 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'Mal finnes ikke.'
+            });
+        }
+
+        const current = state.templates[index];
+        const workspaceId = resolveSocialPlannerWorkspaceId(state, req.body?.workspaceId || current.workspaceId);
+        const workspaceIds = getSocialPlannerWorkspaceIds(state);
+        const nextTemplate = normalizeSocialPlannerTemplate({
+            ...current,
+            ...req.body,
+            id: current.id,
+            workspaceId,
+            createdAt: current.createdAt,
+            updatedAt: new Date().toISOString()
+        }, workspaceIds);
+
+        state.templates[index] = nextTemplate;
+        const saveResult = await saveSocialPlannerState(state);
+        res.json({
+            success: true,
+            template: nextTemplate,
+            ...saveResult
+        });
+    } catch (error) {
+        console.error('[Social Planner] Failed to update template:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Kunne ikke oppdatere mal.',
+            details: error.message
+        });
+    }
+});
+
+app.delete('/api/social-planner/templates/:templateId', async (req, res) => {
+    const templateId = String(req.params.templateId || '').trim();
+    if (!templateId) {
+        return res.status(400).json({
+            success: false,
+            error: 'Template id mangler.'
+        });
+    }
+
+    try {
+        const state = await getSocialPlannerState();
+        state.templates = Array.isArray(state.templates) ? state.templates : [];
+        const index = state.templates.findIndex((template) => template.id === templateId);
+        if (index < 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'Mal finnes ikke.'
+            });
+        }
+
+        const [removedTemplate] = state.templates.splice(index, 1);
+        const saveResult = await saveSocialPlannerState(state);
+        res.json({
+            success: true,
+            removedTemplateId: removedTemplate.id,
+            ...saveResult
+        });
+    } catch (error) {
+        console.error('[Social Planner] Failed to delete template:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Kunne ikke slette mal.',
+            details: error.message
+        });
+    }
+});
+
+app.post('/api/social-planner/entries', async (req, res) => {
+    try {
+        const state = await getSocialPlannerState();
+        state.entries = Array.isArray(state.entries) ? state.entries : [];
+        const workspaceIds = getSocialPlannerWorkspaceIds(state);
+        const accountIds = getSocialPlannerAccountIds(state);
+        const workspaceId = resolveSocialPlannerWorkspaceId(state, req.body?.workspaceId);
+        const nowIso = new Date().toISOString();
+        const desiredStatus = normalizePlannerStatus(req.body?.status || (req.body?.scheduledFor ? 'scheduled' : 'draft'));
+        const entry = normalizeSocialPlannerEntry({
+            ...req.body,
+            id: req.body?.id || createSocialPlannerId('entry'),
+            workspaceId,
+            status: desiredStatus,
+            createdAt: nowIso,
+            updatedAt: nowIso,
+            publishedAt: desiredStatus === 'published' ? (req.body?.publishedAt || nowIso) : (req.body?.publishedAt || '')
+        }, workspaceIds, accountIds);
+
+        if (entry.status === 'scheduled' && !entry.scheduledFor) {
+            return res.status(400).json({
+                success: false,
+                error: 'scheduledFor er påkrevd når status er scheduled.'
+            });
+        }
+
+        state.entries.push(entry);
+        const saveResult = await saveSocialPlannerState(state);
+        const publishNow = parseBooleanFlag(req.body?.publishNow, false);
+
+        if (publishNow) {
+            const publishResult = await publishSocialPlannerEntryById(entry.id, req, { keepScheduledOnFail: false });
+            return res.status(Number.isFinite(publishResult.httpStatus) ? publishResult.httpStatus : 500).json({
+                success: !!publishResult.ok,
+                entry: publishResult.entry || entry,
+                delivery: publishResult.delivery || [],
+                code: publishResult.ok ? 'published' : 'publish_failed',
+                ...saveResult
+            });
+        }
+
+        res.status(201).json({
+            success: true,
+            entry,
+            ...saveResult
+        });
+    } catch (error) {
+        console.error('[Social Planner] Failed to create entry:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Kunne ikke opprette innlegg.',
+            details: error.message
+        });
+    }
+});
+
+app.patch('/api/social-planner/entries/:entryId', async (req, res) => {
+    const entryId = String(req.params.entryId || '').trim();
+    if (!entryId) {
+        return res.status(400).json({
+            success: false,
+            error: 'Entry id mangler.'
+        });
+    }
+
+    try {
+        const state = await getSocialPlannerState();
+        state.entries = Array.isArray(state.entries) ? state.entries : [];
+        const index = state.entries.findIndex((entry) => entry.id === entryId);
+        if (index < 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'Innlegg finnes ikke.'
+            });
+        }
+
+        const current = state.entries[index];
+        const workspaceIds = getSocialPlannerWorkspaceIds(state);
+        const accountIds = getSocialPlannerAccountIds(state);
+        const workspaceId = resolveSocialPlannerWorkspaceId(state, req.body?.workspaceId || current.workspaceId);
+        const desiredStatus = req.body?.status ? normalizePlannerStatus(req.body.status) : current.status;
+        const nextEntry = normalizeSocialPlannerEntry({
+            ...current,
+            ...req.body,
+            id: current.id,
+            workspaceId,
+            status: desiredStatus,
+            createdAt: current.createdAt,
+            updatedAt: new Date().toISOString(),
+            publishedAt: desiredStatus === 'published'
+                ? (req.body?.publishedAt || current.publishedAt || new Date().toISOString())
+                : (req.body?.publishedAt ?? current.publishedAt)
+        }, workspaceIds, accountIds);
+
+        if (nextEntry.status === 'scheduled' && !nextEntry.scheduledFor) {
+            return res.status(400).json({
+                success: false,
+                error: 'scheduledFor er påkrevd når status er scheduled.'
+            });
+        }
+
+        state.entries[index] = nextEntry;
+        const saveResult = await saveSocialPlannerState(state);
+        const publishNow = parseBooleanFlag(req.body?.publishNow, false);
+
+        if (publishNow) {
+            const publishResult = await publishSocialPlannerEntryById(entryId, req, {
+                keepScheduledOnFail: parseBooleanFlag(req.body?.keepScheduledOnFail, false)
+            });
+            return res.status(Number.isFinite(publishResult.httpStatus) ? publishResult.httpStatus : 500).json({
+                success: !!publishResult.ok,
+                entry: publishResult.entry || nextEntry,
+                delivery: publishResult.delivery || [],
+                code: publishResult.ok ? 'published' : 'publish_failed',
+                ...saveResult
+            });
+        }
+
+        res.json({
+            success: true,
+            entry: nextEntry,
+            ...saveResult
+        });
+    } catch (error) {
+        console.error('[Social Planner] Failed to update entry:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Kunne ikke oppdatere innlegg.',
+            details: error.message
+        });
+    }
+});
+
+app.delete('/api/social-planner/entries/:entryId', async (req, res) => {
+    const entryId = String(req.params.entryId || '').trim();
+    if (!entryId) {
+        return res.status(400).json({
+            success: false,
+            error: 'Entry id mangler.'
+        });
+    }
+
+    try {
+        const state = await getSocialPlannerState();
+        state.entries = Array.isArray(state.entries) ? state.entries : [];
+        const index = state.entries.findIndex((entry) => entry.id === entryId);
+        if (index < 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'Innlegg finnes ikke.'
+            });
+        }
+
+        const [removedEntry] = state.entries.splice(index, 1);
+        const saveResult = await saveSocialPlannerState(state);
+        res.json({
+            success: true,
+            removedEntryId: removedEntry.id,
+            ...saveResult
+        });
+    } catch (error) {
+        console.error('[Social Planner] Failed to delete entry:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Kunne ikke slette innlegg.',
+            details: error.message
+        });
+    }
+});
+
+app.post('/api/social-planner/entries/:entryId/publish', async (req, res) => {
+    try {
+        const publishResult = await publishSocialPlannerEntryById(req.params.entryId, req, {
+            keepScheduledOnFail: parseBooleanFlag(req.body?.keepScheduledOnFail, false)
+        });
+        const statusCode = Number.isFinite(publishResult.httpStatus) ? publishResult.httpStatus : 500;
+        res.status(statusCode).json({
+            success: !!publishResult.ok,
+            entry: publishResult.entry || null,
+            delivery: publishResult.delivery || [],
+            code: publishResult.ok ? 'published' : 'publish_failed',
+            error: publishResult.error || ''
+        });
+    } catch (error) {
+        console.error('[Social Planner] Failed to publish entry:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Kunne ikke publisere innlegg.',
+            details: error.message
+        });
+    }
+});
+
+app.post('/api/social-planner/scheduler/run', async (req, res) => {
+    try {
+        const schedulerResult = await runSocialPlannerSchedulerTick(req, {
+            maxEntries: req.body?.maxEntries ?? req.query.maxEntries
+        });
+        const success = schedulerResult.ok || schedulerResult.skipped;
+        res.status(success ? 200 : 500).json({
+            success,
+            scheduler: schedulerResult
+        });
+    } catch (error) {
+        console.error('[Social Planner] Scheduler run endpoint failed:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Kunne ikke kjøre scheduler.',
+            details: error.message
+        });
+    }
+});
+
+app.get('/api/social-planner/analytics', async (req, res) => {
+    try {
+        const state = await getSocialPlannerState();
+        const workspaceScope = String(req.query.scope || 'workspace').trim().toLowerCase();
+        const workspaceId = resolveSocialPlannerWorkspaceId(state, req.query.workspaceId);
+        const scopedEntries = workspaceScope === 'all'
+            ? (Array.isArray(state.entries) ? state.entries : [])
+            : (Array.isArray(state.entries) ? state.entries : []).filter((entry) => entry.workspaceId === workspaceId);
+        const range = resolveSocialPlannerDateRange(req.query);
+        const analytics = computeSocialPlannerAnalytics({
+            ...state,
+            entries: scopedEntries
+        }, range);
+
+        res.json({
+            success: true,
+            scope: workspaceScope === 'all' ? 'all' : 'workspace',
+            workspaceId: workspaceScope === 'all' ? null : workspaceId,
+            analytics
+        });
+    } catch (error) {
+        console.error('[Social Planner] Failed to compute analytics:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Kunne ikke hente analytics.',
+            details: error.message
+        });
+    }
+});
+
 function buildSocialAutopostPayload(post = {}, req) {
     const postId = Number(post.id);
     const postUrl = resolveAbsolutePostUrl(post.link, req, postId);
@@ -3009,15 +4745,6 @@ function buildSocialAutopostPayload(post = {}, req) {
 
 app.post('/api/social/autopost', async (req, res) => {
     try {
-        const webhookUrl = String(process.env.SOCIAL_WEBHOOK_URL || '').trim();
-        if (!webhookUrl) {
-            return res.status(200).json({
-                sent: false,
-                code: 'social_webhook_not_configured',
-                details: 'Set SOCIAL_WEBHOOK_URL to enable social auto-post.'
-            });
-        }
-
         const incomingPost = req.body?.post && typeof req.body.post === 'object'
             ? req.body.post
             : req.body;
@@ -3027,75 +4754,22 @@ app.post('/api/social/autopost', async (req, res) => {
         }
 
         const payload = buildSocialAutopostPayload(incomingPost, req);
-        const body = JSON.stringify(payload);
-        const webhookSecret = String(process.env.SOCIAL_WEBHOOK_SECRET || '').trim();
-        const requestedTimeout = Number.parseInt(process.env.SOCIAL_WEBHOOK_TIMEOUT_MS, 10);
-        const timeoutMs = Number.isFinite(requestedTimeout)
-            ? Math.max(1000, Math.min(requestedTimeout, 20000))
-            : 8000;
+        const webhookResult = await postPayloadToSocialWebhook(payload, {
+            userAgent: 'tk-design-social-autopost'
+        });
 
-        const headers = {
-            'Content-Type': 'application/json',
-            'User-Agent': 'tk-design-social-autopost'
-        };
-
-        if (webhookSecret) {
-            const signature = crypto
-                .createHmac('sha256', webhookSecret)
-                .update(body)
-                .digest('hex');
-            headers['X-TK-Signature'] = signature;
-        }
-
-        const fetch = await getFetch();
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), timeoutMs);
-        let response;
-
-        try {
-            response = await fetch(webhookUrl, {
-                method: 'POST',
-                headers,
-                body,
-                signal: controller.signal
-            });
-        } finally {
-            clearTimeout(timeout);
-        }
-
-        if (!response.ok) {
-            const responseBody = await response.text().catch(() => '');
-            const webhookHost = resolveWebhookHost(webhookUrl);
-            const hostHint = webhookHost ? ` (${webhookHost})` : '';
-
-            if (response.status === 404) {
-                return res.status(502).json({
-                    sent: false,
-                    error: 'Social webhook failed',
-                    code: 'social_webhook_not_found',
-                    details: `Webhook URL returned 404${hostHint}. The endpoint is likely deleted or inactive. Update SOCIAL_WEBHOOK_URL in server environment variables.`
-                });
-            }
-
-            const providerMessage = summarizeWebhookResponseBody(responseBody);
-            const providerHint = providerMessage ? ` Provider response: ${providerMessage}` : '';
-            return res.status(502).json({
+        if (!webhookResult.sent) {
+            const statusCode = Number.isFinite(webhookResult.httpStatus) ? webhookResult.httpStatus : 500;
+            return res.status(statusCode).json({
                 sent: false,
-                error: 'Social webhook failed',
-                code: 'social_webhook_http_error',
-                details: `Webhook responded with ${response.status}${hostHint}.${providerHint}`
+                error: webhookResult.error || 'Social webhook failed',
+                code: webhookResult.code || 'social_webhook_error',
+                details: webhookResult.details || ''
             });
         }
 
-        return res.status(200).json({ sent: true });
+        return res.status(200).json({ sent: true, code: 'ok' });
     } catch (error) {
-        if (error?.name === 'AbortError') {
-            return res.status(504).json({
-                sent: false,
-                error: 'Social webhook timed out'
-            });
-        }
-
         console.error('Social auto-post error:', error);
         return res.status(500).json({
             sent: false,
@@ -3334,10 +5008,16 @@ htmlPages.forEach(page => {
     });
 });
 
-// Admin clean URL
+// Admin clean URL + single source of truth from public/admin
+const adminPublicDir = path.join(__dirname, 'public', 'admin');
 app.get('/admin/index.html', (req, res) => res.redirect(301, '/admin/'));
-app.get('/admin/', (req, res) => res.sendFile(path.join(__dirname, 'admin', 'index.html')));
+app.get('/admin/', (req, res) => res.sendFile(path.join(adminPublicDir, 'index.html')));
 app.get('/admin', (req, res) => res.redirect(301, '/admin/'));
+app.use('/admin', express.static(adminPublicDir));
+app.get('/public/admin', (req, res) => res.redirect(301, '/admin/'));
+app.get('/public/admin/', (req, res) => res.redirect(301, '/admin/'));
+app.get('/public/admin/index.html', (req, res) => res.redirect(301, '/admin/'));
+app.get('/public/admin/login.html', (req, res) => res.redirect(301, '/admin/login.html'));
 
 // SEO: Serve sitemap and robots.txt with correct content-type
 app.get('/sitemap.xml', (req, res) => {
@@ -3377,8 +5057,18 @@ app.use(express.static(path.join(__dirname)));
 if (require.main === module) {
     app.listen(PORT, () => {
         logContactPipelineConfig();
+        const schedulerStartup = startSocialPlannerSchedulerLoop();
         console.log(`CMS Server running at http://localhost:${PORT}`);
         console.log(`Admin Panel available at http://localhost:${PORT}/admin`);
+        if (schedulerStartup.enabled) {
+            if (schedulerStartup.started) {
+                console.log(`[Social Planner] Scheduler aktiv: ${schedulerStartup.intervalMs} ms intervall.`);
+            } else {
+                console.log('[Social Planner] Scheduler var allerede aktiv.');
+            }
+        } else {
+            console.log('[Social Planner] Scheduler er deaktivert via SOCIAL_PLANNER_SCHEDULER_ENABLED=false.');
+        }
     });
 }
 

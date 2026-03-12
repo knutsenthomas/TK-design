@@ -14,10 +14,16 @@ function getAdminApiUrl() {
 }
 
 const API_URL = getAdminApiUrl();
+const ADMIN_LOGIN_PATH = '/admin/login.html';
 let contentData = {};
 let blogData = [];
 let currentLang = 'no';
 let seoData = { global: {}, pages: {} };
+let socialPlannerState = null;
+let socialPlannerAnalytics = null;
+let socialPlannerLoaded = false;
+let socialPlannerLoading = false;
+const SOCIAL_PLANNER_UI_PLATFORMS = ['facebook', 'instagram', 'linkedin', 'x', 'tiktok'];
 let quill; // Define quill globally but initialize later
 
 // Section Translations
@@ -1626,7 +1632,8 @@ async function init() {
         fetchStyles(),
         fetchContent(),
         fetchBlogPosts(),
-        fetchSeo()
+        fetchSeo(),
+        refreshSocialPlannerState({ silent: true })
     ]);
 
     try {
@@ -1744,6 +1751,7 @@ function renderSeoEditor() {
     const separatorEl = document.getElementById('seo-separator');
     const keywordsEl = document.getElementById('seo-default-keywords');
     const gaIdEl = document.getElementById('seo-ga-id');
+    const blogCommentsEnabledEl = document.getElementById('seo-blog-comments-enabled');
 
     if (siteTitleEl) siteTitleEl.value = seoData.global.siteTitle || '';
     if (logoTextEl) logoTextEl.value = seoData.global.logoText || '';
@@ -1751,6 +1759,7 @@ function renderSeoEditor() {
     if (separatorEl) separatorEl.value = seoData.global.separator || '|';
     if (keywordsEl) keywordsEl.value = seoData.global.defaultKeywords || '';
     if (gaIdEl) gaIdEl.value = seoData.global.googleAnalyticsId || '';
+    if (blogCommentsEnabledEl) blogCommentsEnabledEl.checked = seoData.global.blogCommentsEnabled !== false;
 
     const pagesList = document.getElementById('seo-pages-list');
     if (!pagesList) return;
@@ -1799,7 +1808,8 @@ async function saveSeo() {
         logoImage: document.getElementById('seo-logo-image')?.value?.trim() || '',
         separator: document.getElementById('seo-separator').value,
         defaultKeywords: document.getElementById('seo-default-keywords').value,
-        googleAnalyticsId: document.getElementById('seo-ga-id').value
+        googleAnalyticsId: document.getElementById('seo-ga-id').value,
+        blogCommentsEnabled: document.getElementById('seo-blog-comments-enabled')?.checked !== false
     };
 
     const pageTitles = document.querySelectorAll('.page-seo-title');
@@ -1848,6 +1858,1543 @@ async function saveSeo() {
     }
 }
 
+function getSocialPlannerWorkspaceIdCandidate() {
+    const select = document.getElementById('sp-workspace-select');
+    if (select?.value) {
+        return String(select.value).trim();
+    }
+    return String(socialPlannerState?.settings?.activeWorkspaceId || 'default');
+}
+
+function getSocialPlannerActiveWorkspaceId() {
+    const candidate = getSocialPlannerWorkspaceIdCandidate();
+    const workspaces = Array.isArray(socialPlannerState?.workspaces) ? socialPlannerState.workspaces : [];
+    if (workspaces.some((workspace) => workspace.id === candidate)) {
+        return candidate;
+    }
+    return workspaces[0]?.id || 'default';
+}
+
+function getSocialPlannerScopedAccounts() {
+    const workspaceId = getSocialPlannerActiveWorkspaceId();
+    const accounts = Array.isArray(socialPlannerState?.socialAccounts) ? socialPlannerState.socialAccounts : [];
+    return accounts.filter((account) => account.workspaceId === workspaceId);
+}
+
+function getSocialPlannerScopedEntries() {
+    const workspaceId = getSocialPlannerActiveWorkspaceId();
+    const entries = Array.isArray(socialPlannerState?.entries) ? socialPlannerState.entries : [];
+    return entries.filter((entry) => entry.workspaceId === workspaceId);
+}
+
+function getSocialPlannerScopedTemplates() {
+    const workspaceId = getSocialPlannerActiveWorkspaceId();
+    const templates = Array.isArray(socialPlannerState?.templates) ? socialPlannerState.templates : [];
+    return templates.filter((template) => template.workspaceId === workspaceId);
+}
+
+function getSocialPlannerUiPlatforms() {
+    const supported = Array.isArray(socialPlannerState?.supports?.platforms)
+        ? socialPlannerState.supports.platforms
+        : SOCIAL_PLANNER_UI_PLATFORMS;
+    const normalized = supported
+        .map((platform) => String(platform || '').trim().toLowerCase())
+        .filter((platform) => SOCIAL_PLANNER_UI_PLATFORMS.includes(platform));
+    return normalized.length > 0 ? normalized : SOCIAL_PLANNER_UI_PLATFORMS.slice();
+}
+
+function formatPlatformLabel(platform = '') {
+    const normalized = String(platform || '').trim().toLowerCase();
+    if (normalized === 'x') return 'X';
+    if (normalized === 'tiktok') return 'TikTok';
+    if (normalized === 'linkedin') return 'LinkedIn';
+    if (normalized === 'facebook') return 'Facebook';
+    if (normalized === 'instagram') return 'Instagram';
+    return normalized || 'Platform';
+}
+
+function formatNumberForUi(value) {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return '0';
+    return new Intl.NumberFormat('nb-NO').format(number);
+}
+
+function formatSocialPlannerDateTime(value = '') {
+    const date = new Date(String(value || '').trim());
+    if (!Number.isFinite(date.getTime())) {
+        return 'Ikke satt';
+    }
+    const locale = currentLang === 'en' ? 'en-GB' : 'nb-NO';
+    return new Intl.DateTimeFormat(locale, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    }).format(date);
+}
+
+function formatSocialPlannerStatus(status = '') {
+    const normalized = String(status || '').trim().toLowerCase();
+    if (!normalized) return 'draft';
+    return normalized.replace(/_/g, ' ');
+}
+
+function toSocialPlannerStatusClass(status = '') {
+    return String(status || '')
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9_]+/g, '_') || 'draft';
+}
+
+function computeSocialPlannerEntryEngagement(entry = {}) {
+    const metrics = entry?.metrics && typeof entry.metrics === 'object' ? entry.metrics : {};
+    const likes = Number.parseInt(metrics.likes, 10) || 0;
+    const comments = Number.parseInt(metrics.comments, 10) || 0;
+    const shares = Number.parseInt(metrics.shares, 10) || 0;
+    const clicks = Number.parseInt(metrics.clicks, 10) || 0;
+    return likes + comments + shares + clicks;
+}
+
+function setSocialPlannerStatus(message, variant = 'info') {
+    const statusEl = document.getElementById('sp-status');
+    if (!statusEl) return;
+    statusEl.textContent = String(message || '');
+    statusEl.style.color = variant === 'danger'
+        ? '#b91c1c'
+        : variant === 'success'
+            ? '#065f46'
+            : '#64748b';
+}
+
+async function requestSocialPlanner(path = '', options = {}, fallbackMessage = 'Kunne ikke hente social planner-data.') {
+    const url = `${API_URL}/social-planner${path}`;
+    const headers = { ...(options.headers || {}) };
+    if (options.body && !headers['Content-Type']) {
+        headers['Content-Type'] = 'application/json';
+    }
+    const response = await fetch(url, {
+        ...options,
+        headers
+    });
+    if (!response.ok) {
+        const apiMessage = await parseApiErrorMessage(response, fallbackMessage);
+        throw new Error(apiMessage);
+    }
+    return response.json();
+}
+
+function toIsoFromLocalDateTime(value = '') {
+    const trimmed = String(value || '').trim();
+    if (!trimmed) return '';
+    const parsed = new Date(trimmed);
+    if (!Number.isFinite(parsed.getTime())) return '';
+    return parsed.toISOString();
+}
+
+function parseHashtagInput(value = '') {
+    return String(value || '')
+        .split(/[\s,]+/)
+        .map((token) => token.trim())
+        .filter(Boolean);
+}
+
+function renderSocialPlannerTemplateBody(templateBody = '', context = {}) {
+    const source = String(templateBody || '');
+    const contextMap = (context && typeof context === 'object' && !Array.isArray(context)) ? context : {};
+    return source.replace(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g, (match, key) => {
+        const lookup = String(key || '').trim().toLowerCase();
+        if (!lookup) return '';
+        if (!(lookup in contextMap)) return '';
+        return String(contextMap[lookup] ?? '');
+    });
+}
+
+function syncSocialPlannerScheduleFieldState() {
+    const statusSelect = document.getElementById('sp-entry-status');
+    const scheduleInput = document.getElementById('sp-entry-scheduled-for');
+    if (!statusSelect || !scheduleInput) return;
+
+    const isScheduled = String(statusSelect.value || '').trim() === 'scheduled';
+    scheduleInput.required = isScheduled;
+    scheduleInput.disabled = !isScheduled;
+    if (!isScheduled) {
+        scheduleInput.value = '';
+    }
+}
+
+function renderSocialPlannerWorkspaceSelect() {
+    const select = document.getElementById('sp-workspace-select');
+    if (!select) return;
+
+    const workspaces = Array.isArray(socialPlannerState?.workspaces) ? socialPlannerState.workspaces : [];
+    const activeWorkspaceId = getSocialPlannerActiveWorkspaceId();
+    select.innerHTML = '';
+
+    if (workspaces.length === 0) {
+        const option = document.createElement('option');
+        option.value = 'default';
+        option.textContent = 'default';
+        select.appendChild(option);
+        select.value = 'default';
+        return;
+    }
+
+    workspaces.forEach((workspace) => {
+        const option = document.createElement('option');
+        option.value = workspace.id;
+        option.textContent = workspace.name || workspace.id;
+        select.appendChild(option);
+    });
+
+    select.value = workspaces.some((workspace) => workspace.id === activeWorkspaceId)
+        ? activeWorkspaceId
+        : workspaces[0].id;
+}
+
+function resetSocialPlannerWorkspaceForm() {
+    const editIdInput = document.getElementById('sp-workspace-edit-id');
+    const nameInput = document.getElementById('sp-workspace-name');
+    const timezoneInput = document.getElementById('sp-workspace-timezone');
+    const submitBtn = document.getElementById('sp-workspace-submit-btn');
+
+    if (editIdInput) editIdInput.value = '';
+    if (nameInput) nameInput.value = '';
+    if (timezoneInput) timezoneInput.value = 'Europe/Oslo';
+    if (submitBtn) submitBtn.textContent = 'Opprett workspace';
+}
+
+function resetSocialPlannerTemplateForm() {
+    const editIdInput = document.getElementById('sp-template-edit-id');
+    const nameInput = document.getElementById('sp-template-name');
+    const categoryInput = document.getElementById('sp-template-category');
+    const bodyInput = document.getElementById('sp-template-body');
+    const submitBtn = document.getElementById('sp-template-submit-btn');
+
+    if (editIdInput) editIdInput.value = '';
+    if (nameInput) nameInput.value = '';
+    if (categoryInput) categoryInput.value = '';
+    if (bodyInput) bodyInput.value = '';
+    if (submitBtn) submitBtn.textContent = 'Lagre mal';
+}
+
+function resetSocialPlannerAccountForm() {
+    const form = document.getElementById('sp-account-form');
+    if (form) {
+        form.reset();
+    }
+
+    const editIdInput = document.getElementById('sp-account-edit-id');
+    const submitBtn = document.getElementById('sp-account-submit-btn');
+    if (editIdInput) editIdInput.value = '';
+    if (submitBtn) submitBtn.textContent = 'Legg til konto';
+}
+
+function getSocialPlannerEntryFormVariants() {
+    const variants = {};
+    getSocialPlannerUiPlatforms().forEach((platform) => {
+        const input = document.getElementById(`sp-entry-variant-${platform}`);
+        variants[platform] = String(input?.value || '').trim();
+    });
+    return variants;
+}
+
+function setSocialPlannerEntryFormVariants(variants = {}) {
+    const source = (variants && typeof variants === 'object' && !Array.isArray(variants)) ? variants : {};
+    getSocialPlannerUiPlatforms().forEach((platform) => {
+        const input = document.getElementById(`sp-entry-variant-${platform}`);
+        if (!input) return;
+        input.value = String(source[platform] || '');
+    });
+}
+
+function buildSocialPlannerCaptionPreview(platform = 'facebook') {
+    const variants = getSocialPlannerEntryFormVariants();
+    const masterText = String(document.getElementById('sp-entry-master-text')?.value || '').trim();
+    const linkValue = String(document.getElementById('sp-entry-link')?.value || '').trim();
+    const hashtagTokens = parseHashtagInput(document.getElementById('sp-entry-hashtags')?.value || '');
+    const hashtags = hashtagTokens.join(' ');
+    const variantText = String(variants[platform] || '').trim();
+    return [variantText || masterText, linkValue, hashtags].filter(Boolean).join('\n\n').trim();
+}
+
+function renderSocialPlannerEntryPreview() {
+    const container = document.getElementById('sp-entry-preview-grid');
+    if (!container) return;
+
+    const platforms = getSocialPlannerUiPlatforms();
+    const hasAnyText = platforms.some((platform) => buildSocialPlannerCaptionPreview(platform));
+    container.innerHTML = '';
+
+    if (!hasAnyText) {
+        const empty = document.createElement('p');
+        empty.className = 'social-planner-list-empty';
+        empty.textContent = 'Fyll ut tekst for å se preview.';
+        container.appendChild(empty);
+        return;
+    }
+
+    platforms.forEach((platform) => {
+        const caption = buildSocialPlannerCaptionPreview(platform);
+        if (!caption) return;
+
+        const card = document.createElement('article');
+        card.className = 'social-planner-preview-card';
+
+        const label = document.createElement('strong');
+        label.textContent = formatPlatformLabel(platform);
+
+        const text = document.createElement('pre');
+        text.textContent = caption;
+
+        card.appendChild(label);
+        card.appendChild(text);
+        container.appendChild(card);
+    });
+
+    if (!container.children.length) {
+        const empty = document.createElement('p');
+        empty.className = 'social-planner-list-empty';
+        empty.textContent = 'Fyll ut tekst for å se preview.';
+        container.appendChild(empty);
+    }
+}
+
+function resetSocialPlannerEntryForm() {
+    const form = document.getElementById('sp-entry-form');
+    if (form) {
+        form.reset();
+    }
+
+    const editIdInput = document.getElementById('sp-entry-edit-id');
+    const submitBtn = document.getElementById('sp-entry-submit-btn');
+    const templateSelect = document.getElementById('sp-entry-template');
+
+    if (editIdInput) editIdInput.value = '';
+    if (submitBtn) submitBtn.textContent = 'Lagre innlegg';
+    if (templateSelect) templateSelect.value = '';
+    setSocialPlannerEntryFormVariants({});
+    syncSocialPlannerScheduleFieldState();
+    renderSocialPlannerEntryPreview();
+}
+
+function setMultiSelectValues(selectElement, values = []) {
+    if (!selectElement) return;
+    const selected = new Set((Array.isArray(values) ? values : []).map((value) => String(value)));
+    Array.from(selectElement.options).forEach((option) => {
+        option.selected = selected.has(String(option.value));
+    });
+}
+
+function renderSocialPlannerWorkspaceList() {
+    const container = document.getElementById('sp-workspaces-list');
+    if (!container) return;
+
+    const workspaces = Array.isArray(socialPlannerState?.workspaces) ? socialPlannerState.workspaces : [];
+    const activeWorkspaceId = getSocialPlannerActiveWorkspaceId();
+    container.innerHTML = '';
+
+    if (workspaces.length === 0) {
+        container.className = 'social-planner-list-empty';
+        container.textContent = 'Ingen workspaces funnet.';
+        return;
+    }
+
+    container.className = 'social-planner-generic-list';
+    workspaces.forEach((workspace) => {
+        const item = document.createElement('article');
+        item.className = 'social-planner-generic-item';
+
+        const meta = document.createElement('div');
+        meta.className = 'social-planner-generic-meta';
+
+        const title = document.createElement('strong');
+        title.textContent = workspace.name || workspace.id;
+
+        const details = document.createElement('span');
+        const activeSuffix = workspace.id === activeWorkspaceId ? ' • aktiv' : '';
+        details.textContent = `${workspace.timezone || 'Europe/Oslo'}${activeSuffix}`;
+
+        meta.appendChild(title);
+        meta.appendChild(details);
+
+        const actions = document.createElement('div');
+        actions.className = 'social-planner-generic-actions';
+
+        const activateBtn = document.createElement('button');
+        activateBtn.type = 'button';
+        activateBtn.className = 'action-btn';
+        activateBtn.title = 'Sett som aktiv';
+        activateBtn.innerHTML = '<i class="fas fa-location-dot"></i>';
+        activateBtn.disabled = workspace.id === activeWorkspaceId;
+        activateBtn.addEventListener('click', () => {
+            window.changeSocialPlannerWorkspace(workspace.id);
+        });
+
+        const editBtn = document.createElement('button');
+        editBtn.type = 'button';
+        editBtn.className = 'action-btn';
+        editBtn.title = 'Rediger workspace';
+        editBtn.innerHTML = '<i class="fas fa-pen"></i>';
+        editBtn.addEventListener('click', () => {
+            window.editSocialPlannerWorkspace(workspace.id);
+        });
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'action-btn delete';
+        deleteBtn.title = 'Slett workspace';
+        deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+        deleteBtn.addEventListener('click', () => {
+            window.deleteSocialPlannerWorkspace(workspace.id);
+        });
+
+        actions.appendChild(activateBtn);
+        actions.appendChild(editBtn);
+        actions.appendChild(deleteBtn);
+
+        item.appendChild(meta);
+        item.appendChild(actions);
+        container.appendChild(item);
+    });
+}
+
+function renderSocialPlannerTemplateSelect() {
+    const select = document.getElementById('sp-entry-template');
+    if (!select) return;
+
+    const previousValue = String(select.value || '').trim();
+    const templates = getSocialPlannerScopedTemplates();
+    select.innerHTML = '';
+
+    const emptyOption = document.createElement('option');
+    emptyOption.value = '';
+    emptyOption.textContent = 'Velg mal (valgfritt)';
+    select.appendChild(emptyOption);
+
+    templates.forEach((template) => {
+        const option = document.createElement('option');
+        option.value = template.id;
+        option.textContent = `${template.name}${template.category ? ` (${template.category})` : ''}`;
+        select.appendChild(option);
+    });
+
+    if (previousValue && templates.some((template) => template.id === previousValue)) {
+        select.value = previousValue;
+    } else {
+        select.value = '';
+    }
+}
+
+function renderSocialPlannerTemplatesList() {
+    const container = document.getElementById('sp-templates-list');
+    if (!container) return;
+
+    const templates = getSocialPlannerScopedTemplates();
+    container.innerHTML = '';
+
+    if (templates.length === 0) {
+        container.className = 'social-planner-list-empty';
+        container.textContent = 'Ingen maler i dette workspace.';
+        return;
+    }
+
+    container.className = 'social-planner-generic-list';
+    templates.forEach((template) => {
+        const item = document.createElement('article');
+        item.className = 'social-planner-generic-item';
+
+        const meta = document.createElement('div');
+        meta.className = 'social-planner-generic-meta';
+
+        const title = document.createElement('strong');
+        title.textContent = template.name || template.id;
+
+        const preview = String(template.body || '')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .slice(0, 120);
+        const details = document.createElement('span');
+        details.textContent = `${template.category || 'generelt'} • ${preview || 'Ingen tekst'}`;
+
+        meta.appendChild(title);
+        meta.appendChild(details);
+
+        const actions = document.createElement('div');
+        actions.className = 'social-planner-generic-actions';
+
+        const applyBtn = document.createElement('button');
+        applyBtn.type = 'button';
+        applyBtn.className = 'action-btn';
+        applyBtn.title = 'Bruk mal';
+        applyBtn.innerHTML = '<i class="fas fa-bolt"></i>';
+        applyBtn.addEventListener('click', () => {
+            window.applySocialPlannerTemplateToEntry(template.id);
+        });
+
+        const editBtn = document.createElement('button');
+        editBtn.type = 'button';
+        editBtn.className = 'action-btn';
+        editBtn.title = 'Rediger mal';
+        editBtn.innerHTML = '<i class="fas fa-pen"></i>';
+        editBtn.addEventListener('click', () => {
+            window.editSocialPlannerTemplate(template.id);
+        });
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'action-btn delete';
+        deleteBtn.title = 'Slett mal';
+        deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+        deleteBtn.addEventListener('click', () => {
+            window.deleteSocialPlannerTemplate(template.id);
+        });
+
+        actions.appendChild(applyBtn);
+        actions.appendChild(editBtn);
+        actions.appendChild(deleteBtn);
+
+        item.appendChild(meta);
+        item.appendChild(actions);
+        container.appendChild(item);
+    });
+}
+
+function renderSocialPlannerTargetAccountOptions() {
+    const select = document.getElementById('sp-entry-target-accounts');
+    if (!select) return;
+
+    const previousSelection = new Set(Array.from(select.selectedOptions).map((option) => option.value));
+    const scopedAccounts = getSocialPlannerScopedAccounts();
+    select.innerHTML = '';
+
+    scopedAccounts.forEach((account) => {
+        const option = document.createElement('option');
+        option.value = account.id;
+        option.textContent = `${account.displayName} (${account.platform})`;
+        if (previousSelection.has(account.id)) {
+            option.selected = true;
+        }
+        select.appendChild(option);
+    });
+}
+
+function renderSocialPlannerAccounts() {
+    const container = document.getElementById('sp-accounts-list');
+    if (!container) return;
+
+    const scopedAccounts = getSocialPlannerScopedAccounts();
+    container.innerHTML = '';
+
+    if (scopedAccounts.length === 0) {
+        container.className = 'social-planner-list-empty';
+        container.textContent = 'Ingen kontoer lagt til i dette workspace.';
+        return;
+    }
+
+    container.className = 'social-planner-account-list';
+    scopedAccounts.forEach((account) => {
+        const item = document.createElement('article');
+        item.className = 'social-planner-account-item';
+
+        const meta = document.createElement('div');
+        meta.className = 'social-planner-account-meta';
+
+        const title = document.createElement('strong');
+        title.textContent = account.displayName || account.id;
+
+        const details = document.createElement('span');
+        const ext = String(account.externalAccountId || '').trim();
+        details.textContent = ext ? `${account.platform} • ${ext}` : account.platform;
+
+        meta.appendChild(title);
+        meta.appendChild(details);
+
+        const actions = document.createElement('div');
+        actions.className = 'social-planner-account-actions';
+
+        const badge = document.createElement('span');
+        badge.className = `social-planner-badge status-${toSocialPlannerStatusClass(account.status)}`;
+        badge.textContent = formatSocialPlannerStatus(account.status || 'active');
+
+        const editBtn = document.createElement('button');
+        editBtn.type = 'button';
+        editBtn.className = 'action-btn';
+        editBtn.title = 'Rediger konto';
+        editBtn.innerHTML = '<i class="fas fa-pen"></i>';
+        editBtn.addEventListener('click', () => {
+            window.editSocialPlannerAccount(account.id);
+        });
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'action-btn delete';
+        deleteBtn.title = 'Slett konto';
+        deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+        deleteBtn.addEventListener('click', () => {
+            window.deleteSocialPlannerAccount(account.id);
+        });
+
+        actions.appendChild(badge);
+        actions.appendChild(editBtn);
+        actions.appendChild(deleteBtn);
+
+        item.appendChild(meta);
+        item.appendChild(actions);
+        container.appendChild(item);
+    });
+}
+
+function renderSocialPlannerEntries() {
+    const tableBody = document.getElementById('sp-entries-body');
+    if (!tableBody) return;
+
+    const scopedEntries = getSocialPlannerScopedEntries();
+    tableBody.innerHTML = '';
+
+    if (scopedEntries.length === 0) {
+        const row = document.createElement('tr');
+        const cell = document.createElement('td');
+        cell.colSpan = 6;
+        cell.textContent = 'Ingen innlegg i dette workspace enda.';
+        row.appendChild(cell);
+        tableBody.appendChild(row);
+        return;
+    }
+
+    scopedEntries.forEach((entry) => {
+        const row = document.createElement('tr');
+
+        const titleCell = document.createElement('td');
+        const title = document.createElement('strong');
+        title.textContent = entry.title || 'Uten tittel';
+        const titleMeta = document.createElement('span');
+        titleMeta.className = 'meta';
+        titleMeta.textContent = entry.lastError ? `Feil: ${entry.lastError}` : `Oppdatert ${formatSocialPlannerDateTime(entry.updatedAt)}`;
+        titleCell.appendChild(title);
+        titleCell.appendChild(titleMeta);
+
+        const statusCell = document.createElement('td');
+        const badge = document.createElement('span');
+        badge.className = `social-planner-badge status-${toSocialPlannerStatusClass(entry.status)}`;
+        badge.textContent = formatSocialPlannerStatus(entry.status || 'draft');
+        statusCell.appendChild(badge);
+
+        const dateCell = document.createElement('td');
+        const primaryDate = entry.status === 'published' || entry.status === 'partially_published'
+            ? entry.publishedAt
+            : entry.scheduledFor;
+        dateCell.textContent = formatSocialPlannerDateTime(primaryDate);
+
+        const targetsCell = document.createElement('td');
+        targetsCell.textContent = String(Array.isArray(entry.targetAccountIds) ? entry.targetAccountIds.length : 0);
+
+        const engagementCell = document.createElement('td');
+        engagementCell.textContent = formatNumberForUi(computeSocialPlannerEntryEngagement(entry));
+
+        const actionCell = document.createElement('td');
+        actionCell.style.textAlign = 'right';
+        const actions = document.createElement('div');
+        actions.className = 'social-planner-table-actions';
+
+        const editBtn = document.createElement('button');
+        editBtn.type = 'button';
+        editBtn.className = 'action-btn';
+        editBtn.title = 'Rediger innlegg';
+        editBtn.innerHTML = '<i class="fas fa-pen"></i>';
+        editBtn.addEventListener('click', () => {
+            window.editSocialPlannerEntry(entry.id);
+        });
+
+        const publishBtn = document.createElement('button');
+        publishBtn.type = 'button';
+        publishBtn.className = 'action-btn';
+        publishBtn.title = 'Publiser nå';
+        publishBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+        publishBtn.disabled = entry.status === 'publishing';
+        publishBtn.addEventListener('click', () => {
+            window.publishSocialPlannerEntry(entry.id);
+        });
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'action-btn delete';
+        deleteBtn.title = 'Slett innlegg';
+        deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+        deleteBtn.addEventListener('click', () => {
+            window.deleteSocialPlannerEntry(entry.id);
+        });
+
+        actions.appendChild(editBtn);
+        actions.appendChild(publishBtn);
+        actions.appendChild(deleteBtn);
+        actionCell.appendChild(actions);
+
+        row.appendChild(titleCell);
+        row.appendChild(statusCell);
+        row.appendChild(dateCell);
+        row.appendChild(targetsCell);
+        row.appendChild(engagementCell);
+        row.appendChild(actionCell);
+
+        tableBody.appendChild(row);
+    });
+}
+
+function renderSocialPlannerStats() {
+    const overview = socialPlannerAnalytics?.overview || {};
+    const publishedEl = document.getElementById('sp-stat-published');
+    const reachEl = document.getElementById('sp-stat-reach');
+    const engagementEl = document.getElementById('sp-stat-engagement');
+    const bestTimeEl = document.getElementById('sp-stat-best-time');
+
+    const likes = Number.parseInt(overview.likes, 10) || 0;
+    const comments = Number.parseInt(overview.comments, 10) || 0;
+    const shares = Number.parseInt(overview.shares, 10) || 0;
+    const clicks = Number.parseInt(overview.clicks, 10) || 0;
+    const totalEngagement = likes + comments + shares + clicks;
+
+    if (publishedEl) {
+        publishedEl.textContent = formatNumberForUi(overview.publishedPosts || 0);
+    }
+    if (reachEl) {
+        reachEl.textContent = formatNumberForUi(overview.reach || 0);
+    }
+    if (engagementEl) {
+        engagementEl.textContent = formatNumberForUi(totalEngagement);
+    }
+    if (bestTimeEl) {
+        const bestDay = String(overview.bestDay || '').trim();
+        const bestHour = String(overview.bestHour || '').trim();
+        if (bestDay && bestDay !== 'Ingen data' && bestHour && bestHour !== 'Ingen data') {
+            bestTimeEl.textContent = `${bestDay}, ${bestHour}`;
+        } else {
+            bestTimeEl.textContent = 'Ingen data';
+        }
+    }
+}
+
+function renderSocialPlannerTopEntries() {
+    const container = document.getElementById('sp-top-entries');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const topEntries = Array.isArray(socialPlannerAnalytics?.topEntries) ? socialPlannerAnalytics.topEntries : [];
+    if (topEntries.length === 0) {
+        const empty = document.createElement('p');
+        empty.className = 'social-planner-list-empty';
+        empty.textContent = 'Ingen analytics-data enda.';
+        container.appendChild(empty);
+        return;
+    }
+
+    topEntries.forEach((entry) => {
+        const item = document.createElement('article');
+        item.className = 'social-planner-top-item';
+
+        const title = document.createElement('strong');
+        title.textContent = entry.title || 'Uten tittel';
+
+        const engagement = document.createElement('p');
+        engagement.className = 'meta';
+        engagement.textContent = `Engasjement: ${formatNumberForUi(entry.engagement || 0)}`;
+
+        const publishedAt = document.createElement('p');
+        publishedAt.className = 'meta';
+        publishedAt.textContent = `Publisert: ${formatSocialPlannerDateTime(entry.publishedAt)}`;
+
+        item.appendChild(title);
+        item.appendChild(engagement);
+        item.appendChild(publishedAt);
+        container.appendChild(item);
+    });
+}
+
+function renderSocialPlannerTab() {
+    renderSocialPlannerWorkspaceSelect();
+    renderSocialPlannerWorkspaceList();
+    renderSocialPlannerTemplateSelect();
+    renderSocialPlannerTemplatesList();
+    renderSocialPlannerTargetAccountOptions();
+    renderSocialPlannerAccounts();
+    renderSocialPlannerEntries();
+    renderSocialPlannerStats();
+    renderSocialPlannerTopEntries();
+    syncSocialPlannerScheduleFieldState();
+    renderSocialPlannerEntryPreview();
+}
+
+async function fetchSocialPlannerAnalytics(period = '7d', options = {}) {
+    if (!socialPlannerState) {
+        socialPlannerAnalytics = null;
+        renderSocialPlannerStats();
+        renderSocialPlannerTopEntries();
+        return null;
+    }
+
+    const safePeriod = String(period || '7d').trim() || '7d';
+    const params = new URLSearchParams({
+        scope: 'workspace',
+        workspaceId: getSocialPlannerActiveWorkspaceId(),
+        period: safePeriod
+    });
+
+    try {
+        const response = await fetch(`${API_URL}/social-planner/analytics?${params.toString()}`);
+        if (!response.ok) {
+            const apiMessage = await parseApiErrorMessage(response, 'Kunne ikke hente analytics.');
+            throw new Error(apiMessage);
+        }
+        const payload = await response.json();
+        socialPlannerAnalytics = payload?.analytics || null;
+        renderSocialPlannerStats();
+        renderSocialPlannerTopEntries();
+        return socialPlannerAnalytics;
+    } catch (error) {
+        socialPlannerAnalytics = null;
+        renderSocialPlannerStats();
+        renderSocialPlannerTopEntries();
+        if (!options.silent) {
+            setSocialPlannerStatus(
+                normalizeAdminErrorMessage(error, 'Kunne ikke hente analytics.'),
+                'danger'
+            );
+        }
+        return null;
+    }
+}
+
+async function refreshSocialPlannerState(options = {}) {
+    if (socialPlannerLoading) return;
+    socialPlannerLoading = true;
+
+    const requestedWorkspaceId = String(options.workspaceId || getSocialPlannerWorkspaceIdCandidate() || 'default');
+    const params = new URLSearchParams({
+        scope: 'all',
+        workspaceId: requestedWorkspaceId
+    });
+    if (options.runScheduler) {
+        params.set('runScheduler', 'true');
+        params.set('maxEntries', String(options.maxEntries || 10));
+    }
+
+    if (!options.silent) {
+        setSocialPlannerStatus('Laster social planner-data...');
+    }
+
+    try {
+        const payload = await requestSocialPlanner(`?${params.toString()}`, {}, 'Kunne ikke hente social planner-data.');
+        if (!payload?.success || !payload.state) {
+            throw new Error(String(payload?.error || 'Ugyldig svar fra social planner API.'));
+        }
+
+        socialPlannerState = payload.state;
+        socialPlannerLoaded = true;
+        renderSocialPlannerTab();
+
+        const selectedPeriod = document.getElementById('sp-analytics-period')?.value || '7d';
+        await fetchSocialPlannerAnalytics(selectedPeriod, { silent: true });
+
+        if (payload.scheduler && options.runScheduler) {
+            const scheduler = payload.scheduler;
+            setSocialPlannerStatus(
+                `Scheduler ferdig: ${scheduler.published || 0} publisert, ${scheduler.failed || 0} feilet (av ${scheduler.processed || 0}).`,
+                scheduler.ok ? 'success' : 'danger'
+            );
+        } else {
+            setSocialPlannerStatus(`Oppdatert ${new Date().toLocaleTimeString('nb-NO')}`, 'success');
+        }
+    } catch (error) {
+        console.error('Error refreshing social planner:', error);
+        setSocialPlannerStatus(
+            normalizeAdminErrorMessage(error, 'Kunne ikke hente social planner-data.'),
+            'danger'
+        );
+    } finally {
+        socialPlannerLoading = false;
+    }
+}
+
+window.refreshSocialPlanner = async function () {
+    await refreshSocialPlannerState({ silent: false });
+};
+
+window.changeSocialPlannerWorkspace = async function (workspaceId) {
+    const normalizedWorkspaceId = String(workspaceId || '').trim();
+    if (!normalizedWorkspaceId) return;
+
+    try {
+        await requestSocialPlanner('/settings', {
+            method: 'PATCH',
+            body: JSON.stringify({ activeWorkspaceId: normalizedWorkspaceId })
+        }, 'Kunne ikke bytte workspace.');
+
+        if (socialPlannerState) {
+            socialPlannerState.settings = {
+                ...(socialPlannerState.settings || {}),
+                activeWorkspaceId: normalizedWorkspaceId
+            };
+        }
+
+        resetSocialPlannerWorkspaceForm();
+        resetSocialPlannerTemplateForm();
+        resetSocialPlannerAccountForm();
+        resetSocialPlannerEntryForm();
+        renderSocialPlannerTab();
+        const selectedPeriod = document.getElementById('sp-analytics-period')?.value || '7d';
+        await fetchSocialPlannerAnalytics(selectedPeriod, { silent: true });
+        setSocialPlannerStatus('Workspace byttet.', 'success');
+    } catch (error) {
+        console.error('Error changing social planner workspace:', error);
+        setSocialPlannerStatus(
+            normalizeAdminErrorMessage(error, 'Kunne ikke bytte workspace.'),
+            'danger'
+        );
+    }
+};
+
+window.changeSocialPlannerAnalyticsPeriod = async function (period) {
+    const safePeriod = String(period || '').trim() || '7d';
+    await fetchSocialPlannerAnalytics(safePeriod);
+};
+
+window.resetSocialPlannerWorkspaceForm = function () {
+    resetSocialPlannerWorkspaceForm();
+};
+
+window.saveSocialPlannerWorkspace = async function (event) {
+    event.preventDefault();
+
+    const editId = String(document.getElementById('sp-workspace-edit-id')?.value || '').trim();
+    const name = String(document.getElementById('sp-workspace-name')?.value || '').trim();
+    const timezone = String(document.getElementById('sp-workspace-timezone')?.value || '').trim() || 'Europe/Oslo';
+
+    if (!name) {
+        setSocialPlannerStatus('Workspace-navn er påkrevd.', 'danger');
+        return;
+    }
+
+    try {
+        let nextWorkspaceId = getSocialPlannerActiveWorkspaceId();
+        if (editId) {
+            const payload = await requestSocialPlanner(`/workspaces/${encodeURIComponent(editId)}`, {
+                method: 'PATCH',
+                body: JSON.stringify({
+                    name,
+                    timezone
+                })
+            }, 'Kunne ikke oppdatere workspace.');
+            nextWorkspaceId = String(payload?.workspace?.id || editId);
+            setSocialPlannerStatus('Workspace oppdatert.', 'success');
+        } else {
+            const payload = await requestSocialPlanner('/workspaces', {
+                method: 'POST',
+                body: JSON.stringify({
+                    name,
+                    timezone,
+                    setActive: true
+                })
+            }, 'Kunne ikke opprette workspace.');
+            nextWorkspaceId = String(payload?.workspace?.id || nextWorkspaceId);
+            setSocialPlannerStatus('Workspace opprettet.', 'success');
+        }
+
+        resetSocialPlannerWorkspaceForm();
+        await refreshSocialPlannerState({
+            silent: true,
+            workspaceId: nextWorkspaceId
+        });
+    } catch (error) {
+        console.error('Error saving social planner workspace:', error);
+        setSocialPlannerStatus(
+            normalizeAdminErrorMessage(error, 'Kunne ikke lagre workspace.'),
+            'danger'
+        );
+    }
+};
+
+window.editSocialPlannerWorkspace = function (workspaceId) {
+    const normalizedWorkspaceId = String(workspaceId || '').trim();
+    if (!normalizedWorkspaceId) return;
+
+    const workspaces = Array.isArray(socialPlannerState?.workspaces) ? socialPlannerState.workspaces : [];
+    const workspace = workspaces.find((item) => item.id === normalizedWorkspaceId);
+    if (!workspace) {
+        setSocialPlannerStatus('Workspace ble ikke funnet.', 'danger');
+        return;
+    }
+
+    const editIdInput = document.getElementById('sp-workspace-edit-id');
+    const nameInput = document.getElementById('sp-workspace-name');
+    const timezoneInput = document.getElementById('sp-workspace-timezone');
+    const submitBtn = document.getElementById('sp-workspace-submit-btn');
+
+    if (editIdInput) editIdInput.value = workspace.id;
+    if (nameInput) nameInput.value = workspace.name || '';
+    if (timezoneInput) timezoneInput.value = workspace.timezone || 'Europe/Oslo';
+    if (submitBtn) submitBtn.textContent = 'Oppdater workspace';
+    nameInput?.focus();
+};
+
+window.deleteSocialPlannerWorkspace = async function (workspaceId) {
+    const normalizedWorkspaceId = String(workspaceId || '').trim();
+    if (!normalizedWorkspaceId) return;
+
+    const shouldDelete = await showAdminConfirm(
+        'Workspace og tilhørende kontoer, maler og innlegg blir slettet.',
+        {
+            title: 'Slette workspace?',
+            confirmText: 'Slett workspace',
+            cancelText: 'Avbryt',
+            variant: 'warning'
+        }
+    );
+    if (!shouldDelete) return;
+
+    try {
+        await requestSocialPlanner(`/workspaces/${encodeURIComponent(normalizedWorkspaceId)}`, {
+            method: 'DELETE'
+        }, 'Kunne ikke slette workspace.');
+
+        if (document.getElementById('sp-workspace-edit-id')?.value === normalizedWorkspaceId) {
+            resetSocialPlannerWorkspaceForm();
+        }
+
+        await refreshSocialPlannerState({ silent: true });
+        setSocialPlannerStatus('Workspace slettet.', 'success');
+    } catch (error) {
+        console.error('Error deleting social planner workspace:', error);
+        setSocialPlannerStatus(
+            normalizeAdminErrorMessage(error, 'Kunne ikke slette workspace.'),
+            'danger'
+        );
+    }
+};
+
+window.resetSocialPlannerTemplateForm = function () {
+    resetSocialPlannerTemplateForm();
+};
+
+window.saveSocialPlannerTemplate = async function (event) {
+    event.preventDefault();
+
+    const editId = String(document.getElementById('sp-template-edit-id')?.value || '').trim();
+    const name = String(document.getElementById('sp-template-name')?.value || '').trim();
+    const category = String(document.getElementById('sp-template-category')?.value || '').trim();
+    const body = String(document.getElementById('sp-template-body')?.value || '').trim();
+
+    if (!name || !body) {
+        setSocialPlannerStatus('Template-navn og tekst er påkrevd.', 'danger');
+        return;
+    }
+
+    try {
+        if (editId) {
+            await requestSocialPlanner(`/templates/${encodeURIComponent(editId)}`, {
+                method: 'PATCH',
+                body: JSON.stringify({
+                    workspaceId: getSocialPlannerActiveWorkspaceId(),
+                    name,
+                    category,
+                    body
+                })
+            }, 'Kunne ikke oppdatere mal.');
+            setSocialPlannerStatus('Mal oppdatert.', 'success');
+        } else {
+            await requestSocialPlanner('/templates', {
+                method: 'POST',
+                body: JSON.stringify({
+                    workspaceId: getSocialPlannerActiveWorkspaceId(),
+                    name,
+                    category,
+                    body
+                })
+            }, 'Kunne ikke lagre mal.');
+            setSocialPlannerStatus('Mal lagret.', 'success');
+        }
+
+        resetSocialPlannerTemplateForm();
+        await refreshSocialPlannerState({
+            silent: true,
+            workspaceId: getSocialPlannerActiveWorkspaceId()
+        });
+    } catch (error) {
+        console.error('Error saving social planner template:', error);
+        setSocialPlannerStatus(
+            normalizeAdminErrorMessage(error, 'Kunne ikke lagre mal.'),
+            'danger'
+        );
+    }
+};
+
+window.editSocialPlannerTemplate = function (templateId) {
+    const normalizedTemplateId = String(templateId || '').trim();
+    if (!normalizedTemplateId) return;
+
+    const templates = Array.isArray(socialPlannerState?.templates) ? socialPlannerState.templates : [];
+    const template = templates.find((item) => item.id === normalizedTemplateId);
+    if (!template) {
+        setSocialPlannerStatus('Malen ble ikke funnet.', 'danger');
+        return;
+    }
+
+    const editIdInput = document.getElementById('sp-template-edit-id');
+    const nameInput = document.getElementById('sp-template-name');
+    const categoryInput = document.getElementById('sp-template-category');
+    const bodyInput = document.getElementById('sp-template-body');
+    const submitBtn = document.getElementById('sp-template-submit-btn');
+
+    if (editIdInput) editIdInput.value = template.id;
+    if (nameInput) nameInput.value = template.name || '';
+    if (categoryInput) categoryInput.value = template.category || '';
+    if (bodyInput) bodyInput.value = template.body || '';
+    if (submitBtn) submitBtn.textContent = 'Oppdater mal';
+    nameInput?.focus();
+};
+
+window.deleteSocialPlannerTemplate = async function (templateId) {
+    const normalizedTemplateId = String(templateId || '').trim();
+    if (!normalizedTemplateId) return;
+
+    const shouldDelete = await showAdminConfirm(
+        'Malen blir permanent slettet fra dette workspace.',
+        {
+            title: 'Slette mal?',
+            confirmText: 'Slett mal',
+            cancelText: 'Avbryt',
+            variant: 'warning'
+        }
+    );
+    if (!shouldDelete) return;
+
+    try {
+        await requestSocialPlanner(`/templates/${encodeURIComponent(normalizedTemplateId)}`, {
+            method: 'DELETE'
+        }, 'Kunne ikke slette mal.');
+
+        if (document.getElementById('sp-template-edit-id')?.value === normalizedTemplateId) {
+            resetSocialPlannerTemplateForm();
+        }
+
+        await refreshSocialPlannerState({
+            silent: true,
+            workspaceId: getSocialPlannerActiveWorkspaceId()
+        });
+        setSocialPlannerStatus('Mal slettet.', 'success');
+    } catch (error) {
+        console.error('Error deleting social planner template:', error);
+        setSocialPlannerStatus(
+            normalizeAdminErrorMessage(error, 'Kunne ikke slette mal.'),
+            'danger'
+        );
+    }
+};
+
+window.applySocialPlannerTemplateToEntry = async function (templateId = '') {
+    const select = document.getElementById('sp-entry-template');
+    const titleInput = document.getElementById('sp-entry-title');
+    const linkInput = document.getElementById('sp-entry-link');
+    const hashtagInput = document.getElementById('sp-entry-hashtags');
+    const masterTextInput = document.getElementById('sp-entry-master-text');
+    if (!masterTextInput) return;
+
+    const chosenTemplateId = String(templateId || select?.value || '').trim();
+    if (!chosenTemplateId) {
+        setSocialPlannerStatus('Velg en mal først.', 'danger');
+        return;
+    }
+
+    const templates = getSocialPlannerScopedTemplates();
+    const template = templates.find((item) => item.id === chosenTemplateId);
+    if (!template) {
+        setSocialPlannerStatus('Malen ble ikke funnet i dette workspace.', 'danger');
+        return;
+    }
+
+    const existingText = String(masterTextInput.value || '').trim();
+    const titleValue = String(titleInput?.value || '').trim();
+    const linkValue = String(linkInput?.value || '').trim();
+    const hashtagValue = String(hashtagInput?.value || '').trim();
+    const summaryValue = existingText.replace(/\s+/g, ' ').trim().slice(0, 220);
+    const resolvedTemplateBody = renderSocialPlannerTemplateBody(template.body || '', {
+        title: titleValue,
+        summary: summaryValue,
+        url: linkValue,
+        link: linkValue,
+        hook: titleValue,
+        hashtags: hashtagValue
+    }).trim();
+    const templateToApply = resolvedTemplateBody || String(template.body || '').trim();
+
+    if (existingText && existingText !== templateToApply) {
+        const shouldReplace = await showAdminConfirm(
+            'Master-teksten har innhold allerede. Vil du erstatte med valgt mal?',
+            {
+                title: 'Erstatte tekst?',
+                confirmText: 'Erstatt',
+                cancelText: 'Avbryt',
+                variant: 'warning'
+            }
+        );
+        if (!shouldReplace) {
+            return;
+        }
+    }
+
+    masterTextInput.value = templateToApply;
+    if (select) {
+        select.value = template.id;
+    }
+    renderSocialPlannerEntryPreview();
+    setSocialPlannerStatus('Mal satt inn i master-tekst.', 'success');
+};
+
+window.resetSocialPlannerAccountForm = function () {
+    resetSocialPlannerAccountForm();
+};
+
+window.editSocialPlannerAccount = function (accountId) {
+    const normalizedAccountId = String(accountId || '').trim();
+    if (!normalizedAccountId) return;
+
+    const accounts = Array.isArray(socialPlannerState?.socialAccounts) ? socialPlannerState.socialAccounts : [];
+    const account = accounts.find((item) => item.id === normalizedAccountId);
+    if (!account) {
+        setSocialPlannerStatus('Kontoen ble ikke funnet.', 'danger');
+        return;
+    }
+
+    const editIdInput = document.getElementById('sp-account-edit-id');
+    const nameInput = document.getElementById('sp-account-name');
+    const platformSelect = document.getElementById('sp-account-platform');
+    const externalInput = document.getElementById('sp-account-external');
+    const statusSelect = document.getElementById('sp-account-status');
+    const submitBtn = document.getElementById('sp-account-submit-btn');
+
+    if (editIdInput) editIdInput.value = account.id;
+    if (nameInput) nameInput.value = account.displayName || '';
+    if (platformSelect) platformSelect.value = String(account.platform || 'facebook');
+    if (externalInput) externalInput.value = account.externalAccountId || '';
+    if (statusSelect) statusSelect.value = String(account.status || 'active');
+    if (submitBtn) submitBtn.textContent = 'Oppdater konto';
+    nameInput?.focus();
+};
+
+window.createSocialPlannerAccount = async function (event) {
+    event.preventDefault();
+
+    const editId = String(document.getElementById('sp-account-edit-id')?.value || '').trim();
+    const displayName = String(document.getElementById('sp-account-name')?.value || '').trim();
+    const platform = String(document.getElementById('sp-account-platform')?.value || 'facebook').trim();
+    const externalAccountId = String(document.getElementById('sp-account-external')?.value || '').trim();
+    const status = String(document.getElementById('sp-account-status')?.value || 'active').trim();
+
+    if (!displayName) {
+        setSocialPlannerStatus('Skriv inn visningsnavn for kontoen.', 'danger');
+        return;
+    }
+
+    try {
+        const requestPath = editId
+            ? `/accounts/${encodeURIComponent(editId)}`
+            : '/accounts';
+        const requestMethod = editId ? 'PATCH' : 'POST';
+
+        await requestSocialPlanner(requestPath, {
+            method: requestMethod,
+            body: JSON.stringify({
+                workspaceId: getSocialPlannerActiveWorkspaceId(),
+                displayName,
+                platform,
+                externalAccountId,
+                status
+            })
+        }, 'Kunne ikke lagre konto.');
+
+        resetSocialPlannerAccountForm();
+        await refreshSocialPlannerState({
+            silent: true,
+            workspaceId: getSocialPlannerActiveWorkspaceId()
+        });
+        setSocialPlannerStatus(editId ? 'Konto oppdatert.' : 'Konto lagret.', 'success');
+    } catch (error) {
+        console.error('Error creating social planner account:', error);
+        setSocialPlannerStatus(
+            normalizeAdminErrorMessage(error, 'Kunne ikke lagre konto.'),
+            'danger'
+        );
+    }
+};
+
+window.deleteSocialPlannerAccount = async function (accountId) {
+    const normalizedAccountId = String(accountId || '').trim();
+    if (!normalizedAccountId) return;
+
+    const shouldDelete = await showAdminConfirm(
+        'Kontoen fjernes fra workspace, og innlegg mister koblingen til denne kontoen.',
+        {
+            title: 'Slette konto?',
+            confirmText: 'Slett konto',
+            cancelText: 'Behold',
+            variant: 'warning'
+        }
+    );
+    if (!shouldDelete) return;
+
+    try {
+        await requestSocialPlanner(`/accounts/${encodeURIComponent(normalizedAccountId)}`, {
+            method: 'DELETE'
+        }, 'Kunne ikke slette konto.');
+
+        if (document.getElementById('sp-account-edit-id')?.value === normalizedAccountId) {
+            resetSocialPlannerAccountForm();
+        }
+
+        await refreshSocialPlannerState({
+            silent: true,
+            workspaceId: getSocialPlannerActiveWorkspaceId()
+        });
+        setSocialPlannerStatus('Konto slettet.', 'success');
+    } catch (error) {
+        console.error('Error deleting social planner account:', error);
+        setSocialPlannerStatus(
+            normalizeAdminErrorMessage(error, 'Kunne ikke slette konto.'),
+            'danger'
+        );
+    }
+};
+
+window.createSocialPlannerEntry = async function (event) {
+    event.preventDefault();
+
+    const editId = String(document.getElementById('sp-entry-edit-id')?.value || '').trim();
+    const title = String(document.getElementById('sp-entry-title')?.value || '').trim();
+    const masterText = String(document.getElementById('sp-entry-master-text')?.value || '').trim();
+    const status = String(document.getElementById('sp-entry-status')?.value || 'draft').trim();
+    const scheduledFor = toIsoFromLocalDateTime(document.getElementById('sp-entry-scheduled-for')?.value || '');
+    const linkUrl = String(document.getElementById('sp-entry-link')?.value || '').trim();
+    const mediaUrl = String(document.getElementById('sp-entry-media')?.value || '').trim();
+    const hashtags = parseHashtagInput(document.getElementById('sp-entry-hashtags')?.value || '');
+    const variants = getSocialPlannerEntryFormVariants();
+    const targetAccountIds = Array.from(document.getElementById('sp-entry-target-accounts')?.selectedOptions || [])
+        .map((option) => option.value)
+        .filter(Boolean);
+
+    if (!title) {
+        setSocialPlannerStatus('Tittel er påkrevd for innlegg.', 'danger');
+        return;
+    }
+
+    if (status === 'scheduled' && !scheduledFor) {
+        setSocialPlannerStatus('Velg tidspunkt når status er scheduled.', 'danger');
+        return;
+    }
+
+    try {
+        const payload = {
+            workspaceId: getSocialPlannerActiveWorkspaceId(),
+            title,
+            masterText,
+            status,
+            hashtags,
+            linkUrl,
+            mediaUrl,
+            variants,
+            targetAccountIds
+        };
+        if (scheduledFor) {
+            payload.scheduledFor = scheduledFor;
+        } else if (status !== 'scheduled') {
+            payload.scheduledFor = '';
+        }
+
+        const requestPath = editId
+            ? `/entries/${encodeURIComponent(editId)}`
+            : '/entries';
+        const requestMethod = editId ? 'PATCH' : 'POST';
+
+        await requestSocialPlanner(requestPath, {
+            method: requestMethod,
+            body: JSON.stringify(payload)
+        }, 'Kunne ikke lagre innlegg.');
+
+        resetSocialPlannerEntryForm();
+        await refreshSocialPlannerState({
+            silent: true,
+            workspaceId: getSocialPlannerActiveWorkspaceId()
+        });
+        setSocialPlannerStatus(editId ? 'Innlegg oppdatert i planner.' : 'Innlegg lagret i planner.', 'success');
+    } catch (error) {
+        console.error('Error creating social planner entry:', error);
+        setSocialPlannerStatus(
+            normalizeAdminErrorMessage(error, 'Kunne ikke lagre innlegg.'),
+            'danger'
+        );
+    }
+};
+
+window.resetSocialPlannerEntryForm = function () {
+    resetSocialPlannerEntryForm();
+};
+
+function toLocalDateTimeInputValue(value = '') {
+    const date = new Date(String(value || '').trim());
+    if (!Number.isFinite(date.getTime())) {
+        return '';
+    }
+    const pad = (number) => String(number).padStart(2, '0');
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1);
+    const day = pad(date.getDate());
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+window.editSocialPlannerEntry = function (entryId) {
+    const normalizedEntryId = String(entryId || '').trim();
+    if (!normalizedEntryId) return;
+
+    const entries = Array.isArray(socialPlannerState?.entries) ? socialPlannerState.entries : [];
+    const entry = entries.find((item) => item.id === normalizedEntryId);
+    if (!entry) {
+        setSocialPlannerStatus('Innlegget ble ikke funnet.', 'danger');
+        return;
+    }
+
+    const editIdInput = document.getElementById('sp-entry-edit-id');
+    const titleInput = document.getElementById('sp-entry-title');
+    const masterInput = document.getElementById('sp-entry-master-text');
+    const statusSelect = document.getElementById('sp-entry-status');
+    const scheduledInput = document.getElementById('sp-entry-scheduled-for');
+    const linkInput = document.getElementById('sp-entry-link');
+    const mediaInput = document.getElementById('sp-entry-media');
+    const hashtagsInput = document.getElementById('sp-entry-hashtags');
+    const accountSelect = document.getElementById('sp-entry-target-accounts');
+    const templateSelect = document.getElementById('sp-entry-template');
+    const submitBtn = document.getElementById('sp-entry-submit-btn');
+
+    if (editIdInput) editIdInput.value = entry.id;
+    if (titleInput) titleInput.value = String(entry.title || '');
+    if (masterInput) masterInput.value = String(entry.masterText || '');
+    if (statusSelect) {
+        const normalizedStatus = String(entry.status || '').trim();
+        statusSelect.value = normalizedStatus === 'scheduled' ? 'scheduled' : 'draft';
+    }
+    syncSocialPlannerScheduleFieldState();
+    if (scheduledInput) {
+        scheduledInput.value = toLocalDateTimeInputValue(entry.scheduledFor || '');
+    }
+    if (linkInput) linkInput.value = String(entry.linkUrl || '');
+    if (mediaInput) mediaInput.value = String(entry.mediaUrl || '');
+    if (hashtagsInput) hashtagsInput.value = Array.isArray(entry.hashtags) ? entry.hashtags.join(' ') : '';
+    setSocialPlannerEntryFormVariants(entry.variants || {});
+    setMultiSelectValues(accountSelect, Array.isArray(entry.targetAccountIds) ? entry.targetAccountIds : []);
+    if (templateSelect) templateSelect.value = '';
+    if (submitBtn) submitBtn.textContent = 'Oppdater innlegg';
+    renderSocialPlannerEntryPreview();
+
+    titleInput?.focus();
+    setSocialPlannerStatus('Innlegg lastet i skjema for redigering.', 'success');
+};
+
+window.publishSocialPlannerEntry = async function (entryId) {
+    const normalizedEntryId = String(entryId || '').trim();
+    if (!normalizedEntryId) return;
+
+    try {
+        const payload = await requestSocialPlanner(`/entries/${encodeURIComponent(normalizedEntryId)}/publish`, {
+            method: 'POST',
+            body: JSON.stringify({})
+        }, 'Kunne ikke publisere innlegg.');
+
+        await refreshSocialPlannerState({
+            silent: true,
+            workspaceId: getSocialPlannerActiveWorkspaceId()
+        });
+
+        if (payload?.success) {
+            setSocialPlannerStatus('Innlegg publisert.', 'success');
+        } else {
+            setSocialPlannerStatus(
+                String(payload?.error || 'Publisering feilet.'),
+                'danger'
+            );
+        }
+    } catch (error) {
+        console.error('Error publishing social planner entry:', error);
+        setSocialPlannerStatus(
+            normalizeAdminErrorMessage(error, 'Kunne ikke publisere innlegg.'),
+            'danger'
+        );
+    }
+};
+
+window.deleteSocialPlannerEntry = async function (entryId) {
+    const normalizedEntryId = String(entryId || '').trim();
+    if (!normalizedEntryId) return;
+
+    const shouldDelete = await showAdminConfirm(
+        'Innlegget fjernes fra social planner-listen.',
+        {
+            title: 'Slette innlegg?',
+            confirmText: 'Slett innlegg',
+            cancelText: 'Avbryt',
+            variant: 'warning'
+        }
+    );
+    if (!shouldDelete) return;
+
+    try {
+        await requestSocialPlanner(`/entries/${encodeURIComponent(normalizedEntryId)}`, {
+            method: 'DELETE'
+        }, 'Kunne ikke slette innlegg.');
+
+        if (document.getElementById('sp-entry-edit-id')?.value === normalizedEntryId) {
+            resetSocialPlannerEntryForm();
+        }
+
+        await refreshSocialPlannerState({
+            silent: true,
+            workspaceId: getSocialPlannerActiveWorkspaceId()
+        });
+        setSocialPlannerStatus('Innlegg slettet.', 'success');
+    } catch (error) {
+        console.error('Error deleting social planner entry:', error);
+        setSocialPlannerStatus(
+            normalizeAdminErrorMessage(error, 'Kunne ikke slette innlegg.'),
+            'danger'
+        );
+    }
+};
+
+window.runSocialPlannerScheduler = async function () {
+    try {
+        const payload = await requestSocialPlanner('/scheduler/run', {
+            method: 'POST',
+            body: JSON.stringify({ maxEntries: 10 })
+        }, 'Kunne ikke kjøre scheduler.');
+
+        await refreshSocialPlannerState({
+            silent: true,
+            workspaceId: getSocialPlannerActiveWorkspaceId()
+        });
+
+        const scheduler = payload?.scheduler || {};
+        const success = !!payload?.success;
+        setSocialPlannerStatus(
+            `Scheduler: ${scheduler.published || 0} publisert, ${scheduler.failed || 0} feilet.`,
+            success ? 'success' : 'danger'
+        );
+    } catch (error) {
+        console.error('Error running social planner scheduler:', error);
+        setSocialPlannerStatus(
+            normalizeAdminErrorMessage(error, 'Kunne ikke kjøre scheduler.'),
+            'danger'
+        );
+    }
+};
+
 
 function setupLogout() {
     const logoutBtn = document.getElementById('logout-btn');
@@ -1855,7 +3402,7 @@ function setupLogout() {
         logoutBtn.addEventListener('click', async () => {
             if (window.adminAuthClient) {
                 await window.adminAuthClient.auth.signOut();
-                window.location.href = 'login.html';
+                window.location.href = ADMIN_LOGIN_PATH;
             }
         });
     }
@@ -2407,7 +3954,8 @@ const breadcrumbConfig = {
         'content': ['Sideinnhold'],
         'style': ['Design'],
         'seo': ['SEO'],
-        'media': ['Media']
+        'media': ['Media'],
+        'social-planner': ['Social Planner']
     },
     'en': {
         'home': ['Home'],
@@ -2415,7 +3963,8 @@ const breadcrumbConfig = {
         'content': ['Site Content'],
         'style': ['Design'],
         'seo': ['SEO'],
-        'media': ['Media']
+        'media': ['Media'],
+        'social-planner': ['Social Planner']
     }
 };
 
@@ -2437,6 +3986,15 @@ function updateHeaderActions(section) {
 
     if (section === 'blog') {
         // Button moved to content area
+    } else if (section === 'social-planner') {
+        actionsContainer.innerHTML = `
+            <button class="header-action-btn" type="button" onclick="refreshSocialPlanner()">
+                <i class="fas fa-rotate"></i> Oppdater
+            </button>
+            <button class="header-action-btn primary" type="button" onclick="runSocialPlannerScheduler()">
+                <i class="fas fa-play"></i> Kjør scheduler
+            </button>
+        `;
     }
 }
 
@@ -2470,6 +4028,11 @@ function setupEventListeners() {
                 if (targetTab) targetTab.classList.add('active');
                 updateBreadcrumb(section);
                 updateHeaderActions(section);
+                if (section === 'social-planner') {
+                    refreshSocialPlannerState({ silent: socialPlannerLoaded }).catch((error) => {
+                        console.error('Error loading social planner tab:', error);
+                    });
+                }
             }
         });
     });
@@ -2495,6 +4058,34 @@ function setupEventListeners() {
 
     const saveSeoBtn = document.getElementById('save-seo-btn');
     if (saveSeoBtn) saveSeoBtn.addEventListener('click', saveSeo);
+
+    const plannerStatusSelect = document.getElementById('sp-entry-status');
+    if (plannerStatusSelect) {
+        plannerStatusSelect.addEventListener('change', () => {
+            syncSocialPlannerScheduleFieldState();
+            renderSocialPlannerEntryPreview();
+        });
+    }
+
+    const plannerPreviewInputs = [
+        'sp-entry-title',
+        'sp-entry-master-text',
+        'sp-entry-link',
+        'sp-entry-hashtags',
+        'sp-entry-variant-facebook',
+        'sp-entry-variant-instagram',
+        'sp-entry-variant-linkedin',
+        'sp-entry-variant-x',
+        'sp-entry-variant-tiktok'
+    ];
+
+    plannerPreviewInputs.forEach((inputId) => {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        input.addEventListener('input', () => {
+            renderSocialPlannerEntryPreview();
+        });
+    });
 }
 
 
@@ -3528,7 +5119,7 @@ async function checkAuth() {
     try {
         if (!window.adminAuthClient) {
             console.error('Firebase client not initialized');
-            window.location.replace('login.html');
+            window.location.replace(ADMIN_LOGIN_PATH);
             return null;
         }
 
@@ -3582,7 +5173,7 @@ async function checkAuth() {
         }
 
         if (error || !session) {
-            window.location.replace('login.html');
+            window.location.replace(ADMIN_LOGIN_PATH);
             return null;
         }
 
@@ -3590,7 +5181,7 @@ async function checkAuth() {
         return currentUser;
     } catch (error) {
         console.error('Auth check failed:', error);
-        window.location.replace('login.html');
+        window.location.replace(ADMIN_LOGIN_PATH);
         return null;
     }
 }
@@ -3678,7 +5269,7 @@ function setupProfileEventListeners() {
     async function handleLogout() {
         if (window.adminAuthClient) {
             await window.adminAuthClient.auth.signOut();
-            window.location.href = 'login.html';
+            window.location.href = ADMIN_LOGIN_PATH;
         }
     }
 

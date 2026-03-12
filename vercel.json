@@ -21,7 +21,6 @@
                     "legacy_html/sw.js",
                     "legacy_html/robots.txt",
                     "legacy_html/sitemap.xml",
-                    "legacy_html/admin/**",
                     "legacy_html/data/**",
                     "legacy_html/img/**",
                     "legacy_html/js/**",

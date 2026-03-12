@@ -22,7 +22,7 @@
                     "robots.txt",
                     "sitemap.xml",
                     "llms.txt",
-                    "admin/**",
+                    "public/admin/**",
                     "data/**",
                     "img/**",
                     "js/**"
