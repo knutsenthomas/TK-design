@@ -3904,6 +3904,245 @@ function buildSocialPlannerWorkspaceScopedState(state, workspaceId = '') {
     };
 }
 
+const SOCIAL_PLANNER_ASSISTANT_ALLOWED_ACTIONS = new Set(['write', 'improve', 'variants', 'shorten', 'expand', 'hashtags']);
+const SOCIAL_PLANNER_ASSISTANT_ALLOWED_TONES = new Set(['professional', 'friendly', 'inspirational', 'sales', 'playful', 'informative']);
+
+function normalizeSocialPlannerAssistantAction(value = '') {
+    const normalized = String(value || '').trim().toLowerCase();
+    return SOCIAL_PLANNER_ASSISTANT_ALLOWED_ACTIONS.has(normalized) ? normalized : 'write';
+}
+
+function normalizeSocialPlannerAssistantTone(value = '') {
+    const normalized = normalizePlannerShortText(value || 'professional', 40).toLowerCase();
+    return SOCIAL_PLANNER_ASSISTANT_ALLOWED_TONES.has(normalized) ? normalized : 'professional';
+}
+
+function normalizeSocialPlannerAssistantPlatforms(value = []) {
+    const source = Array.isArray(value) ? value : [];
+    const platforms = [];
+    const seen = new Set();
+
+    source.forEach((entry) => {
+        const platform = normalizePlannerPlatform(entry);
+        if (seen.has(platform)) return;
+        seen.add(platform);
+        platforms.push(platform);
+    });
+
+    return platforms.length > 0 ? platforms : SOCIAL_PLATFORMS.slice();
+}
+
+function buildSocialPlannerAssistantPrompt(payload = {}) {
+    const action = normalizeSocialPlannerAssistantAction(payload.action);
+    const tone = normalizeSocialPlannerAssistantTone(payload.tone);
+    const prompt = normalizePlannerText(payload.prompt || '', 1200);
+    const masterText = normalizePlannerText(payload.masterText || '', 6000);
+    const variants = normalizePlannerVariants(payload.variants || {});
+    const linkUrl = normalizePlannerUrl(payload.linkUrl || '');
+    const hashtags = normalizePlannerHashtags(payload.hashtags || []);
+    const selectedPlatforms = normalizeSocialPlannerAssistantPlatforms(payload.selectedPlatforms);
+
+    const actionDescriptions = {
+        write: 'Skriv et nytt forslag til innleggstekst basert på instruks og kontekst.',
+        improve: 'Forbedre eksisterende innleggstekst med tydelig hook, flyt og call-to-action.',
+        variants: 'Lag plattformspesifikke varianter til hver valgt plattform.',
+        shorten: 'Forkort teksten uten å miste hovedbudskapet.',
+        expand: 'Utvid teksten med mer verdi og konkretisering.',
+        hashtags: 'Foreslå relevante hashtags og eventuelt en bedre hook.'
+    };
+
+    const existingVariantSummary = selectedPlatforms
+        .map((platform) => `${platform}: ${String(variants[platform] || '').trim() || '(tom)'}`)
+        .join('\n');
+
+    return [
+        'Du er en senior SoMe-copywriter for norske bedrifter.',
+        `Oppgave: ${actionDescriptions[action] || actionDescriptions.write}`,
+        `Tone: ${tone}`,
+        `Målplattformer: ${selectedPlatforms.join(', ')}`,
+        'Språk: Norsk bokmål.',
+        '',
+        'Returner KUN gyldig JSON med nøyaktig denne strukturen (ingen markdown, ingen kodeblokker):',
+        '{',
+        '  "masterText": "string",',
+        '  "variants": {',
+        '    "facebook": "string",',
+        '    "instagram": "string",',
+        '    "linkedin": "string",',
+        '    "x": "string",',
+        '    "tiktok": "string"',
+        '  },',
+        '  "hashtags": ["#tag1", "#tag2"],',
+        '  "notes": "kort forklaring av hva som ble forbedret"',
+        '}',
+        '',
+        'Regler:',
+        '- Ingen påfunn eller udokumenterte fakta.',
+        '- Kort, konkret og handlingsorientert stil.',
+        '- Ikke legg inn URL i masterText hvis lenke er oppgitt separat.',
+        '- La felt være tomme hvis de ikke er relevante for oppgaven.',
+        '- Hashtags skal være relevante og uten duplikater (maks 12).',
+        '',
+        `Instruks fra bruker: ${prompt || '(ingen ekstra instruks)'}`,
+        `Eksisterende mastertekst: ${masterText || '(tom)'}`,
+        `Eksisterende varianter:\n${existingVariantSummary || '(ingen)'}`,
+        `Lenke: ${linkUrl || '(ingen)'}`,
+        `Eksisterende hashtags: ${hashtags.join(' ') || '(ingen)'}`
+    ].join('\n');
+}
+
+function normalizeSocialPlannerAssistantSuggestion(payload = {}, fallbackText = '') {
+    const source = (payload && typeof payload === 'object' && !Array.isArray(payload)) ? payload : {};
+    const normalizedVariants = normalizePlannerVariants({});
+
+    const assignVariant = (platformValue = '', textValue = '') => {
+        const platform = normalizePlannerPlatform(platformValue);
+        const normalizedText = normalizePlannerText(textValue || '', 3000);
+        if (!normalizedText) return;
+        normalizedVariants[platform] = normalizedText;
+    };
+
+    const variantObject = (source.variants && typeof source.variants === 'object' && !Array.isArray(source.variants))
+        ? source.variants
+        : {};
+    Object.entries(variantObject).forEach(([platform, value]) => {
+        assignVariant(platform, value);
+    });
+
+    const platformVariantsObject = (source.platformVariants && typeof source.platformVariants === 'object' && !Array.isArray(source.platformVariants))
+        ? source.platformVariants
+        : {};
+    Object.entries(platformVariantsObject).forEach(([platform, value]) => {
+        assignVariant(platform, value);
+    });
+
+    if (Array.isArray(source.variants)) {
+        source.variants.forEach((entry) => {
+            if (!entry || typeof entry !== 'object') return;
+            assignVariant(entry.platform || entry.channel || entry.name, entry.text || entry.caption || entry.value);
+        });
+    }
+
+    SOCIAL_PLATFORMS.forEach((platform) => {
+        if (source[platform]) {
+            assignVariant(platform, source[platform]);
+        }
+    });
+
+    const fallbackMasterText = normalizePlannerText(fallbackText || '', 6000);
+    const masterText = normalizePlannerText(
+        source.masterText || source.text || source.caption || source.post || fallbackMasterText,
+        6000
+    );
+    const hashtags = normalizePlannerHashtags(source.hashtags || source.tags || source.keywords || []);
+    const notes = normalizePlannerText(source.notes || source.explanation || source.summary || '', 400);
+
+    return {
+        masterText,
+        variants: normalizedVariants,
+        hashtags,
+        notes
+    };
+}
+
+app.post('/api/social-planner/assistant', async (req, res) => {
+    try {
+        const action = normalizeSocialPlannerAssistantAction(req.body?.action);
+        const tone = normalizeSocialPlannerAssistantTone(req.body?.tone);
+        const prompt = normalizePlannerText(req.body?.prompt || '', 1200);
+        const masterText = normalizePlannerText(req.body?.masterText || '', 6000);
+        const variants = normalizePlannerVariants(req.body?.variants || {});
+        const linkUrl = normalizePlannerUrl(req.body?.linkUrl || '');
+        const hashtags = normalizePlannerHashtags(req.body?.hashtags || []);
+        const selectedPlatforms = normalizeSocialPlannerAssistantPlatforms(req.body?.selectedPlatforms);
+        const hasVariantContext = Object.values(variants).some((value) => String(value || '').trim());
+
+        if (!prompt && !masterText && !hasVariantContext && !linkUrl && hashtags.length === 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'Skriv en instruks eller legg inn litt eksisterende tekst først.'
+            });
+        }
+
+        const aiResult = await runGeminiGenerateContent([{
+            text: buildSocialPlannerAssistantPrompt({
+                action,
+                tone,
+                prompt,
+                masterText,
+                variants,
+                linkUrl,
+                hashtags,
+                selectedPlatforms
+            })
+        }]);
+
+        const parsed = parseGeminiJsonPayload(aiResult.text);
+        const suggestion = normalizeSocialPlannerAssistantSuggestion(parsed, aiResult.text);
+
+        if (action === 'hashtags' && suggestion.hashtags.length === 0) {
+            const hashtagFromText = normalizePlannerHashtags(
+                String(suggestion.masterText || '').match(/#[a-z0-9_]+/gi) || []
+            );
+            suggestion.hashtags = hashtagFromText;
+        }
+
+        return res.json({
+            success: true,
+            suggestion,
+            model: aiResult.model
+        });
+    } catch (error) {
+        console.error('[Social Planner] Assistant request failed:', error);
+        const errorCode = String(error?.code || '');
+        const errorMessage = String(error?.message || '');
+        const apiKeyInvalid = /API_KEY_INVALID|API key not valid/i.test(errorMessage);
+        const refererBlocked = /API_KEY_HTTP_REFERRER_BLOCKED|Requests from referer <empty> are blocked/i.test(errorMessage);
+
+        if (errorCode === 'gemini_api_key_missing') {
+            return res.status(500).json({
+                success: false,
+                error: 'Gemini API key is missing',
+                code: 'gemini_api_key_missing',
+                details: 'Set GEMINI_API_KEY in server environment variables.'
+            });
+        }
+
+        if (errorCode === 'gemini_model_unavailable') {
+            return res.status(500).json({
+                success: false,
+                error: 'No supported Gemini model available',
+                code: 'gemini_model_unavailable',
+                details: errorMessage || 'Server could not find a Gemini model that supports generateContent.'
+            });
+        }
+
+        if (apiKeyInvalid) {
+            return res.status(500).json({
+                success: false,
+                error: 'Gemini API key is invalid',
+                code: 'gemini_api_key_invalid',
+                details: 'Oppdater GEMINI_API_KEY i server-miljøet. Nåværende nøkkel avvises av Google.'
+            });
+        }
+
+        if (refererBlocked) {
+            return res.status(500).json({
+                success: false,
+                error: 'Gemini key blocked by HTTP referrer restrictions',
+                code: 'gemini_api_key_http_referrer_blocked',
+                details: 'Gemini-kallet går fra server (uten referer). Bruk en servernøkkel uten HTTP-referrer-restriksjon, men med API-restriksjon til Generative Language API.'
+            });
+        }
+
+        return res.status(500).json({
+            success: false,
+            error: 'AI-assistenten feilet.',
+            details: errorMessage || 'Unknown Gemini error'
+        });
+    }
+});
+
 app.get('/api/social-planner', async (req, res) => {
     try {
         const state = await getSocialPlannerState();

@@ -255,6 +255,69 @@ body.admin-sidebar-collapsed .sidebar {
     gap: 12px;
 }
 
+.sidebar-logo-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.sidebar-logo-row .sidebar-menu-title {
+    margin-bottom: 0;
+}
+
+.sidebar-inline-toggle-btn {
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--border-color);
+    border-radius: 9px;
+    background: #ffffff;
+    color: #64748b;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex: 0 0 auto;
+}
+
+.sidebar-inline-toggle-btn:hover {
+    color: #0f172a;
+    border-color: #cbd5e1;
+    background: #f8fafc;
+}
+
+.sidebar-reopen-btn {
+    position: fixed;
+    left: 14px;
+    top: 86px;
+    z-index: 1100;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: #ffffff;
+    color: #334155;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.sidebar-reopen-btn:hover {
+    color: #0f172a;
+    border-color: #cbd5e1;
+    background: #f8fafc;
+}
+
+body.admin-sidebar-collapsed .sidebar-reopen-btn {
+    display: inline-flex;
+}
+
 .sidebar nav {
     display: flex;
     flex-direction: column;
@@ -2176,22 +2239,100 @@ body.social-planner-compose-open {
 }
 
 .social-planner-compose-upload-box {
-    width: 180px;
-    min-height: 96px;
+    width: min(460px, 100%);
+    min-height: 108px;
     border: 1px dashed #94a3b8;
     border-radius: 12px;
     display: grid;
     justify-items: center;
     align-content: center;
-    gap: 8px;
+    gap: 10px;
     color: #64748b;
     font-size: 13px;
     text-align: center;
-    cursor: pointer;
+    padding: 12px;
 }
 
 .social-planner-compose-upload-box i {
     font-size: 18px;
+}
+
+.social-planner-compose-upload-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.social-planner-compose-upload-actions .save-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 8px 10px;
+}
+
+.social-planner-compose-media-preview {
+    margin-top: 10px;
+    width: min(460px, 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: 70px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+}
+
+.social-planner-compose-media-preview[hidden] {
+    display: none !important;
+}
+
+.social-planner-compose-media-thumb {
+    width: 70px;
+    height: 70px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 1px solid #d4dce6;
+    background: #fff;
+}
+
+.social-planner-compose-media-meta {
+    min-width: 0;
+    display: grid;
+    gap: 4px;
+}
+
+.social-planner-compose-media-meta strong {
+    font-size: 13px;
+    color: #0f172a;
+}
+
+.social-planner-compose-media-meta a {
+    font-size: 12px;
+    color: #2563eb;
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.social-planner-compose-media-meta a:hover {
+    text-decoration: underline;
+}
+
+.social-planner-compose-media-remove {
+    border: 1px solid #fecaca;
+    background: #fff5f5;
+    color: #b91c1c;
+    border-radius: 8px;
+    height: 32px;
+    padding: 0 10px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.social-planner-compose-media-remove:hover {
+    background: #fee2e2;
 }
 
 .social-planner-compose-quick-actions {
@@ -2284,6 +2425,69 @@ body.social-planner-compose-open {
     padding-left: 18px;
     display: grid;
     gap: 5px;
+}
+
+.social-planner-assistant-meta-row {
+    grid-template-columns: 1fr;
+}
+
+.social-planner-compose-assistant-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.social-planner-compose-assistant-actions .save-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 9px 10px;
+    font-size: 13px;
+}
+
+.social-planner-assistant-action-btn[disabled] {
+    opacity: 0.62;
+    cursor: progress;
+}
+
+.social-planner-compose-assistant-output {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 10px 12px;
+    background: #f8fafc;
+    display: grid;
+    gap: 8px;
+    min-height: 92px;
+}
+
+.social-planner-compose-assistant-output .social-planner-list-empty {
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    min-height: 0;
+    color: #64748b;
+}
+
+.social-planner-assistant-output-title {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.social-planner-assistant-output-title.is-success {
+    color: #065f46;
+}
+
+.social-planner-assistant-output-title.is-danger {
+    color: #b91c1c;
+}
+
+.social-planner-assistant-output-detail {
+    margin: 0;
+    font-size: 12px;
+    color: #64748b;
+    line-height: 1.45;
 }
 
 .social-planner-compose-footer {
@@ -3305,6 +3509,19 @@ body.admin-dashboard-refresh .sidebar {
     border-right: 1px solid rgba(15, 23, 42, 0.06);
 }
 
+body.admin-dashboard-refresh .sidebar-inline-toggle-btn {
+    border-color: rgba(15, 23, 42, 0.08);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+body.admin-dashboard-refresh .sidebar-reopen-btn {
+    top: 130px;
+    left: 24px;
+    border-radius: 14px;
+    border-color: rgba(15, 23, 42, 0.08);
+    background: rgba(255, 255, 255, 0.96);
+}
+
 body.admin-dashboard-refresh .sidebar .logo h2 {
     margin-bottom: 34px;
     font-size: 18px;
@@ -3318,6 +3535,10 @@ body.admin-dashboard-refresh .sidebar .logo .sidebar-menu-title {
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: #94a3b8;
+}
+
+body.admin-dashboard-refresh .sidebar-logo-row .sidebar-menu-title {
+    margin-bottom: 0;
 }
 
 body.admin-dashboard-refresh .nav-btn {
@@ -3340,6 +3561,16 @@ body.admin-dashboard-refresh .nav-btn.active {
 body.admin-dashboard-refresh .main-content {
     padding: 38px 40px 52px;
     background: transparent;
+}
+
+body.admin-dashboard-refresh.admin-sidebar-collapsed .sidebar {
+    width: 0;
+    flex-basis: 0;
+    padding: 0;
+    border-right-color: transparent;
+    transform: translateX(-24px);
+    opacity: 0;
+    pointer-events: none;
 }
 
 body.admin-dashboard-refresh header {
@@ -3614,6 +3845,10 @@ body.admin-dashboard-refresh .user-dropdown {
     }
 
     .sidebar-toggle-btn {
+        display: inline-flex;
+    }
+
+    .sidebar-inline-toggle-btn {
         display: none;
     }
 
@@ -3657,6 +3892,23 @@ body.admin-dashboard-refresh .user-dropdown {
         padding: 16px 14px;
         border-right: none;
         border-bottom: 1px solid var(--border-color);
+    }
+
+    body.admin-sidebar-collapsed .sidebar {
+        max-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        border-bottom-color: transparent;
+        transform: translateX(-105%);
+        opacity: 0;
+        pointer-events: none;
+        overflow: hidden;
+    }
+
+    .sidebar-reopen-btn {
+        top: 94px;
+        left: 8px;
+        padding: 7px 9px;
     }
 
     .sidebar .logo h2 {
@@ -3887,6 +4139,10 @@ body.admin-dashboard-refresh .user-dropdown {
         font-size: 24px;
     }
 
+    .social-planner-compose-assistant-actions {
+        grid-template-columns: 1fr;
+    }
+
     .social-planner-compose-modal {
         padding: 0;
     }
@@ -3934,6 +4190,16 @@ body.admin-dashboard-refresh .user-dropdown {
 
     .social-planner-compose-upload-box {
         width: 100%;
+    }
+
+    .social-planner-compose-upload-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .social-planner-compose-media-preview {
+        width: 100%;
+        grid-template-columns: 1fr;
+        justify-items: start;
     }
 
     .social-planner-compose-footer-actions {
@@ -4109,6 +4375,16 @@ body.admin-dashboard-refresh .user-dropdown {
         overflow: visible;
     }
 
+    body.admin-dashboard-refresh .sidebar-reopen-btn {
+        top: 82px;
+        left: 10px;
+        padding: 7px 9px;
+    }
+
+    body.admin-dashboard-refresh .sidebar-reopen-btn span {
+        display: none;
+    }
+
     body.admin-dashboard-refresh .sidebar {
         position: fixed;
         left: 0;
@@ -4121,6 +4397,12 @@ body.admin-dashboard-refresh .user-dropdown {
         border-top: 1px solid rgba(15, 23, 42, 0.1);
         background: #ffffff;
         box-shadow: 0 -12px 34px rgba(15, 23, 42, 0.12);
+    }
+
+    body.admin-dashboard-refresh.admin-sidebar-collapsed .sidebar {
+        transform: translateX(-105%);
+        opacity: 0;
+        pointer-events: none;
     }
 
     body.admin-dashboard-refresh .sidebar .logo {

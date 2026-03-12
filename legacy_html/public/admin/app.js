@@ -26,6 +26,7 @@ let socialPlannerLoading = false;
 let socialPlannerEntryFilter = 'all';
 let socialPlannerEntrySearch = '';
 let socialPlannerComposerPanel = 'preview';
+let socialPlannerAssistantInFlight = false;
 const SOCIAL_PLANNER_UI_PLATFORMS = ['facebook', 'instagram', 'linkedin', 'x', 'tiktok'];
 const ADMIN_SIDEBAR_COLLAPSE_KEY = 'tk_admin_sidebar_collapsed';
 let quill; // Define quill globally but initialize later
@@ -2378,6 +2379,301 @@ function renderSocialPlannerEntryPreview() {
     }
 }
 
+function renderSocialPlannerComposerMediaPreview() {
+    const preview = document.getElementById('sp-entry-media-preview');
+    const mediaInput = document.getElementById('sp-entry-media');
+    if (!preview || !mediaInput) return;
+
+    const mediaUrl = String(mediaInput.value || '').trim();
+    preview.innerHTML = '';
+
+    if (!mediaUrl) {
+        preview.hidden = true;
+        return;
+    }
+
+    const thumb = document.createElement('img');
+    thumb.className = 'social-planner-compose-media-thumb';
+    thumb.src = mediaUrl;
+    thumb.alt = 'Valgt innleggsbilde';
+    thumb.loading = 'lazy';
+
+    const meta = document.createElement('div');
+    meta.className = 'social-planner-compose-media-meta';
+
+    const title = document.createElement('strong');
+    title.textContent = 'Valgt bilde';
+
+    const link = document.createElement('a');
+    link.href = mediaUrl;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = mediaUrl;
+
+    const clearButton = document.createElement('button');
+    clearButton.type = 'button';
+    clearButton.className = 'social-planner-compose-media-remove';
+    clearButton.innerHTML = '<i class="fas fa-trash"></i> Fjern';
+    clearButton.addEventListener('click', () => {
+        setSocialPlannerMediaUrl('');
+        setSocialPlannerStatus('Bilde fjernet fra innlegget.', 'success');
+    });
+
+    meta.appendChild(title);
+    meta.appendChild(link);
+    preview.appendChild(thumb);
+    preview.appendChild(meta);
+    preview.appendChild(clearButton);
+    preview.hidden = false;
+}
+
+function setSocialPlannerMediaUrl(mediaUrl = '') {
+    const mediaInput = document.getElementById('sp-entry-media');
+    if (!mediaInput) return;
+
+    mediaInput.value = String(mediaUrl || '').trim();
+    renderSocialPlannerComposerMediaPreview();
+    renderSocialPlannerEntryPreview();
+}
+
+const SOCIAL_PLANNER_ASSISTANT_ACTIONS = new Set(['write', 'improve', 'variants', 'shorten', 'expand', 'hashtags']);
+
+function normalizeSocialPlannerAssistantAction(action = '') {
+    const normalized = String(action || '').trim().toLowerCase();
+    return SOCIAL_PLANNER_ASSISTANT_ACTIONS.has(normalized) ? normalized : 'write';
+}
+
+function formatSocialPlannerAssistantActionLabel(action = '') {
+    const normalized = normalizeSocialPlannerAssistantAction(action);
+    if (normalized === 'improve') return 'forbedring';
+    if (normalized === 'variants') return 'plattformvarianter';
+    if (normalized === 'shorten') return 'forkorting';
+    if (normalized === 'expand') return 'utvidelse';
+    if (normalized === 'hashtags') return 'hashtags';
+    return 'skriving';
+}
+
+function normalizeSocialPlannerHashtagToken(token = '') {
+    const cleaned = String(token || '')
+        .trim()
+        .replace(/^#+/, '')
+        .replace(/[^\wæøåÆØÅ-]+/g, '');
+    if (!cleaned) return '';
+    return `#${cleaned.toLowerCase()}`;
+}
+
+function normalizeSocialPlannerHashtagList(values = []) {
+    const source = Array.isArray(values) ? values : String(values || '').split(/[\s,]+/);
+    const seen = new Set();
+    const output = [];
+    source.forEach((value) => {
+        const normalized = normalizeSocialPlannerHashtagToken(value);
+        if (!normalized || seen.has(normalized)) return;
+        seen.add(normalized);
+        output.push(normalized);
+    });
+    return output.slice(0, 20);
+}
+
+function getSocialPlannerAssistantSelectedPlatforms() {
+    const supportedPlatforms = getSocialPlannerUiPlatforms();
+    const accountSelect = document.getElementById('sp-entry-target-accounts');
+    const selectedAccountIds = Array.from(accountSelect?.selectedOptions || [])
+        .map((option) => String(option.value || '').trim())
+        .filter(Boolean);
+
+    if (selectedAccountIds.length === 0) {
+        return supportedPlatforms;
+    }
+
+    const scopedAccounts = getSocialPlannerScopedAccounts();
+    const scopedAccountLookup = new Map(scopedAccounts.map((account) => [String(account.id), account]));
+    const selectedPlatforms = [];
+    const seen = new Set();
+
+    selectedAccountIds.forEach((accountId) => {
+        const platform = String(scopedAccountLookup.get(accountId)?.platform || '').trim().toLowerCase();
+        if (!supportedPlatforms.includes(platform) || seen.has(platform)) return;
+        seen.add(platform);
+        selectedPlatforms.push(platform);
+    });
+
+    return selectedPlatforms.length > 0 ? selectedPlatforms : supportedPlatforms;
+}
+
+function setSocialPlannerAssistantBusy(isBusy = false, action = '') {
+    const normalizedAction = normalizeSocialPlannerAssistantAction(action);
+    const actionButtons = document.querySelectorAll('.social-planner-assistant-action-btn');
+    actionButtons.forEach((button) => {
+        const isActiveButton = String(button.dataset.action || '').trim().toLowerCase() === normalizedAction;
+        if (isBusy && isActiveButton) {
+            button.dataset.originalLabel = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Jobber...';
+        } else if (!isBusy && button.dataset.originalLabel) {
+            button.innerHTML = button.dataset.originalLabel;
+            delete button.dataset.originalLabel;
+        }
+        button.disabled = !!isBusy;
+    });
+
+    const promptInput = document.getElementById('sp-assistant-prompt');
+    const toneSelect = document.getElementById('sp-assistant-tone');
+    if (promptInput) promptInput.disabled = !!isBusy;
+    if (toneSelect) toneSelect.disabled = !!isBusy;
+}
+
+function setSocialPlannerAssistantOutput(message = '', variant = 'info', details = '') {
+    const container = document.getElementById('sp-assistant-output');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const normalizedVariant = String(variant || 'info').trim().toLowerCase();
+    const title = document.createElement('p');
+    title.className = `social-planner-assistant-output-title${normalizedVariant === 'success' ? ' is-success' : normalizedVariant === 'danger' ? ' is-danger' : ''}`;
+    title.textContent = String(message || 'Gi en instruks, og velg hva AI skal gjøre.');
+    container.appendChild(title);
+
+    const detailText = String(details || '').trim();
+    if (detailText) {
+        const detail = document.createElement('p');
+        detail.className = 'social-planner-assistant-output-detail';
+        detail.textContent = detailText;
+        container.appendChild(detail);
+    }
+}
+
+function resetSocialPlannerAssistantState() {
+    const promptInput = document.getElementById('sp-assistant-prompt');
+    const toneSelect = document.getElementById('sp-assistant-tone');
+    if (promptInput) promptInput.value = '';
+    if (toneSelect) toneSelect.value = 'professional';
+    setSocialPlannerAssistantOutput('Gi en instruks, og velg hva AI skal gjøre.', 'info');
+}
+
+async function requestSocialPlannerAssistantSuggestion(payload = {}) {
+    const response = await fetch(`${API_URL}/social-planner/assistant`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        throw new Error(result?.details || result?.error || `AI-feil (${response.status})`);
+    }
+    return result;
+}
+
+function applySocialPlannerAssistantSuggestion(suggestion = {}, action = 'write') {
+    const normalizedAction = normalizeSocialPlannerAssistantAction(action);
+    const touched = [];
+
+    const masterTextSuggestion = String(suggestion?.masterText || '').trim();
+    const shouldApplyMasterText = ['write', 'improve', 'shorten', 'expand'].includes(normalizedAction);
+    if (masterTextSuggestion && shouldApplyMasterText) {
+        const masterInput = document.getElementById('sp-entry-master-text');
+        if (masterInput) {
+            masterInput.value = masterTextSuggestion;
+            touched.push('mastertekst');
+        }
+    }
+
+    const variantSource = (suggestion?.variants && typeof suggestion.variants === 'object' && !Array.isArray(suggestion.variants))
+        ? suggestion.variants
+        : {};
+    let variantCount = 0;
+    getSocialPlannerUiPlatforms().forEach((platform) => {
+        const variantValue = String(variantSource[platform] || '').trim();
+        if (!variantValue) return;
+        const variantInput = document.getElementById(`sp-entry-variant-${platform}`);
+        if (!variantInput) return;
+        variantInput.value = variantValue;
+        variantCount += 1;
+    });
+    if (variantCount > 0) {
+        touched.push(`${variantCount} varianter`);
+    }
+
+    const hashtagsSuggestion = normalizeSocialPlannerHashtagList(suggestion?.hashtags || []);
+    if (hashtagsSuggestion.length > 0) {
+        const hashtagInput = document.getElementById('sp-entry-hashtags');
+        if (hashtagInput) {
+            const existingHashtags = normalizeSocialPlannerHashtagList(parseHashtagInput(hashtagInput.value || ''));
+            const mergedHashtags = normalizedAction === 'hashtags'
+                ? normalizeSocialPlannerHashtagList([...hashtagsSuggestion, ...existingHashtags])
+                : (existingHashtags.length > 0 ? existingHashtags : hashtagsSuggestion);
+            hashtagInput.value = mergedHashtags.join(' ');
+            touched.push('hashtags');
+        }
+    }
+
+    if (touched.length > 0) {
+        renderSocialPlannerEntryPreview();
+    }
+
+    return touched;
+}
+
+async function runSocialPlannerAssistant(action = 'write') {
+    const normalizedAction = normalizeSocialPlannerAssistantAction(action);
+    if (socialPlannerAssistantInFlight) return;
+
+    const promptInput = document.getElementById('sp-assistant-prompt');
+    const toneSelect = document.getElementById('sp-assistant-tone');
+    const prompt = String(promptInput?.value || '').trim();
+    const tone = String(toneSelect?.value || 'professional').trim() || 'professional';
+    const masterText = String(document.getElementById('sp-entry-master-text')?.value || '').trim();
+    const variants = getSocialPlannerEntryFormVariants();
+    const linkUrl = String(document.getElementById('sp-entry-link')?.value || '').trim();
+    const hashtags = parseHashtagInput(document.getElementById('sp-entry-hashtags')?.value || '');
+    const selectedPlatforms = getSocialPlannerAssistantSelectedPlatforms();
+
+    if (!prompt && !masterText && normalizedAction !== 'hashtags') {
+        setSocialPlannerAssistantOutput('Skriv en instruks eller start med litt tekst først.', 'danger');
+        return;
+    }
+
+    socialPlannerAssistantInFlight = true;
+    setSocialPlannerAssistantBusy(true, normalizedAction);
+    setSocialPlannerAssistantOutput(`Kjører AI ${formatSocialPlannerAssistantActionLabel(normalizedAction)}...`, 'info');
+
+    try {
+        const payload = await requestSocialPlannerAssistantSuggestion({
+            action: normalizedAction,
+            prompt,
+            tone,
+            masterText,
+            variants,
+            linkUrl,
+            hashtags,
+            selectedPlatforms
+        });
+
+        const suggestion = (payload?.suggestion && typeof payload.suggestion === 'object' && !Array.isArray(payload.suggestion))
+            ? payload.suggestion
+            : {};
+        const touched = applySocialPlannerAssistantSuggestion(suggestion, normalizedAction);
+        const appliedSummary = touched.length > 0
+            ? `Oppdatert: ${touched.join(', ')}.`
+            : 'AI ga forslag, men ingen felt ble oppdatert automatisk.';
+        const details = [
+            String(suggestion.notes || '').trim(),
+            payload?.model ? `Model: ${payload.model}` : ''
+        ].filter(Boolean).join(' • ');
+        setSocialPlannerAssistantOutput(appliedSummary, 'success', details);
+        setSocialPlannerStatus('AI-assistent oppdaterte composer-forslag.', 'success');
+    } catch (error) {
+        console.error('Error running social planner assistant:', error);
+        const message = normalizeAdminErrorMessage(error, 'AI-assistenten kunne ikke generere forslag.');
+        setSocialPlannerAssistantOutput(message, 'danger');
+        setSocialPlannerStatus(message, 'danger');
+    } finally {
+        socialPlannerAssistantInFlight = false;
+        setSocialPlannerAssistantBusy(false, normalizedAction);
+    }
+}
+
+window.runSocialPlannerAssistant = runSocialPlannerAssistant;
+
 function syncSocialPlannerComposerMeta() {
     const editId = String(document.getElementById('sp-entry-edit-id')?.value || '').trim();
     const titleEl = document.getElementById('sp-compose-title');
@@ -2522,6 +2818,10 @@ function resetSocialPlannerEntryForm() {
     syncSocialPlannerScheduleFieldState();
     renderSocialPlannerComposerAccountChips();
     renderSocialPlannerEntryPreview();
+    renderSocialPlannerComposerMediaPreview();
+    socialPlannerAssistantInFlight = false;
+    setSocialPlannerAssistantBusy(false);
+    resetSocialPlannerAssistantState();
 }
 
 function setMultiSelectValues(selectElement, values = []) {
@@ -3867,6 +4167,7 @@ window.editSocialPlannerEntry = function (entryId) {
     syncSocialPlannerComposerMeta();
     renderSocialPlannerComposerAccountChips();
     renderSocialPlannerEntryPreview();
+    renderSocialPlannerComposerMediaPreview();
     openSocialPlannerComposer({ reset: false, panel: 'preview' });
 
     masterInput?.focus();
@@ -4575,10 +4876,6 @@ function updateHeaderActions(section) {
 
 let adminSidebarResizeBound = false;
 
-function isAdminSidebarDesktopViewport() {
-    return window.matchMedia('(min-width: 901px)').matches;
-}
-
 function getAdminSidebarCollapsedFromStorage() {
     try {
         return window.localStorage.getItem(ADMIN_SIDEBAR_COLLAPSE_KEY) === '1';
@@ -4596,45 +4893,72 @@ function setAdminSidebarCollapsedInStorage(collapsed) {
 }
 
 function updateAdminSidebarToggleButton(collapsed) {
-    const toggleBtn = document.getElementById('sidebar-toggle-btn');
-    if (!toggleBtn) return;
+    const controls = [
+        {
+            id: 'sidebar-toggle-btn',
+            collapsedIcon: 'fa-bars',
+            expandedIcon: 'fa-xmark'
+        },
+        {
+            id: 'sidebar-inline-toggle-btn',
+            collapsedIcon: 'fa-angle-right',
+            expandedIcon: 'fa-angle-left'
+        },
+        {
+            id: 'sidebar-reopen-btn',
+            collapsedIcon: 'fa-angles-right',
+            expandedIcon: 'fa-angles-left'
+        }
+    ];
 
-    toggleBtn.classList.toggle('is-collapsed', !!collapsed);
-    toggleBtn.setAttribute('aria-expanded', String(!collapsed));
-    toggleBtn.setAttribute('title', collapsed ? 'Vis meny' : 'Skjul meny');
-    toggleBtn.setAttribute('aria-label', collapsed ? 'Vis meny' : 'Skjul meny');
+    controls.forEach((control) => {
+        const button = document.getElementById(control.id);
+        if (!button) return;
 
-    const icon = toggleBtn.querySelector('i');
-    if (!icon) return;
-    icon.classList.remove('fa-bars', 'fa-xmark');
-    icon.classList.add(collapsed ? 'fa-bars' : 'fa-xmark');
+        button.classList.toggle('is-collapsed', !!collapsed);
+        button.setAttribute('aria-expanded', String(!collapsed));
+        button.setAttribute('title', collapsed ? 'Vis meny' : 'Skjul meny');
+        button.setAttribute('aria-label', collapsed ? 'Vis meny' : 'Skjul meny');
+
+        const icon = button.querySelector('i');
+        if (!icon) return;
+        icon.classList.remove('fa-bars', 'fa-xmark', 'fa-angle-left', 'fa-angle-right', 'fa-angles-left', 'fa-angles-right');
+        icon.classList.add(collapsed ? control.collapsedIcon : control.expandedIcon);
+    });
+}
+
+function setAdminSidebarCollapsed(collapsed, persist = true) {
+    const normalizedCollapsed = !!collapsed;
+    document.body.classList.toggle('admin-sidebar-collapsed', normalizedCollapsed);
+    updateAdminSidebarToggleButton(normalizedCollapsed);
+    if (persist) {
+        setAdminSidebarCollapsedInStorage(normalizedCollapsed);
+    }
 }
 
 function applyAdminSidebarViewportState() {
-    if (!isAdminSidebarDesktopViewport()) {
-        document.body.classList.remove('admin-sidebar-collapsed');
-        updateAdminSidebarToggleButton(false);
-        return;
-    }
-
     const collapsed = getAdminSidebarCollapsedFromStorage();
-    document.body.classList.toggle('admin-sidebar-collapsed', collapsed);
-    updateAdminSidebarToggleButton(collapsed);
+    setAdminSidebarCollapsed(collapsed, false);
 }
 
 function setupAdminSidebarToggle() {
-    const toggleBtn = document.getElementById('sidebar-toggle-btn');
-    if (!toggleBtn) return;
+    const toggleControls = Array.from(document.querySelectorAll('[data-admin-sidebar-toggle]'));
+    if (!toggleControls.length) return;
 
     applyAdminSidebarViewportState();
 
-    toggleBtn.addEventListener('click', () => {
-        if (!isAdminSidebarDesktopViewport()) return;
-
-        const nextCollapsed = !document.body.classList.contains('admin-sidebar-collapsed');
-        document.body.classList.toggle('admin-sidebar-collapsed', nextCollapsed);
-        updateAdminSidebarToggleButton(nextCollapsed);
-        setAdminSidebarCollapsedInStorage(nextCollapsed);
+    toggleControls.forEach((control) => {
+        control.addEventListener('click', (event) => {
+            event.preventDefault();
+            const action = String(control.dataset.adminSidebarToggle || 'toggle').trim().toLowerCase();
+            const currentlyCollapsed = document.body.classList.contains('admin-sidebar-collapsed');
+            const nextCollapsed = action === 'open'
+                ? false
+                : action === 'close'
+                    ? true
+                    : !currentlyCollapsed;
+            setAdminSidebarCollapsed(nextCollapsed, true);
+        });
     });
 
     if (!adminSidebarResizeBound) {
@@ -4642,6 +4966,14 @@ function setupAdminSidebarToggle() {
         adminSidebarResizeBound = true;
     }
 }
+
+window.toggleAdminSidebar = function (forceCollapsed = null) {
+    const currentCollapsed = document.body.classList.contains('admin-sidebar-collapsed');
+    const nextCollapsed = typeof forceCollapsed === 'boolean'
+        ? forceCollapsed
+        : !currentCollapsed;
+    setAdminSidebarCollapsed(nextCollapsed, true);
+};
 
 function setupEventListeners() {
     const langBtns = document.querySelectorAll('.lang-btn');
@@ -4724,6 +5056,7 @@ function setupEventListeners() {
         'sp-entry-title',
         'sp-entry-master-text',
         'sp-entry-link',
+        'sp-entry-media',
         'sp-entry-hashtags',
         'sp-entry-variant-facebook',
         'sp-entry-variant-instagram',
@@ -4737,8 +5070,22 @@ function setupEventListeners() {
         if (!input) return;
         input.addEventListener('input', () => {
             renderSocialPlannerEntryPreview();
+            if (inputId === 'sp-entry-media') {
+                renderSocialPlannerComposerMediaPreview();
+            }
         });
     });
+    renderSocialPlannerComposerMediaPreview();
+
+    const assistantPromptInput = document.getElementById('sp-assistant-prompt');
+    if (assistantPromptInput) {
+        assistantPromptInput.addEventListener('keydown', (event) => {
+            const isShortcut = (event.metaKey || event.ctrlKey) && event.key === 'Enter';
+            if (!isShortcut) return;
+            event.preventDefault();
+            runSocialPlannerAssistant('write');
+        });
+    }
 
     const plannerFilterTabs = document.querySelectorAll('#sp-status-tabs .social-planner-tab-btn');
     plannerFilterTabs.forEach((tab) => {
@@ -4791,6 +5138,7 @@ let aiTranslateInFlight = false;
 const aiEnrichmentInFlight = new Map();
 const IMAGE_PICKER_TARGET_EDITOR = 'editor';
 const IMAGE_PICKER_TARGET_FEATURED = 'featured';
+const IMAGE_PICKER_TARGET_SOCIAL_PLANNER = 'social-planner';
 let imagePickerTarget = IMAGE_PICKER_TARGET_EDITOR;
 
 function sanitizeStorageFileName(fileName = 'image') {
@@ -5384,31 +5732,53 @@ window.insertVideo = function () {
 
 
 // Image Picker Integration
-window.openImagePicker = function (target = IMAGE_PICKER_TARGET_EDITOR) {
-    imagePickerTarget = target === IMAGE_PICKER_TARGET_FEATURED
-        ? IMAGE_PICKER_TARGET_FEATURED
-        : IMAGE_PICKER_TARGET_EDITOR;
+function setImagePickerActiveTab(tab = 'upload') {
+    const normalizedTab = String(tab || '').trim().toLowerCase() === 'unsplash' ? 'unsplash' : 'upload';
+    const tabBtns = document.querySelectorAll('.image-picker-tabs .tab-btn');
+    tabBtns.forEach((button) => {
+        button.classList.toggle('active', button.dataset.tab === normalizedTab);
+    });
+
+    const tabPanels = document.querySelectorAll('.picker-tab');
+    tabPanels.forEach((panel) => {
+        const panelId = `${normalizedTab}-tab`;
+        panel.classList.toggle('active', panel.id === panelId);
+    });
+}
+
+window.openImagePicker = function (target = IMAGE_PICKER_TARGET_EDITOR, options = {}) {
+    const normalizedTarget = String(target || '').trim().toLowerCase();
+    if (normalizedTarget === IMAGE_PICKER_TARGET_FEATURED) {
+        imagePickerTarget = IMAGE_PICKER_TARGET_FEATURED;
+    } else if (normalizedTarget === IMAGE_PICKER_TARGET_SOCIAL_PLANNER) {
+        imagePickerTarget = IMAGE_PICKER_TARGET_SOCIAL_PLANNER;
+    } else {
+        imagePickerTarget = IMAGE_PICKER_TARGET_EDITOR;
+    }
 
     const modal = document.getElementById('image-picker-modal');
     if (modal) modal.style.display = 'flex';
 
+    setImagePickerActiveTab(options?.initialTab);
+
     // Setup tab switching logic locally or verify it works
     const tabBtns = document.querySelectorAll('.image-picker-tabs .tab-btn');
-    tabBtns.forEach(btn => {
-        btn.onclick = function () {
-            const tab = this.dataset.tab;
-            tabBtns.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            document.querySelectorAll('.picker-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(`${tab}-tab`).classList.add('active');
+    tabBtns.forEach((button) => {
+        button.onclick = function () {
+            setImagePickerActiveTab(this.dataset.tab || 'upload');
         };
     });
+};
+
+window.openSocialPlannerMediaPicker = function (initialTab = 'unsplash') {
+    window.openImagePicker(IMAGE_PICKER_TARGET_SOCIAL_PLANNER, { initialTab });
 };
 
 window.closeImagePicker = function () {
     const modal = document.getElementById('image-picker-modal');
     if (modal) modal.style.display = 'none';
     imagePickerTarget = IMAGE_PICKER_TARGET_EDITOR;
+    setImagePickerActiveTab('upload');
     selectedImageUrl = null;
     selectedUploadFile = null;
     unsplashSearchState = { query: '', page: 0, total: 0, inFlight: false };
@@ -5447,9 +5817,20 @@ window.insertUploadedImage = async function () {
     }
 
     try {
-        const imageUrl = await uploadFileToFirebaseStorage(selectedUploadFile, 'blog');
         const isFeaturedPicker = imagePickerTarget === IMAGE_PICKER_TARGET_FEATURED;
+        const isSocialPlannerPicker = imagePickerTarget === IMAGE_PICKER_TARGET_SOCIAL_PLANNER;
+        const uploadFolder = isSocialPlannerPicker ? 'social' : 'blog';
+        const imageUrl = await uploadFileToFirebaseStorage(selectedUploadFile, uploadFolder);
         selectedImageUrl = imageUrl;
+
+        if (isSocialPlannerPicker) {
+            setSocialPlannerMediaUrl(imageUrl);
+            renderMediaLibraryItem(imageUrl, selectedUploadFile.name || 'SoMe-bilde');
+            closeImagePicker();
+            setSocialPlannerStatus('Bilde er lagt til i social-innlegget.', 'success');
+            return;
+        }
+
         if (!isFeaturedPicker) {
             insertImageIntoEditor(imageUrl);
         }
@@ -5591,7 +5972,17 @@ window.insertUnsplashImage = async function (imageUrl) {
     if (!imageUrl) return;
 
     const isFeaturedPicker = imagePickerTarget === IMAGE_PICKER_TARGET_FEATURED;
+    const isSocialPlannerPicker = imagePickerTarget === IMAGE_PICKER_TARGET_SOCIAL_PLANNER;
     selectedImageUrl = imageUrl;
+
+    if (isSocialPlannerPicker) {
+        setSocialPlannerMediaUrl(imageUrl);
+        renderMediaLibraryItem(imageUrl, 'Unsplash-bilde');
+        closeImagePicker();
+        setSocialPlannerStatus('Unsplash-bilde lagt til i social-innlegget.', 'success');
+        return;
+    }
+
     if (!isFeaturedPicker) {
         insertImageIntoEditor(imageUrl);
     }

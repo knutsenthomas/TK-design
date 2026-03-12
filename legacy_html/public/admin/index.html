@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>tk-design Admin</title>
-    <link rel="stylesheet" href="style.css?v=44">
+    <link rel="stylesheet" href="style.css?v=47">
     <link rel="stylesheet" href="panel.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -26,7 +26,7 @@
     <!-- Modern Admin Header -->
     <header class="admin-header">
         <div class="header-left">
-            <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" type="button" title="Skjul meny" aria-label="Skjul meny" aria-expanded="true">
+            <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" data-admin-sidebar-toggle="toggle" type="button" title="Skjul meny" aria-label="Skjul meny" aria-expanded="true">
                 <i class="fas fa-xmark"></i>
             </button>
             <button class="back-btn" onclick="navigateBack()" style="display: none;">
@@ -81,8 +81,11 @@
     <div id="dashboard-container" class="admin-container">
         <!-- Sidebar -->
         <aside class="sidebar">
-            <div class="logo">
+            <div class="logo sidebar-logo-row">
                 <h2 class="sidebar-menu-title" data-i18n="sidebar_menu">Meny</h2>
+                <button class="sidebar-inline-toggle-btn" id="sidebar-inline-toggle-btn" data-admin-sidebar-toggle="close" type="button" title="Skjul meny" aria-label="Skjul meny" aria-expanded="true">
+                    <i class="fas fa-angle-left"></i>
+                </button>
             </div>
             <nav>
                 <button class="nav-btn active" data-tab="home" data-i18n="nav_home"><i class="fas fa-home"></i>
@@ -107,6 +110,10 @@
                     Logg ut</button>
             </nav>
         </aside>
+        <button class="sidebar-reopen-btn" id="sidebar-reopen-btn" data-admin-sidebar-toggle="open" type="button" title="Vis meny" aria-label="Vis meny" aria-expanded="false">
+            <i class="fas fa-angles-right"></i>
+            <span>Meny</span>
+        </button>
 
         <!-- Main Content -->
         <main class="main-content">
@@ -740,12 +747,22 @@
                                         <div class="social-planner-compose-editor">
                                             <textarea id="sp-entry-master-text" rows="10" maxlength="6000" placeholder="What would you like to share?"></textarea>
                                             <div class="social-planner-compose-upload">
-                                                <label for="sp-entry-media" class="social-planner-compose-upload-box">
+                                                <div class="social-planner-compose-upload-box">
                                                     <i class="fas fa-image"></i>
-                                                    <span>Dra og slipp, eller velg fil/URL</span>
-                                                </label>
+                                                    <span>Legg til bilde fra Unsplash eller last opp fil</span>
+                                                    <div class="social-planner-compose-upload-actions">
+                                                        <button type="button" class="save-btn secondary-action-btn" onclick="openSocialPlannerMediaPicker('unsplash')">
+                                                            <i class="fas fa-camera-retro"></i> Unsplash
+                                                        </button>
+                                                        <button type="button" class="save-btn secondary-action-btn" onclick="openSocialPlannerMediaPicker('upload')">
+                                                            <i class="fas fa-upload"></i> Last opp
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div id="sp-entry-media-preview" class="social-planner-compose-media-preview" hidden></div>
                                             </div>
                                             <div class="social-planner-compose-quick-actions">
+                                                <button type="button" class="social-planner-compose-quick-btn" onclick="openSocialPlannerMediaPicker('unsplash')" title="Legg til bilde fra Unsplash"><i class="fas fa-image"></i></button>
                                                 <button type="button" class="social-planner-compose-quick-btn" onclick="document.getElementById('sp-entry-link')?.focus()"><i class="fas fa-link"></i></button>
                                                 <button type="button" class="social-planner-compose-quick-btn" onclick="document.getElementById('sp-entry-hashtags')?.focus()"><i class="fas fa-hashtag"></i></button>
                                                 <button type="button" class="social-planner-compose-quick-btn" onclick="document.getElementById('sp-entry-template')?.focus()"><i class="fas fa-bolt"></i></button>
@@ -833,6 +850,46 @@
                                                     <li>Lage variasjoner per plattform</li>
                                                     <li>Forkorte eller utvide caption</li>
                                                 </ul>
+                                            </div>
+                                            <div class="social-planner-field">
+                                                <label for="sp-assistant-prompt">Instruks</label>
+                                                <textarea id="sp-assistant-prompt" rows="4" maxlength="1200" placeholder="F.eks: Skriv et engasjerende innlegg om ny tjeneste for små bedrifter."></textarea>
+                                            </div>
+                                            <div class="social-planner-form-row social-planner-assistant-meta-row">
+                                                <div class="social-planner-field">
+                                                    <label for="sp-assistant-tone">Tone</label>
+                                                    <select id="sp-assistant-tone">
+                                                        <option value="professional" selected>Professional</option>
+                                                        <option value="friendly">Friendly</option>
+                                                        <option value="inspirational">Inspirational</option>
+                                                        <option value="sales">Sales</option>
+                                                        <option value="playful">Playful</option>
+                                                        <option value="informative">Informative</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="social-planner-compose-assistant-actions">
+                                                <button type="button" class="save-btn secondary-action-btn social-planner-assistant-action-btn" data-action="write" onclick="runSocialPlannerAssistant('write')">
+                                                    <i class="fas fa-feather-pointed"></i> Skriv innlegg
+                                                </button>
+                                                <button type="button" class="save-btn secondary-action-btn social-planner-assistant-action-btn" data-action="improve" onclick="runSocialPlannerAssistant('improve')">
+                                                    <i class="fas fa-wand-magic"></i> Forbedre tekst
+                                                </button>
+                                                <button type="button" class="save-btn secondary-action-btn social-planner-assistant-action-btn" data-action="variants" onclick="runSocialPlannerAssistant('variants')">
+                                                    <i class="fas fa-shapes"></i> Lag varianter
+                                                </button>
+                                                <button type="button" class="save-btn secondary-action-btn social-planner-assistant-action-btn" data-action="shorten" onclick="runSocialPlannerAssistant('shorten')">
+                                                    <i class="fas fa-minimize"></i> Forkort
+                                                </button>
+                                                <button type="button" class="save-btn secondary-action-btn social-planner-assistant-action-btn" data-action="expand" onclick="runSocialPlannerAssistant('expand')">
+                                                    <i class="fas fa-maximize"></i> Utvid
+                                                </button>
+                                                <button type="button" class="save-btn secondary-action-btn social-planner-assistant-action-btn" data-action="hashtags" onclick="runSocialPlannerAssistant('hashtags')">
+                                                    <i class="fas fa-hashtag"></i> Foreslå hashtags
+                                                </button>
+                                            </div>
+                                            <div id="sp-assistant-output" class="social-planner-compose-assistant-output">
+                                                <p class="social-planner-list-empty">Gi en instruks, og velg hva AI skal gjøre.</p>
                                             </div>
                                         </div>
                                     </aside>
@@ -1484,7 +1541,7 @@
         </div>
     </div>
 
-    <script src="app.js?v=1.0.22"></script>
+    <script src="app.js?v=1.0.25"></script>
     <script type="importmap">
         {
             "imports": {
