@@ -2466,21 +2466,23 @@ function setSocialPlannerComposerPanel(panel = 'preview') {
     if (assistantBtn) assistantBtn.classList.toggle('active', normalizedPanel === 'assistant');
 }
 
-window.setSocialPlannerComposerPanel = function (panel = 'preview') {
-    setSocialPlannerComposerPanel(panel);
-};
+window.setSocialPlannerComposerPanel = setSocialPlannerComposerPanel;
 
 function openSocialPlannerComposer(options = {}) {
+    const resolvedOptions = (options && typeof options === 'object' && !Array.isArray(options))
+        ? options
+        : {};
     const modal = document.getElementById('sp-compose-modal');
     if (!modal) return;
 
-    if (options.reset) {
+    const shouldReset = resolvedOptions.reset !== false;
+    if (shouldReset) {
         resetSocialPlannerEntryForm();
     }
 
     syncSocialPlannerComposerMeta();
     renderSocialPlannerComposerAccountChips();
-    setSocialPlannerComposerPanel(options.panel || socialPlannerComposerPanel || 'preview');
+    setSocialPlannerComposerPanel(resolvedOptions.panel || socialPlannerComposerPanel || 'preview');
 
     modal.classList.add('is-open');
     modal.setAttribute('aria-hidden', 'false');
@@ -2492,9 +2494,7 @@ function openSocialPlannerComposer(options = {}) {
     }, 20);
 }
 
-window.openSocialPlannerComposer = function () {
-    openSocialPlannerComposer({ reset: true, panel: 'preview' });
-};
+window.openSocialPlannerComposer = openSocialPlannerComposer;
 
 function closeSocialPlannerComposer() {
     const modal = document.getElementById('sp-compose-modal');
@@ -2504,9 +2504,7 @@ function closeSocialPlannerComposer() {
     document.body.classList.remove('social-planner-compose-open');
 }
 
-window.closeSocialPlannerComposer = function () {
-    closeSocialPlannerComposer();
-};
+window.closeSocialPlannerComposer = closeSocialPlannerComposer;
 
 function resetSocialPlannerEntryForm() {
     const form = document.getElementById('sp-entry-form');
@@ -3335,9 +3333,7 @@ window.changeSocialPlannerAnalyticsPeriod = async function (period) {
     await fetchSocialPlannerAnalytics(safePeriod);
 };
 
-window.resetSocialPlannerWorkspaceForm = function () {
-    resetSocialPlannerWorkspaceForm();
-};
+window.resetSocialPlannerWorkspaceForm = resetSocialPlannerWorkspaceForm;
 
 window.saveSocialPlannerWorkspace = async function (event) {
     event.preventDefault();
@@ -3448,9 +3444,7 @@ window.deleteSocialPlannerWorkspace = async function (workspaceId) {
     }
 };
 
-window.resetSocialPlannerTemplateForm = function () {
-    resetSocialPlannerTemplateForm();
-};
+window.resetSocialPlannerTemplateForm = resetSocialPlannerTemplateForm;
 
 window.saveSocialPlannerTemplate = async function (event) {
     event.preventDefault();
@@ -3626,9 +3620,7 @@ window.applySocialPlannerTemplateToEntry = async function (templateId = '') {
     setSocialPlannerStatus('Mal satt inn i master-tekst.', 'success');
 };
 
-window.resetSocialPlannerAccountForm = function () {
-    resetSocialPlannerAccountForm();
-};
+window.resetSocialPlannerAccountForm = resetSocialPlannerAccountForm;
 
 window.editSocialPlannerAccount = function (accountId) {
     const normalizedAccountId = String(accountId || '').trim();
@@ -3817,9 +3809,7 @@ window.createSocialPlannerEntry = async function (event) {
     }
 };
 
-window.resetSocialPlannerEntryForm = function () {
-    resetSocialPlannerEntryForm();
-};
+window.resetSocialPlannerEntryForm = resetSocialPlannerEntryForm;
 
 function toLocalDateTimeInputValue(value = '') {
     const date = new Date(String(value || '').trim());
