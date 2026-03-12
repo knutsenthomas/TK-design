@@ -4903,11 +4903,6 @@ function updateAdminSidebarToggleButton(collapsed) {
             id: 'sidebar-inline-toggle-btn',
             collapsedIcon: 'fa-angle-right',
             expandedIcon: 'fa-angle-left'
-        },
-        {
-            id: 'sidebar-reopen-btn',
-            collapsedIcon: 'fa-angles-right',
-            expandedIcon: 'fa-angles-left'
         }
     ];
 
