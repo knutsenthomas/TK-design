@@ -2004,6 +2004,105 @@ function formatPlatformLabel(platform = '') {
     return normalized || 'Platform';
 }
 
+function getSocialPlannerPlatformIconClass(platform = '') {
+    const normalized = String(platform || '').trim().toLowerCase();
+    if (normalized === 'facebook') return 'fab fa-facebook-f';
+    if (normalized === 'instagram') return 'fab fa-instagram';
+    if (normalized === 'linkedin') return 'fab fa-linkedin-in';
+    if (normalized === 'x') return 'fa-brands fa-x-twitter';
+    if (normalized === 'tiktok') return 'fab fa-tiktok';
+    return 'fas fa-share-nodes';
+}
+
+function getSocialPlannerEntryPrimaryDateValue(entry = {}) {
+    const status = toSocialPlannerStatusClass(entry?.status);
+    if (isSocialPlannerPublishedLikeStatus(status) && entry?.publishedAt) {
+        return String(entry.publishedAt);
+    }
+    if (entry?.scheduledFor) {
+        return String(entry.scheduledFor);
+    }
+    if (entry?.updatedAt) {
+        return String(entry.updatedAt);
+    }
+    return String(entry?.createdAt || '');
+}
+
+function getSocialPlannerEntryPrimaryDate(entry = {}) {
+    const candidate = getSocialPlannerEntryPrimaryDateValue(entry);
+    const parsed = new Date(String(candidate || '').trim());
+    return Number.isFinite(parsed.getTime()) ? parsed : null;
+}
+
+function getSocialPlannerEntryPrimaryTimestamp(entry = {}) {
+    const primaryDate = getSocialPlannerEntryPrimaryDate(entry);
+    return primaryDate ? primaryDate.getTime() : 0;
+}
+
+function getSocialPlannerDateKey(date) {
+    if (!(date instanceof Date) || !Number.isFinite(date.getTime())) {
+        return 'unknown';
+    }
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+function formatSocialPlannerFeedDate(date) {
+    if (!(date instanceof Date) || !Number.isFinite(date.getTime())) {
+        return 'Ukjent dato';
+    }
+    const locale = currentLang === 'en' ? 'en-GB' : 'nb-NO';
+    return new Intl.DateTimeFormat(locale, {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long'
+    }).format(date);
+}
+
+function formatSocialPlannerTime(date) {
+    if (!(date instanceof Date) || !Number.isFinite(date.getTime())) {
+        return '--:--';
+    }
+    const locale = currentLang === 'en' ? 'en-GB' : 'nb-NO';
+    return new Intl.DateTimeFormat(locale, {
+        hour: '2-digit',
+        minute: '2-digit'
+    }).format(date);
+}
+
+function getSocialPlannerEntryTimeLabel(entry = {}) {
+    const status = toSocialPlannerStatusClass(entry?.status);
+    if (isSocialPlannerPublishedLikeStatus(status)) {
+        return 'Publisert';
+    }
+    if (status === 'scheduled' || status === 'publishing') {
+        return 'Planlagt';
+    }
+    return 'Oppdatert';
+}
+
+function resolveSocialPlannerEntryCaption(entry = {}) {
+    const master = String(entry?.masterText || '').trim();
+    if (master) return master;
+
+    const variants = (entry?.variants && typeof entry.variants === 'object' && !Array.isArray(entry.variants))
+        ? entry.variants
+        : {};
+    const fallbackVariant = Object.values(variants)
+        .map((value) => String(value || '').trim())
+        .find(Boolean);
+    return String(fallbackVariant || '').trim();
+}
+
+function truncateSocialPlannerText(value = '', maxLength = 220) {
+    const normalized = String(value || '').replace(/\s+/g, ' ').trim();
+    if (!normalized) return '';
+    if (normalized.length <= maxLength) return normalized;
+    return `${normalized.slice(0, Math.max(0, maxLength - 1)).trimEnd()}…`;
+}
+
 function formatNumberForUi(value) {
     const number = Number(value);
     if (!Number.isFinite(number)) return '0';
@@ -2537,10 +2636,12 @@ function renderSocialPlannerAccounts() {
 }
 
 function renderSocialPlannerEntries() {
-    const tableBody = document.getElementById('sp-entries-body');
-    if (!tableBody) return;
+    const feed = document.getElementById('sp-entries-feed');
+    if (!feed) return;
 
     const scopedEntries = getSocialPlannerScopedEntries();
+    const scopedAccounts = getSocialPlannerScopedAccounts();
+    const accountLookup = new Map(scopedAccounts.map((account) => [String(account.id), account]));
     renderSocialPlannerEntryFilters(scopedEntries);
 
     const filteredEntries = scopedEntries.filter((entry) => {
@@ -2548,102 +2649,297 @@ function renderSocialPlannerEntries() {
             && matchesSocialPlannerEntrySearch(entry, socialPlannerEntrySearch);
     });
 
-    tableBody.innerHTML = '';
+    const sortedEntries = filteredEntries.slice().sort((left, right) => {
+        const rightTs = getSocialPlannerEntryPrimaryTimestamp(right);
+        const leftTs = getSocialPlannerEntryPrimaryTimestamp(left);
+        if (rightTs !== leftTs) {
+            return rightTs - leftTs;
+        }
+        return String(right?.updatedAt || '').localeCompare(String(left?.updatedAt || ''));
+    });
 
-    if (filteredEntries.length === 0) {
-        const row = document.createElement('tr');
-        const cell = document.createElement('td');
-        cell.colSpan = 6;
-        cell.className = 'meta';
+    feed.innerHTML = '';
+
+    if (sortedEntries.length === 0) {
+        const empty = document.createElement('p');
+        empty.className = 'social-planner-list-empty social-planner-feed-empty';
         const hasScopedEntries = scopedEntries.length > 0;
         if (!hasScopedEntries) {
-            cell.textContent = 'Ingen innlegg i dette workspace enda.';
+            empty.textContent = 'Ingen innlegg i dette workspace enda. Opprett første innlegg for å komme i gang.';
         } else if (socialPlannerEntrySearch) {
-            cell.textContent = `Ingen innlegg matcher søket "${socialPlannerEntrySearch}".`;
+            empty.textContent = `Ingen innlegg matcher søket "${socialPlannerEntrySearch}".`;
         } else {
-            cell.textContent = 'Ingen innlegg i valgt statusfilter.';
+            empty.textContent = 'Ingen innlegg i valgt statusfilter.';
         }
-        row.appendChild(cell);
-        tableBody.appendChild(row);
+        feed.appendChild(empty);
         return;
     }
 
-    filteredEntries.forEach((entry) => {
-        const row = document.createElement('tr');
+    const groupedEntries = new Map();
+    sortedEntries.forEach((entry) => {
+        const primaryDate = getSocialPlannerEntryPrimaryDate(entry);
+        const key = getSocialPlannerDateKey(primaryDate);
+        if (!groupedEntries.has(key)) {
+            groupedEntries.set(key, {
+                date: primaryDate,
+                entries: []
+            });
+        }
+        groupedEntries.get(key).entries.push(entry);
+    });
 
-        const titleCell = document.createElement('td');
-        const title = document.createElement('strong');
-        title.textContent = entry.title || 'Uten tittel';
-        const titleMeta = document.createElement('span');
-        titleMeta.className = 'meta';
-        titleMeta.textContent = entry.lastError ? `Feil: ${entry.lastError}` : `Oppdatert ${formatSocialPlannerDateTime(entry.updatedAt)}`;
-        titleCell.appendChild(title);
-        titleCell.appendChild(titleMeta);
+    groupedEntries.forEach((group) => {
+        const groupSection = document.createElement('section');
+        groupSection.className = 'social-planner-feed-group';
 
-        const statusCell = document.createElement('td');
-        const badge = document.createElement('span');
-        badge.className = `social-planner-badge status-${toSocialPlannerStatusClass(entry.status)}`;
-        badge.textContent = formatSocialPlannerStatus(entry.status || 'draft');
-        statusCell.appendChild(badge);
+        const groupTitle = document.createElement('h4');
+        groupTitle.className = 'social-planner-feed-date';
+        groupTitle.textContent = formatSocialPlannerFeedDate(group.date);
+        groupSection.appendChild(groupTitle);
 
-        const dateCell = document.createElement('td');
-        const primaryDate = entry.status === 'published' || entry.status === 'partially_published'
-            ? entry.publishedAt
-            : entry.scheduledFor;
-        dateCell.textContent = formatSocialPlannerDateTime(primaryDate);
+        const list = document.createElement('div');
+        list.className = 'social-planner-feed-list';
 
-        const targetsCell = document.createElement('td');
-        targetsCell.textContent = String(Array.isArray(entry.targetAccountIds) ? entry.targetAccountIds.length : 0);
+        group.entries.forEach((entry) => {
+            const primaryDate = getSocialPlannerEntryPrimaryDate(entry);
+            const statusClass = toSocialPlannerStatusClass(entry.status);
 
-        const engagementCell = document.createElement('td');
-        engagementCell.textContent = formatNumberForUi(computeSocialPlannerEntryEngagement(entry));
+            const row = document.createElement('article');
+            row.className = 'social-planner-feed-item';
 
-        const actionCell = document.createElement('td');
-        actionCell.style.textAlign = 'right';
-        const actions = document.createElement('div');
-        actions.className = 'social-planner-table-actions';
+            const timeCol = document.createElement('div');
+            timeCol.className = 'social-planner-feed-time';
 
-        const editBtn = document.createElement('button');
-        editBtn.type = 'button';
-        editBtn.className = 'action-btn';
-        editBtn.title = 'Rediger innlegg';
-        editBtn.innerHTML = '<i class="fas fa-pen"></i>';
-        editBtn.addEventListener('click', () => {
-            window.editSocialPlannerEntry(entry.id);
+            const timeValue = document.createElement('strong');
+            timeValue.textContent = formatSocialPlannerTime(primaryDate);
+
+            const timeLabel = document.createElement('span');
+            timeLabel.textContent = getSocialPlannerEntryTimeLabel(entry);
+
+            timeCol.appendChild(timeValue);
+            timeCol.appendChild(timeLabel);
+
+            const card = document.createElement('article');
+            card.className = 'social-planner-entry-card';
+
+            const head = document.createElement('div');
+            head.className = 'social-planner-entry-card-head';
+
+            const accountsWrap = document.createElement('div');
+            accountsWrap.className = 'social-planner-entry-accounts';
+
+            const targetIds = Array.isArray(entry.targetAccountIds) ? entry.targetAccountIds : [];
+            const resolvedAccounts = targetIds.map((accountId) => {
+                const account = accountLookup.get(String(accountId));
+                if (account) return account;
+                return {
+                    id: String(accountId || ''),
+                    displayName: String(accountId || 'Ukjent konto'),
+                    platform: 'custom'
+                };
+            });
+
+            if (resolvedAccounts.length === 0) {
+                const emptyChip = document.createElement('span');
+                emptyChip.className = 'social-planner-account-chip';
+                emptyChip.innerHTML = '<i class="fas fa-user-plus"></i> Ingen konto';
+                accountsWrap.appendChild(emptyChip);
+            } else {
+                const visibleAccounts = resolvedAccounts.slice(0, 3);
+                visibleAccounts.forEach((account) => {
+                    const chip = document.createElement('span');
+                    chip.className = 'social-planner-account-chip';
+                    chip.dataset.platform = String(account.platform || '').toLowerCase();
+
+                    const icon = document.createElement('i');
+                    icon.className = getSocialPlannerPlatformIconClass(account.platform);
+
+                    const label = document.createElement('span');
+                    label.textContent = account.displayName || account.id || 'Konto';
+
+                    chip.appendChild(icon);
+                    chip.appendChild(label);
+                    accountsWrap.appendChild(chip);
+                });
+
+                if (resolvedAccounts.length > visibleAccounts.length) {
+                    const overflowChip = document.createElement('span');
+                    overflowChip.className = 'social-planner-account-chip';
+                    overflowChip.textContent = `+${resolvedAccounts.length - visibleAccounts.length}`;
+                    accountsWrap.appendChild(overflowChip);
+                }
+            }
+
+            const badge = document.createElement('span');
+            badge.className = `social-planner-badge status-${statusClass}`;
+            badge.textContent = formatSocialPlannerStatus(entry.status || 'draft');
+
+            head.appendChild(accountsWrap);
+            head.appendChild(badge);
+
+            const body = document.createElement('div');
+            body.className = 'social-planner-entry-card-body';
+
+            const title = document.createElement('h5');
+            title.className = 'social-planner-entry-title';
+            title.textContent = entry.title || 'Uten tittel';
+
+            const caption = truncateSocialPlannerText(resolveSocialPlannerEntryCaption(entry), 320);
+            if (caption) {
+                const text = document.createElement('p');
+                text.className = 'social-planner-entry-text';
+                text.textContent = caption;
+                body.appendChild(title);
+                body.appendChild(text);
+            } else {
+                body.appendChild(title);
+            }
+
+            const meta = document.createElement('div');
+            meta.className = 'social-planner-entry-meta';
+
+            const updatedMeta = document.createElement('span');
+            updatedMeta.className = 'social-planner-entry-updated';
+            updatedMeta.textContent = `Oppdatert ${formatSocialPlannerDateTime(entry.updatedAt)}`;
+            meta.appendChild(updatedMeta);
+
+            const linkUrl = String(entry.linkUrl || '').trim();
+            if (linkUrl) {
+                const hasHttpScheme = /^https?:\/\//i.test(linkUrl);
+                const linkEl = hasHttpScheme
+                    ? document.createElement('a')
+                    : document.createElement('span');
+                linkEl.className = 'social-planner-entry-link';
+                if (hasHttpScheme) {
+                    linkEl.href = linkUrl;
+                    linkEl.target = '_blank';
+                    linkEl.rel = 'noopener noreferrer';
+                }
+                linkEl.textContent = linkUrl;
+                meta.appendChild(linkEl);
+            }
+
+            const hashtags = Array.isArray(entry.hashtags) ? entry.hashtags.filter(Boolean) : [];
+            if (hashtags.length > 0) {
+                const hashtagWrap = document.createElement('div');
+                hashtagWrap.className = 'social-planner-entry-hashtags';
+
+                hashtags.slice(0, 8).forEach((tag) => {
+                    const tagEl = document.createElement('span');
+                    tagEl.className = 'social-planner-entry-hashtag';
+                    const normalizedTag = String(tag).trim();
+                    tagEl.textContent = normalizedTag.startsWith('#') ? normalizedTag : `#${normalizedTag}`;
+                    hashtagWrap.appendChild(tagEl);
+                });
+
+                meta.appendChild(hashtagWrap);
+            }
+
+            if (entry.lastError) {
+                const error = document.createElement('p');
+                error.className = 'social-planner-entry-error';
+                error.textContent = `Feil: ${entry.lastError}`;
+                meta.appendChild(error);
+            }
+
+            body.appendChild(meta);
+
+            const metricsRow = document.createElement('div');
+            metricsRow.className = 'social-planner-entry-metrics';
+
+            const metrics = (entry.metrics && typeof entry.metrics === 'object') ? entry.metrics : {};
+            const metricItems = [
+                { label: 'Likes', value: metrics.likes || 0 },
+                { label: 'Comments', value: metrics.comments || 0 },
+                { label: 'Shares', value: metrics.shares || 0 },
+                { label: 'Clicks', value: metrics.clicks || 0 },
+                { label: 'Reach', value: metrics.reach || 0 }
+            ];
+
+            metricItems.forEach((metric) => {
+                const metricCell = document.createElement('div');
+                metricCell.className = 'social-planner-entry-metric';
+
+                const metricLabel = document.createElement('span');
+                metricLabel.textContent = metric.label;
+
+                const metricValue = document.createElement('strong');
+                metricValue.textContent = formatNumberForUi(metric.value);
+
+                metricCell.appendChild(metricLabel);
+                metricCell.appendChild(metricValue);
+                metricsRow.appendChild(metricCell);
+            });
+
+            const footer = document.createElement('div');
+            footer.className = 'social-planner-entry-footer';
+
+            const source = document.createElement('p');
+            source.className = 'social-planner-entry-source';
+            const platforms = Array.from(new Set(
+                resolvedAccounts
+                    .map((account) => formatPlatformLabel(account.platform))
+                    .filter(Boolean)
+            ));
+            const sourcePrefix = isSocialPlannerPublishedLikeStatus(statusClass) ? 'Publisert via' : 'Kontoer';
+            source.innerHTML = '<i class="fas fa-share-nodes"></i>';
+            const sourceText = document.createTextNode(
+                platforms.length > 0
+                    ? `${sourcePrefix} ${platforms.join(', ')}`
+                    : 'Ingen konto valgt'
+            );
+            source.appendChild(sourceText);
+
+            const actions = document.createElement('div');
+            actions.className = 'social-planner-entry-actions';
+
+            const editBtn = document.createElement('button');
+            editBtn.type = 'button';
+            editBtn.className = 'action-btn';
+            editBtn.title = 'Rediger innlegg';
+            editBtn.innerHTML = '<i class="fas fa-pen"></i><span>Rediger</span>';
+            editBtn.addEventListener('click', () => {
+                window.editSocialPlannerEntry(entry.id);
+            });
+
+            const publishBtn = document.createElement('button');
+            publishBtn.type = 'button';
+            publishBtn.className = 'action-btn';
+            publishBtn.title = 'Publiser nå';
+            publishBtn.innerHTML = '<i class="fas fa-paper-plane"></i><span>Publiser</span>';
+            publishBtn.disabled = statusClass === 'publishing';
+            publishBtn.addEventListener('click', () => {
+                window.publishSocialPlannerEntry(entry.id);
+            });
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.className = 'action-btn delete';
+            deleteBtn.title = 'Slett innlegg';
+            deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+            deleteBtn.addEventListener('click', () => {
+                window.deleteSocialPlannerEntry(entry.id);
+            });
+
+            actions.appendChild(editBtn);
+            actions.appendChild(publishBtn);
+            actions.appendChild(deleteBtn);
+
+            footer.appendChild(source);
+            footer.appendChild(actions);
+
+            card.appendChild(head);
+            card.appendChild(body);
+            card.appendChild(metricsRow);
+            card.appendChild(footer);
+
+            row.appendChild(timeCol);
+            row.appendChild(card);
+            list.appendChild(row);
         });
 
-        const publishBtn = document.createElement('button');
-        publishBtn.type = 'button';
-        publishBtn.className = 'action-btn';
-        publishBtn.title = 'Publiser nå';
-        publishBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
-        publishBtn.disabled = entry.status === 'publishing';
-        publishBtn.addEventListener('click', () => {
-            window.publishSocialPlannerEntry(entry.id);
-        });
-
-        const deleteBtn = document.createElement('button');
-        deleteBtn.type = 'button';
-        deleteBtn.className = 'action-btn delete';
-        deleteBtn.title = 'Slett innlegg';
-        deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
-        deleteBtn.addEventListener('click', () => {
-            window.deleteSocialPlannerEntry(entry.id);
-        });
-
-        actions.appendChild(editBtn);
-        actions.appendChild(publishBtn);
-        actions.appendChild(deleteBtn);
-        actionCell.appendChild(actions);
-
-        row.appendChild(titleCell);
-        row.appendChild(statusCell);
-        row.appendChild(dateCell);
-        row.appendChild(targetsCell);
-        row.appendChild(engagementCell);
-        row.appendChild(actionCell);
-
-        tableBody.appendChild(row);
+        groupSection.appendChild(list);
+        feed.appendChild(groupSection);
     });
 }
 

@@ -595,6 +595,21 @@
                         </div>
 
                         <section class="card social-planner-card social-planner-entry-stream">
+                            <div class="social-planner-stream-toolbar">
+                                <div class="social-planner-stream-title">
+                                    <h3>All Channels</h3>
+                                    <p>Planlagte og publiserte innlegg for valgt workspace.</p>
+                                </div>
+                                <div class="social-planner-inline-actions">
+                                    <button class="save-btn" type="button" onclick="document.getElementById('sp-entry-title')?.focus()">
+                                        <i class="fas fa-plus"></i> New Post
+                                    </button>
+                                    <button class="save-btn secondary-action-btn" type="button" onclick="refreshSocialPlannerState({ silent: true, workspaceId: getSocialPlannerActiveWorkspaceId() })">
+                                        Oppdater
+                                    </button>
+                                </div>
+                            </div>
+
                             <div class="social-planner-stream-head">
                                 <div id="sp-status-tabs" class="social-planner-status-tabs">
                                     <button type="button" class="social-planner-tab-btn active" data-filter="all">
@@ -621,24 +636,8 @@
                                 </div>
                             </div>
 
-                            <div class="social-planner-table-wrap">
-                                <table class="social-planner-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Tittel</th>
-                                            <th>Status</th>
-                                            <th>Planlagt/publisert</th>
-                                            <th>Kontoer</th>
-                                            <th>Engasjement</th>
-                                            <th style="text-align: right;">Handling</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="sp-entries-body">
-                                        <tr>
-                                            <td colspan="6">Ingen innlegg funnet.</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <div id="sp-entries-feed" class="social-planner-feed">
+                                <p class="social-planner-list-empty">Ingen innlegg funnet.</p>
                             </div>
                         </section>
 
@@ -1417,7 +1416,7 @@
         </div>
     </div>
 
-    <script src="app.js?v=1.0.18"></script>
+    <script src="app.js?v=1.0.20"></script>
     <script type="importmap">
         {
             "imports": {

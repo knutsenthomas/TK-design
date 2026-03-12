@@ -1141,8 +1141,8 @@ header h1 {
 
 .social-planner-shell {
     display: grid;
-    grid-template-columns: minmax(280px, 320px) 1fr;
-    gap: 18px;
+    grid-template-columns: minmax(268px, 296px) minmax(0, 1fr);
+    gap: 20px;
     align-items: start;
 }
 
@@ -1151,8 +1151,10 @@ header h1 {
     top: 82px;
     max-height: calc(100vh - 120px);
     overflow: auto;
-    border: 1px solid rgba(249, 115, 22, 0.12);
-    background: linear-gradient(180deg, #ffffff 0%, #fff9f4 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #ffffff 0%, #fafcff 100%);
+    box-shadow: 0 22px 44px -34px rgba(15, 23, 42, 0.5);
 }
 
 .social-planner-main {
@@ -1164,8 +1166,8 @@ header h1 {
 .social-planner-rail-section h3,
 .social-planner-card h3 {
     margin-bottom: 12px;
-    font-size: 17px;
-    letter-spacing: -0.01em;
+    font-size: 16px;
+    letter-spacing: -0.015em;
 }
 
 .social-planner-rail-section {
@@ -1175,7 +1177,7 @@ header h1 {
 
 .social-planner-rail-divider {
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(15, 23, 42, 0.12), transparent);
+    background: linear-gradient(90deg, transparent, rgba(15, 23, 42, 0.1), transparent);
     margin: 14px 0;
 }
 
@@ -1188,9 +1190,9 @@ header h1 {
     font-size: 13px;
     line-height: 1.45;
     padding: 10px 12px;
-    border: 1px dashed rgba(249, 115, 22, 0.2);
+    border: 1px dashed #cbd5e1;
     border-radius: 10px;
-    background: rgba(255, 255, 255, 0.75);
+    background: #f8fafc;
 }
 
 .social-planner-grid {
@@ -1206,12 +1208,13 @@ header h1 {
 }
 
 .social-planner-grid-bottom {
-    grid-template-columns: minmax(280px, 0.75fr) minmax(420px, 1.25fr);
+    grid-template-columns: minmax(280px, 0.72fr) minmax(460px, 1.28fr);
 }
 
 .social-planner-card {
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    box-shadow: 0 10px 30px -22px rgba(15, 23, 42, 0.35);
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 18px 36px -30px rgba(15, 23, 42, 0.42);
 }
 
 .social-planner-form {
@@ -1304,14 +1307,41 @@ header h1 {
 }
 
 .social-planner-stats-grid .stat-card {
-    border: 1px solid rgba(15, 23, 42, 0.08);
+    border: 1px solid #e2e8f0;
     border-radius: 14px;
-    background: linear-gradient(180deg, #ffffff 0%, #fff8f3 100%);
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
 }
 
 .social-planner-entry-stream {
     display: grid;
+    gap: 16px;
+    background: linear-gradient(180deg, #ffffff 0%, #fcfdff 100%);
+}
+
+.social-planner-stream-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     gap: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.social-planner-stream-title h3 {
+    font-size: 30px;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin: 0 0 4px;
+}
+
+.social-planner-stream-title p {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.social-planner-stream-toolbar .social-planner-inline-actions .save-btn {
+    padding: 9px 14px;
+    border-radius: 10px;
 }
 
 .social-planner-stream-head {
@@ -1325,70 +1355,83 @@ header h1 {
 .social-planner-status-tabs {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 2px;
     flex-wrap: wrap;
+    width: 100%;
+    padding: 0;
+    border: none;
+    border-bottom: 1px solid #e2e8f0;
+    border-radius: 0;
+    background: transparent;
 }
 
 .social-planner-tab-btn {
-    border: 1px solid var(--border-color);
-    border-radius: 999px;
-    background: #fff;
+    border: none;
+    border-radius: 0;
+    background: transparent;
     color: var(--text-muted);
     font-size: 13px;
-    font-weight: 700;
-    padding: 8px 12px;
+    font-weight: 600;
+    padding: 10px 10px 12px;
+    margin-bottom: -1px;
     display: inline-flex;
     align-items: center;
     gap: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
+    border-bottom: 2px solid transparent;
 }
 
 .social-planner-tab-btn span {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 20px;
+    min-width: 22px;
     height: 20px;
     border-radius: 999px;
     padding: 0 6px;
     font-size: 11px;
-    background: #f1f5f9;
-    color: #334155;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #475569;
 }
 
 .social-planner-tab-btn:hover {
-    border-color: #cbd5e1;
+    background: #f8fafc;
     color: var(--text-color);
 }
 
 .social-planner-tab-btn.active {
-    background: #fff7ed;
-    border-color: rgba(249, 115, 22, 0.35);
-    color: #9a3412;
+    background: transparent;
+    border-bottom-color: #16a34a;
+    color: #0f172a;
+    box-shadow: none;
 }
 
 .social-planner-tab-btn.active span {
-    background: #fed7aa;
-    color: #7c2d12;
+    background: #dcfce7;
+    border-color: #bbf7d0;
+    color: #166534;
 }
 
 .social-planner-stream-tools {
     display: flex;
     align-items: center;
     gap: 10px;
+    margin-left: auto;
 }
 
 .social-planner-search {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 8px 10px;
+    border: 1px solid #cfd8e3;
+    border-radius: 12px;
+    padding: 9px 12px;
     min-width: 260px;
     background: #fff;
     color: var(--text-muted);
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.03);
 }
 
 .social-planner-search i {
@@ -1402,6 +1445,10 @@ header h1 {
     font: inherit;
     color: var(--text-color);
     background: transparent;
+}
+
+.social-planner-search input::placeholder {
+    color: #94a3b8;
 }
 
 .social-planner-account-list,
@@ -1523,53 +1570,301 @@ header h1 {
     background: #fff;
 }
 
-.social-planner-table-wrap {
-    overflow: auto;
-    border: 1px solid var(--border-color);
-    border-radius: 14px;
-    background: #fff;
+.social-planner-feed {
+    display: grid;
+    gap: 14px;
 }
 
-.social-planner-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
+.social-planner-feed-group {
+    display: grid;
+    gap: 10px;
 }
 
-.social-planner-table th,
-.social-planner-table td {
-    padding: 12px 10px;
-    border-bottom: 1px solid var(--border-color);
-    vertical-align: top;
-    text-align: left;
-    background: #fff;
+.social-planner-feed-date {
+    font-size: 13px;
+    text-transform: none;
+    letter-spacing: -0.01em;
+    color: #64748b;
+    font-weight: 600;
+    padding: 2px 2px;
 }
 
-.social-planner-table th {
-    color: var(--text-muted);
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    background: #f8fafc;
-    position: sticky;
+.social-planner-feed-list {
+    display: grid;
+    gap: 12px;
+    position: relative;
+}
+
+.social-planner-feed-list::before {
+    content: "";
+    position: absolute;
+    left: 86px;
     top: 0;
+    bottom: 0;
+    width: 1px;
+    background: #e2e8f0;
+    pointer-events: none;
+}
+
+.social-planner-feed-item {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+}
+
+.social-planner-feed-time {
+    display: grid;
+    gap: 4px;
+    padding-top: 10px;
+    position: relative;
     z-index: 1;
+    background: linear-gradient(90deg, #ffffff 0%, #ffffff 78%, rgba(255, 255, 255, 0) 100%);
 }
 
-.social-planner-table td strong {
-    display: block;
-    color: var(--text-color);
+.social-planner-feed-time strong {
+    font-size: 16px;
+    line-height: 1.2;
+    color: #0f172a;
 }
 
-.social-planner-table .meta {
-    color: var(--text-muted);
+.social-planner-feed-time span {
     font-size: 12px;
+    color: #64748b;
 }
 
-.social-planner-table-actions {
+.social-planner-entry-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #ffffff;
+    overflow: hidden;
+    box-shadow: 0 12px 28px -24px rgba(15, 23, 42, 0.34);
+    transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.social-planner-entry-card:hover {
+    border-color: #d3dce8;
+    box-shadow: 0 18px 34px -26px rgba(15, 23, 42, 0.38);
+    transform: translateY(-1px);
+}
+
+.social-planner-entry-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 11px 14px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.social-planner-entry-card-head .social-planner-badge {
+    font-size: 10px;
+    padding: 5px 10px;
+}
+
+.social-planner-entry-accounts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.social-planner-account-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid #dbe2eb;
+    border-radius: 999px;
+    padding: 5px 10px;
+    font-size: 11px;
+    color: #334155;
+    background: #f8fafc;
+    font-weight: 600;
+}
+
+.social-planner-account-chip i {
+    font-size: 11px;
+}
+
+.social-planner-account-chip[data-platform="facebook"] {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    color: #1d4ed8;
+}
+
+.social-planner-account-chip[data-platform="instagram"] {
+    background: #fdf2f8;
+    border-color: #fbcfe8;
+    color: #be185d;
+}
+
+.social-planner-account-chip[data-platform="linkedin"] {
+    background: #ecfeff;
+    border-color: #a5f3fc;
+    color: #0e7490;
+}
+
+.social-planner-account-chip[data-platform="x"] {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #0f172a;
+}
+
+.social-planner-account-chip[data-platform="tiktok"] {
+    background: #f5f3ff;
+    border-color: #ddd6fe;
+    color: #6d28d9;
+}
+
+.social-planner-entry-card-body {
+    display: grid;
+    gap: 10px;
+    padding: 14px;
+}
+
+.social-planner-entry-title {
+    font-size: 18px;
+    letter-spacing: -0.01em;
+    color: #0f172a;
+    margin: 0;
+}
+
+.social-planner-entry-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #334155;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.social-planner-entry-meta {
+    display: grid;
+    gap: 8px;
+}
+
+.social-planner-entry-updated {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.social-planner-entry-link {
+    color: #0f766e;
+    font-size: 12px;
+    font-weight: 600;
+    word-break: break-all;
+}
+
+.social-planner-entry-hashtags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.social-planner-entry-hashtag {
+    font-size: 11px;
+    font-weight: 700;
+    color: #9a3412;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 999px;
+    padding: 3px 8px;
+}
+
+.social-planner-entry-error {
+    border: 1px solid #fecaca;
+    background: #fef2f2;
+    color: #991b1b;
+    border-radius: 10px;
+    padding: 8px 10px;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.social-planner-entry-metrics {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.social-planner-entry-metric {
+    padding: 10px 12px;
+    display: grid;
+    gap: 3px;
+    border-right: 1px solid #e2e8f0;
+}
+
+.social-planner-entry-metric:last-child {
+    border-right: none;
+}
+
+.social-planner-entry-metric span {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.social-planner-entry-metric strong {
+    font-size: 16px;
+    line-height: 1.1;
+    color: #0f172a;
+}
+
+.social-planner-entry-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 11px 14px;
+    background: #ffffff;
+}
+
+.social-planner-entry-source {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #64748b;
+    font-size: 12px;
+    margin: 0;
+}
+
+.social-planner-entry-source i {
+    color: #94a3b8;
+}
+
+.social-planner-entry-actions {
     display: inline-flex;
     gap: 8px;
-    justify-content: flex-end;
+}
+
+.social-planner-entry-actions .action-btn {
+    margin-left: 0;
+    min-width: 36px;
+    border-radius: 9px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 11px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.social-planner-entry-actions .action-btn.delete {
+    padding: 7px 10px;
+}
+
+.social-planner-entry-actions .action-btn i {
+    font-size: 12px;
+}
+
+.social-planner-feed-empty {
+    text-align: center;
+    border-style: dashed;
+    padding: 20px 16px;
+    background: #fff;
 }
 
 .social-planner-entry-preview h4 {
@@ -3005,6 +3300,19 @@ body.admin-dashboard-refresh .user-dropdown {
         align-items: flex-start;
     }
 
+    .social-planner-stream-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .social-planner-stream-toolbar .social-planner-inline-actions {
+        width: 100%;
+    }
+
+    .social-planner-stream-toolbar .social-planner-inline-actions .save-btn {
+        flex: 1;
+    }
+
     .social-planner-stream-head {
         flex-direction: column;
         align-items: stretch;
@@ -3017,6 +3325,28 @@ body.admin-dashboard-refresh .user-dropdown {
     .social-planner-search {
         width: 100%;
         min-width: 0;
+    }
+
+    .social-planner-feed-item {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .social-planner-feed-time {
+        grid-auto-flow: column;
+        align-items: baseline;
+        justify-content: flex-start;
+        gap: 8px;
+        padding-top: 0;
+        padding-left: 2px;
+    }
+
+    .social-planner-entry-metrics {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .social-planner-entry-metric:nth-child(3n) {
+        border-right: none;
     }
 
     .blog-list-header {
@@ -3095,6 +3425,37 @@ body.admin-dashboard-refresh .user-dropdown {
 
     .social-planner-search {
         width: 100%;
+    }
+
+    .social-planner-stream-title h3 {
+        font-size: 24px;
+    }
+
+    .social-planner-entry-card-head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .social-planner-entry-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .social-planner-entry-metric {
+        border-right: 1px solid #e2e8f0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .social-planner-entry-metric:nth-child(2n) {
+        border-right: none;
+    }
+
+    .social-planner-entry-metric:nth-last-child(-n + 2) {
+        border-bottom: none;
+    }
+
+    .social-planner-entry-footer {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
     .social-planner-toolbar-actions .save-btn {
