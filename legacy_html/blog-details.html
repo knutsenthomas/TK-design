@@ -201,6 +201,16 @@
                             <section class="blog-side-card" id="blogCommentsCard">
                                 <h2 id="blogCommentsTitle">Kommentarer</h2>
                                 <p id="blogCommentsStatus">Laster inn innhold...</p>
+                                <form id="blogCommentForm" class="blog-comment-form" novalidate>
+                                    <label for="blogCommentName" id="blogCommentNameLabel">Navn</label>
+                                    <input id="blogCommentName" type="text" maxlength="80" autocomplete="name" required>
+
+                                    <label for="blogCommentMessage" id="blogCommentMessageLabel">Kommentar</label>
+                                    <textarea id="blogCommentMessage" rows="4" maxlength="2000" required></textarea>
+
+                                    <button type="submit" class="primary-cta" id="blogCommentSubmit">Publiser kommentar</button>
+                                </form>
+                                <div class="blog-comment-list" id="blogCommentsList"></div>
                             </section>
 
                             <section class="blog-side-card">
@@ -300,8 +310,24 @@
                 loadError: 'Det oppstod en feil ved lasting av innlegget.',
                 recentEmpty: 'Ingen flere innlegg tilgjengelig.',
                 commentsTitle: 'Kommentarer',
-                commentsEnabled: 'Kommentarer er aktivert for dette innlegget.',
-                commentsDisabled: 'Kommentarer er deaktivert for dette innlegget.'
+                commentsEnabled: 'Skriv en kommentar under.',
+                commentsDisabled: 'Kommentarer er deaktivert for dette innlegget.',
+                commentsDisabledGlobal: 'Kommentarer er deaktivert globalt.',
+                commentsLoading: 'Laster kommentarer...',
+                commentsLoadError: 'Kunne ikke laste kommentarer.',
+                commentsEmpty: 'Ingen kommentarer ennå. Vær den første.',
+                commentsCountSingle: '1 kommentar',
+                commentsCountMany: '{count} kommentarer',
+                commentNameLabel: 'Navn',
+                commentMessageLabel: 'Kommentar',
+                commentNamePlaceholder: 'Hva heter du?',
+                commentMessagePlaceholder: 'Skriv kommentaren din her...',
+                commentSubmit: 'Publiser kommentar',
+                commentSubmitting: 'Publiserer...',
+                commentSuccess: 'Kommentaren er publisert.',
+                commentError: 'Kunne ikke publisere kommentaren.',
+                commentValidationName: 'Skriv inn navnet ditt.',
+                commentValidationMessage: 'Skriv en kommentar først.'
             },
             en: {
                 loading: 'Loading content...',
@@ -309,13 +335,32 @@
                 loadError: 'There was a problem loading the post.',
                 recentEmpty: 'No additional posts available.',
                 commentsTitle: 'Comments',
-                commentsEnabled: 'Comments are enabled for this post.',
-                commentsDisabled: 'Comments are disabled for this post.'
+                commentsEnabled: 'Write a comment below.',
+                commentsDisabled: 'Comments are disabled for this post.',
+                commentsDisabledGlobal: 'Comments are disabled globally.',
+                commentsLoading: 'Loading comments...',
+                commentsLoadError: 'Could not load comments.',
+                commentsEmpty: 'No comments yet. Be the first.',
+                commentsCountSingle: '1 comment',
+                commentsCountMany: '{count} comments',
+                commentNameLabel: 'Name',
+                commentMessageLabel: 'Comment',
+                commentNamePlaceholder: 'What is your name?',
+                commentMessagePlaceholder: 'Write your comment here...',
+                commentSubmit: 'Publish comment',
+                commentSubmitting: 'Publishing...',
+                commentSuccess: 'Your comment has been published.',
+                commentError: 'Could not publish comment.',
+                commentValidationName: 'Please enter your name.',
+                commentValidationMessage: 'Please write a comment first.'
             }
         };
 
         let blogPosts = [];
         let currentPostId = null;
+        let activePost = null;
+        let globalCommentsEnabled = true;
+        let globalCommentSettingLoaded = false;
 
         function getBlogRuntimeText() {
             return BLOG_DETAIL_RUNTIME[currentLang] || BLOG_DETAIL_RUNTIME.no;
@@ -457,6 +502,359 @@
             }
         }
 
+        function parseGlobalCommentsEnabled(payload) {
+            if (payload && typeof payload.blogCommentsEnabled === 'boolean') {
+                return payload.blogCommentsEnabled;
+            }
+
+            if (payload?.global && typeof payload.global.blogCommentsEnabled === 'boolean') {
+                return payload.global.blogCommentsEnabled;
+            }
+
+            return null;
+        }
+
+        async function fetchGlobalCommentsEnabled(forceRefresh = false) {
+            if (globalCommentSettingLoaded && !forceRefresh) {
+                return globalCommentsEnabled;
+            }
+
+            const sources = [
+                '/api/comments/settings',
+                '/data/seo.json'
+            ];
+
+            for (const source of sources) {
+                try {
+                    const response = await fetch(source, { cache: 'no-store' });
+                    if (!response.ok) continue;
+
+                    const payload = await response.json();
+                    const parsedValue = parseGlobalCommentsEnabled(payload);
+                    if (typeof parsedValue === 'boolean') {
+                        globalCommentsEnabled = parsedValue;
+                        globalCommentSettingLoaded = true;
+                        return globalCommentsEnabled;
+                    }
+                } catch (error) {
+                    // Try next source.
+                }
+            }
+
+            globalCommentsEnabled = true;
+            globalCommentSettingLoaded = true;
+            return globalCommentsEnabled;
+        }
+
+        function getCommentCountText(count) {
+            const runtimeText = getBlogRuntimeText();
+            if (count === 1) {
+                return runtimeText.commentsCountSingle;
+            }
+
+            return runtimeText.commentsCountMany.replace('{count}', String(count));
+        }
+
+        function formatCommentTimestamp(value) {
+            const parsedDate = new Date(value);
+            if (!Number.isFinite(parsedDate.getTime())) {
+                return '';
+            }
+
+            const locale = currentLang === 'en' ? 'en-GB' : 'nb-NO';
+            return new Intl.DateTimeFormat(locale, {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }).format(parsedDate);
+        }
+
+        function setCommentFormDisabled(disabled) {
+            const commentForm = document.getElementById('blogCommentForm');
+            if (!commentForm) {
+                return;
+            }
+
+            const formElements = commentForm.querySelectorAll('input, textarea, button');
+            formElements.forEach((element) => {
+                element.disabled = disabled;
+            });
+        }
+
+        function applyCommentFormText() {
+            const runtimeText = getBlogRuntimeText();
+            const nameLabel = document.getElementById('blogCommentNameLabel');
+            const messageLabel = document.getElementById('blogCommentMessageLabel');
+            const nameInput = document.getElementById('blogCommentName');
+            const messageInput = document.getElementById('blogCommentMessage');
+            const submitButton = document.getElementById('blogCommentSubmit');
+
+            if (nameLabel) {
+                nameLabel.textContent = runtimeText.commentNameLabel;
+            }
+
+            if (messageLabel) {
+                messageLabel.textContent = runtimeText.commentMessageLabel;
+            }
+
+            if (nameInput) {
+                nameInput.placeholder = runtimeText.commentNamePlaceholder;
+            }
+
+            if (messageInput) {
+                messageInput.placeholder = runtimeText.commentMessagePlaceholder;
+            }
+
+            if (submitButton) {
+                submitButton.textContent = runtimeText.commentSubmit;
+            }
+        }
+
+        function normalizeClientComment(comment, fallbackPostId = null) {
+            const normalizedPostId = Number(comment?.postId ?? fallbackPostId);
+            if (!Number.isFinite(normalizedPostId) || normalizedPostId <= 0) {
+                return null;
+            }
+
+            const name = String(comment?.name || '').replace(/\s+/g, ' ').trim();
+            const message = String(comment?.message || '').trim();
+            if (!name || !message) {
+                return null;
+            }
+
+            const createdAtRaw = String(comment?.createdAt || '').trim();
+            const createdAt = Number.isFinite(new Date(createdAtRaw).getTime())
+                ? new Date(createdAtRaw).toISOString()
+                : new Date().toISOString();
+
+            const id = String(comment?.id || '').trim() || `${normalizedPostId}-${name}-${createdAt}`;
+
+            return {
+                id,
+                postId: normalizedPostId,
+                name,
+                message,
+                createdAt
+            };
+        }
+
+        function extractCommentsForPost(payload, postId) {
+            const normalizedPostId = Number(postId);
+            if (!Number.isFinite(normalizedPostId) || normalizedPostId <= 0) {
+                return [];
+            }
+
+            if (Array.isArray(payload)) {
+                return payload
+                    .map((comment) => normalizeClientComment(comment, normalizedPostId))
+                    .filter(Boolean)
+                    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+            }
+
+            if (payload && typeof payload === 'object') {
+                const bucket = payload[String(normalizedPostId)] || payload[normalizedPostId] || [];
+                if (Array.isArray(bucket)) {
+                    return bucket
+                        .map((comment) => normalizeClientComment(comment, normalizedPostId))
+                        .filter(Boolean)
+                        .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+                }
+            }
+
+            return [];
+        }
+
+        async function fetchCommentsForPost(postId) {
+            const sources = [
+                `/api/comments?postId=${encodeURIComponent(postId)}`,
+                '/data/comments.json'
+            ];
+
+            for (const source of sources) {
+                try {
+                    const response = await fetch(source, { cache: 'no-store' });
+                    if (!response.ok) {
+                        continue;
+                    }
+
+                    const payload = await response.json();
+                    return extractCommentsForPost(payload, postId);
+                } catch (error) {
+                    // Try next source.
+                }
+            }
+
+            return [];
+        }
+
+        function renderCommentsList(comments = []) {
+            const listContainer = document.getElementById('blogCommentsList');
+            if (!listContainer) {
+                return;
+            }
+
+            listContainer.innerHTML = '';
+
+            comments.forEach((comment) => {
+                const commentCard = document.createElement('article');
+                commentCard.className = 'blog-comment-item';
+
+                const commentMeta = document.createElement('div');
+                commentMeta.className = 'blog-comment-meta';
+
+                const author = document.createElement('strong');
+                author.textContent = comment.name;
+
+                const time = document.createElement('time');
+                time.dateTime = comment.createdAt;
+                time.textContent = formatCommentTimestamp(comment.createdAt);
+
+                commentMeta.appendChild(author);
+                commentMeta.appendChild(time);
+
+                const message = document.createElement('p');
+                message.textContent = comment.message;
+
+                commentCard.appendChild(commentMeta);
+                commentCard.appendChild(message);
+                listContainer.appendChild(commentCard);
+            });
+        }
+
+        async function renderCommentsSection(post, options = {}) {
+            const runtimeText = getBlogRuntimeText();
+            const commentsStatus = document.getElementById('blogCommentsStatus');
+            const commentsTitle = document.getElementById('blogCommentsTitle');
+            const commentForm = document.getElementById('blogCommentForm');
+            const commentsEnabledForPost = post.allowComments !== false;
+            const commentsEnabledGlobally = await fetchGlobalCommentsEnabled();
+            const allowComments = commentsEnabledGlobally && commentsEnabledForPost;
+            const shouldShowSuccess = options && options.showSuccess === true;
+
+            if (commentsTitle) {
+                commentsTitle.textContent = runtimeText.commentsTitle;
+            }
+
+            applyCommentFormText();
+
+            if (commentForm) {
+                commentForm.style.display = allowComments ? 'grid' : 'none';
+            }
+
+            if (commentsStatus) {
+                commentsStatus.textContent = runtimeText.commentsLoading;
+            }
+
+            setCommentFormDisabled(!allowComments);
+
+            try {
+                const comments = await fetchCommentsForPost(post.id);
+                renderCommentsList(comments);
+
+                if (!commentsStatus) {
+                    return;
+                }
+
+                if (allowComments) {
+                    if (shouldShowSuccess) {
+                        commentsStatus.textContent = runtimeText.commentSuccess;
+                    } else if (comments.length === 0) {
+                        commentsStatus.textContent = runtimeText.commentsEmpty;
+                    } else {
+                        commentsStatus.textContent = getCommentCountText(comments.length);
+                    }
+                } else if (!commentsEnabledGlobally) {
+                    commentsStatus.textContent = runtimeText.commentsDisabledGlobal;
+                } else {
+                    commentsStatus.textContent = runtimeText.commentsDisabled;
+                }
+            } catch (error) {
+                if (commentsStatus) {
+                    commentsStatus.textContent = runtimeText.commentsLoadError;
+                }
+            }
+        }
+
+        async function handleCommentSubmit(event) {
+            event.preventDefault();
+
+            const runtimeText = getBlogRuntimeText();
+            const commentsStatus = document.getElementById('blogCommentsStatus');
+            const commentsEnabledGlobally = await fetchGlobalCommentsEnabled();
+            if (!activePost || !commentsEnabledGlobally || activePost.allowComments === false) {
+                if (commentsStatus) {
+                    commentsStatus.textContent = !commentsEnabledGlobally
+                        ? runtimeText.commentsDisabledGlobal
+                        : runtimeText.commentsDisabled;
+                }
+                return;
+            }
+
+            const nameInput = document.getElementById('blogCommentName');
+            const messageInput = document.getElementById('blogCommentMessage');
+            const submitButton = document.getElementById('blogCommentSubmit');
+
+            const name = String(nameInput?.value || '').replace(/\s+/g, ' ').trim();
+            const message = String(messageInput?.value || '').trim();
+
+            if (!name) {
+                if (commentsStatus) commentsStatus.textContent = runtimeText.commentValidationName;
+                nameInput?.focus();
+                return;
+            }
+
+            if (!message) {
+                if (commentsStatus) commentsStatus.textContent = runtimeText.commentValidationMessage;
+                messageInput?.focus();
+                return;
+            }
+
+            if (submitButton) {
+                submitButton.textContent = runtimeText.commentSubmitting;
+            }
+            setCommentFormDisabled(true);
+
+            try {
+                const response = await fetch('/api/comments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        postId: activePost.id,
+                        name,
+                        message
+                    })
+                });
+
+                if (!response.ok) {
+                    let errorMessage = runtimeText.commentError;
+                    try {
+                        const errorBody = await response.json();
+                        if (errorBody?.error) {
+                            errorMessage = String(errorBody.error);
+                        }
+                    } catch (error) {
+                        // Keep fallback text.
+                    }
+                    throw new Error(errorMessage);
+                }
+
+                if (nameInput) nameInput.value = '';
+                if (messageInput) messageInput.value = '';
+                await renderCommentsSection(activePost, { showSuccess: true });
+            } catch (error) {
+                if (commentsStatus) {
+                    commentsStatus.textContent = error?.message || runtimeText.commentError;
+                }
+            } finally {
+                setCommentFormDisabled(false);
+                if (submitButton) {
+                    submitButton.textContent = runtimeText.commentSubmit;
+                }
+            }
+        }
+
         function renderOutline(post) {
             const outlineList = document.getElementById('blogOutlineList');
             if (!outlineList) {
@@ -561,6 +959,7 @@
         }
 
         function renderPost(post) {
+            activePost = post;
             const localizedPost = getLocalizedPost(post);
             const summary = buildSummary(post);
             const readingTime = estimateReadingTime(post);
@@ -578,10 +977,7 @@
             const detailMedia = document.querySelector('.blog-article-media');
             const detailImage = document.getElementById('blogDetailImage');
             const contentContainer = document.getElementById('blog-content-container');
-            const commentsTitle = document.getElementById('blogCommentsTitle');
-            const commentsStatus = document.getElementById('blogCommentsStatus');
             const showFeaturedImage = post.showFeaturedImage !== false;
-            const runtimeText = getBlogRuntimeText();
 
             if (title) {
                 title.textContent = localizedPost.title;
@@ -636,31 +1032,25 @@
                 contentContainer.innerHTML = localizedPost.content || `<p>${getBlogRuntimeText().notFound}</p>`;
             }
 
-            if (commentsTitle) {
-                commentsTitle.textContent = runtimeText.commentsTitle;
-            }
-
-            if (commentsStatus) {
-                commentsStatus.textContent = post.allowComments === false
-                    ? runtimeText.commentsDisabled
-                    : runtimeText.commentsEnabled;
-            }
-
             document.title = `${localizedPost.seoTitle || localizedPost.title} | tk-design`;
             renderTags(post);
             renderOutline(post);
             renderRecentPosts(post);
             renderPostNavigation(post);
             updateShareLinks(post);
+            renderCommentsSection(post);
         }
 
         function renderError(message) {
+            activePost = null;
             const title = document.getElementById('blogDetailTitle');
             const summaryEl = document.getElementById('blogDetailSummary');
             const contentContainer = document.getElementById('blog-content-container');
             const outlineList = document.getElementById('blogOutlineList');
             const recentContainer = document.getElementById('blogRecentPosts');
             const commentsStatus = document.getElementById('blogCommentsStatus');
+            const commentForm = document.getElementById('blogCommentForm');
+            const commentList = document.getElementById('blogCommentsList');
 
             if (title) {
                 title.textContent = message;
@@ -685,6 +1075,14 @@
             if (commentsStatus) {
                 commentsStatus.textContent = message;
             }
+
+            if (commentList) {
+                commentList.innerHTML = '';
+            }
+
+            if (commentForm) {
+                commentForm.style.display = 'none';
+            }
         }
 
         async function loadPostDetails() {
@@ -708,7 +1106,13 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            applyCommentFormText();
             loadPostDetails();
+
+            const commentForm = document.getElementById('blogCommentForm');
+            if (commentForm) {
+                commentForm.addEventListener('submit', handleCommentSubmit);
+            }
 
             const originalSwitchLanguage = window.switchLanguage;
             if (typeof originalSwitchLanguage === 'function') {

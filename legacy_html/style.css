@@ -1377,6 +1377,92 @@ body.blog-page-refresh .blog-share-link:hover {
     color: #fff;
 }
 
+body.blog-page-refresh .blog-comment-form {
+    display: grid;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+body.blog-page-refresh .blog-comment-form label {
+    color: #718097;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+body.blog-page-refresh .blog-comment-form input,
+body.blog-page-refresh .blog-comment-form textarea {
+    width: 100%;
+    border-radius: 14px;
+    border: 1px solid rgba(17, 38, 60, 0.12);
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--refresh-heading);
+    font: inherit;
+    padding: 12px 14px;
+}
+
+body.blog-page-refresh .blog-comment-form textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+body.blog-page-refresh .blog-comment-form input:focus,
+body.blog-page-refresh .blog-comment-form textarea:focus {
+    outline: none;
+    border-color: rgba(255, 106, 27, 0.45);
+    box-shadow: 0 0 0 3px rgba(255, 106, 27, 0.14);
+}
+
+body.blog-page-refresh .blog-comment-form button {
+    margin-top: 6px;
+    justify-self: start;
+}
+
+body.blog-page-refresh .blog-comment-form button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+body.blog-page-refresh .blog-comment-list {
+    display: grid;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+body.blog-page-refresh .blog-comment-item {
+    border-radius: 18px;
+    background: rgba(17, 38, 60, 0.03);
+    border: 1px solid rgba(17, 38, 60, 0.08);
+    padding: 14px 16px;
+}
+
+body.blog-page-refresh .blog-comment-meta {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+body.blog-page-refresh .blog-comment-meta strong {
+    color: var(--refresh-heading);
+    font-size: 0.95rem;
+}
+
+body.blog-page-refresh .blog-comment-meta time {
+    color: #718097;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+body.blog-page-refresh .blog-comment-item p {
+    margin: 0;
+    color: var(--refresh-text);
+    line-height: 1.65;
+    white-space: pre-wrap;
+}
+
 body.blog-page-refresh .blog-recent-list {
     display: grid;
     gap: 14px;
@@ -1540,6 +1626,11 @@ body.blog-page-refresh .blog-grid-view i {
 
     body.blog-page-refresh .blog-share-links {
         grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    body.blog-page-refresh .blog-comment-form button {
+        width: 100%;
+        justify-content: center;
     }
 }
 
