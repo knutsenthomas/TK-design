@@ -56,6 +56,32 @@ body {
     gap: 20px;
 }
 
+.sidebar-toggle-btn {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: #ffffff;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex: 0 0 auto;
+}
+
+.sidebar-toggle-btn:hover {
+    color: var(--text-color);
+    border-color: #cbd5e1;
+    background: #f8fafc;
+}
+
+.sidebar-toggle-btn i {
+    font-size: 16px;
+    line-height: 1;
+}
+
 .back-btn {
     background: none;
     border: none;
@@ -190,17 +216,33 @@ body {
     display: flex;
     height: 100vh;
     width: 100vw;
+    overflow: hidden;
 }
 
 /* Sidebar */
 .sidebar {
     width: 260px;
+    flex: 0 0 260px;
+    min-width: 0;
     background-color: var(--sidebar-bg);
     color: var(--sidebar-text);
     display: flex;
     flex-direction: column;
     padding: 24px;
     border-right: 1px solid var(--border-color);
+    overflow-x: hidden;
+    transition: width 0.28s ease, flex-basis 0.28s ease, padding 0.28s ease, transform 0.28s ease, opacity 0.2s ease, border-color 0.28s ease;
+    will-change: width, transform;
+}
+
+body.admin-sidebar-collapsed .sidebar {
+    width: 0;
+    flex-basis: 0;
+    padding: 0;
+    border-right-color: transparent;
+    transform: translateX(-24px);
+    opacity: 0;
+    pointer-events: none;
 }
 
 .sidebar .logo h2 {
@@ -255,6 +297,8 @@ body {
     overflow-y: auto;
     padding: 40px;
     background-color: var(--content-bg);
+    min-width: 0;
+    transition: padding 0.28s ease;
 }
 
 header {
@@ -1211,6 +1255,10 @@ header h1 {
     grid-template-columns: minmax(280px, 0.72fr) minmax(460px, 1.28fr);
 }
 
+.social-planner-grid-single {
+    grid-template-columns: 1fr;
+}
+
 .social-planner-card {
     border: 1px solid #e2e8f0;
     border-radius: 16px;
@@ -1928,6 +1976,353 @@ header h1 {
 .social-planner-top-item .meta {
     color: var(--text-muted);
     font-size: 12px;
+}
+
+body.social-planner-compose-open {
+    overflow: hidden;
+}
+
+.social-planner-compose-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1900;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.social-planner-compose-modal.is-open {
+    display: flex;
+}
+
+.social-planner-compose-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.46);
+    backdrop-filter: blur(2px);
+}
+
+.social-planner-compose-dialog {
+    position: relative;
+    z-index: 1;
+    width: min(1180px, calc(100vw - 40px));
+    max-height: min(90vh, 860px);
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    overflow: hidden;
+    border-radius: 22px;
+    border: 1px solid rgba(15, 23, 42, 0.14);
+    background: #ffffff;
+    box-shadow: 0 40px 90px -44px rgba(15, 23, 42, 0.62);
+}
+
+.social-planner-compose-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.social-planner-compose-head-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.social-planner-compose-head-left h3 {
+    margin: 0;
+    font-size: 34px;
+    letter-spacing: -0.035em;
+    line-height: 1;
+}
+
+.social-planner-compose-tag-pill {
+    border: 1px solid #d4dce6;
+    border-radius: 10px;
+    background: #f8fafc;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 7px 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.social-planner-compose-head-actions {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.social-planner-compose-head-btn {
+    border: 1px solid #d4dce6;
+    border-radius: 10px;
+    background: #fff;
+    color: #334155;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.social-planner-compose-head-btn.active {
+    background: #dcfce7;
+    border-color: #86efac;
+    color: #166534;
+}
+
+.social-planner-compose-head-btn.icon-only {
+    width: 38px;
+    height: 38px;
+    justify-content: center;
+    padding: 0;
+}
+
+.social-planner-compose-body {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(260px, 0.95fr);
+}
+
+.social-planner-compose-left,
+.social-planner-compose-right {
+    min-height: 0;
+    padding: 16px 18px;
+}
+
+.social-planner-compose-left {
+    border-right: 1px solid #e2e8f0;
+    display: grid;
+    gap: 14px;
+    align-content: start;
+    overflow: auto;
+}
+
+.social-planner-compose-right {
+    background: #fcfcfd;
+    overflow: auto;
+}
+
+.social-planner-compose-account-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.social-planner-compose-account-chip,
+.social-planner-compose-account-add-btn {
+    border: 1px solid #d4dce6;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.social-planner-compose-account-chip.active {
+    background: #ffedd5;
+    border-color: #fdba74;
+    color: #9a3412;
+}
+
+.social-planner-compose-account-add-btn {
+    width: 36px;
+    height: 36px;
+    justify-content: center;
+    padding: 0;
+}
+
+.social-planner-compose-editor {
+    border: 1px solid #d4dce6;
+    border-radius: 14px;
+    background: #fff;
+    min-height: 420px;
+    display: grid;
+    grid-template-rows: minmax(240px, 1fr) auto auto;
+}
+
+.social-planner-compose-editor textarea {
+    border: none;
+    resize: none;
+    outline: none;
+    width: 100%;
+    min-height: 240px;
+    padding: 18px;
+    font-size: 17px;
+    line-height: 1.55;
+    color: #0f172a;
+    background: transparent;
+}
+
+.social-planner-compose-editor textarea::placeholder {
+    color: #94a3b8;
+}
+
+.social-planner-compose-upload {
+    padding: 0 18px 12px;
+}
+
+.social-planner-compose-upload-box {
+    width: 180px;
+    min-height: 96px;
+    border: 1px dashed #94a3b8;
+    border-radius: 12px;
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 8px;
+    color: #64748b;
+    font-size: 13px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.social-planner-compose-upload-box i {
+    font-size: 18px;
+}
+
+.social-planner-compose-quick-actions {
+    border-top: 1px solid #e2e8f0;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.social-planner-compose-quick-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+}
+
+.social-planner-compose-quick-btn:hover {
+    background: #f1f5f9;
+    border-color: #d4dce6;
+    color: #0f172a;
+}
+
+.social-planner-compose-advanced {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #fff;
+    padding: 10px 12px;
+    display: grid;
+    gap: 10px;
+}
+
+.social-planner-compose-advanced summary {
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 13px;
+    color: #0f172a;
+}
+
+.social-planner-compose-panel {
+    display: none;
+    height: 100%;
+}
+
+.social-planner-compose-panel.is-active {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+}
+
+.social-planner-compose-panel h4 {
+    font-size: 15px;
+    margin: 0;
+    color: #0f172a;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.social-planner-preview-grid-modal {
+    grid-template-columns: 1fr;
+}
+
+.social-planner-preview-grid-modal .social-planner-list-empty {
+    min-height: 340px;
+    display: grid;
+    place-items: center;
+}
+
+.social-planner-compose-assistant-card {
+    border: 1px solid #ddd6fe;
+    background: #f5f3ff;
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: #4c1d95;
+    display: grid;
+    gap: 8px;
+    line-height: 1.4;
+}
+
+.social-planner-compose-assistant-card p {
+    margin: 0;
+}
+
+.social-planner-compose-assistant-card ul {
+    margin: 0;
+    padding-left: 18px;
+    display: grid;
+    gap: 5px;
+}
+
+.social-planner-compose-footer {
+    border-top: 1px solid #e2e8f0;
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.social-planner-compose-create-another {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #334155;
+    font-size: 14px;
+}
+
+.social-planner-compose-footer-actions {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-left: auto;
+}
+
+.social-planner-compose-status-field,
+.social-planner-compose-schedule-field {
+    min-width: 170px;
+}
+
+.social-planner-compose-status-field label,
+.social-planner-compose-schedule-field label {
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 12px;
+    font-weight: 600;
 }
 
 .social-planner-advanced {
@@ -2760,6 +3155,22 @@ body.admin-dashboard-refresh .admin-header {
     backdrop-filter: blur(14px);
 }
 
+body.admin-dashboard-refresh .sidebar-toggle-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    background: rgba(255, 255, 255, 0.95);
+    color: #475569;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
+}
+
+body.admin-dashboard-refresh .sidebar-toggle-btn:hover {
+    color: #0f172a;
+    border-color: rgba(249, 115, 22, 0.26);
+    background: #fff7ed;
+}
+
 body.admin-dashboard-refresh .admin-container {
     margin-top: 0;
 }
@@ -3202,6 +3613,10 @@ body.admin-dashboard-refresh .user-dropdown {
         min-height: 100vh;
     }
 
+    .sidebar-toggle-btn {
+        display: none;
+    }
+
     .admin-header {
         height: auto;
         min-height: 64px;
@@ -3349,6 +3764,47 @@ body.admin-dashboard-refresh .user-dropdown {
         border-right: none;
     }
 
+    .social-planner-compose-modal {
+        padding: 10px;
+    }
+
+    .social-planner-compose-dialog {
+        width: calc(100vw - 20px);
+        max-height: calc(100vh - 20px);
+    }
+
+    .social-planner-compose-head {
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+
+    .social-planner-compose-head-left h3 {
+        font-size: 28px;
+    }
+
+    .social-planner-compose-body {
+        grid-template-columns: 1fr;
+    }
+
+    .social-planner-compose-left {
+        border-right: none;
+        border-bottom: 1px solid #e2e8f0;
+        max-height: 56vh;
+    }
+
+    .social-planner-compose-right {
+        max-height: 34vh;
+    }
+
+    .social-planner-compose-footer {
+        align-items: stretch;
+    }
+
+    .social-planner-compose-footer-actions {
+        width: 100%;
+        margin-left: 0;
+    }
+
     .blog-list-header {
         display: none;
     }
@@ -3429,6 +3885,76 @@ body.admin-dashboard-refresh .user-dropdown {
 
     .social-planner-stream-title h3 {
         font-size: 24px;
+    }
+
+    .social-planner-compose-modal {
+        padding: 0;
+    }
+
+    .social-planner-compose-dialog {
+        width: 100vw;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+        border: none;
+    }
+
+    .social-planner-compose-head {
+        padding: 12px;
+    }
+
+    .social-planner-compose-head-left h3 {
+        font-size: 24px;
+    }
+
+    .social-planner-compose-head-actions {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .social-planner-compose-head-btn {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .social-planner-compose-head-btn.icon-only {
+        flex: 0 0 auto;
+    }
+
+    .social-planner-compose-left,
+    .social-planner-compose-right {
+        padding: 12px;
+    }
+
+    .social-planner-compose-editor {
+        min-height: 300px;
+        grid-template-rows: minmax(180px, 1fr) auto auto;
+    }
+
+    .social-planner-compose-upload-box {
+        width: 100%;
+    }
+
+    .social-planner-compose-footer-actions {
+        display: grid;
+        width: 100%;
+        grid-template-columns: 1fr;
+    }
+
+    .social-planner-compose-status-field,
+    .social-planner-compose-schedule-field {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .social-planner-compose-create-another {
+        width: 100%;
+    }
+
+    .social-planner-compose-footer .save-btn {
+        width: 100%;
+        justify-content: center;
     }
 
     .social-planner-entry-card-head {

@@ -25,7 +25,9 @@ let socialPlannerLoaded = false;
 let socialPlannerLoading = false;
 let socialPlannerEntryFilter = 'all';
 let socialPlannerEntrySearch = '';
+let socialPlannerComposerPanel = 'preview';
 const SOCIAL_PLANNER_UI_PLATFORMS = ['facebook', 'instagram', 'linkedin', 'x', 'tiktok'];
+const ADMIN_SIDEBAR_COLLAPSE_KEY = 'tk_admin_sidebar_collapsed';
 let quill; // Define quill globally but initialize later
 
 // Section Translations
@@ -1628,6 +1630,7 @@ async function init() {
     }
 
     setupEventListeners();
+    setupAdminSidebarToggle();
     setupLogout();
 
     await Promise.allSettled([
@@ -2103,6 +2106,27 @@ function truncateSocialPlannerText(value = '', maxLength = 220) {
     return `${normalized.slice(0, Math.max(0, maxLength - 1)).trimEnd()}…`;
 }
 
+function deriveSocialPlannerEntryTitle(title = '', masterText = '', variants = {}) {
+    const explicitTitle = String(title || '').trim();
+    if (explicitTitle) {
+        return truncateSocialPlannerText(explicitTitle, 180);
+    }
+
+    const sources = [
+        String(masterText || '').trim(),
+        ...Object.values((variants && typeof variants === 'object' && !Array.isArray(variants)) ? variants : {})
+            .map((value) => String(value || '').trim())
+    ];
+    const firstText = sources.find(Boolean) || '';
+    const firstLine = String(firstText)
+        .split('\n')
+        .map((line) => line.trim())
+        .find(Boolean) || '';
+
+    if (!firstLine) return '';
+    return truncateSocialPlannerText(firstLine, 180);
+}
+
 function formatNumberForUi(value) {
     const number = Number(value);
     if (!Number.isFinite(number)) return '0';
@@ -2203,11 +2227,15 @@ function renderSocialPlannerTemplateBody(templateBody = '', context = {}) {
 function syncSocialPlannerScheduleFieldState() {
     const statusSelect = document.getElementById('sp-entry-status');
     const scheduleInput = document.getElementById('sp-entry-scheduled-for');
+    const scheduleWrap = document.getElementById('sp-compose-schedule-wrap');
     if (!statusSelect || !scheduleInput) return;
 
     const isScheduled = String(statusSelect.value || '').trim() === 'scheduled';
     scheduleInput.required = isScheduled;
     scheduleInput.disabled = !isScheduled;
+    if (scheduleWrap) {
+        scheduleWrap.style.display = isScheduled ? '' : 'none';
+    }
     if (!isScheduled) {
         scheduleInput.value = '';
     }
@@ -2350,6 +2378,136 @@ function renderSocialPlannerEntryPreview() {
     }
 }
 
+function syncSocialPlannerComposerMeta() {
+    const editId = String(document.getElementById('sp-entry-edit-id')?.value || '').trim();
+    const titleEl = document.getElementById('sp-compose-title');
+    const submitBtn = document.getElementById('sp-entry-submit-btn');
+
+    if (titleEl) {
+        titleEl.textContent = editId ? 'Edit Post' : 'Create Post';
+    }
+    if (submitBtn) {
+        submitBtn.innerHTML = editId
+            ? 'Oppdater innlegg <i class="fas fa-check"></i>'
+            : 'Customize for each network <i class="fas fa-arrow-right"></i>';
+    }
+}
+
+function renderSocialPlannerComposerAccountChips() {
+    const container = document.getElementById('sp-compose-account-chips');
+    const select = document.getElementById('sp-entry-target-accounts');
+    if (!container || !select) return;
+
+    const options = Array.from(select.options || []);
+    container.innerHTML = '';
+
+    if (options.length === 0) {
+        const empty = document.createElement('p');
+        empty.className = 'social-planner-list-empty';
+        empty.textContent = 'Ingen kontoer er koblet til i dette workspace.';
+        container.appendChild(empty);
+        return;
+    }
+
+    options.forEach((option) => {
+        const accountId = String(option.value || '');
+        const account = getSocialPlannerScopedAccounts().find((row) => row.id === accountId);
+        const platform = String(account?.platform || '').toLowerCase();
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `social-planner-compose-account-chip${option.selected ? ' active' : ''}`;
+        button.dataset.platform = platform;
+
+        const icon = document.createElement('i');
+        icon.className = getSocialPlannerPlatformIconClass(platform);
+        const label = document.createElement('span');
+        label.textContent = account?.displayName || option.textContent || accountId || 'Konto';
+
+        button.appendChild(icon);
+        button.appendChild(label);
+        button.addEventListener('click', () => {
+            option.selected = !option.selected;
+            renderSocialPlannerComposerAccountChips();
+            renderSocialPlannerEntryPreview();
+        });
+        container.appendChild(button);
+    });
+
+    const addBtn = document.createElement('button');
+    addBtn.type = 'button';
+    addBtn.className = 'social-planner-compose-account-add-btn';
+    addBtn.innerHTML = '<i class="fas fa-plus"></i>';
+    addBtn.title = 'Velg kontoer i avanserte felt';
+    addBtn.addEventListener('click', () => {
+        const advanced = document.querySelector('.social-planner-compose-advanced');
+        if (advanced && !advanced.open) {
+            advanced.open = true;
+        }
+        select.focus();
+    });
+    container.appendChild(addBtn);
+}
+
+function setSocialPlannerComposerPanel(panel = 'preview') {
+    const normalizedPanel = String(panel || '').trim().toLowerCase() === 'assistant'
+        ? 'assistant'
+        : 'preview';
+    socialPlannerComposerPanel = normalizedPanel;
+
+    const previewPanel = document.getElementById('sp-compose-panel-preview');
+    const assistantPanel = document.getElementById('sp-compose-panel-assistant');
+    const previewBtn = document.getElementById('sp-compose-preview-btn');
+    const assistantBtn = document.getElementById('sp-compose-assistant-btn');
+
+    if (previewPanel) previewPanel.classList.toggle('is-active', normalizedPanel === 'preview');
+    if (assistantPanel) assistantPanel.classList.toggle('is-active', normalizedPanel === 'assistant');
+    if (previewBtn) previewBtn.classList.toggle('active', normalizedPanel === 'preview');
+    if (assistantBtn) assistantBtn.classList.toggle('active', normalizedPanel === 'assistant');
+}
+
+window.setSocialPlannerComposerPanel = function (panel = 'preview') {
+    setSocialPlannerComposerPanel(panel);
+};
+
+function openSocialPlannerComposer(options = {}) {
+    const modal = document.getElementById('sp-compose-modal');
+    if (!modal) return;
+
+    if (options.reset) {
+        resetSocialPlannerEntryForm();
+    }
+
+    syncSocialPlannerComposerMeta();
+    renderSocialPlannerComposerAccountChips();
+    setSocialPlannerComposerPanel(options.panel || socialPlannerComposerPanel || 'preview');
+
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('social-planner-compose-open');
+
+    window.setTimeout(() => {
+        const primaryInput = document.getElementById('sp-entry-master-text');
+        primaryInput?.focus();
+    }, 20);
+}
+
+window.openSocialPlannerComposer = function () {
+    openSocialPlannerComposer({ reset: true, panel: 'preview' });
+};
+
+function closeSocialPlannerComposer() {
+    const modal = document.getElementById('sp-compose-modal');
+    if (!modal) return;
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('social-planner-compose-open');
+}
+
+window.closeSocialPlannerComposer = function () {
+    closeSocialPlannerComposer();
+};
+
 function resetSocialPlannerEntryForm() {
     const form = document.getElementById('sp-entry-form');
     if (form) {
@@ -2357,14 +2515,14 @@ function resetSocialPlannerEntryForm() {
     }
 
     const editIdInput = document.getElementById('sp-entry-edit-id');
-    const submitBtn = document.getElementById('sp-entry-submit-btn');
     const templateSelect = document.getElementById('sp-entry-template');
 
     if (editIdInput) editIdInput.value = '';
-    if (submitBtn) submitBtn.textContent = 'Lagre innlegg';
     if (templateSelect) templateSelect.value = '';
     setSocialPlannerEntryFormVariants({});
+    syncSocialPlannerComposerMeta();
     syncSocialPlannerScheduleFieldState();
+    renderSocialPlannerComposerAccountChips();
     renderSocialPlannerEntryPreview();
 }
 
@@ -2567,6 +2725,8 @@ function renderSocialPlannerTargetAccountOptions() {
         }
         select.appendChild(option);
     });
+
+    renderSocialPlannerComposerAccountChips();
 }
 
 function renderSocialPlannerAccounts() {
@@ -3032,6 +3192,8 @@ function renderSocialPlannerTab() {
     renderSocialPlannerEntries();
     renderSocialPlannerStats();
     renderSocialPlannerTopEntries();
+    syncSocialPlannerComposerMeta();
+    renderSocialPlannerComposerAccountChips();
     syncSocialPlannerScheduleFieldState();
     renderSocialPlannerEntryPreview();
 }
@@ -3152,6 +3314,7 @@ window.changeSocialPlannerWorkspace = async function (workspaceId) {
         resetSocialPlannerTemplateForm();
         resetSocialPlannerAccountForm();
         resetSocialPlannerEntryForm();
+        closeSocialPlannerComposer();
         socialPlannerEntryFilter = 'all';
         socialPlannerEntrySearch = '';
         renderSocialPlannerTab();
@@ -3582,7 +3745,7 @@ window.createSocialPlannerEntry = async function (event) {
     event.preventDefault();
 
     const editId = String(document.getElementById('sp-entry-edit-id')?.value || '').trim();
-    const title = String(document.getElementById('sp-entry-title')?.value || '').trim();
+    const rawTitle = String(document.getElementById('sp-entry-title')?.value || '').trim();
     const masterText = String(document.getElementById('sp-entry-master-text')?.value || '').trim();
     const status = String(document.getElementById('sp-entry-status')?.value || 'draft').trim();
     const scheduledFor = toIsoFromLocalDateTime(document.getElementById('sp-entry-scheduled-for')?.value || '');
@@ -3590,12 +3753,13 @@ window.createSocialPlannerEntry = async function (event) {
     const mediaUrl = String(document.getElementById('sp-entry-media')?.value || '').trim();
     const hashtags = parseHashtagInput(document.getElementById('sp-entry-hashtags')?.value || '');
     const variants = getSocialPlannerEntryFormVariants();
+    const title = deriveSocialPlannerEntryTitle(rawTitle, masterText, variants);
     const targetAccountIds = Array.from(document.getElementById('sp-entry-target-accounts')?.selectedOptions || [])
         .map((option) => option.value)
         .filter(Boolean);
 
     if (!title) {
-        setSocialPlannerStatus('Tittel er påkrevd for innlegg.', 'danger');
+        setSocialPlannerStatus('Skriv inn tekst eller tittel før du lagrer innlegget.', 'danger');
         return;
     }
 
@@ -3632,7 +3796,13 @@ window.createSocialPlannerEntry = async function (event) {
             body: JSON.stringify(payload)
         }, 'Kunne ikke lagre innlegg.');
 
+        const createAnother = !editId && !!document.getElementById('sp-compose-create-another')?.checked;
         resetSocialPlannerEntryForm();
+        if (createAnother) {
+            openSocialPlannerComposer({ reset: false, panel: 'preview' });
+        } else {
+            closeSocialPlannerComposer();
+        }
         await refreshSocialPlannerState({
             silent: true,
             workspaceId: getSocialPlannerActiveWorkspaceId()
@@ -3686,7 +3856,6 @@ window.editSocialPlannerEntry = function (entryId) {
     const hashtagsInput = document.getElementById('sp-entry-hashtags');
     const accountSelect = document.getElementById('sp-entry-target-accounts');
     const templateSelect = document.getElementById('sp-entry-template');
-    const submitBtn = document.getElementById('sp-entry-submit-btn');
 
     if (editIdInput) editIdInput.value = entry.id;
     if (titleInput) titleInput.value = String(entry.title || '');
@@ -3705,10 +3874,12 @@ window.editSocialPlannerEntry = function (entryId) {
     setSocialPlannerEntryFormVariants(entry.variants || {});
     setMultiSelectValues(accountSelect, Array.isArray(entry.targetAccountIds) ? entry.targetAccountIds : []);
     if (templateSelect) templateSelect.value = '';
-    if (submitBtn) submitBtn.textContent = 'Oppdater innlegg';
+    syncSocialPlannerComposerMeta();
+    renderSocialPlannerComposerAccountChips();
     renderSocialPlannerEntryPreview();
+    openSocialPlannerComposer({ reset: false, panel: 'preview' });
 
-    titleInput?.focus();
+    masterInput?.focus();
     setSocialPlannerStatus('Innlegg lastet i skjema for redigering.', 'success');
 };
 
@@ -4412,6 +4583,76 @@ function updateHeaderActions(section) {
     }
 }
 
+let adminSidebarResizeBound = false;
+
+function isAdminSidebarDesktopViewport() {
+    return window.matchMedia('(min-width: 901px)').matches;
+}
+
+function getAdminSidebarCollapsedFromStorage() {
+    try {
+        return window.localStorage.getItem(ADMIN_SIDEBAR_COLLAPSE_KEY) === '1';
+    } catch (error) {
+        return false;
+    }
+}
+
+function setAdminSidebarCollapsedInStorage(collapsed) {
+    try {
+        window.localStorage.setItem(ADMIN_SIDEBAR_COLLAPSE_KEY, collapsed ? '1' : '0');
+    } catch (error) {
+        // Ignore storage write errors (e.g. private mode restrictions)
+    }
+}
+
+function updateAdminSidebarToggleButton(collapsed) {
+    const toggleBtn = document.getElementById('sidebar-toggle-btn');
+    if (!toggleBtn) return;
+
+    toggleBtn.classList.toggle('is-collapsed', !!collapsed);
+    toggleBtn.setAttribute('aria-expanded', String(!collapsed));
+    toggleBtn.setAttribute('title', collapsed ? 'Vis meny' : 'Skjul meny');
+    toggleBtn.setAttribute('aria-label', collapsed ? 'Vis meny' : 'Skjul meny');
+
+    const icon = toggleBtn.querySelector('i');
+    if (!icon) return;
+    icon.classList.remove('fa-bars', 'fa-xmark');
+    icon.classList.add(collapsed ? 'fa-bars' : 'fa-xmark');
+}
+
+function applyAdminSidebarViewportState() {
+    if (!isAdminSidebarDesktopViewport()) {
+        document.body.classList.remove('admin-sidebar-collapsed');
+        updateAdminSidebarToggleButton(false);
+        return;
+    }
+
+    const collapsed = getAdminSidebarCollapsedFromStorage();
+    document.body.classList.toggle('admin-sidebar-collapsed', collapsed);
+    updateAdminSidebarToggleButton(collapsed);
+}
+
+function setupAdminSidebarToggle() {
+    const toggleBtn = document.getElementById('sidebar-toggle-btn');
+    if (!toggleBtn) return;
+
+    applyAdminSidebarViewportState();
+
+    toggleBtn.addEventListener('click', () => {
+        if (!isAdminSidebarDesktopViewport()) return;
+
+        const nextCollapsed = !document.body.classList.contains('admin-sidebar-collapsed');
+        document.body.classList.toggle('admin-sidebar-collapsed', nextCollapsed);
+        updateAdminSidebarToggleButton(nextCollapsed);
+        setAdminSidebarCollapsedInStorage(nextCollapsed);
+    });
+
+    if (!adminSidebarResizeBound) {
+        window.addEventListener('resize', applyAdminSidebarViewportState);
+        adminSidebarResizeBound = true;
+    }
+}
+
 function setupEventListeners() {
     const langBtns = document.querySelectorAll('.lang-btn');
     langBtns.forEach(btn => {
@@ -4481,6 +4722,14 @@ function setupEventListeners() {
         });
     }
 
+    const plannerAccountsSelect = document.getElementById('sp-entry-target-accounts');
+    if (plannerAccountsSelect) {
+        plannerAccountsSelect.addEventListener('change', () => {
+            renderSocialPlannerComposerAccountChips();
+            renderSocialPlannerEntryPreview();
+        });
+    }
+
     const plannerPreviewInputs = [
         'sp-entry-title',
         'sp-entry-master-text',
@@ -4515,6 +4764,14 @@ function setupEventListeners() {
             renderSocialPlannerEntries();
         });
     }
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+        const modal = document.getElementById('sp-compose-modal');
+        if (modal?.classList.contains('is-open')) {
+            closeSocialPlannerComposer();
+        }
+    });
 }
 
 
