@@ -1608,6 +1608,183 @@ window.publishPost = async function () {
 // ==========================================
 
 let contactMessages = [];
+const analyticsRangePresets = Object.freeze({
+    '1d': { metricSuffix: 'siste døgn', shortLabel: '1d' },
+    '7d': { metricSuffix: 'siste 7 dager', shortLabel: '7d' },
+    '14d': { metricSuffix: 'siste 14 dager', shortLabel: '14d' },
+    '30d': { metricSuffix: 'siste 30 dager', shortLabel: '30d' },
+    '365d': { metricSuffix: 'siste 1 år', shortLabel: '1 år' }
+});
+const analyticsFilterState = {
+    period: '7d',
+    startDate: '',
+    endDate: ''
+};
+let analyticsFiltersInitialized = false;
+
+function isValidAnalyticsIsoDate(value = '') {
+    const normalized = String(value || '').trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(normalized)) return false;
+    const parsed = new Date(`${normalized}T12:00:00`);
+    return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === normalized;
+}
+
+function getIsoDateDaysAgo(days = 0) {
+    const date = new Date();
+    date.setHours(12, 0, 0, 0);
+    date.setDate(date.getDate() - days);
+    return date.toISOString().slice(0, 10);
+}
+
+function formatAnalyticsDate(isoDate = '') {
+    if (!isValidAnalyticsIsoDate(isoDate)) return isoDate || '';
+    return new Date(`${isoDate}T12:00:00`).toLocaleDateString('no-NO');
+}
+
+function getAnalyticsUiMeta(range = {}) {
+    const period = String(range.period || analyticsFilterState.period || '7d');
+
+    if (period === 'custom') {
+        const startDate = String(range.startDate || analyticsFilterState.startDate || '').trim();
+        const endDate = String(range.endDate || analyticsFilterState.endDate || '').trim();
+        const startLabel = formatAnalyticsDate(startDate);
+        const endLabel = formatAnalyticsDate(endDate);
+        const subtitleRange = (startLabel && endLabel) ? `${startLabel} - ${endLabel}` : 'valgt periode';
+
+        return {
+            usersLabel: 'Brukere i valgt periode',
+            viewsLabel: 'Sidevisninger i valgt periode',
+            pagesSubtitle: `Sidevisninger (${subtitleRange})`,
+            sourcesSubtitle: `Økter (${subtitleRange})`
+        };
+    }
+
+    const preset = analyticsRangePresets[period] || analyticsRangePresets['7d'];
+    return {
+        usersLabel: `Brukere ${preset.metricSuffix}`,
+        viewsLabel: `Sidevisninger ${preset.metricSuffix}`,
+        pagesSubtitle: `Sidevisninger (${preset.shortLabel})`,
+        sourcesSubtitle: `Økter (${preset.shortLabel})`
+    };
+}
+
+function updateAnalyticsLabels(range = {}) {
+    const usersLabelEl = document.getElementById('ga-users-label');
+    const viewsLabelEl = document.getElementById('ga-pageviews-label');
+    const pagesSubtitleEl = document.getElementById('ga-pages-subtitle');
+    const sourcesSubtitleEl = document.getElementById('ga-sources-subtitle');
+    const uiMeta = getAnalyticsUiMeta(range);
+
+    if (usersLabelEl) usersLabelEl.textContent = uiMeta.usersLabel;
+    if (viewsLabelEl) viewsLabelEl.textContent = uiMeta.viewsLabel;
+    if (pagesSubtitleEl) pagesSubtitleEl.textContent = uiMeta.pagesSubtitle;
+    if (sourcesSubtitleEl) sourcesSubtitleEl.textContent = uiMeta.sourcesSubtitle;
+}
+
+function syncAnalyticsFilterInputs() {
+    const rangeSelect = document.getElementById('analytics-range-select');
+    const customRange = document.getElementById('analytics-custom-range');
+    const startInput = document.getElementById('analytics-start-date');
+    const endInput = document.getElementById('analytics-end-date');
+    const isCustom = analyticsFilterState.period === 'custom';
+
+    if (rangeSelect && rangeSelect.value !== analyticsFilterState.period) {
+        rangeSelect.value = analyticsFilterState.period;
+    }
+    if (customRange) {
+        customRange.hidden = !isCustom;
+    }
+    if (startInput && analyticsFilterState.startDate) {
+        startInput.value = analyticsFilterState.startDate;
+    }
+    if (endInput && analyticsFilterState.endDate) {
+        endInput.value = analyticsFilterState.endDate;
+    }
+}
+
+async function buildAnalyticsRequestParams() {
+    const rangeSelect = document.getElementById('analytics-range-select');
+    const startInput = document.getElementById('analytics-start-date');
+    const endInput = document.getElementById('analytics-end-date');
+
+    analyticsFilterState.period = String(rangeSelect?.value || analyticsFilterState.period || '7d');
+    const params = new URLSearchParams({ period: analyticsFilterState.period });
+
+    if (analyticsFilterState.period !== 'custom') {
+        return params;
+    }
+
+    const startDate = String(startInput?.value || '').trim();
+    const endDate = String(endInput?.value || '').trim();
+
+    if (!isValidAnalyticsIsoDate(startDate) || !isValidAnalyticsIsoDate(endDate)) {
+        await showAdminNotice('Velg gyldig start- og sluttdato (YYYY-MM-DD) for valgfritt tidsrom.', {
+            title: 'Mangler datoer',
+            variant: 'warning'
+        });
+        return null;
+    }
+
+    if (startDate > endDate) {
+        await showAdminNotice('Startdato kan ikke vare senere enn sluttdato.', {
+            title: 'Ugyldig periode',
+            variant: 'warning'
+        });
+        return null;
+    }
+
+    analyticsFilterState.startDate = startDate;
+    analyticsFilterState.endDate = endDate;
+    params.set('startDate', startDate);
+    params.set('endDate', endDate);
+
+    return params;
+}
+
+function initializeAnalyticsFilters() {
+    if (analyticsFiltersInitialized) return;
+
+    const rangeSelect = document.getElementById('analytics-range-select');
+    const startInput = document.getElementById('analytics-start-date');
+    const endInput = document.getElementById('analytics-end-date');
+    const applyButton = document.getElementById('analytics-apply-filter');
+
+    if (!rangeSelect || !startInput || !endInput || !applyButton) return;
+
+    analyticsFilterState.period = String(rangeSelect.value || '7d');
+    analyticsFilterState.startDate = startInput.value || getIsoDateDaysAgo(7);
+    analyticsFilterState.endDate = endInput.value || getIsoDateDaysAgo(0);
+    startInput.value = analyticsFilterState.startDate;
+    endInput.value = analyticsFilterState.endDate;
+
+    rangeSelect.addEventListener('change', () => {
+        analyticsFilterState.period = String(rangeSelect.value || '7d');
+        syncAnalyticsFilterInputs();
+        updateAnalyticsLabels(analyticsFilterState);
+
+        if (analyticsFilterState.period !== 'custom') {
+            fetchAnalyticsData();
+        }
+    });
+
+    applyButton.addEventListener('click', () => {
+        fetchAnalyticsData();
+    });
+
+    startInput.addEventListener('change', () => {
+        analyticsFilterState.startDate = startInput.value || analyticsFilterState.startDate;
+        updateAnalyticsLabels(analyticsFilterState);
+    });
+
+    endInput.addEventListener('change', () => {
+        analyticsFilterState.endDate = endInput.value || analyticsFilterState.endDate;
+        updateAnalyticsLabels(analyticsFilterState);
+    });
+
+    analyticsFiltersInitialized = true;
+    syncAnalyticsFilterInputs();
+    updateAnalyticsLabels(analyticsFilterState);
+}
 
 window.fetchAnalyticsData = async function () {
     console.log('[Analytics] Fetching data...');
@@ -1635,7 +1812,12 @@ window.fetchAnalyticsData = async function () {
     if (sourcesContainer) sourcesContainer.innerHTML = '<div class="analytics-loading-inline"><i class="fas fa-spinner fa-spin"></i> Laster...</div>';
 
     try {
-        const response = await fetch(`${API_URL}/analytics`);
+        const requestParams = await buildAnalyticsRequestParams();
+        if (!requestParams) return;
+
+        updateAnalyticsLabels(analyticsFilterState);
+
+        const response = await fetch(`${API_URL}/analytics?${requestParams.toString()}`);
         if (!response.ok) throw new Error(`Server returned ${response.status}`);
 
         const result = await response.json();
@@ -1643,7 +1825,17 @@ window.fetchAnalyticsData = async function () {
 
         if (result.status === 'success' || result.status === 'unconfigured') {
             const data = result.data;
-            usersEl.textContent = data.active7DayUsers || '0';
+            if (result.range?.period) {
+                analyticsFilterState.period = result.range.period;
+                if (result.range.period === 'custom') {
+                    analyticsFilterState.startDate = result.range.startDate || analyticsFilterState.startDate;
+                    analyticsFilterState.endDate = result.range.endDate || analyticsFilterState.endDate;
+                }
+            }
+            syncAnalyticsFilterInputs();
+            updateAnalyticsLabels(result.range || analyticsFilterState);
+
+            usersEl.textContent = data.activeUsersInRange || data.active7DayUsers || '0';
             viewsEl.textContent = data.screenPageViews || '0';
             realtimeEl.textContent = data.activeUsers || '0';
             if (searchEl) searchEl.textContent = data.searchClicks || '9';
@@ -1653,16 +1845,16 @@ window.fetchAnalyticsData = async function () {
                 if (data.topPages.length === 0) {
                     pagesContainer.innerHTML = '<div class="analytics-loading-inline">Ingen data tilgjengelig</div>';
                 } else {
-                    const maxViews = Math.max(...data.topPages.map(p => parseInt(p.views) || 1));
+                    const maxViews = Math.max(...data.topPages.map(p => parseInt(p.views, 10) || 1));
                     pagesContainer.innerHTML = data.topPages.map(page => `
                         <div class="analytics-list-item">
                             <div class="analytics-item-info">
-                                <span class="analytics-item-label" title="${page.title}">${page.title}</span>
+                                <span class="analytics-item-label" title="${escapeHtmlForUi(page.title || '(uten tittel)')}">${escapeHtmlForUi(page.title || '(uten tittel)')}</span>
                                 <div class="analytics-item-bar">
-                                    <div class="analytics-item-progress" style="width: ${(parseInt(page.views) / maxViews) * 100}%"></div>
+                                    <div class="analytics-item-progress" style="width: ${(parseInt(page.views, 10) / maxViews) * 100}%"></div>
                                 </div>
                             </div>
-                            <span class="analytics-item-value">${page.views}</span>
+                            <span class="analytics-item-value">${parseInt(page.views, 10) || 0}</span>
                         </div>
                     `).join('');
                 }
@@ -1673,16 +1865,16 @@ window.fetchAnalyticsData = async function () {
                 if (data.trafficSources.length === 0) {
                     sourcesContainer.innerHTML = '<div class="analytics-loading-inline">Ingen data tilgjengelig</div>';
                 } else {
-                    const maxSessions = Math.max(...data.trafficSources.map(s => parseInt(s.sessions) || 1));
+                    const maxSessions = Math.max(...data.trafficSources.map(s => parseInt(s.sessions, 10) || 1));
                     sourcesContainer.innerHTML = data.trafficSources.map(source => `
                         <div class="analytics-list-item">
                             <div class="analytics-item-info">
-                                <span class="analytics-item-label">${source.source}</span>
+                                <span class="analytics-item-label">${escapeHtmlForUi(source.source || 'Ukjent')}</span>
                                 <div class="analytics-item-bar">
-                                    <div class="analytics-item-progress" style="width: ${(parseInt(source.sessions) / maxSessions) * 100}%"></div>
+                                    <div class="analytics-item-progress" style="width: ${(parseInt(source.sessions, 10) / maxSessions) * 100}%"></div>
                                 </div>
                             </div>
-                            <span class="analytics-item-value">${source.sessions}</span>
+                            <span class="analytics-item-value">${parseInt(source.sessions, 10) || 0}</span>
                         </div>
                     `).join('');
                 }
@@ -1994,6 +2186,7 @@ function renderSeoEditor() {
     const separatorEl = document.getElementById('seo-separator');
     const keywordsEl = document.getElementById('seo-default-keywords');
     const gaIdEl = document.getElementById('seo-ga-id');
+    const blogCommentsEnabledEl = document.getElementById('seo-blog-comments-enabled');
 
     if (siteTitleEl) siteTitleEl.value = seoData.global.siteTitle || '';
     if (logoTextEl) logoTextEl.value = seoData.global.logoText || '';
@@ -2001,6 +2194,7 @@ function renderSeoEditor() {
     if (separatorEl) separatorEl.value = seoData.global.separator || '|';
     if (keywordsEl) keywordsEl.value = seoData.global.defaultKeywords || '';
     if (gaIdEl) gaIdEl.value = seoData.global.googleAnalyticsId || '';
+    if (blogCommentsEnabledEl) blogCommentsEnabledEl.checked = seoData.global.blogCommentsEnabled !== false;
 
     const pagesList = document.getElementById('seo-pages-list');
     if (!pagesList) return;
@@ -2049,7 +2243,8 @@ async function saveSeo() {
         logoImage: document.getElementById('seo-logo-image')?.value?.trim() || '',
         separator: document.getElementById('seo-separator').value,
         defaultKeywords: document.getElementById('seo-default-keywords').value,
-        googleAnalyticsId: document.getElementById('seo-ga-id').value
+        googleAnalyticsId: document.getElementById('seo-ga-id').value,
+        blogCommentsEnabled: document.getElementById('seo-blog-comments-enabled')?.checked !== false
     };
 
     const pageTitles = document.querySelectorAll('.page-seo-title');
@@ -2725,6 +2920,7 @@ function setupEventListeners() {
         'home';
 
     setActiveSection(initialActiveSection);
+    initializeAnalyticsFilters();
 
     navBtns.forEach(btn => {
         btn.addEventListener('click', () => {

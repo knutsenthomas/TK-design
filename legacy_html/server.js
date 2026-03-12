@@ -69,7 +69,8 @@ const SEO_GLOBAL_DEFAULTS = {
     siteTitle: 'TK-design',
     separator: '|',
     defaultKeywords: 'design, portfolio, webutvikling, grafisk design',
-    googleAnalyticsId: ''
+    googleAnalyticsId: '',
+    blogCommentsEnabled: true
 };
 const SEO_PAGE_DEFAULTS = {
     'index.html': {
@@ -927,6 +928,10 @@ function getPostsFilePath() {
     return path.join(__dirname, 'data/posts.json');
 }
 
+function getCommentsFilePath() {
+    return path.join(__dirname, 'data/comments.json');
+}
+
 function getSeoFilePath() {
     return path.join(__dirname, 'data/seo.json');
 }
@@ -974,6 +979,96 @@ function writeBlogPosts(posts) {
     fs.writeFileSync(getPostsFilePath(), JSON.stringify(posts, null, 4), 'utf8');
 }
 
+function buildFallbackCommentId(postId, name, message, createdAt) {
+    const digest = crypto
+        .createHash('sha1')
+        .update(`${postId}|${name}|${message}|${createdAt}`)
+        .digest('hex')
+        .slice(0, 12);
+    return `legacy_${digest}`;
+}
+
+function normalizeCommentEntry(value, fallbackPostId = null) {
+    const postId = Number(value?.postId ?? fallbackPostId);
+    if (!Number.isFinite(postId) || postId <= 0) {
+        return null;
+    }
+
+    const name = String(value?.name || '').replace(/\s+/g, ' ').trim().slice(0, 80);
+    const message = String(value?.message || '').replace(/\r\n/g, '\n').trim().slice(0, 2000);
+    if (!name || !message) {
+        return null;
+    }
+
+    const rawCreatedAt = String(value?.createdAt || '').trim();
+    const createdAt = Number.isFinite(new Date(rawCreatedAt).getTime())
+        ? new Date(rawCreatedAt).toISOString()
+        : new Date().toISOString();
+
+    const id = String(value?.id || '').trim() || buildFallbackCommentId(postId, name, message, createdAt);
+
+    return {
+        id,
+        postId,
+        name,
+        message,
+        createdAt
+    };
+}
+
+function normalizeCommentsData(rawComments) {
+    const normalized = {};
+
+    function assignComment(value, fallbackPostId = null) {
+        const comment = normalizeCommentEntry(value, fallbackPostId);
+        if (!comment) return;
+
+        const postKey = String(comment.postId);
+        if (!Array.isArray(normalized[postKey])) {
+            normalized[postKey] = [];
+        }
+        normalized[postKey].push(comment);
+    }
+
+    if (Array.isArray(rawComments)) {
+        rawComments.forEach((comment) => assignComment(comment));
+    } else if (rawComments && typeof rawComments === 'object') {
+        for (const [postKey, comments] of Object.entries(rawComments)) {
+            if (!Array.isArray(comments)) continue;
+            comments.forEach((comment) => assignComment(comment, postKey));
+        }
+    }
+
+    for (const [postKey, comments] of Object.entries(normalized)) {
+        comments.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        const deduplicated = [];
+        const seenIds = new Set();
+        comments.forEach((comment) => {
+            if (seenIds.has(comment.id)) return;
+            seenIds.add(comment.id);
+            deduplicated.push(comment);
+        });
+        normalized[postKey] = deduplicated;
+    }
+
+    return normalized;
+}
+
+function readBlogComments() {
+    const commentsPath = getCommentsFilePath();
+    if (!fs.existsSync(commentsPath)) {
+        return {};
+    }
+
+    const rawData = JSON.parse(fs.readFileSync(commentsPath, 'utf8'));
+    return normalizeCommentsData(rawData);
+}
+
+function writeBlogComments(commentsData) {
+    const normalizedComments = normalizeCommentsData(commentsData);
+    fs.writeFileSync(getCommentsFilePath(), JSON.stringify(normalizedComments, null, 4), 'utf8');
+}
+
 function normalizeSeoData(seoData) {
     const parsedSeoData = (seoData && typeof seoData === 'object' && !Array.isArray(seoData))
         ? seoData
@@ -984,6 +1079,11 @@ function normalizeSeoData(seoData) {
     const parsedPages = (parsedSeoData.pages && typeof parsedSeoData.pages === 'object' && !Array.isArray(parsedSeoData.pages))
         ? parsedSeoData.pages
         : {};
+    const blogCommentsEnabledRaw = parsedGlobal.blogCommentsEnabled;
+    const blogCommentsEnabled = !(
+        blogCommentsEnabledRaw === false ||
+        String(blogCommentsEnabledRaw).toLowerCase() === 'false'
+    );
     const normalizedPages = {};
 
     for (const [pageFile, defaults] of Object.entries(SEO_PAGE_DEFAULTS)) {
@@ -1002,7 +1102,8 @@ function normalizeSeoData(seoData) {
     return {
         global: {
             ...SEO_GLOBAL_DEFAULTS,
-            ...parsedGlobal
+            ...parsedGlobal,
+            blogCommentsEnabled
         },
         pages: normalizedPages
     };
@@ -1139,10 +1240,87 @@ app.post('/api/style', async (req, res) => {
     }
 });
 
+const ANALYTICS_DATE_RANGE_PRESETS = Object.freeze({
+    '1d': { startDate: '1daysAgo', endDate: 'today', shortLabel: '1d', metricSuffix: 'siste døgn' },
+    '7d': { startDate: '7daysAgo', endDate: 'today', shortLabel: '7d', metricSuffix: 'siste 7 dager' },
+    '14d': { startDate: '14daysAgo', endDate: 'today', shortLabel: '14d', metricSuffix: 'siste 14 dager' },
+    '30d': { startDate: '30daysAgo', endDate: 'today', shortLabel: '30d', metricSuffix: 'siste 30 dager' },
+    '365d': { startDate: '365daysAgo', endDate: 'today', shortLabel: '1 år', metricSuffix: 'siste 1 år' }
+});
+
+const ANALYTICS_DATE_RANGE_ALIASES = Object.freeze({
+    '1': '1d',
+    '1d': '1d',
+    '24h': '1d',
+    day: '1d',
+    '7': '7d',
+    '7d': '7d',
+    '14': '14d',
+    '14d': '14d',
+    '30': '30d',
+    '30d': '30d',
+    '365': '365d',
+    '1y': '365d',
+    '365d': '365d',
+    year: '365d',
+    custom: 'custom'
+});
+
+function normalizeAnalyticsPeriod(period = '7d') {
+    const raw = String(period || '').trim().toLowerCase();
+    return ANALYTICS_DATE_RANGE_ALIASES[raw] || '7d';
+}
+
+function isValidIsoDateString(value = '') {
+    const candidate = String(value || '').trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(candidate)) return false;
+    const parsed = new Date(`${candidate}T12:00:00`);
+    return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === candidate;
+}
+
 // API: Get Blog Posts
 // --- Messages API ---
 app.get('/api/analytics', async (req, res) => {
     const propertyId = process.env.GA_PROPERTY_ID;
+    const period = normalizeAnalyticsPeriod(req.query.period);
+    const startDate = String(req.query.startDate || '').trim();
+    const endDate = String(req.query.endDate || '').trim();
+
+    let selectedRange;
+    let rangeMeta;
+
+    if (period === 'custom') {
+        if (!isValidIsoDateString(startDate) || !isValidIsoDateString(endDate)) {
+            return res.status(400).json({
+                status: 'error',
+                error: 'Ugyldig datoformat. Bruk YYYY-MM-DD.'
+            });
+        }
+        if (startDate > endDate) {
+            return res.status(400).json({
+                status: 'error',
+                error: 'Startdato kan ikke vare senere enn sluttdato.'
+            });
+        }
+        selectedRange = { startDate, endDate };
+        rangeMeta = {
+            period,
+            startDate,
+            endDate,
+            shortLabel: `${startDate} - ${endDate}`,
+            metricSuffix: 'i valgt periode'
+        };
+    } else {
+        const preset = ANALYTICS_DATE_RANGE_PRESETS[period] || ANALYTICS_DATE_RANGE_PRESETS['7d'];
+        selectedRange = { startDate: preset.startDate, endDate: preset.endDate };
+        rangeMeta = {
+            period,
+            startDate: preset.startDate,
+            endDate: preset.endDate,
+            shortLabel: preset.shortLabel,
+            metricSuffix: preset.metricSuffix
+        };
+    }
 
     if (!analyticsClient || !propertyId) {
         return res.json({
@@ -1150,23 +1328,29 @@ app.get('/api/analytics', async (req, res) => {
             message: 'Google Analytics er ikke konfigurert ennå.',
             data: {
                 active7DayUsers: '—',
+                activeUsersInRange: '—',
                 screenPageViews: '—',
-                activeUsers: '—'
-            }
+                activeUsers: '—',
+                topPages: [],
+                trafficSources: []
+            },
+            range: rangeMeta
         });
     }
 
     try {
+        const dateRanges = [selectedRange];
+
         // Run all GA4 reports in parallel for faster response
         const [[summaryResponse], [pagesResponse], [sourcesResponse]] = await Promise.all([
             analyticsClient.runReport({
                 property: `properties/${propertyId}`,
-                dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
+                dateRanges,
                 metrics: [{ name: 'activeUsers' }, { name: 'screenPageViews' }],
             }),
             analyticsClient.runReport({
                 property: `properties/${propertyId}`,
-                dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
+                dateRanges,
                 dimensions: [{ name: 'pageTitle' }],
                 metrics: [{ name: 'screenPageViews' }],
                 limit: 8,
@@ -1174,7 +1358,7 @@ app.get('/api/analytics', async (req, res) => {
             }),
             analyticsClient.runReport({
                 property: `properties/${propertyId}`,
-                dateRanges: [{ startDate: '7daysAgo', endDate: 'today' }],
+                dateRanges,
                 dimensions: [{ name: 'sessionDefaultChannelGroup' }],
                 metrics: [{ name: 'sessions' }],
                 limit: 8,
@@ -1210,11 +1394,13 @@ app.get('/api/analytics', async (req, res) => {
             status: 'success',
             data: {
                 active7DayUsers: summaryMetrics[0]?.value || '0',
+                activeUsersInRange: summaryMetrics[0]?.value || '0',
                 screenPageViews: summaryMetrics[1]?.value || '0',
                 activeUsers: activeUsersNow,
                 topPages,
                 trafficSources
-            }
+            },
+            range: rangeMeta
         });
     } catch (err) {
         console.error('[Analytics] API feil:', err.message);
@@ -1362,6 +1548,110 @@ app.post('/api/posts', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, error: 'Error saving posts', details: error.message });
+    }
+});
+
+app.get('/api/comments', async (req, res) => {
+    const requestedPostId = Number(req.query.postId);
+
+    try {
+        const commentsData = normalizeCommentsData(await readSiteDataWithFallback('comments', readBlogComments));
+
+        if (Number.isFinite(requestedPostId) && requestedPostId > 0) {
+            return res.json(commentsData[String(requestedPostId)] || []);
+        }
+
+        return res.json(commentsData);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Error reading comments' });
+    }
+});
+
+app.get('/api/comments/settings', async (req, res) => {
+    try {
+        const seoConfig = normalizeSeoData(await readSiteDataWithFallback('seo', readSeoData));
+        return res.json({
+            blogCommentsEnabled: seoConfig.global.blogCommentsEnabled !== false
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Error reading comment settings' });
+    }
+});
+
+app.post('/api/comments', async (req, res) => {
+    const postId = Number(req.body?.postId);
+    const name = String(req.body?.name || '').replace(/\s+/g, ' ').trim();
+    const message = String(req.body?.message || '').trim();
+
+    if (!Number.isFinite(postId) || postId <= 0) {
+        return res.status(400).json({ error: 'Ugyldig innlegg.' });
+    }
+
+    if (!name || name.length < 2) {
+        return res.status(400).json({ error: 'Navn må være minst 2 tegn.' });
+    }
+
+    if (!message || message.length < 3) {
+        return res.status(400).json({ error: 'Kommentar må være minst 3 tegn.' });
+    }
+
+    if (name.length > 80 || message.length > 2000) {
+        return res.status(400).json({ error: 'Kommentaren er for lang.' });
+    }
+
+    try {
+        const seoConfig = normalizeSeoData(await readSiteDataWithFallback('seo', readSeoData));
+        if (seoConfig.global.blogCommentsEnabled === false) {
+            return res.status(403).json({ error: 'Kommentarer er deaktivert globalt.' });
+        }
+
+        const posts = await readSiteDataWithFallback('posts', readBlogPosts);
+        const post = Array.isArray(posts)
+            ? posts.find((item) => Number(item?.id) === postId)
+            : null;
+
+        if (!post) {
+            return res.status(404).json({ error: 'Innlegget finnes ikke.' });
+        }
+
+        if (post.allowComments === false) {
+            return res.status(403).json({ error: 'Kommentarer er deaktivert for dette innlegget.' });
+        }
+
+        const commentsData = normalizeCommentsData(await readSiteDataWithFallback('comments', readBlogComments));
+        const postKey = String(postId);
+        const createdAt = new Date().toISOString();
+        const comment = normalizeCommentEntry({
+            id: `c_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`,
+            postId,
+            name,
+            message,
+            createdAt
+        }, postId);
+
+        if (!comment) {
+            return res.status(400).json({ error: 'Kunne ikke opprette kommentar.' });
+        }
+
+        if (!Array.isArray(commentsData[postKey])) {
+            commentsData[postKey] = [];
+        }
+
+        commentsData[postKey].push(comment);
+        commentsData[postKey] = commentsData[postKey].slice(-500);
+
+        const result = await persistSiteData('comments', commentsData, writeBlogComments);
+        return res.status(201).json({
+            success: true,
+            comment,
+            comments: commentsData[postKey],
+            ...result
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Error saving comment', details: error.message });
     }
 });
 

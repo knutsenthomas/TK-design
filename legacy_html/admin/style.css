@@ -2369,6 +2369,41 @@ body.admin-dashboard-refresh .analytics-header-link {
     background: #fff7ed;
 }
 
+body.admin-dashboard-refresh .analytics-range-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-right: 4px;
+}
+
+body.admin-dashboard-refresh .analytics-range-select,
+body.admin-dashboard-refresh .analytics-range-date {
+    height: 36px;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    border-radius: 8px;
+    background: #fff;
+    color: #334155;
+    font-size: 0.85rem;
+    padding: 0 10px;
+}
+
+body.admin-dashboard-refresh .analytics-range-select {
+    min-width: 170px;
+}
+
+body.admin-dashboard-refresh .analytics-custom-range {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #64748b;
+    font-size: 0.82rem;
+}
+
+body.admin-dashboard-refresh .analytics-custom-range[hidden] {
+    display: none !important;
+}
+
 body.admin-dashboard-refresh .analytics-header-link:hover {
     color: #7c2d12;
     border-color: rgba(249, 115, 22, 0.3);
@@ -2619,6 +2654,21 @@ body.admin-dashboard-refresh .analytics-meta-note {
 @media (max-width: 900px) {
     .analytics-detail-grid {
         grid-template-columns: 1fr;
+    }
+
+    body.admin-dashboard-refresh .analytics-range-controls {
+        width: 100%;
+    }
+
+    body.admin-dashboard-refresh .analytics-range-select,
+    body.admin-dashboard-refresh .analytics-range-date {
+        width: 100%;
+    }
+
+    body.admin-dashboard-refresh .analytics-custom-range {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
     }
 }
 

@@ -457,6 +457,18 @@
                                 <input type="text" id="seo-default-keywords" class="form-control"
                                     style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
                             </div>
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <div class="toggle-row">
+                                    <label>Tillat kommentarer globalt på blogg</label>
+                                    <label class="switch">
+                                        <input type="checkbox" id="seo-blog-comments-enabled" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                                <p style="margin-top: 8px; color: #64748b; font-size: 13px;">
+                                    Hvis av: ingen kan kommentere noen blogginnlegg, uansett innstilling per innlegg.
+                                </p>
+                            </div>
                         </div>
                     </div>
 
@@ -507,6 +519,27 @@
                     <header>
                         <h1 data-i18n="nav_analytics">Statistikk</h1>
                         <div class="header-actions">
+                            <div class="analytics-range-controls">
+                                <select id="analytics-range-select" class="analytics-range-select"
+                                    title="Velg periode for statistikk">
+                                    <option value="1d">Siste døgn</option>
+                                    <option value="7d" selected>Siste 7 dager</option>
+                                    <option value="14d">Siste 14 dager</option>
+                                    <option value="30d">Siste 30 dager</option>
+                                    <option value="365d">Siste 1 år</option>
+                                    <option value="custom">Valgfritt tidsrom</option>
+                                </select>
+                                <div id="analytics-custom-range" class="analytics-custom-range" hidden>
+                                    <input type="date" id="analytics-start-date" class="analytics-range-date"
+                                        title="Startdato">
+                                    <span>til</span>
+                                    <input type="date" id="analytics-end-date" class="analytics-range-date"
+                                        title="Sluttdato">
+                                </div>
+                                <button id="analytics-apply-filter" class="action-btn" title="Bruk valgt periode">
+                                    Bruk
+                                </button>
+                            </div>
                             <button onclick="fetchAnalyticsData()" class="action-btn" title="Oppdater statistikk">
                                 <i class="fas fa-sync-alt"></i>
                             </button>
@@ -521,14 +554,15 @@
                         <div class="card stat-card analytics-metric-card">
                             <div class="analytics-metric-head">
                                 <i class="fas fa-users analytics-metric-icon"></i>
-                                <span class="analytics-metric-label">Brukere siste 7 dager</span>
+                                <span id="ga-users-label" class="analytics-metric-label">Brukere siste 7 dager</span>
                             </div>
                             <div id="ga-users" class="analytics-metric-value">—</div>
                         </div>
                         <div class="card stat-card analytics-metric-card">
                             <div class="analytics-metric-head">
                                 <i class="fas fa-eye analytics-metric-icon"></i>
-                                <span class="analytics-metric-label">Sidevisninger siste 7 dager</span>
+                                <span id="ga-pageviews-label" class="analytics-metric-label">Sidevisninger siste 7
+                                    dager</span>
                             </div>
                             <div id="ga-pageviews" class="analytics-metric-value">—</div>
                         </div>
@@ -552,7 +586,7 @@
                         <div class="card analytics-list-card">
                             <div class="analytics-list-head">
                                 <h3><i class="fas fa-file-alt"></i> Toppsider</h3>
-                                <span class="analytics-list-subtitle">Sidevisninger (7d)</span>
+                                <span id="ga-pages-subtitle" class="analytics-list-subtitle">Sidevisninger (7d)</span>
                             </div>
                             <div id="ga-top-pages" class="analytics-list-body">
                                 <div class="analytics-loading-inline"><i class="fas fa-spinner fa-spin"></i> Laster...
@@ -563,7 +597,7 @@
                         <div class="card analytics-list-card">
                             <div class="analytics-list-head">
                                 <h3><i class="fas fa-share-nodes"></i> Trafikkilder</h3>
-                                <span class="analytics-list-subtitle">Økter (7d)</span>
+                                <span id="ga-sources-subtitle" class="analytics-list-subtitle">Økter (7d)</span>
                             </div>
                             <div id="ga-traffic-sources" class="analytics-list-body">
                                 <div class="analytics-loading-inline"><i class="fas fa-spinner fa-spin"></i> Laster...
@@ -856,6 +890,9 @@
                                     <span class="slider round"></span>
                                 </label>
                             </div>
+                            <p style="margin-top: 8px; color: #64748b; font-size: 12px;">
+                                Global kommentarbryter i SEO overstyrer denne.
+                            </p>
                         </div>
 
                         <!-- Hidden inputs for compatibility with existing save logic -->
