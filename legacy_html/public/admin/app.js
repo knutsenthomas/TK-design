@@ -23,6 +23,8 @@ let socialPlannerState = null;
 let socialPlannerAnalytics = null;
 let socialPlannerLoaded = false;
 let socialPlannerLoading = false;
+let socialPlannerEntryFilter = 'all';
+let socialPlannerEntrySearch = '';
 const SOCIAL_PLANNER_UI_PLATFORMS = ['facebook', 'instagram', 'linkedin', 'x', 'tiktok'];
 let quill; // Define quill globally but initialize later
 
@@ -1893,6 +1895,95 @@ function getSocialPlannerScopedTemplates() {
     return templates.filter((template) => template.workspaceId === workspaceId);
 }
 
+function normalizeSocialPlannerEntryFilter(filter = '') {
+    const value = String(filter || '').trim().toLowerCase();
+    const allowed = new Set(['all', 'queue', 'draft', 'scheduled', 'published']);
+    return allowed.has(value) ? value : 'all';
+}
+
+function isSocialPlannerPublishedLikeStatus(status = '') {
+    const normalized = toSocialPlannerStatusClass(status);
+    return normalized === 'published' || normalized === 'partially_published';
+}
+
+function matchesSocialPlannerEntryFilter(entry = {}, filter = 'all') {
+    const normalizedFilter = normalizeSocialPlannerEntryFilter(filter);
+    if (normalizedFilter === 'all') return true;
+
+    const status = toSocialPlannerStatusClass(entry?.status);
+    if (normalizedFilter === 'queue') {
+        return status === 'scheduled' || status === 'publishing';
+    }
+    if (normalizedFilter === 'published') {
+        return isSocialPlannerPublishedLikeStatus(status);
+    }
+    return status === normalizedFilter;
+}
+
+function matchesSocialPlannerEntrySearch(entry = {}, query = '') {
+    const normalizedQuery = String(query || '').trim().toLowerCase();
+    if (!normalizedQuery) return true;
+
+    const parts = [
+        entry?.title,
+        entry?.masterText,
+        entry?.lastError,
+        entry?.linkUrl,
+        entry?.mediaUrl,
+        Array.isArray(entry?.hashtags) ? entry.hashtags.join(' ') : '',
+        Array.isArray(entry?.targetAccountIds) ? entry.targetAccountIds.join(' ') : ''
+    ];
+
+    return parts
+        .filter(Boolean)
+        .map((part) => String(part).toLowerCase())
+        .some((part) => part.includes(normalizedQuery));
+}
+
+function buildSocialPlannerEntryCounts(entries = []) {
+    const scopedEntries = Array.isArray(entries) ? entries : [];
+    const counts = {
+        all: scopedEntries.length,
+        queue: 0,
+        draft: 0,
+        scheduled: 0,
+        published: 0
+    };
+
+    scopedEntries.forEach((entry) => {
+        const status = toSocialPlannerStatusClass(entry?.status);
+        if (status === 'scheduled' || status === 'publishing') {
+            counts.queue += 1;
+        }
+        if (status === 'draft') {
+            counts.draft += 1;
+        }
+        if (status === 'scheduled') {
+            counts.scheduled += 1;
+        }
+        if (isSocialPlannerPublishedLikeStatus(status)) {
+            counts.published += 1;
+        }
+    });
+
+    return counts;
+}
+
+function renderSocialPlannerEntryFilters(entries = []) {
+    const tabs = document.querySelectorAll('#sp-status-tabs .social-planner-tab-btn');
+    if (tabs.length === 0) return;
+
+    const counts = buildSocialPlannerEntryCounts(entries);
+    tabs.forEach((tab) => {
+        const filter = normalizeSocialPlannerEntryFilter(tab.dataset.filter);
+        const countEl = tab.querySelector('span');
+        if (countEl) {
+            countEl.textContent = formatNumberForUi(counts[filter] || 0);
+        }
+        tab.classList.toggle('active', filter === socialPlannerEntryFilter);
+    });
+}
+
 function getSocialPlannerUiPlatforms() {
     const supported = Array.isArray(socialPlannerState?.supports?.platforms)
         ? socialPlannerState.supports.platforms
@@ -2450,19 +2541,34 @@ function renderSocialPlannerEntries() {
     if (!tableBody) return;
 
     const scopedEntries = getSocialPlannerScopedEntries();
+    renderSocialPlannerEntryFilters(scopedEntries);
+
+    const filteredEntries = scopedEntries.filter((entry) => {
+        return matchesSocialPlannerEntryFilter(entry, socialPlannerEntryFilter)
+            && matchesSocialPlannerEntrySearch(entry, socialPlannerEntrySearch);
+    });
+
     tableBody.innerHTML = '';
 
-    if (scopedEntries.length === 0) {
+    if (filteredEntries.length === 0) {
         const row = document.createElement('tr');
         const cell = document.createElement('td');
         cell.colSpan = 6;
-        cell.textContent = 'Ingen innlegg i dette workspace enda.';
+        cell.className = 'meta';
+        const hasScopedEntries = scopedEntries.length > 0;
+        if (!hasScopedEntries) {
+            cell.textContent = 'Ingen innlegg i dette workspace enda.';
+        } else if (socialPlannerEntrySearch) {
+            cell.textContent = `Ingen innlegg matcher søket "${socialPlannerEntrySearch}".`;
+        } else {
+            cell.textContent = 'Ingen innlegg i valgt statusfilter.';
+        }
         row.appendChild(cell);
         tableBody.appendChild(row);
         return;
     }
 
-    scopedEntries.forEach((entry) => {
+    filteredEntries.forEach((entry) => {
         const row = document.createElement('tr');
 
         const titleCell = document.createElement('td');
@@ -2541,6 +2647,11 @@ function renderSocialPlannerEntries() {
     });
 }
 
+window.setSocialPlannerEntryFilter = function (filter = 'all') {
+    socialPlannerEntryFilter = normalizeSocialPlannerEntryFilter(filter);
+    renderSocialPlannerEntries();
+};
+
 function renderSocialPlannerStats() {
     const overview = socialPlannerAnalytics?.overview || {};
     const publishedEl = document.getElementById('sp-stat-published');
@@ -2611,12 +2722,17 @@ function renderSocialPlannerTopEntries() {
 }
 
 function renderSocialPlannerTab() {
+    socialPlannerEntryFilter = normalizeSocialPlannerEntryFilter(socialPlannerEntryFilter);
     renderSocialPlannerWorkspaceSelect();
     renderSocialPlannerWorkspaceList();
     renderSocialPlannerTemplateSelect();
     renderSocialPlannerTemplatesList();
     renderSocialPlannerTargetAccountOptions();
     renderSocialPlannerAccounts();
+    const searchInput = document.getElementById('sp-entry-search');
+    if (searchInput && String(searchInput.value || '') !== socialPlannerEntrySearch) {
+        searchInput.value = socialPlannerEntrySearch;
+    }
     renderSocialPlannerEntries();
     renderSocialPlannerStats();
     renderSocialPlannerTopEntries();
@@ -2740,6 +2856,8 @@ window.changeSocialPlannerWorkspace = async function (workspaceId) {
         resetSocialPlannerTemplateForm();
         resetSocialPlannerAccountForm();
         resetSocialPlannerEntryForm();
+        socialPlannerEntryFilter = 'all';
+        socialPlannerEntrySearch = '';
         renderSocialPlannerTab();
         const selectedPeriod = document.getElementById('sp-analytics-period')?.value || '7d';
         await fetchSocialPlannerAnalytics(selectedPeriod, { silent: true });
@@ -4086,6 +4204,21 @@ function setupEventListeners() {
             renderSocialPlannerEntryPreview();
         });
     });
+
+    const plannerFilterTabs = document.querySelectorAll('#sp-status-tabs .social-planner-tab-btn');
+    plannerFilterTabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+            window.setSocialPlannerEntryFilter(tab.dataset.filter || 'all');
+        });
+    });
+
+    const plannerSearchInput = document.getElementById('sp-entry-search');
+    if (plannerSearchInput) {
+        plannerSearchInput.addEventListener('input', () => {
+            socialPlannerEntrySearch = String(plannerSearchInput.value || '').trim();
+            renderSocialPlannerEntries();
+        });
+    }
 }
 
 
