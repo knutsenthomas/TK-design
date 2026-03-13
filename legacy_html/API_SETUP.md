@@ -114,3 +114,42 @@ Merk:
 - `SITE_URL` brukes for å bygge absolutte lenker i payloaden.
 - Hvis webhook ikke er satt, publiseres innlegget fortsatt normalt uten SoMe-feil.
 - Hvis SoMe-autopost feiler med `404`, er webhook-URL-en vanligvis slettet eller utløpt hos leverandøren. Opprett ny webhook og oppdater `SOCIAL_WEBHOOK_URL`, deretter restart serveren.
+
+## 8. Synk av ekte SoMe-metrics tilbake til Social Planner
+
+Du kan nå sende faktiske tall (likes, comments, shares, reach, clicks) tilbake til serveren etter publisering.
+
+Valgfritt i `.env`:
+
+```env
+SOCIAL_METRICS_SYNC_TOKEN=valgfri_lang_hemmelig_token
+```
+
+Endpoint:
+
+- `POST /api/social-planner/metrics/sync`
+- Hvis `SOCIAL_METRICS_SYNC_TOKEN` er satt, må request ha header:
+  - `x-social-sync-token: <samme token>`
+
+Eksempel payload (fra Make):
+
+```json
+{
+  "entryId": "entry_1773325861788_59dad94b",
+  "accountId": "acct_1773320144080_986d04c1",
+  "platform": "facebook",
+  "externalPostId": "1234567890_9876543210",
+  "metrics": {
+    "likes": 14,
+    "comments": 2,
+    "shares": 1,
+    "reach": 742,
+    "clicks": 19
+  }
+}
+```
+
+Tips:
+
+- Publiseringspayloaden fra serveren inneholder nå `sync.metricsUrl`, `sync.entryId`, `sync.accountId`, `sync.platform`.
+- Bruk disse feltene i Make når du sender metrics tilbake.

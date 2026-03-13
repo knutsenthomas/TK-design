@@ -1,0 +1,315 @@
+{
+    "version": 1,
+    "settings": {
+        "activeWorkspaceId": "default"
+    },
+    "workspaces": [
+        {
+            "id": "default",
+            "name": "TK-design",
+            "timezone": "Europe/Oslo",
+            "createdAt": "2026-03-12T11:20:55.704Z",
+            "updatedAt": "2026-03-12T11:20:55.704Z"
+        }
+    ],
+    "socialAccounts": [
+        {
+            "id": "acct_1773320144080_986d04c1",
+            "workspaceId": "default",
+            "platform": "facebook",
+            "displayName": "TK-design facebook",
+            "externalAccountId": "",
+            "status": "active",
+            "createdAt": "2026-03-12T12:55:44.080Z",
+            "updatedAt": "2026-03-12T13:09:41.067Z"
+        },
+        {
+            "id": "acct_1773321018034_c64fa4a0",
+            "workspaceId": "default",
+            "platform": "instagram",
+            "displayName": "TK-design instagram",
+            "externalAccountId": "",
+            "status": "active",
+            "createdAt": "2026-03-12T13:10:18.034Z",
+            "updatedAt": "2026-03-12T13:10:18.034Z"
+        },
+        {
+            "id": "acct_1773324333206_ed93362e",
+            "workspaceId": "default",
+            "platform": "linkedin",
+            "displayName": "TK-design - Linkedin",
+            "externalAccountId": "",
+            "status": "active",
+            "createdAt": "2026-03-12T14:05:33.206Z",
+            "updatedAt": "2026-03-12T14:05:33.206Z"
+        }
+    ],
+    "templates": [
+        {
+            "id": "tpl_1773314455704_2c485ded",
+            "workspaceId": "default",
+            "category": "salg",
+            "name": "Salgskampanje",
+            "body": "Nytt fra oss: {{title}}\n{{summary}}\nLes mer: {{url}}",
+            "createdAt": "2026-03-12T11:20:55.704Z",
+            "updatedAt": "2026-03-12T11:20:55.704Z"
+        },
+        {
+            "id": "tpl_1773314455704_5cb6395a",
+            "workspaceId": "default",
+            "category": "inspirasjon",
+            "name": "Tips og innsikt",
+            "body": "{{hook}}\n{{summary}}\n#tips #inspirasjon",
+            "createdAt": "2026-03-12T11:20:55.704Z",
+            "updatedAt": "2026-03-12T11:20:55.704Z"
+        }
+    ],
+    "entries": [
+        {
+            "id": "entry_1773346845785_5fa78806",
+            "workspaceId": "default",
+            "title": "Dette er en test",
+            "masterText": "Dette er en test",
+            "variants": {
+                "facebook": "",
+                "instagram": "",
+                "linkedin": "",
+                "x": "",
+                "tiktok": ""
+            },
+            "hashtags": [],
+            "mediaUrl": "https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4ODk3NDV8MHwxfHNlYXJjaHwxfHxUZXN0fGVufDB8fHx8MTc3MzM0NTg5Nnww&ixlib=rb-4.1.0&q=85",
+            "linkUrl": "",
+            "targetAccountIds": [],
+            "status": "failed",
+            "scheduledFor": "",
+            "publishedAt": "",
+            "createdAt": "2026-03-12T20:20:45.785Z",
+            "updatedAt": "2026-03-12T20:20:45.967Z",
+            "lastError": "Ingen aktive kontoer er valgt for publisering.",
+            "publishLog": [],
+            "platformPublications": [],
+            "metrics": {
+                "likes": 0,
+                "comments": 0,
+                "shares": 0,
+                "reach": 0,
+                "clicks": 0
+            }
+        },
+        {
+            "id": "entry_1773343095763_fcecf706",
+            "workspaceId": "default",
+            "title": "Dette er en test!",
+            "masterText": "Dette er en test!",
+            "variants": {
+                "facebook": "",
+                "instagram": "",
+                "linkedin": "",
+                "x": "",
+                "tiktok": ""
+            },
+            "hashtags": [],
+            "mediaUrl": "",
+            "linkUrl": "",
+            "targetAccountIds": [],
+            "status": "failed",
+            "scheduledFor": "",
+            "publishedAt": "",
+            "createdAt": "2026-03-12T19:18:15.763Z",
+            "updatedAt": "2026-03-12T19:18:15.972Z",
+            "lastError": "Ingen aktive kontoer er valgt for publisering.",
+            "publishLog": [],
+            "platformPublications": [],
+            "metrics": {
+                "likes": 0,
+                "comments": 0,
+                "shares": 0,
+                "reach": 0,
+                "clicks": 0
+            }
+        },
+        {
+            "id": "entry_1773325861788_59dad94b",
+            "workspaceId": "default",
+            "title": "Lurer du på hvem som skal bygge din neste nettside? Valget av webdesignpartner er kritisk. Små webdesignfirmaer tilbyr ofte en unik kombinasjon av personlig oppfølging, direkte ti…",
+            "masterText": "Lurer du på hvem som skal bygge din neste nettside? Valget av webdesignpartner er kritisk. Små webdesignfirmaer tilbyr ofte en unik kombinasjon av personlig oppfølging, direkte tilgang til erfarne designere, og en smidighet som sikrer at ditt prosjekt får den dedikasjonen det fortjener. Med en mindre aktør får du gjerne en partner som kjenner din virksomhet og dine mål ut og inn, noe som resulterer i en nettside som virkelig gjenspeiler din merkevare og strategi. La oss hjelpe deg å realisere ditt digitale potensial.",
+            "variants": {
+                "facebook": "Når du skal velge webdesignpartner, er det mange hensyn å ta. Små webdesignfirmaer tilbyr ofte en unik kombinasjon av fordeler: personlig oppfølging, direkte tilgang til erfarne fagfolk, og en smidighet som sikrer raske og effektive prosesser. Med et mindre team får du en partner som virkelig tar seg tid til å forstå din virksomhet og dine mål, noe som resulterer i en nettside som er perfekt tilpasset dine behov og som leverer resultater. Ønsker du en skreddersydd nettside bygget med dedikasjon og ekspertise? Vurder fordelene ved å velge en mindre aktør.",
+                "instagram": "Trenger du en ny nettside? Små webdesignfirmaer leverer ofte de mest personlige og skreddersydde løsningene! ✨ Få direkte kontakt med eksperter, raske prosesser og en nettside som virkelig gjenspeiler din merkevare. Mindre firma = større fokus på dine mål og resultater. Ta kontakt for en prat!",
+                "linkedin": "I jakten på den ideelle webdesignpartneren overser mange de betydelige fordelene ved å engasjere et mindre firma. Mindre webdesignfirmaer utmerker seg ofte med sin evne til å tilby dypere forståelse for kundens forretningsmål, mer direkte kommunikasjonslinjer til prosjektledere og designere, samt en fleksibilitet som muliggjør raske justeringer og innovasjon. Dette sikrer ikke bare et sluttprodukt av høy kvalitet, men også en smidig og kostnadseffektiv prosess. Velg en partner som investerer tid i å forstå din unike posisjon i markedet. Dette er avgjørende for digital suksess.",
+                "x": "Optimaliser din online tilstedeværelse! Velg små webdesignfirmaer for personlig service, direkte ekspertkontakt og skreddersydde løsninger. Mindre aktører gir deg mer fokus og de beste resultatene for din nettside. #Webdesign #DigitalStrategi",
+                "tiktok": "Skal du bygge ny nettside? Velg smart! Små webdesignfirmaer gir deg personlig service, direkte kontakt med ekspertene, og skreddersydde løsninger som treffer dine mål. Mindre firma, større fokus på din suksess. ✨ #WebdesignTips #Nettsted"
+            },
+            "hashtags": [
+                "#webdesign",
+                "#nettside",
+                "#digitalstrategi",
+                "#smenorge",
+                "#webutvikling",
+                "#skreddersydd",
+                "#lokalweb",
+                "#personligservice",
+                "#norskdesign",
+                "#forretningsvekst",
+                "#onlinesynlighet",
+                "#digitalpartner",
+                "#smbedrift",
+                "#profesjonellweb",
+                "#onlinetilstedevrelse",
+                "#skreddersyddlsning",
+                "#nettsted",
+                "#webdesignbyr"
+            ],
+            "mediaUrl": "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4ODk3NDV8MHwxfHNlYXJjaHwxfHxXZWJkZXNpZ258ZW58MHx8fHwxNzczMzI1NzQ4fDA&ixlib=rb-4.1.0&q=85",
+            "linkUrl": "",
+            "targetAccountIds": [
+                "acct_1773320144080_986d04c1",
+                "acct_1773321018034_c64fa4a0",
+                "acct_1773324333206_ed93362e"
+            ],
+            "status": "published",
+            "scheduledFor": "",
+            "publishedAt": "2026-03-13T08:17:20.311Z",
+            "createdAt": "2026-03-12T14:31:01.788Z",
+            "updatedAt": "2026-03-13T08:17:20.311Z",
+            "lastError": "",
+            "publishLog": [
+                {
+                    "at": "2026-03-12T16:50:00.114Z",
+                    "accountId": "acct_1773320144080_986d04c1",
+                    "platform": "facebook",
+                    "status": "published",
+                    "details": "Publisert via webhook"
+                },
+                {
+                    "at": "2026-03-12T16:50:00.292Z",
+                    "accountId": "acct_1773321018034_c64fa4a0",
+                    "platform": "instagram",
+                    "status": "published",
+                    "details": "Publisert via webhook"
+                },
+                {
+                    "at": "2026-03-12T16:50:00.504Z",
+                    "accountId": "acct_1773324333206_ed93362e",
+                    "platform": "linkedin",
+                    "status": "published",
+                    "details": "Publisert via webhook"
+                },
+                {
+                    "at": "2026-03-12T17:32:14.733Z",
+                    "accountId": "acct_1773320144080_986d04c1",
+                    "platform": "facebook",
+                    "status": "published",
+                    "details": "Accepted"
+                },
+                {
+                    "at": "2026-03-12T17:32:14.890Z",
+                    "accountId": "acct_1773321018034_c64fa4a0",
+                    "platform": "instagram",
+                    "status": "published",
+                    "details": "Accepted"
+                },
+                {
+                    "at": "2026-03-12T17:32:15.055Z",
+                    "accountId": "acct_1773324333206_ed93362e",
+                    "platform": "linkedin",
+                    "status": "published",
+                    "details": "Accepted"
+                },
+                {
+                    "at": "2026-03-12T17:34:10.244Z",
+                    "accountId": "acct_1773320144080_986d04c1",
+                    "platform": "facebook",
+                    "status": "published",
+                    "details": "Accepted"
+                },
+                {
+                    "at": "2026-03-12T17:34:10.401Z",
+                    "accountId": "acct_1773321018034_c64fa4a0",
+                    "platform": "instagram",
+                    "status": "published",
+                    "details": "Accepted"
+                },
+                {
+                    "at": "2026-03-12T17:34:10.605Z",
+                    "accountId": "acct_1773324333206_ed93362e",
+                    "platform": "linkedin",
+                    "status": "published",
+                    "details": "Accepted"
+                },
+                {
+                    "at": "2026-03-12T17:39:05.703Z",
+                    "accountId": "acct_1773320144080_986d04c1",
+                    "platform": "facebook",
+                    "status": "published",
+                    "details": "Accepted"
+                },
+                {
+                    "at": "2026-03-12T17:39:05.865Z",
+                    "accountId": "acct_1773321018034_c64fa4a0",
+                    "platform": "instagram",
+                    "status": "published",
+                    "details": "Accepted"
+                },
+                {
+                    "at": "2026-03-12T17:39:06.005Z",
+                    "accountId": "acct_1773324333206_ed93362e",
+                    "platform": "linkedin",
+                    "status": "published",
+                    "details": "Accepted"
+                },
+                {
+                    "at": "2026-03-13T08:16:08.170Z",
+                    "accountId": "acct_1773320144080_986d04c1",
+                    "platform": "facebook",
+                    "status": "published",
+                    "details": "Accepted"
+                },
+                {
+                    "at": "2026-03-13T08:16:08.376Z",
+                    "accountId": "acct_1773321018034_c64fa4a0",
+                    "platform": "instagram",
+                    "status": "published",
+                    "details": "Accepted"
+                },
+                {
+                    "at": "2026-03-13T08:16:08.588Z",
+                    "accountId": "acct_1773324333206_ed93362e",
+                    "platform": "linkedin",
+                    "status": "published",
+                    "details": "Accepted"
+                },
+                {
+                    "at": "2026-03-13T08:17:19.954Z",
+                    "accountId": "acct_1773320144080_986d04c1",
+                    "platform": "facebook",
+                    "status": "published",
+                    "details": "Accepted"
+                },
+                {
+                    "at": "2026-03-13T08:17:20.202Z",
+                    "accountId": "acct_1773321018034_c64fa4a0",
+                    "platform": "instagram",
+                    "status": "published",
+                    "details": "Accepted"
+                },
+                {
+                    "at": "2026-03-13T08:17:20.311Z",
+                    "accountId": "acct_1773324333206_ed93362e",
+                    "platform": "linkedin",
+                    "status": "published",
+                    "details": "Accepted"
+                }
+            ],
+            "platformPublications": [],
+            "metrics": {
+                "likes": 0,
+                "comments": 0,
+                "shares": 0,
+                "reach": 0,
+                "clicks": 0
+            }
+        }
+    ]
+}

@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>tk-design Admin</title>
-    <link rel="stylesheet" href="style.css?v=47">
-    <link rel="stylesheet" href="panel.css">
+    <link rel="stylesheet" href="/admin/style.css?v=52">
+    <link rel="stylesheet" href="/admin/panel.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -77,17 +77,21 @@
             </div>
         </div>
     </header>
+    <button class="mobile-menu-backdrop" data-admin-sidebar-toggle="close" type="button" aria-label="Lukk meny"></button>
 
     <div id="dashboard-container" class="admin-container">
         <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="logo sidebar-logo-row">
-                <h2 class="sidebar-menu-title" data-i18n="sidebar_menu">Meny</h2>
-                <button class="sidebar-inline-toggle-btn" id="sidebar-inline-toggle-btn" data-admin-sidebar-toggle="close" type="button" title="Skjul meny" aria-label="Skjul meny" aria-expanded="true">
-                    <i class="fas fa-angle-left"></i>
+        <aside class="sidebar" id="admin-sidebar">
+            <div class="sidebar-mobile-head">
+                <h2 data-i18n="sidebar_menu">Meny</h2>
+                <button class="sidebar-mobile-close-btn" data-admin-sidebar-toggle="close" type="button" title="Lukk meny" aria-label="Lukk meny">
+                    <i class="fas fa-xmark"></i>
                 </button>
             </div>
-            <nav>
+            <div class="logo sidebar-logo-row">
+                <h2 class="sidebar-menu-title" data-i18n="sidebar_menu">Meny</h2>
+            </div>
+            <nav class="sidebar-nav-main">
                 <button class="nav-btn active" data-tab="home" data-i18n="nav_home"><i class="fas fa-home"></i>
                     Hjem</button>
                 <button class="nav-btn" data-tab="blog" data-i18n="nav_blog"><i class="fas fa-pen-nib"></i>
@@ -101,14 +105,16 @@
                     Media</button>
                 <button class="nav-btn" data-tab="social-planner"><i class="fas fa-share-nodes"></i>
                     Social Planner</button>
-                <div style="flex-grow: 1;"></div>
+            </nav>
+            <div class="sidebar-footer-links">
+                <p class="sidebar-footer-caption">tk-design Studio</p>
                 <button class="nav-btn" onclick="window.open('/', '_blank')" data-i18n="nav_view_site"><i
                         class="fas fa-external-link-alt"></i>
                     Se Nettside</button>
                 <button id="logout-btn" class="nav-btn" style="color: #ef4444;" data-i18n="nav_logout"><i
                         class="fas fa-sign-out-alt"></i>
                     Logg ut</button>
-            </nav>
+            </div>
         </aside>
         <!-- Main Content -->
         <main class="main-content">
@@ -489,33 +495,19 @@
             </div>
 
             <div id="social-planner-tab" class="tab-content">
-                <header class="social-planner-page-header">
-                    <div>
-                        <h1>Social Planner</h1>
-                        <p>Planlegg, filtrer og publiser innlegg med tydelig oversikt over kanaler og status.</p>
-                    </div>
-                    <button class="save-btn" type="button" onclick="openSocialPlannerComposer()">
-                        <i class="fas fa-plus"></i> Nytt innlegg
-                    </button>
-                </header>
-
-                <div class="social-planner-shell">
-                    <aside class="card social-planner-rail">
+                <div id="sp-rail-modal" class="social-planner-rail-modal" hidden>
+                    <button type="button" class="social-planner-rail-modal-backdrop" aria-label="Lukk kontrollpanel" onclick="toggleSocialPlannerRail(false)"></button>
+                    <div class="social-planner-rail-modal-dialog" role="dialog" aria-modal="true" aria-label="Kontrollpanel">
+                        <button type="button" class="social-planner-rail-modal-close" aria-label="Lukk kontrollpanel" title="Lukk" onclick="toggleSocialPlannerRail(false)">
+                            <i class="fas fa-xmark"></i>
+                        </button>
+                        <aside class="card social-planner-rail">
                         <div class="social-planner-rail-section">
                             <h3>Kontrollpanel</h3>
                             <div class="social-planner-field">
                                 <label for="sp-workspace-select">Workspace</label>
                                 <select id="sp-workspace-select" onchange="changeSocialPlannerWorkspace(this.value)">
                                     <option value="default">Laster...</option>
-                                </select>
-                            </div>
-                            <div class="social-planner-field">
-                                <label for="sp-analytics-period">Analytics-periode</label>
-                                <select id="sp-analytics-period" onchange="changeSocialPlannerAnalyticsPeriod(this.value)">
-                                    <option value="7d" selected>Siste 7 dager</option>
-                                    <option value="14d">Siste 14 dager</option>
-                                    <option value="30d">Siste 30 dager</option>
-                                    <option value="365d">Siste 365 dager</option>
                                 </select>
                             </div>
                             <div class="social-planner-inline-actions social-planner-toolbar-actions">
@@ -577,66 +569,87 @@
                                 </div>
                             </form>
                         </div>
-                    </aside>
+                        </aside>
+                    </div>
+                </div>
+
+                <div class="social-planner-shell">
 
                     <section class="social-planner-main">
-                        <div class="social-planner-stats-grid">
-                            <article class="stat-card">
-                                <h3>Publiserte innlegg</h3>
-                                <div class="value"><span id="sp-stat-published">0</span></div>
-                            </article>
-                            <article class="stat-card">
-                                <h3>Total rekkevidde</h3>
-                                <div class="value"><span id="sp-stat-reach">0</span></div>
-                            </article>
-                            <article class="stat-card">
-                                <h3>Total engasjement</h3>
-                                <div class="value"><span id="sp-stat-engagement">0</span></div>
-                            </article>
-                            <article class="stat-card">
-                                <h3>Beste publiseringstid</h3>
-                                <div class="value"><span id="sp-stat-best-time">Ingen data</span></div>
-                            </article>
-                        </div>
-
                         <section class="card social-planner-card social-planner-entry-stream">
                             <div class="social-planner-stream-toolbar">
-                                <div class="social-planner-stream-title">
-                                    <h3>All Channels</h3>
-                                    <p>Planlagte og publiserte innlegg for valgt workspace.</p>
+                                <div class="social-planner-buffer-title">
+                                    <div class="social-planner-buffer-title-icon" aria-hidden="true">
+                                        <i class="fas fa-table-cells-large"></i>
+                                    </div>
+                                    <div class="social-planner-stream-title">
+                                        <h3>Alle kanaler</h3>
+                                        <p>Planlagte og publiserte innlegg for valgt arbeidsområde.</p>
+                                    </div>
                                 </div>
-                                <div class="social-planner-inline-actions">
-                                    <button class="save-btn" type="button" onclick="openSocialPlannerComposer()">
-                                        <i class="fas fa-plus"></i> Nytt innlegg
+                                <div class="social-planner-buffer-actions">
+                                    <button id="sp-rail-toggle-btn" class="social-planner-rail-toggle-btn" type="button" aria-label="Åpne kontrollpanel" title="Åpne kontrollpanel" aria-expanded="false">
+                                        <i class="fas fa-gear"></i>
                                     </button>
-                                    <button class="save-btn secondary-action-btn" type="button" onclick="refreshSocialPlannerState({ silent: true, workspaceId: getSocialPlannerActiveWorkspaceId() })">
-                                        Oppdater
+                                    <div id="sp-view-mode-toggle" class="social-planner-view-toggle" role="tablist" aria-label="Visningsmodus">
+                                        <button type="button" class="social-planner-view-btn active" data-view="list">
+                                            <i class="fas fa-list"></i> Liste
+                                        </button>
+                                        <button type="button" class="social-planner-view-btn" data-view="calendar">
+                                            <i class="fas fa-calendar"></i> Kalender
+                                        </button>
+                                    </div>
+                                    <button class="save-btn social-planner-new-post-btn" type="button" onclick="openSocialPlannerComposer()">
+                                        <i class="fas fa-plus"></i> Nytt innlegg
                                     </button>
                                 </div>
                             </div>
 
                             <div class="social-planner-stream-head">
                                 <div id="sp-status-tabs" class="social-planner-status-tabs">
-                                    <button type="button" class="social-planner-tab-btn active" data-filter="all">
-                                        Alle <span id="sp-filter-count-all">0</span>
-                                    </button>
-                                    <button type="button" class="social-planner-tab-btn" data-filter="queue">
-                                        Queue <span id="sp-filter-count-queue">0</span>
+                                    <button type="button" class="social-planner-tab-btn active" data-filter="queue">
+                                        Kø <span id="sp-filter-count-queue">0</span>
                                     </button>
                                     <button type="button" class="social-planner-tab-btn" data-filter="draft">
-                                        Drafts <span id="sp-filter-count-draft">0</span>
+                                        Utkast <span id="sp-filter-count-draft">0</span>
                                     </button>
-                                    <button type="button" class="social-planner-tab-btn" data-filter="scheduled">
-                                        Scheduled <span id="sp-filter-count-scheduled">0</span>
+                                    <button type="button" class="social-planner-tab-btn" data-filter="approval">
+                                        Godkjenninger <span id="sp-filter-count-approval">0</span>
                                     </button>
-                                    <button type="button" class="social-planner-tab-btn" data-filter="published">
-                                        Published <span id="sp-filter-count-published">0</span>
+                                    <button type="button" class="social-planner-tab-btn" data-filter="sent">
+                                        Sendt <span id="sp-filter-count-sent">0</span>
+                                    </button>
+                                    <button type="button" class="social-planner-tab-btn" data-filter="analytics">
+                                        Analyse
                                     </button>
                                 </div>
+                            </div>
+
+                            <div class="social-planner-stream-filters">
                                 <div class="social-planner-stream-tools">
                                     <label class="social-planner-search">
                                         <i class="fas fa-search"></i>
-                                        <input id="sp-entry-search" type="search" placeholder="Søk i innlegg, hashtags eller feil...">
+                                        <input id="sp-entry-search" type="search" placeholder="Søk i innlegg, tagger eller feil">
+                                    </label>
+                                </div>
+                                <div class="social-planner-stream-filter-group">
+                                    <label class="social-planner-select-filter">
+                                        <i class="fas fa-circle-nodes"></i>
+                                        <select id="sp-stream-channel-filter" aria-label="Filtrer kanaler">
+                                            <option value="all">Kanaler</option>
+                                        </select>
+                                    </label>
+                                    <label class="social-planner-select-filter">
+                                        <i class="fas fa-tag"></i>
+                                        <select id="sp-stream-tag-filter" aria-label="Filtrer tagger">
+                                            <option value="all">Tagger</option>
+                                        </select>
+                                    </label>
+                                    <label class="social-planner-select-filter">
+                                        <i class="fas fa-globe"></i>
+                                        <select id="sp-stream-timezone-filter" aria-label="Velg tidssone">
+                                            <option value="Europe/Oslo">Europe/Oslo</option>
+                                        </select>
                                     </label>
                                 </div>
                             </div>
@@ -644,16 +657,38 @@
                             <div id="sp-entries-feed" class="social-planner-feed">
                                 <p class="social-planner-list-empty">Ingen innlegg funnet.</p>
                             </div>
-                        </section>
-
-                        <div class="social-planner-grid social-planner-grid-single">
-                            <section class="card social-planner-card">
-                                <h3>Toppinnlegg i valgt periode</h3>
-                                <div id="sp-top-entries" class="social-planner-top-list">
-                                    <p class="social-planner-list-empty">Ingen analytics-data enda.</p>
+                            <div id="sp-calendar-view" class="social-planner-calendar" hidden></div>
+                            <div id="sp-analytics-panel" class="social-planner-analytics-panel" hidden>
+                                <div class="social-planner-analytics-head">
+                                    <h4>Analyse</h4>
+                                    <p>Siste 7 dager</p>
                                 </div>
-                            </section>
-                        </div>
+                                <div class="social-planner-stats-grid">
+                                    <article class="stat-card">
+                                        <h3>Publiserte innlegg</h3>
+                                        <div class="value"><span id="sp-stat-published">0</span></div>
+                                    </article>
+                                    <article class="stat-card">
+                                        <h3>Total rekkevidde</h3>
+                                        <div class="value"><span id="sp-stat-reach">0</span></div>
+                                    </article>
+                                    <article class="stat-card">
+                                        <h3>Total engasjement</h3>
+                                        <div class="value"><span id="sp-stat-engagement">0</span></div>
+                                    </article>
+                                    <article class="stat-card">
+                                        <h3>Beste publiseringstid</h3>
+                                        <div class="value"><span id="sp-stat-best-time">Ingen data</span></div>
+                                    </article>
+                                </div>
+                                <section class="social-planner-analytics-top">
+                                    <h4>Toppinnlegg i valgt periode</h4>
+                                    <div id="sp-top-entries" class="social-planner-top-list">
+                                        <p class="social-planner-list-empty">Ingen analytics-data enda.</p>
+                                    </div>
+                                </section>
+                            </div>
+                        </section>
 
                         <details class="social-planner-advanced">
                             <summary>Workspace og maler</summary>
@@ -716,8 +751,11 @@
                                 <header class="social-planner-compose-head">
                                     <div class="social-planner-compose-head-left">
                                         <h3 id="sp-compose-title">Create Post</h3>
-                                        <button type="button" class="social-planner-compose-tag-pill">
-                                            <i class="fas fa-tag"></i> Tags <i class="fas fa-chevron-down"></i>
+                                        <button type="button" id="sp-compose-tag-pill" class="social-planner-compose-tag-pill" onclick="toggleSocialPlannerTagEditor()" aria-label="Åpne tags" aria-expanded="false">
+                                            <i class="fas fa-tag"></i>
+                                            <span>Tagger</span>
+                                            <span id="sp-compose-tag-count" class="social-planner-compose-tag-count">0</span>
+                                            <i class="fas fa-chevron-down"></i>
                                         </button>
                                     </div>
                                     <div class="social-planner-compose-head-actions">
@@ -754,7 +792,6 @@
                                                         </button>
                                                     </div>
                                                 </div>
-                                                <div id="sp-entry-media-preview" class="social-planner-compose-media-preview" hidden></div>
                                             </div>
                                             <div class="social-planner-compose-quick-actions">
                                                 <button type="button" class="social-planner-compose-quick-btn" onclick="openSocialPlannerMediaPicker('unsplash')" title="Legg til bilde fra Unsplash"><i class="fas fa-image"></i></button>
@@ -763,6 +800,8 @@
                                                 <button type="button" class="social-planner-compose-quick-btn" onclick="document.getElementById('sp-entry-template')?.focus()"><i class="fas fa-bolt"></i></button>
                                             </div>
                                         </div>
+
+                                        <div id="sp-entry-media-preview" class="social-planner-compose-media-preview" hidden></div>
 
                                         <details class="social-planner-compose-advanced">
                                             <summary>Avanserte felt</summary>
@@ -893,22 +932,25 @@
                                 <footer class="social-planner-compose-footer">
                                     <label class="social-planner-compose-create-another">
                                         <input id="sp-compose-create-another" type="checkbox">
-                                        Create Another
+                                        Opprett en til
                                     </label>
                                     <div class="social-planner-compose-footer-actions">
                                         <div class="social-planner-field social-planner-compose-status-field">
                                             <label for="sp-entry-status">Publisering</label>
                                             <select id="sp-entry-status">
-                                                <option value="draft" selected>Next Available</option>
-                                                <option value="scheduled">Schedule Time</option>
+                                                <option value="draft" selected>Neste ledige</option>
+                                                <option value="scheduled">Planlegg tidspunkt</option>
                                             </select>
                                         </div>
                                         <div class="social-planner-field social-planner-compose-schedule-field" id="sp-compose-schedule-wrap">
                                             <label for="sp-entry-scheduled-for">Tidspunkt</label>
                                             <input id="sp-entry-scheduled-for" type="datetime-local">
                                         </div>
-                                        <button type="submit" class="save-btn" id="sp-entry-submit-btn">
-                                            Customize for each network <i class="fas fa-arrow-right"></i>
+                                        <button type="button" class="save-btn secondary-action-btn" id="sp-entry-save-btn" onclick="saveSocialPlannerDraft()">
+                                            <i class="fas fa-save"></i> Lagre
+                                        </button>
+                                        <button type="button" class="save-btn" id="sp-entry-publish-btn" onclick="publishSocialPlannerFromComposer()">
+                                            <i class="fas fa-paper-plane"></i> Publiser nå
                                         </button>
                                         <button type="button" class="save-btn secondary-action-btn" onclick="resetSocialPlannerEntryForm()">Nullstill</button>
                                     </div>
@@ -1536,7 +1578,7 @@
         </div>
     </div>
 
-    <script src="app.js?v=1.0.25"></script>
+    <script src="/admin/app.js?v=1.0.30"></script>
     <script type="importmap">
         {
             "imports": {

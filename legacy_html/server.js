@@ -130,12 +130,24 @@ app.use((req, res, next) => {
 });
 
 async function getFetch() {
-    try {
-        return require('node-fetch');
-    } catch (e) {
-        const fetchModule = await import('node-fetch');
-        return fetchModule.default;
+    if (typeof globalThis.fetch === 'function') {
+        return globalThis.fetch.bind(globalThis);
     }
+
+    try {
+        const requiredFetch = require('node-fetch');
+        if (typeof requiredFetch === 'function') {
+            return requiredFetch;
+        }
+        if (requiredFetch && typeof requiredFetch.default === 'function') {
+            return requiredFetch.default;
+        }
+    } catch (error) {
+        // Fallback to dynamic import below.
+    }
+
+    const fetchModule = await import('node-fetch');
+    return fetchModule.default;
 }
 
 function escapeHtml(value = '') {
@@ -227,7 +239,8 @@ app.get('/api/debug-env', (req, res) => {
         unsplash: !!String(process.env.UNSPLASH_ACCESS_KEY || '').trim(),
         social: {
             webhook: !!String(process.env.SOCIAL_WEBHOOK_URL || '').trim(),
-            webhookSecret: !!String(process.env.SOCIAL_WEBHOOK_SECRET || '').trim()
+            webhookSecret: !!String(process.env.SOCIAL_WEBHOOK_SECRET || '').trim(),
+            metricsSyncToken: !!String(process.env.SOCIAL_METRICS_SYNC_TOKEN || '').trim()
         }
     });
 });
@@ -1271,6 +1284,161 @@ function normalizeSocialPlannerMetrics(metrics) {
     };
 }
 
+function extractSocialPlannerMetricsPatch(source = {}) {
+    const candidate = (source && typeof source === 'object' && !Array.isArray(source)) ? source : {};
+    const patch = {};
+
+    const likes = parseNonNegativeIntegerOrNull(candidate.likes);
+    const comments = parseNonNegativeIntegerOrNull(candidate.comments);
+    const shares = parseNonNegativeIntegerOrNull(candidate.shares);
+    const reach = parseNonNegativeIntegerOrNull(candidate.reach);
+    const clicks = parseNonNegativeIntegerOrNull(candidate.clicks);
+
+    if (likes !== null) patch.likes = likes;
+    if (comments !== null) patch.comments = comments;
+    if (shares !== null) patch.shares = shares;
+    if (reach !== null) patch.reach = reach;
+    if (clicks !== null) patch.clicks = clicks;
+
+    return patch;
+}
+
+function mergeSocialPlannerMetrics(baseMetrics = {}, patchMetrics = {}) {
+    const base = normalizeSocialPlannerMetrics(baseMetrics);
+    const patch = extractSocialPlannerMetricsPatch(patchMetrics);
+    return {
+        likes: patch.likes ?? base.likes,
+        comments: patch.comments ?? base.comments,
+        shares: patch.shares ?? base.shares,
+        reach: patch.reach ?? base.reach,
+        clicks: patch.clicks ?? base.clicks
+    };
+}
+
+function normalizeSocialPlannerPublication(publication) {
+    const nowIso = new Date().toISOString();
+    const candidate = (publication && typeof publication === 'object' && !Array.isArray(publication)) ? publication : {};
+    return {
+        accountId: normalizePlannerShortText(candidate.accountId || '', 80),
+        platform: normalizePlannerPlatform(candidate.platform || ''),
+        externalPostId: normalizePlannerShortText(candidate.externalPostId || '', 240),
+        externalMediaId: normalizePlannerShortText(candidate.externalMediaId || '', 240),
+        externalUrl: normalizePlannerUrl(candidate.externalUrl || ''),
+        publishedAt: candidate.publishedAt ? normalizeIsoDateTime(candidate.publishedAt, nowIso) : '',
+        metrics: normalizeSocialPlannerMetrics(candidate.metrics || {}),
+        metricsUpdatedAt: candidate.metricsUpdatedAt ? normalizeIsoDateTime(candidate.metricsUpdatedAt, nowIso) : '',
+        updatedAt: normalizeIsoDateTime(candidate.updatedAt, nowIso)
+    };
+}
+
+function normalizeSocialPlannerPublications(publications = []) {
+    const list = Array.isArray(publications) ? publications : [];
+    const normalized = [];
+    const seen = new Set();
+
+    list.forEach((item, index) => {
+        const publication = normalizeSocialPlannerPublication(item);
+        const stableKey = `${publication.accountId || '_'}|${publication.platform || '_'}|${publication.externalPostId || publication.externalMediaId || `idx_${index}`}`;
+        if (seen.has(stableKey)) return;
+        seen.add(stableKey);
+        normalized.push(publication);
+    });
+
+    return normalized.slice(-100);
+}
+
+function sumSocialPlannerPublicationMetrics(publications = []) {
+    const list = Array.isArray(publications) ? publications : [];
+    return list.reduce((acc, publication) => {
+        const metrics = normalizeSocialPlannerMetrics(publication?.metrics || {});
+        acc.likes += metrics.likes;
+        acc.comments += metrics.comments;
+        acc.shares += metrics.shares;
+        acc.reach += metrics.reach;
+        acc.clicks += metrics.clicks;
+        return acc;
+    }, { likes: 0, comments: 0, shares: 0, reach: 0, clicks: 0 });
+}
+
+function findSocialPlannerPublicationIndex(publications = [], update = {}) {
+    const list = Array.isArray(publications) ? publications : [];
+    const accountId = normalizePlannerShortText(update.accountId || '', 80);
+    const platform = normalizePlannerPlatform(update.platform || '');
+    const externalPostId = normalizePlannerShortText(update.externalPostId || '', 240);
+    const externalMediaId = normalizePlannerShortText(update.externalMediaId || '', 240);
+
+    if (accountId && platform) {
+        const exact = list.findIndex((publication) => publication.accountId === accountId && publication.platform === platform);
+        if (exact >= 0) return exact;
+    }
+    if (accountId) {
+        const byAccount = list.findIndex((publication) => publication.accountId === accountId);
+        if (byAccount >= 0) return byAccount;
+    }
+    if (externalPostId && platform) {
+        const byExternalAndPlatform = list.findIndex((publication) => publication.externalPostId === externalPostId && publication.platform === platform);
+        if (byExternalAndPlatform >= 0) return byExternalAndPlatform;
+    }
+    if (externalPostId) {
+        const byExternal = list.findIndex((publication) => publication.externalPostId === externalPostId);
+        if (byExternal >= 0) return byExternal;
+    }
+    if (externalMediaId) {
+        const byMedia = list.findIndex((publication) => publication.externalMediaId === externalMediaId);
+        if (byMedia >= 0) return byMedia;
+    }
+    if (platform) {
+        return list.findIndex((publication) => publication.platform === platform);
+    }
+    return -1;
+}
+
+function upsertSocialPlannerEntryPublication(entry, update = {}) {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+        return;
+    }
+
+    const nowIso = new Date().toISOString();
+    const publications = normalizeSocialPlannerPublications(entry.platformPublications || []);
+    const targetIndex = findSocialPlannerPublicationIndex(publications, update);
+    const current = targetIndex >= 0
+        ? publications[targetIndex]
+        : normalizeSocialPlannerPublication({
+            accountId: update.accountId,
+            platform: update.platform
+        });
+
+    const metricsPatch = extractSocialPlannerMetricsPatch(update.metricsPatch || update.metrics || {});
+    const hasMetricsPatch = Object.keys(metricsPatch).length > 0;
+    const next = normalizeSocialPlannerPublication({
+        ...current,
+        accountId: normalizePlannerShortText(update.accountId || current.accountId || '', 80),
+        platform: normalizePlannerPlatform(update.platform || current.platform || ''),
+        externalPostId: normalizePlannerShortText(update.externalPostId || current.externalPostId || '', 240),
+        externalMediaId: normalizePlannerShortText(update.externalMediaId || current.externalMediaId || '', 240),
+        externalUrl: normalizePlannerUrl(update.externalUrl || current.externalUrl || ''),
+        publishedAt: update.publishedAt || current.publishedAt || '',
+        metrics: hasMetricsPatch
+            ? mergeSocialPlannerMetrics(current.metrics || {}, metricsPatch)
+            : normalizeSocialPlannerMetrics(current.metrics || {}),
+        metricsUpdatedAt: hasMetricsPatch
+            ? normalizeIsoDateTime(update.metricsUpdatedAt || nowIso, nowIso)
+            : current.metricsUpdatedAt,
+        updatedAt: nowIso
+    });
+
+    if (targetIndex >= 0) {
+        publications[targetIndex] = next;
+    } else {
+        publications.push(next);
+    }
+
+    entry.platformPublications = normalizeSocialPlannerPublications(publications);
+    if (hasMetricsPatch) {
+        entry.metrics = sumSocialPlannerPublicationMetrics(entry.platformPublications);
+    }
+}
+
 function normalizeSocialPlannerEntry(entry, workspaceIds = new Set(['default']), accountIds = new Set()) {
     const nowIso = new Date().toISOString();
     const candidate = (entry && typeof entry === 'object' && !Array.isArray(entry)) ? entry : {};
@@ -1316,6 +1484,7 @@ function normalizeSocialPlannerEntry(entry, workspaceIds = new Set(['default']),
                 details: normalizePlannerText(row?.details || '', 500)
             }))
             : [],
+        platformPublications: normalizeSocialPlannerPublications(candidate.platformPublications || []),
         metrics: normalizeSocialPlannerMetrics(candidate.metrics || {})
     };
 }
@@ -1510,10 +1679,11 @@ function computeSocialPlannerAnalytics(data, range) {
 function buildSocialPlannerCaption(entry = {}, platform = 'facebook') {
     const variant = String(entry?.variants?.[platform] || '').trim();
     const master = String(entry?.masterText || '').trim();
+    const title = String(entry?.title || '').trim();
     const hashtags = Array.isArray(entry?.hashtags) ? entry.hashtags.join(' ') : '';
     const linkUrl = String(entry?.linkUrl || '').trim();
 
-    return [variant || master, linkUrl, hashtags].filter(Boolean).join('\n\n').trim();
+    return [variant || master || title, linkUrl, hashtags].filter(Boolean).join('\n\n').trim();
 }
 
 function normalizeSeoData(seoData) {
@@ -2386,10 +2556,17 @@ const AI_ATTACHMENT_LIMITS = {
     fileSize: 12 * 1024 * 1024,
     files: 6
 };
+const ADMIN_STORAGE_UPLOAD_LIMITS = {
+    fileSize: 20 * 1024 * 1024
+};
 
 const aiAttachmentUpload = multer({
     storage: multer.memoryStorage(),
     limits: AI_ATTACHMENT_LIMITS
+});
+const adminStorageUpload = multer({
+    storage: multer.memoryStorage(),
+    limits: ADMIN_STORAGE_UPLOAD_LIMITS
 });
 
 const aiAttachmentMiddleware = (req, res, next) => {
@@ -2414,6 +2591,26 @@ const aiAttachmentMiddleware = (req, res, next) => {
 
         return res.status(400).json({
             error: 'Invalid multipart request',
+            details: error.message
+        });
+    });
+};
+
+const adminStorageUploadMiddleware = (req, res, next) => {
+    adminStorageUpload.single('file')(req, res, (error) => {
+        if (!error) {
+            return next();
+        }
+
+        if (error.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).json({
+                error: 'File too large',
+                details: `Max filstørrelse er ${Math.round(ADMIN_STORAGE_UPLOAD_LIMITS.fileSize / (1024 * 1024))} MB.`
+            });
+        }
+
+        return res.status(400).json({
+            error: 'Invalid upload request',
             details: error.message
         });
     });
@@ -2446,6 +2643,97 @@ function isSupportedAiAttachmentMimeType(mimeType = '') {
     if (mimeType === 'application/pdf') return true;
     if (mimeType === 'text/plain' || mimeType === 'text/markdown') return true;
     return false;
+}
+
+function sanitizeStoragePathSegment(segment = '') {
+    return String(segment || '')
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9._-]+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
+}
+
+function normalizeAdminStorageFolder(folderName = 'media') {
+    const normalized = String(folderName || '')
+        .split('/')
+        .map((segment) => sanitizeStoragePathSegment(segment))
+        .filter(Boolean)
+        .join('/');
+
+    return normalized || 'media';
+}
+
+function buildAdminStorageObjectName(folderName = 'media', originalName = 'file') {
+    const extension = path.extname(String(originalName || '').toLowerCase()).replace(/^\./, '');
+    const baseName = path.basename(String(originalName || 'file'), extension ? `.${extension}` : '');
+    const safeBaseName = sanitizeStoragePathSegment(baseName) || 'file';
+    const safeExtension = sanitizeStoragePathSegment(extension);
+    const suffix = safeExtension ? `${safeBaseName}.${safeExtension}` : safeBaseName;
+    return `${normalizeAdminStorageFolder(folderName)}/${Date.now()}-${crypto.randomBytes(4).toString('hex')}-${suffix}`;
+}
+
+function buildFirebaseStorageDownloadUrl(bucketName, objectName, token) {
+    return `https://firebasestorage.googleapis.com/v0/b/${encodeURIComponent(bucketName)}/o/${encodeURIComponent(objectName)}?alt=media&token=${encodeURIComponent(token)}`;
+}
+
+async function uploadBufferToFirebaseStorage({ folder = 'media', originalName = 'file', mimeType = '', buffer }) {
+    const resolvedMimeType = String(mimeType || '').trim() || inferMimeTypeFromFileName(originalName);
+    const storageBucket = String(getFirebaseWebConfig().storageBucket || '').trim();
+
+    if (!storageBucket) {
+        throw new Error('Firebase Storage bucket mangler i konfigurasjonen.');
+    }
+
+    if (!Buffer.isBuffer(buffer) || buffer.length === 0) {
+        throw new Error('Filen var tom.');
+    }
+
+    const objectName = buildAdminStorageObjectName(folder, originalName);
+    const downloadToken = crypto.randomUUID();
+    const metadata = {
+        name: objectName,
+        contentType: resolvedMimeType,
+        cacheControl: 'public,max-age=31536000',
+        metadata: {
+            firebaseStorageDownloadTokens: downloadToken
+        }
+    };
+    const boundary = `tk-design-upload-${crypto.randomUUID()}`;
+    const body = Buffer.concat([
+        Buffer.from(`--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(metadata)}\r\n`, 'utf8'),
+        Buffer.from(`--${boundary}\r\nContent-Type: ${resolvedMimeType}\r\nContent-Transfer-Encoding: binary\r\n\r\n`, 'utf8'),
+        buffer,
+        Buffer.from(`\r\n--${boundary}--`, 'utf8')
+    ]);
+
+    const accessToken = await getFirebaseAccessToken('https://www.googleapis.com/auth/cloud-platform');
+    const fetch = await getFetch();
+    const response = await fetch(
+        `https://storage.googleapis.com/upload/storage/v1/b/${encodeURIComponent(storageBucket)}/o?uploadType=multipart`,
+        {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': `multipart/related; boundary=${boundary}`
+            },
+            body
+        }
+    );
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Firebase Storage upload failed: ${response.status} ${errorText}`);
+    }
+
+    const payload = await response.json();
+
+    return {
+        bucket: storageBucket,
+        path: objectName,
+        fullPath: payload?.name || objectName,
+        publicUrl: buildFirebaseStorageDownloadUrl(storageBucket, payload?.name || objectName, downloadToken)
+    };
 }
 
 const GEMINI_DEFAULT_MODEL_CANDIDATES = [
@@ -3210,6 +3498,50 @@ app.get('/api/unsplash/search', async (req, res) => {
     }
 });
 
+app.post('/api/admin/storage/upload', adminStorageUploadMiddleware, async (req, res) => {
+    try {
+        if (!hasFirebaseServerCredentials()) {
+            return res.status(503).json({
+                error: 'Firebase server credentials missing',
+                details: 'Set TK_FIREBASE_PROJECT_ID, TK_FIREBASE_CLIENT_EMAIL og TK_FIREBASE_PRIVATE_KEY i .env.'
+            });
+        }
+
+        const file = req.file;
+        if (!file || !Buffer.isBuffer(file.buffer) || file.buffer.length === 0) {
+            return res.status(400).json({
+                error: 'Ingen fil valgt'
+            });
+        }
+
+        const mimeType = String(file.mimetype || inferMimeTypeFromFileName(file.originalname))
+            .trim()
+            .toLowerCase();
+        if (!mimeType.startsWith('image/')) {
+            return res.status(400).json({
+                error: 'Ugyldig filtype',
+                details: 'Kun bildefiler er tillatt i denne opplastingen.'
+            });
+        }
+
+        const folder = normalizeAdminStorageFolder(req.body?.folder || 'media');
+        const result = await uploadBufferToFirebaseStorage({
+            folder,
+            originalName: file.originalname || 'file',
+            mimeType,
+            buffer: file.buffer
+        });
+
+        return res.json(result);
+    } catch (error) {
+        console.error('Admin storage upload failed:', error);
+        return res.status(500).json({
+            error: 'Upload failed',
+            details: error.message
+        });
+    }
+});
+
 function getSiteBaseUrl(req) {
     const configured = String(process.env.SITE_URL || '').trim().replace(/\/+$/, '');
     if (configured) {
@@ -3351,6 +3683,24 @@ function firstNonEmptyString(values = []) {
     return '';
 }
 
+function firstDefinedValue(values = []) {
+    for (const value of values) {
+        if (value === 0 || value === '0') return value;
+        if (value === false) return value;
+        if (value === null || value === undefined) continue;
+        if (typeof value === 'string' && value.trim() === '') continue;
+        return value;
+    }
+    return undefined;
+}
+
+function parseNonNegativeIntegerOrNull(value) {
+    if (value === null || value === undefined) return null;
+    if (typeof value === 'string' && value.trim() === '') return null;
+    const parsed = Number.parseInt(value, 10);
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+}
+
 function resolveSocialExcerpt(post = {}, language = 'no') {
     const isEnglish = String(language || '').toLowerCase() === 'en';
     const primaryHtml = isEnglish
@@ -3398,9 +3748,153 @@ function summarizeWebhookResponseBody(responseBody = '', limit = 180) {
     return `${normalized.slice(0, Math.max(0, limit - 1)).trim()}…`;
 }
 
+function parseWebhookResponsePayload(rawBody = '', contentType = '') {
+    const body = String(rawBody || '').trim();
+    if (!body) return null;
+    const type = String(contentType || '').toLowerCase();
+    const looksJson = type.includes('application/json') || /^[\[{]/.test(body);
+    if (!looksJson) return null;
+    try {
+        return JSON.parse(body);
+    } catch (error) {
+        return null;
+    }
+}
+
+function isWebhookPayloadExplicitFailure(payload = null) {
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+        return false;
+    }
+
+    const hasFalseFlag = ['ok', 'success', 'sent', 'published']
+        .some((key) => key in payload && payload[key] === false);
+    const hasErrorSignal = Boolean(
+        payload.error
+        || payload.details && /error|failed|invalid|unauthorized|forbidden|denied/i.test(String(payload.details))
+        || payload.message && /error|failed|invalid|unauthorized|forbidden|denied/i.test(String(payload.message))
+    );
+    const hasErrorList = Array.isArray(payload.errors) && payload.errors.length > 0;
+
+    return hasFalseFlag || hasErrorSignal || hasErrorList;
+}
+
+function extractSocialWebhookDeliveryMeta(payload = null) {
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+        return {
+            externalPostId: '',
+            externalMediaId: '',
+            externalUrl: '',
+            publishedAt: '',
+            metricsPatch: {}
+        };
+    }
+
+    const metricsSources = [
+        payload.metrics,
+        payload.insights,
+        payload.analytics,
+        payload.data?.metrics,
+        payload.result?.metrics,
+        payload.post?.metrics
+    ];
+
+    let metricsPatch = {};
+    metricsSources.forEach((source) => {
+        const nextPatch = extractSocialPlannerMetricsPatch(source);
+        if (Object.keys(nextPatch).length > 0) {
+            metricsPatch = { ...metricsPatch, ...nextPatch };
+        }
+    });
+
+    if (Object.keys(metricsPatch).length === 0) {
+        metricsPatch = extractSocialPlannerMetricsPatch({
+            likes: firstDefinedValue([payload.likes, payload.like_count, payload.data?.likes]),
+            comments: firstDefinedValue([payload.comments, payload.comment_count, payload.data?.comments]),
+            shares: firstDefinedValue([payload.shares, payload.share_count, payload.data?.shares]),
+            reach: firstDefinedValue([payload.reach, payload.impressions, payload.data?.reach, payload.data?.impressions]),
+            clicks: firstDefinedValue([payload.clicks, payload.click_count, payload.data?.clicks])
+        });
+    }
+
+    const externalPostId = normalizePlannerShortText(firstNonEmptyString([
+        payload.externalPostId,
+        payload.external_post_id,
+        payload.postId,
+        payload.post_id,
+        payload.providerPostId,
+        payload.provider_post_id,
+        payload.post?.externalPostId,
+        payload.post?.postId,
+        payload.post?.id,
+        payload.data?.postId,
+        payload.data?.id,
+        payload.result?.postId,
+        payload.result?.id,
+        payload.id,
+        payload.urn
+    ]), 240);
+
+    const externalMediaId = normalizePlannerShortText(firstNonEmptyString([
+        payload.externalMediaId,
+        payload.external_media_id,
+        payload.mediaId,
+        payload.media_id,
+        payload.creationId,
+        payload.creation_id,
+        payload.data?.mediaId,
+        payload.data?.creationId,
+        payload.result?.mediaId,
+        payload.result?.creationId
+    ]), 240);
+
+    const externalUrl = normalizePlannerUrl(firstNonEmptyString([
+        payload.externalUrl,
+        payload.external_url,
+        payload.permalink,
+        payload.permalink_url,
+        payload.postUrl,
+        payload.post_url,
+        payload.url,
+        payload.data?.url,
+        payload.data?.permalink,
+        payload.result?.url
+    ]));
+
+    const publishedAtRaw = firstNonEmptyString([
+        payload.publishedAt,
+        payload.published_at,
+        payload.timestamp,
+        payload.post?.publishedAt,
+        payload.data?.publishedAt,
+        payload.result?.publishedAt
+    ]);
+    const publishedAt = publishedAtRaw
+        ? normalizeIsoDateTime(publishedAtRaw, new Date().toISOString())
+        : '';
+
+    return {
+        externalPostId,
+        externalMediaId,
+        externalUrl,
+        publishedAt,
+        metricsPatch
+    };
+}
+
 async function postPayloadToSocialWebhook(payload = {}, options = {}) {
+    const allowSimulatedWithoutConfig = parseBooleanFlag(options.allowSimulatedWithoutConfig, false);
+    const allowSimulatedOnFailure = parseBooleanFlag(options.allowSimulatedOnFailure, false);
     const webhookUrl = String(process.env.SOCIAL_WEBHOOK_URL || '').trim();
     if (!webhookUrl) {
+        if (allowSimulatedWithoutConfig) {
+            return {
+                sent: true,
+                simulated: true,
+                code: 'social_webhook_simulated',
+                details: 'Publisert lokalt uten webhook (SOCIAL_WEBHOOK_URL mangler).',
+                httpStatus: 200
+            };
+        }
         return {
             sent: false,
             code: 'social_webhook_not_configured',
@@ -3451,6 +3945,16 @@ async function postPayloadToSocialWebhook(payload = {}, options = {}) {
             const webhookHost = resolveWebhookHost(webhookUrl);
             const hostHint = webhookHost ? ` (${webhookHost})` : '';
 
+            if (allowSimulatedOnFailure) {
+                return {
+                    sent: true,
+                    simulated: true,
+                    code: 'social_webhook_simulated',
+                    details: `Publisert lokalt fordi webhook svarte med ${response.status}${hostHint}.`,
+                    httpStatus: 200
+                };
+            }
+
             if (response.status === 404) {
                 return {
                     sent: false,
@@ -3472,18 +3976,64 @@ async function postPayloadToSocialWebhook(payload = {}, options = {}) {
             };
         }
 
+        const responseBody = await response.text().catch(() => '');
+        const responseContentType = response.headers?.get?.('content-type') || '';
+        const parsedPayload = parseWebhookResponsePayload(responseBody, responseContentType);
+        if (isWebhookPayloadExplicitFailure(parsedPayload)) {
+            const providerMessage = summarizeWebhookResponseBody(
+                parsedPayload?.details
+                || parsedPayload?.message
+                || parsedPayload?.error
+                || responseBody
+            );
+            return {
+                sent: false,
+                error: 'Social webhook reported failure',
+                code: String(parsedPayload?.code || 'social_webhook_rejected'),
+                details: providerMessage || 'Webhook svarte med feil i responsen.',
+                httpStatus: 502
+            };
+        }
+
+        const acceptedHint = summarizeWebhookResponseBody(
+            parsedPayload?.details
+            || parsedPayload?.message
+            || responseBody
+        );
+        const deliveryMeta = extractSocialWebhookDeliveryMeta(parsedPayload);
         return {
             sent: true,
-            httpStatus: 200
+            details: acceptedHint || 'Webhook aksepterte publisering.',
+            httpStatus: 200,
+            ...deliveryMeta
         };
     } catch (error) {
         if (error?.name === 'AbortError') {
+            if (allowSimulatedOnFailure) {
+                return {
+                    sent: true,
+                    simulated: true,
+                    code: 'social_webhook_simulated',
+                    details: 'Publisert lokalt fordi webhook fikk timeout.',
+                    httpStatus: 200
+                };
+            }
             return {
                 sent: false,
                 error: 'Social webhook timed out',
                 code: 'social_webhook_timeout',
                 details: 'Webhook timed out while publishing.',
                 httpStatus: 504
+            };
+        }
+
+        if (allowSimulatedOnFailure) {
+            return {
+                sent: true,
+                simulated: true,
+                code: 'social_webhook_simulated',
+                details: 'Publisert lokalt fordi webhook-kall feilet.',
+                httpStatus: 200
             };
         }
 
@@ -3557,12 +4107,43 @@ function withSocialPlannerMeta(state, workspaceId = '') {
     };
 }
 
-function buildSocialPlannerEntryPayload(entry, account, workspace, req) {
+function resolveSocialPlannerPublishMediaUrl(entry, req, options = {}) {
+    const safeReq = req || { get: () => '', protocol: 'https' };
+    const explicitMedia = resolveAbsoluteAssetUrl(options?.mediaUrl || '', safeReq);
+    if (explicitMedia) {
+        return normalizePlannerUrl(explicitMedia);
+    }
+
+    const primaryMedia = resolveAbsoluteAssetUrl(entry?.mediaUrl || '', safeReq);
+    if (primaryMedia) {
+        return normalizePlannerUrl(primaryMedia);
+    }
+
+    const useDefaultFallback = parseBooleanFlag(options?.useDefaultFallback, false);
+    if (!useDefaultFallback) {
+        return '';
+    }
+
+    const fallbackFromOptions = String(options?.fallbackImageUrl || '').trim();
+    const fallbackFromEnv = String(process.env.SOCIAL_PLANNER_DEFAULT_IMAGE_URL || '').trim();
+    const fallbackCandidate = fallbackFromOptions || fallbackFromEnv;
+    const fallbackMedia = resolveAbsoluteAssetUrl(fallbackCandidate, safeReq);
+    return normalizePlannerUrl(fallbackMedia);
+}
+
+function resolveSocialPlannerMetricsSyncUrl(req) {
+    const safeReq = req || { get: () => '', protocol: 'https' };
+    const siteBase = getSiteBaseUrl(safeReq) || String(process.env.SITE_URL || '').trim();
+    if (!siteBase) return '';
+    return `${String(siteBase).replace(/\/+$/, '')}/api/social-planner/metrics/sync`;
+}
+
+function buildSocialPlannerEntryPayload(entry, account, workspace, req, options = {}) {
     const safeReq = req || { get: () => '', protocol: 'https' };
     const siteBase = getSiteBaseUrl(safeReq) || String(process.env.SITE_URL || '').trim();
     const platform = normalizePlannerPlatform(account?.platform || 'facebook');
     const caption = buildSocialPlannerCaption(entry, platform);
-    const mediaUrl = normalizePlannerUrl(entry?.mediaUrl || '');
+    const mediaUrl = resolveSocialPlannerPublishMediaUrl(entry, safeReq, options);
     const linkUrl = normalizePlannerUrl(entry?.linkUrl || '');
 
     return {
@@ -3570,6 +4151,11 @@ function buildSocialPlannerEntryPayload(entry, account, workspace, req) {
         sentAt: new Date().toISOString(),
         source: 'tk-design-social-planner',
         site: siteBase,
+        platform,
+        image_url: mediaUrl,
+        imageUrl: mediaUrl,
+        media_url: mediaUrl,
+        mediaUrl: mediaUrl,
         workspace: {
             id: String(workspace?.id || 'default'),
             name: String(workspace?.name || 'Workspace')
@@ -3586,11 +4172,46 @@ function buildSocialPlannerEntryPayload(entry, account, workspace, req) {
             caption,
             hashtags: Array.isArray(entry?.hashtags) ? entry.hashtags : [],
             mediaUrl,
+            media_url: mediaUrl,
+            image: mediaUrl,
+            imageUrl: mediaUrl,
+            image_url: mediaUrl,
+            url: linkUrl,
             linkUrl,
             scheduledFor: String(entry?.scheduledFor || ''),
             status: String(entry?.status || 'draft')
+        },
+        social: {
+            hashtags: Array.isArray(entry?.hashtags) ? entry.hashtags : [],
+            captions: {
+                no: caption,
+                en: caption
+            }
+        },
+        sync: {
+            metricsUrl: resolveSocialPlannerMetricsSyncUrl(safeReq),
+            entryId: String(entry?.id || ''),
+            accountId: String(account?.id || ''),
+            platform,
+            requiresToken: !!String(process.env.SOCIAL_METRICS_SYNC_TOKEN || '').trim()
         }
     };
+}
+
+function summarizeSocialPlannerDelivery(delivery = []) {
+    const items = Array.isArray(delivery) ? delivery : [];
+    if (items.length === 0) return '';
+
+    const summary = items.map((row) => {
+        const platform = normalizePlannerPlatform(row?.platform || 'custom');
+        const details = String(row?.details || '').trim();
+        if (details) {
+            return `${platform}: ${details}`;
+        }
+        return `${platform}: ${row?.sent ? 'ok' : 'feil'}`;
+    }).join(' | ');
+
+    return summary.slice(0, 600);
 }
 
 async function publishSocialPlannerEntryById(entryId, req, options = {}) {
@@ -3612,8 +4233,46 @@ async function publishSocialPlannerEntryById(entryId, req, options = {}) {
     const accounts = Array.isArray(state.socialAccounts) ? state.socialAccounts : [];
     const targetAccounts = accounts.filter((account) => entry.targetAccountIds.includes(account.id));
     const publishLog = Array.isArray(entry.publishLog) ? entry.publishLog.slice(-50) : [];
+    const allowLocalPublishFallback = parseBooleanFlag(
+        process.env.SOCIAL_PLANNER_ALLOW_LOCAL_PUBLISH_FALLBACK,
+        true
+    );
 
     if (targetAccounts.length === 0) {
+        if (allowLocalPublishFallback) {
+            entry.status = 'published';
+            entry.publishedAt = new Date().toISOString();
+            entry.lastError = '';
+            entry.updatedAt = new Date().toISOString();
+            publishLog.push({
+                at: new Date().toISOString(),
+                accountId: '',
+                platform: 'custom',
+                status: 'published',
+                details: 'Publisert lokalt uten koblet konto.'
+            });
+            entry.publishLog = publishLog.slice(-50);
+            entries[entryIndex] = normalizeSocialPlannerEntry(
+                entry,
+                new Set(state.workspaces.map((w) => w.id)),
+                new Set(accounts.map((a) => a.id))
+            );
+            await saveSocialPlannerState(state);
+            return {
+                ok: true,
+                httpStatus: 200,
+                entry: entries[entryIndex],
+                details: 'Publisert lokalt uten koblet konto.',
+                delivery: [{
+                    accountId: '',
+                    platform: 'custom',
+                    sent: true,
+                    code: 'local_publish_without_account',
+                    details: 'Publisert lokalt uten koblet konto.'
+                }]
+            };
+        }
+
         entry.status = 'failed';
         entry.lastError = 'Ingen aktive kontoer er valgt for publisering.';
         entry.updatedAt = new Date().toISOString();
@@ -3623,7 +4282,38 @@ async function publishSocialPlannerEntryById(entryId, req, options = {}) {
             ok: false,
             httpStatus: 400,
             error: entry.lastError,
+            details: entry.lastError,
             entry: entries[entryIndex]
+        };
+    }
+
+    const requiresImage = targetAccounts.some(
+        (account) => normalizePlannerPlatform(account?.platform || '') === 'instagram'
+    );
+    const explicitMediaUrl = resolveSocialPlannerPublishMediaUrl(entry, req, { useDefaultFallback: false });
+    const resolvedMediaUrl = explicitMediaUrl || resolveSocialPlannerPublishMediaUrl(entry, req, {
+        ...options,
+        useDefaultFallback: requiresImage
+    });
+
+    if (requiresImage && !resolvedMediaUrl) {
+        const details = 'Instagram krever bilde. Legg til bilde i innlegget (Unsplash eller Last opp) før publisering.';
+        entry.status = options.keepScheduledOnFail ? 'scheduled' : 'failed';
+        entry.lastError = details;
+        entry.updatedAt = new Date().toISOString();
+        entries[entryIndex] = normalizeSocialPlannerEntry(
+            entry,
+            new Set(state.workspaces.map((w) => w.id)),
+            new Set(accounts.map((a) => a.id))
+        );
+        await saveSocialPlannerState(state);
+        return {
+            ok: false,
+            httpStatus: 400,
+            error: details,
+            details,
+            entry: entries[entryIndex],
+            delivery: []
         };
     }
 
@@ -3639,6 +4329,9 @@ async function publishSocialPlannerEntryById(entryId, req, options = {}) {
     const delivery = [];
 
     for (const account of targetAccounts) {
+        const accountPlatform = normalizePlannerPlatform(account?.platform || '');
+        const mediaUrlForAccount = explicitMediaUrl || (accountPlatform === 'instagram' ? resolvedMediaUrl : '');
+
         if (String(account.status || 'active').toLowerCase() !== 'active') {
             failedCount += 1;
             const details = `Konto "${account.displayName}" er ikke aktiv.`;
@@ -3646,32 +4339,49 @@ async function publishSocialPlannerEntryById(entryId, req, options = {}) {
             publishLog.push({
                 at: new Date().toISOString(),
                 accountId: account.id,
-                platform: account.platform,
+                platform: accountPlatform,
                 status: 'failed',
                 details
             });
             delivery.push({
                 accountId: account.id,
-                platform: account.platform,
+                platform: accountPlatform,
                 sent: false,
                 details
             });
             continue;
         }
 
-        const payload = buildSocialPlannerEntryPayload(entry, account, workspace, req);
+        const payload = buildSocialPlannerEntryPayload(entry, account, workspace, req, {
+            mediaUrl: mediaUrlForAccount
+        });
         const webhookResult = await postPayloadToSocialWebhook(payload, {
-            userAgent: 'tk-design-social-planner'
+            userAgent: 'tk-design-social-planner',
+            allowSimulatedWithoutConfig: allowLocalPublishFallback,
+            allowSimulatedOnFailure: allowLocalPublishFallback
         });
 
         if (webhookResult.sent) {
             successCount += 1;
+            const successDetails = webhookResult.simulated
+                ? (webhookResult.details || 'Publisert lokalt (simulert).')
+                : (webhookResult.details || 'Publisert via webhook');
             publishLog.push({
                 at: new Date().toISOString(),
                 accountId: account.id,
-                platform: account.platform,
+                platform: accountPlatform,
                 status: 'published',
-                details: 'Publisert via webhook'
+                details: successDetails
+            });
+
+            upsertSocialPlannerEntryPublication(entry, {
+                accountId: account.id,
+                platform: accountPlatform,
+                externalPostId: webhookResult.externalPostId,
+                externalMediaId: webhookResult.externalMediaId,
+                externalUrl: webhookResult.externalUrl,
+                publishedAt: webhookResult.publishedAt || new Date().toISOString(),
+                metricsPatch: webhookResult.metricsPatch || {}
             });
         } else {
             failedCount += 1;
@@ -3679,7 +4389,7 @@ async function publishSocialPlannerEntryById(entryId, req, options = {}) {
             publishLog.push({
                 at: new Date().toISOString(),
                 accountId: account.id,
-                platform: account.platform,
+                platform: accountPlatform,
                 status: 'failed',
                 details: latestError
             });
@@ -3687,10 +4397,13 @@ async function publishSocialPlannerEntryById(entryId, req, options = {}) {
 
         delivery.push({
             accountId: account.id,
-            platform: account.platform,
+            platform: accountPlatform,
             sent: !!webhookResult.sent,
             code: webhookResult.code || '',
-            details: webhookResult.details || ''
+            details: webhookResult.details || '',
+            externalPostId: webhookResult.externalPostId || '',
+            externalMediaId: webhookResult.externalMediaId || '',
+            externalUrl: webhookResult.externalUrl || ''
         });
     }
 
@@ -3715,6 +4428,8 @@ async function publishSocialPlannerEntryById(entryId, req, options = {}) {
     return {
         ok: successCount > 0,
         httpStatus: successCount > 0 ? 200 : 502,
+        error: successCount > 0 ? '' : (latestError || 'Publisering feilet.'),
+        details: summarizeSocialPlannerDelivery(delivery) || (successCount > 0 ? 'Publisering sendt.' : (latestError || 'Publisering feilet.')),
         entry: entries[entryIndex],
         delivery,
         saveResult
@@ -3731,6 +4446,15 @@ function resolveSocialPlannerSchedulerIntervalMs() {
     }
 
     return Math.max(15_000, Math.min(configured, 15 * 60_000));
+}
+
+function resolveSocialPlannerPublishingStaleMs() {
+    const configured = Number.parseInt(process.env.SOCIAL_PLANNER_PUBLISHING_STALE_MS, 10);
+    if (!Number.isFinite(configured)) {
+        return 2 * 60_000;
+    }
+
+    return Math.max(30_000, Math.min(configured, 30 * 60_000));
 }
 
 function createSocialPlannerSchedulerRequestContext() {
@@ -3782,10 +4506,34 @@ async function runSocialPlannerSchedulerTick(req, options = {}) {
         const maxEntries = Number.isFinite(maxEntriesRaw)
             ? Math.max(1, Math.min(maxEntriesRaw, 50))
             : 10;
+        const publishingStaleMs = resolveSocialPlannerPublishingStaleMs();
 
         dueEntries = (Array.isArray(state.entries) ? state.entries : [])
-            .filter((entry) => entry.status === 'scheduled' && entry.scheduledFor && Number.isFinite(new Date(entry.scheduledFor).getTime()) && new Date(entry.scheduledFor).getTime() <= now)
-            .sort((a, b) => new Date(a.scheduledFor).getTime() - new Date(b.scheduledFor).getTime())
+            .filter((entry) => {
+                const status = String(entry?.status || '').trim().toLowerCase();
+                if (status === 'scheduled') {
+                    const scheduledAt = new Date(entry?.scheduledFor || '').getTime();
+                    return Number.isFinite(scheduledAt) && scheduledAt <= now;
+                }
+
+                if (status === 'publishing') {
+                    const updatedAt = new Date(entry?.updatedAt || entry?.createdAt || '').getTime();
+                    return Number.isFinite(updatedAt) && (now - updatedAt) >= publishingStaleMs;
+                }
+
+                return false;
+            })
+            .sort((a, b) => {
+                const aStatus = String(a?.status || '').trim().toLowerCase();
+                const bStatus = String(b?.status || '').trim().toLowerCase();
+                const aTime = aStatus === 'publishing'
+                    ? new Date(a?.updatedAt || a?.createdAt || '').getTime()
+                    : new Date(a?.scheduledFor || '').getTime();
+                const bTime = bStatus === 'publishing'
+                    ? new Date(b?.updatedAt || b?.createdAt || '').getTime()
+                    : new Date(b?.scheduledFor || '').getTime();
+                return aTime - bTime;
+            })
             .slice(0, maxEntries);
 
         for (const entry of dueEntries) {
@@ -3889,6 +4637,158 @@ function parseBooleanFlag(value, fallback = false) {
         return false;
     }
     return fallback;
+}
+
+function safeCompareSecrets(provided = '', expected = '') {
+    const left = Buffer.from(String(provided || ''));
+    const right = Buffer.from(String(expected || ''));
+    if (left.length !== right.length || left.length === 0) return false;
+    return crypto.timingSafeEqual(left, right);
+}
+
+function isAuthorizedSocialPlannerMetricsSyncRequest(req) {
+    const expectedToken = String(process.env.SOCIAL_METRICS_SYNC_TOKEN || '').trim();
+    if (!expectedToken) {
+        return { ok: true, secured: false };
+    }
+
+    const providedToken = firstNonEmptyString([
+        req.get('x-social-sync-token'),
+        req.get('x-metrics-sync-token'),
+        req.query?.token,
+        req.body?.token
+    ]);
+
+    return {
+        ok: safeCompareSecrets(providedToken, expectedToken),
+        secured: true
+    };
+}
+
+function normalizeSocialPlannerMetricsSyncUpdate(rawUpdate = {}) {
+    const source = (rawUpdate && typeof rawUpdate === 'object' && !Array.isArray(rawUpdate)) ? rawUpdate : {};
+
+    const entryId = normalizePlannerShortText(firstNonEmptyString([
+        source.entryId,
+        source.entry_id,
+        source.postId,
+        source.post_id,
+        source.post?.entryId,
+        source.post?.id,
+        source.data?.entryId,
+        source.data?.postId
+    ]), 120);
+
+    const accountId = normalizePlannerShortText(firstNonEmptyString([
+        source.accountId,
+        source.account_id,
+        source.account?.id,
+        source.delivery?.accountId
+    ]), 80);
+
+    const platform = normalizePlannerPlatform(firstNonEmptyString([
+        source.platform,
+        source.account?.platform,
+        source.delivery?.platform,
+        source.social?.platform
+    ]));
+
+    const externalPostId = normalizePlannerShortText(firstNonEmptyString([
+        source.externalPostId,
+        source.external_post_id,
+        source.providerPostId,
+        source.provider_post_id,
+        source.remotePostId,
+        source.remote_post_id,
+        source.postExternalId,
+        source.post_external_id,
+        source.post?.externalPostId,
+        source.post?.providerPostId,
+        source.data?.externalPostId
+    ]), 240);
+
+    const externalMediaId = normalizePlannerShortText(firstNonEmptyString([
+        source.externalMediaId,
+        source.external_media_id,
+        source.mediaId,
+        source.media_id,
+        source.creationId,
+        source.creation_id,
+        source.data?.mediaId,
+        source.data?.creationId
+    ]), 240);
+
+    const externalUrl = normalizePlannerUrl(firstNonEmptyString([
+        source.externalUrl,
+        source.external_url,
+        source.postUrl,
+        source.post_url,
+        source.permalink,
+        source.url
+    ]));
+
+    const publishedAtRaw = firstNonEmptyString([
+        source.publishedAt,
+        source.published_at,
+        source.timestamp,
+        source.post?.publishedAt
+    ]);
+    const nowIso = new Date().toISOString();
+    const publishedAt = publishedAtRaw ? normalizeIsoDateTime(publishedAtRaw, nowIso) : '';
+
+    const metricsPatch = extractSocialPlannerMetricsPatch({
+        likes: firstDefinedValue([source.metrics?.likes, source.likes, source.data?.likes]),
+        comments: firstDefinedValue([source.metrics?.comments, source.comments, source.data?.comments]),
+        shares: firstDefinedValue([source.metrics?.shares, source.shares, source.data?.shares]),
+        reach: firstDefinedValue([
+            source.metrics?.reach,
+            source.metrics?.impressions,
+            source.reach,
+            source.impressions,
+            source.data?.reach,
+            source.data?.impressions
+        ]),
+        clicks: firstDefinedValue([source.metrics?.clicks, source.clicks, source.data?.clicks])
+    });
+
+    return {
+        entryId,
+        accountId,
+        platform,
+        externalPostId,
+        externalMediaId,
+        externalUrl,
+        publishedAt,
+        metricsPatch,
+        metricsUpdatedAt: nowIso
+    };
+}
+
+function findSocialPlannerEntryIndexForMetricsSync(entries = [], update = {}) {
+    const list = Array.isArray(entries) ? entries : [];
+    const entryId = normalizePlannerShortText(update.entryId || '', 120);
+    const accountId = normalizePlannerShortText(update.accountId || '', 80);
+    const platform = normalizePlannerPlatform(update.platform || '');
+    const externalPostId = normalizePlannerShortText(update.externalPostId || '', 240);
+
+    if (entryId) {
+        const byId = list.findIndex((entry) => String(entry?.id || '') === entryId);
+        if (byId >= 0) return byId;
+    }
+
+    if (!externalPostId && !accountId) {
+        return -1;
+    }
+
+    return list.findIndex((entry) => {
+        const publications = normalizeSocialPlannerPublications(entry?.platformPublications || []);
+        return publications.some((publication) => {
+            if (accountId && publication.accountId !== accountId) return false;
+            if (platform && publication.platform !== platform) return false;
+            if (externalPostId && publication.externalPostId !== externalPostId) return false;
+            return true;
+        });
+    });
 }
 
 function buildSocialPlannerWorkspaceScopedState(state, workspaceId = '') {
@@ -4720,6 +5620,8 @@ app.post('/api/social-planner/entries', async (req, res) => {
                 entry: publishResult.entry || entry,
                 delivery: publishResult.delivery || [],
                 code: publishResult.ok ? 'published' : 'publish_failed',
+                error: publishResult.error || '',
+                details: publishResult.details || publishResult.error || '',
                 ...saveResult
             });
         }
@@ -4797,6 +5699,8 @@ app.patch('/api/social-planner/entries/:entryId', async (req, res) => {
                 entry: publishResult.entry || nextEntry,
                 delivery: publishResult.delivery || [],
                 code: publishResult.ok ? 'published' : 'publish_failed',
+                error: publishResult.error || '',
+                details: publishResult.details || publishResult.error || '',
                 ...saveResult
             });
         }
@@ -4864,7 +5768,8 @@ app.post('/api/social-planner/entries/:entryId/publish', async (req, res) => {
             entry: publishResult.entry || null,
             delivery: publishResult.delivery || [],
             code: publishResult.ok ? 'published' : 'publish_failed',
-            error: publishResult.error || ''
+            error: publishResult.error || '',
+            details: publishResult.details || publishResult.error || ''
         });
     } catch (error) {
         console.error('[Social Planner] Failed to publish entry:', error);
@@ -4921,6 +5826,115 @@ app.get('/api/social-planner/analytics', async (req, res) => {
         res.status(500).json({
             success: false,
             error: 'Kunne ikke hente analytics.',
+            details: error.message
+        });
+    }
+});
+
+app.post('/api/social-planner/metrics/sync', async (req, res) => {
+    try {
+        const auth = isAuthorizedSocialPlannerMetricsSyncRequest(req);
+        if (!auth.ok) {
+            return res.status(401).json({
+                success: false,
+                error: 'Unauthorized metrics sync request.'
+            });
+        }
+
+        const body = (req.body && typeof req.body === 'object' && !Array.isArray(req.body))
+            ? req.body
+            : {};
+        const rawUpdates = Array.isArray(body.updates) ? body.updates : [body];
+        const updates = rawUpdates
+            .map((item) => normalizeSocialPlannerMetricsSyncUpdate(item))
+            .filter((item) => item && typeof item === 'object');
+
+        if (updates.length === 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'Ingen gyldige updates sendt inn.'
+            });
+        }
+
+        const state = await getSocialPlannerState();
+        state.entries = Array.isArray(state.entries) ? state.entries : [];
+        const workspaceIds = getSocialPlannerWorkspaceIds(state);
+        const accountIds = getSocialPlannerAccountIds(state);
+        const updatedEntries = [];
+        const notFound = [];
+        const skipped = [];
+
+        for (const update of updates) {
+            const hasLookupValue = Boolean(update.entryId || update.externalPostId || update.accountId);
+            if (!hasLookupValue) {
+                skipped.push({
+                    reason: 'missing_identifiers',
+                    update
+                });
+                continue;
+            }
+
+            const targetIndex = findSocialPlannerEntryIndexForMetricsSync(state.entries, update);
+            if (targetIndex < 0) {
+                notFound.push({
+                    entryId: update.entryId || '',
+                    externalPostId: update.externalPostId || '',
+                    accountId: update.accountId || '',
+                    platform: update.platform || ''
+                });
+                continue;
+            }
+
+            const entry = state.entries[targetIndex];
+            const hasMetricsPatch = Object.keys(update.metricsPatch || {}).length > 0;
+            const hasPublicationData = Boolean(
+                update.accountId
+                || update.platform
+                || update.externalPostId
+                || update.externalMediaId
+                || update.externalUrl
+            );
+
+            if (hasPublicationData) {
+                upsertSocialPlannerEntryPublication(entry, update);
+            } else if (hasMetricsPatch) {
+                entry.metrics = mergeSocialPlannerMetrics(entry.metrics || {}, update.metricsPatch);
+            }
+
+            if (update.publishedAt && (!entry.publishedAt || entry.publishedAt < update.publishedAt)) {
+                entry.publishedAt = update.publishedAt;
+            }
+            entry.updatedAt = new Date().toISOString();
+            if (hasMetricsPatch) {
+                entry.lastError = '';
+            }
+
+            state.entries[targetIndex] = normalizeSocialPlannerEntry(entry, workspaceIds, accountIds);
+            updatedEntries.push({
+                id: state.entries[targetIndex].id,
+                title: state.entries[targetIndex].title,
+                metrics: state.entries[targetIndex].metrics
+            });
+        }
+
+        if (updatedEntries.length > 0) {
+            await saveSocialPlannerState(state);
+        }
+
+        res.json({
+            success: true,
+            secured: auth.secured,
+            processed: updates.length,
+            updated: updatedEntries.length,
+            updatedEntries,
+            notFound,
+            skipped
+        });
+    } catch (error) {
+        console.error('[Social Planner] Metrics sync failed:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Kunne ikke synkronisere metrics.',
             details: error.message
         });
     }

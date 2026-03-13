@@ -23,12 +23,18 @@ let socialPlannerState = null;
 let socialPlannerAnalytics = null;
 let socialPlannerLoaded = false;
 let socialPlannerLoading = false;
-let socialPlannerEntryFilter = 'all';
+let socialPlannerEntryFilter = 'queue';
 let socialPlannerEntrySearch = '';
+let socialPlannerChannelFilter = 'all';
+let socialPlannerTagFilter = 'all';
+let socialPlannerStreamViewMode = 'list';
+let socialPlannerDisplayTimezone = '';
+let socialPlannerCalendarCursor = new Date();
 let socialPlannerComposerPanel = 'preview';
 let socialPlannerAssistantInFlight = false;
 const SOCIAL_PLANNER_UI_PLATFORMS = ['facebook', 'instagram', 'linkedin', 'x', 'tiktok'];
 const ADMIN_SIDEBAR_COLLAPSE_KEY = 'tk_admin_sidebar_collapsed';
+const ADMIN_MOBILE_BREAKPOINT = 900;
 let quill; // Define quill globally but initialize later
 
 // Section Translations
@@ -167,7 +173,7 @@ const adminTranslations = {
         'nav_logout': 'Logout',
         'sidebar_menu': 'Menu',
         'welcome': 'Welcome back',
-        'new_post': '+ New Post',
+        'new_post': '+ Nytt innlegg',
         'dashboard_kicker': 'Site Overview',
         'dashboard_title': 'One place to keep tk-design updated',
         'dashboard_desc': 'Manage the homepage, blog, media, SEO and key pages from this dashboard.',
@@ -1633,6 +1639,7 @@ async function init() {
     setupEventListeners();
     setupAdminSidebarToggle();
     setupLogout();
+    syncAdminScrollMode();
 
     await Promise.allSettled([
         fetchStyles(),
@@ -1881,6 +1888,12 @@ function getSocialPlannerActiveWorkspaceId() {
     return workspaces[0]?.id || 'default';
 }
 
+function getSocialPlannerActiveWorkspace() {
+    const activeWorkspaceId = getSocialPlannerActiveWorkspaceId();
+    const workspaces = Array.isArray(socialPlannerState?.workspaces) ? socialPlannerState.workspaces : [];
+    return workspaces.find((workspace) => workspace.id === activeWorkspaceId) || workspaces[0] || null;
+}
+
 function getSocialPlannerScopedAccounts() {
     const workspaceId = getSocialPlannerActiveWorkspaceId();
     const accounts = Array.isArray(socialPlannerState?.socialAccounts) ? socialPlannerState.socialAccounts : [];
@@ -1901,13 +1914,40 @@ function getSocialPlannerScopedTemplates() {
 
 function normalizeSocialPlannerEntryFilter(filter = '') {
     const value = String(filter || '').trim().toLowerCase();
-    const allowed = new Set(['all', 'queue', 'draft', 'scheduled', 'published']);
-    return allowed.has(value) ? value : 'all';
+    if (value === 'drafts') return 'draft';
+    if (value === 'approvals') return 'approval';
+    if (value === 'published') return 'sent';
+    if (value === 'scheduled') return 'queue';
+    const allowed = new Set(['all', 'queue', 'draft', 'approval', 'sent', 'analytics']);
+    return allowed.has(value) ? value : 'queue';
 }
 
 function isSocialPlannerPublishedLikeStatus(status = '') {
     const normalized = toSocialPlannerStatusClass(status);
     return normalized === 'published' || normalized === 'partially_published';
+}
+
+function isSocialPlannerApprovalLikeStatus(status = '') {
+    const normalized = toSocialPlannerStatusClass(status);
+    if (!normalized) return false;
+    return normalized.includes('approval')
+        || normalized === 'pending_review'
+        || normalized === 'needs_review';
+}
+
+function normalizeSocialPlannerStreamViewMode(mode = '') {
+    const value = String(mode || '').trim().toLowerCase();
+    return value === 'calendar' ? 'calendar' : 'list';
+}
+
+function normalizeSocialPlannerChannelFilter(value = '') {
+    const normalized = String(value || '').trim();
+    return normalized || 'all';
+}
+
+function normalizeSocialPlannerTagFilter(value = '') {
+    const normalized = String(value || '').trim().toLowerCase().replace(/^#/, '');
+    return normalized || 'all';
 }
 
 function matchesSocialPlannerEntryFilter(entry = {}, filter = 'all') {
@@ -1918,7 +1958,10 @@ function matchesSocialPlannerEntryFilter(entry = {}, filter = 'all') {
     if (normalizedFilter === 'queue') {
         return status === 'scheduled' || status === 'publishing';
     }
-    if (normalizedFilter === 'published') {
+    if (normalizedFilter === 'approval') {
+        return isSocialPlannerApprovalLikeStatus(status);
+    }
+    if (normalizedFilter === 'sent') {
         return isSocialPlannerPublishedLikeStatus(status);
     }
     return status === normalizedFilter;
@@ -1944,14 +1987,30 @@ function matchesSocialPlannerEntrySearch(entry = {}, query = '') {
         .some((part) => part.includes(normalizedQuery));
 }
 
+function matchesSocialPlannerEntryChannelFilter(entry = {}, channelFilter = 'all') {
+    const normalizedFilter = normalizeSocialPlannerChannelFilter(channelFilter);
+    if (normalizedFilter === 'all') return true;
+    const targetIds = Array.isArray(entry?.targetAccountIds) ? entry.targetAccountIds : [];
+    return targetIds.map((value) => String(value)).includes(normalizedFilter);
+}
+
+function matchesSocialPlannerEntryTagFilter(entry = {}, tagFilter = 'all') {
+    const normalizedFilter = normalizeSocialPlannerTagFilter(tagFilter);
+    if (normalizedFilter === 'all') return true;
+    const hashtags = Array.isArray(entry?.hashtags) ? entry.hashtags : [];
+    return hashtags
+        .map((tag) => normalizeSocialPlannerTagFilter(tag))
+        .filter(Boolean)
+        .includes(normalizedFilter);
+}
+
 function buildSocialPlannerEntryCounts(entries = []) {
     const scopedEntries = Array.isArray(entries) ? entries : [];
     const counts = {
-        all: scopedEntries.length,
         queue: 0,
         draft: 0,
-        scheduled: 0,
-        published: 0
+        approval: 0,
+        sent: 0
     };
 
     scopedEntries.forEach((entry) => {
@@ -1962,11 +2021,11 @@ function buildSocialPlannerEntryCounts(entries = []) {
         if (status === 'draft') {
             counts.draft += 1;
         }
-        if (status === 'scheduled') {
-            counts.scheduled += 1;
+        if (isSocialPlannerApprovalLikeStatus(status)) {
+            counts.approval += 1;
         }
         if (isSocialPlannerPublishedLikeStatus(status)) {
-            counts.published += 1;
+            counts.sent += 1;
         }
     });
 
@@ -2044,13 +2103,63 @@ function getSocialPlannerEntryPrimaryTimestamp(entry = {}) {
 }
 
 function getSocialPlannerDateKey(date) {
-    if (!(date instanceof Date) || !Number.isFinite(date.getTime())) {
-        return 'unknown';
+    const parts = getSocialPlannerDateParts(date);
+    return parts?.key || 'unknown';
+}
+
+function isValidSocialPlannerTimezone(value = '') {
+    const candidate = String(value || '').trim();
+    if (!candidate) return false;
+    try {
+        new Intl.DateTimeFormat('en-US', { timeZone: candidate }).format(new Date());
+        return true;
+    } catch (error) {
+        return false;
     }
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+}
+
+function getSocialPlannerDefaultTimezone() {
+    const workspaceTimezone = String(getSocialPlannerActiveWorkspace()?.timezone || '').trim();
+    if (isValidSocialPlannerTimezone(workspaceTimezone)) {
+        return workspaceTimezone;
+    }
+    return 'Europe/Oslo';
+}
+
+function getSocialPlannerDisplayTimezone() {
+    if (isValidSocialPlannerTimezone(socialPlannerDisplayTimezone)) {
+        return socialPlannerDisplayTimezone;
+    }
+    socialPlannerDisplayTimezone = getSocialPlannerDefaultTimezone();
+    return socialPlannerDisplayTimezone;
+}
+
+function getSocialPlannerDateParts(date, options = {}) {
+    if (!(date instanceof Date) || !Number.isFinite(date.getTime())) {
+        return null;
+    }
+    const timezone = options.timeZone || getSocialPlannerDisplayTimezone();
+    try {
+        const formatter = new Intl.DateTimeFormat('en-CA', {
+            timeZone: timezone,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        });
+        const parts = formatter.formatToParts(date);
+        const year = parts.find((part) => part.type === 'year')?.value || '';
+        const month = parts.find((part) => part.type === 'month')?.value || '';
+        const day = parts.find((part) => part.type === 'day')?.value || '';
+        if (!year || !month || !day) return null;
+        return {
+            year: Number.parseInt(year, 10),
+            month: Number.parseInt(month, 10),
+            day: Number.parseInt(day, 10),
+            key: `${year}-${month}-${day}`
+        };
+    } catch (error) {
+        return null;
+    }
 }
 
 function formatSocialPlannerFeedDate(date) {
@@ -2059,6 +2168,7 @@ function formatSocialPlannerFeedDate(date) {
     }
     const locale = currentLang === 'en' ? 'en-GB' : 'nb-NO';
     return new Intl.DateTimeFormat(locale, {
+        timeZone: getSocialPlannerDisplayTimezone(),
         weekday: 'long',
         day: 'numeric',
         month: 'long'
@@ -2071,6 +2181,7 @@ function formatSocialPlannerTime(date) {
     }
     const locale = currentLang === 'en' ? 'en-GB' : 'nb-NO';
     return new Intl.DateTimeFormat(locale, {
+        timeZone: getSocialPlannerDisplayTimezone(),
         hour: '2-digit',
         minute: '2-digit'
     }).format(date);
@@ -2081,7 +2192,10 @@ function getSocialPlannerEntryTimeLabel(entry = {}) {
     if (isSocialPlannerPublishedLikeStatus(status)) {
         return 'Publisert';
     }
-    if (status === 'scheduled' || status === 'publishing') {
+    if (status === 'publishing') {
+        return 'Publiserer';
+    }
+    if (status === 'scheduled') {
         return 'Planlagt';
     }
     return 'Oppdatert';
@@ -2141,6 +2255,7 @@ function formatSocialPlannerDateTime(value = '') {
     }
     const locale = currentLang === 'en' ? 'en-GB' : 'nb-NO';
     return new Intl.DateTimeFormat(locale, {
+        timeZone: getSocialPlannerDisplayTimezone(),
         year: 'numeric',
         month: 'short',
         day: 'numeric',
@@ -2213,6 +2328,48 @@ function parseHashtagInput(value = '') {
         .map((token) => token.trim())
         .filter(Boolean);
 }
+
+function getSocialPlannerComposerAdvancedSection() {
+    return document.querySelector('#sp-entry-form .social-planner-compose-advanced');
+}
+
+function syncSocialPlannerTagPillState() {
+    const tagPill = document.getElementById('sp-compose-tag-pill');
+    const tagCount = document.getElementById('sp-compose-tag-count');
+    const hashtagInput = document.getElementById('sp-entry-hashtags');
+    const advancedSection = getSocialPlannerComposerAdvancedSection();
+    if (!tagPill) return;
+
+    const hashtags = parseHashtagInput(hashtagInput?.value || '');
+    const count = hashtags.length;
+    const isOpen = !!advancedSection?.open;
+
+    if (tagCount) {
+        tagCount.textContent = String(count);
+    }
+
+    tagPill.classList.toggle('is-open', isOpen);
+    tagPill.classList.toggle('has-tags', count > 0);
+    tagPill.setAttribute('aria-expanded', String(isOpen));
+}
+
+function toggleSocialPlannerTagEditor(forceOpen = null) {
+    const advancedSection = getSocialPlannerComposerAdvancedSection();
+    const hashtagInput = document.getElementById('sp-entry-hashtags');
+    if (!advancedSection || !hashtagInput) return;
+
+    const shouldOpen = typeof forceOpen === 'boolean'
+        ? forceOpen
+        : !advancedSection.open;
+    advancedSection.open = shouldOpen;
+    syncSocialPlannerTagPillState();
+
+    if (shouldOpen) {
+        hashtagInput.focus();
+    }
+}
+
+window.toggleSocialPlannerTagEditor = toggleSocialPlannerTagEditor;
 
 function renderSocialPlannerTemplateBody(templateBody = '', context = {}) {
     const source = String(templateBody || '');
@@ -2594,6 +2751,7 @@ function applySocialPlannerAssistantSuggestion(suggestion = {}, action = 'write'
     }
 
     const hashtagsSuggestion = normalizeSocialPlannerHashtagList(suggestion?.hashtags || []);
+    let hashtagsUpdated = false;
     if (hashtagsSuggestion.length > 0) {
         const hashtagInput = document.getElementById('sp-entry-hashtags');
         if (hashtagInput) {
@@ -2603,11 +2761,15 @@ function applySocialPlannerAssistantSuggestion(suggestion = {}, action = 'write'
                 : (existingHashtags.length > 0 ? existingHashtags : hashtagsSuggestion);
             hashtagInput.value = mergedHashtags.join(' ');
             touched.push('hashtags');
+            hashtagsUpdated = true;
         }
     }
 
     if (touched.length > 0) {
         renderSocialPlannerEntryPreview();
+    }
+    if (hashtagsUpdated) {
+        syncSocialPlannerTagPillState();
     }
 
     return touched;
@@ -2684,8 +2846,8 @@ function syncSocialPlannerComposerMeta() {
     }
     if (submitBtn) {
         submitBtn.innerHTML = editId
-            ? 'Oppdater innlegg <i class="fas fa-check"></i>'
-            : 'Customize for each network <i class="fas fa-arrow-right"></i>';
+            ? 'Oppdater <i class="fas fa-check"></i>'
+            : '<i class="fas fa-save"></i> Lagre';
     }
 }
 
@@ -2764,6 +2926,22 @@ function setSocialPlannerComposerPanel(panel = 'preview') {
 
 window.setSocialPlannerComposerPanel = setSocialPlannerComposerPanel;
 
+function toSocialPlannerDateTimeInputValueFromDate(date, options = {}) {
+    if (!(date instanceof Date) || !Number.isFinite(date.getTime())) {
+        return '';
+    }
+    const parts = getSocialPlannerDateParts(date);
+    if (!parts) return '';
+
+    const hourCandidate = Number.parseInt(options.hour, 10);
+    const minuteCandidate = Number.parseInt(options.minute, 10);
+    const hour = Number.isFinite(hourCandidate) ? Math.min(23, Math.max(0, hourCandidate)) : 9;
+    const minute = Number.isFinite(minuteCandidate) ? Math.min(59, Math.max(0, minuteCandidate)) : 0;
+    const pad = (value) => String(value).padStart(2, '0');
+
+    return `${parts.year}-${pad(parts.month)}-${pad(parts.day)}T${pad(hour)}:${pad(minute)}`;
+}
+
 function openSocialPlannerComposer(options = {}) {
     const resolvedOptions = (options && typeof options === 'object' && !Array.isArray(options))
         ? options
@@ -2779,6 +2957,7 @@ function openSocialPlannerComposer(options = {}) {
     syncSocialPlannerComposerMeta();
     renderSocialPlannerComposerAccountChips();
     setSocialPlannerComposerPanel(resolvedOptions.panel || socialPlannerComposerPanel || 'preview');
+    syncSocialPlannerTagPillState();
 
     modal.classList.add('is-open');
     modal.setAttribute('aria-hidden', 'false');
@@ -2791,6 +2970,104 @@ function openSocialPlannerComposer(options = {}) {
 }
 
 window.openSocialPlannerComposer = openSocialPlannerComposer;
+
+function openSocialPlannerComposerForDate(date) {
+    const selectedDate = (date instanceof Date && Number.isFinite(date.getTime()))
+        ? date
+        : null;
+    if (!selectedDate) return;
+
+    openSocialPlannerComposer({ reset: true, panel: 'preview' });
+
+    const statusSelect = document.getElementById('sp-entry-status');
+    const scheduledInput = document.getElementById('sp-entry-scheduled-for');
+
+    if (statusSelect) {
+        statusSelect.value = 'scheduled';
+    }
+    syncSocialPlannerScheduleFieldState();
+
+    if (scheduledInput) {
+        const now = new Date();
+        const selectedParts = getSocialPlannerDateParts(selectedDate);
+        const todayParts = getSocialPlannerDateParts(now);
+        const isToday = !!(selectedParts && todayParts && selectedParts.key === todayParts.key);
+        const defaultHour = isToday ? Math.min(23, Math.max(0, now.getHours() + 1)) : 9;
+        const defaultMinute = isToday ? (now.getMinutes() >= 30 ? 30 : 0) : 0;
+        scheduledInput.value = toSocialPlannerDateTimeInputValueFromDate(selectedDate, {
+            hour: defaultHour,
+            minute: defaultMinute
+        });
+    }
+
+    syncSocialPlannerComposerMeta();
+    renderSocialPlannerEntryPreview();
+
+    setSocialPlannerStatus(`Nytt innlegg klargjort for ${formatSocialPlannerFeedDate(selectedDate)}.`, 'success');
+}
+
+window.openSocialPlannerComposerForDate = openSocialPlannerComposerForDate;
+
+function extractFirstUrlFromText(value = '') {
+    const text = String(value || '').trim();
+    if (!text) return '';
+    const match = text.match(/https?:\/\/[^\s<>"')]+/i);
+    return match ? String(match[0]) : '';
+}
+
+function resolveSocialPlannerViewUrl(rawUrl = '') {
+    const value = String(rawUrl || '').trim();
+    if (!value) return '';
+    if (/^https?:\/\//i.test(value)) {
+        return value;
+    }
+    try {
+        return new URL(value, window.location.origin).toString();
+    } catch (error) {
+        return '';
+    }
+}
+
+function getSocialPlannerEntryViewUrl(entry = {}) {
+    const directUrl = resolveSocialPlannerViewUrl(entry?.linkUrl || '');
+    if (directUrl) return directUrl;
+
+    const publishLog = Array.isArray(entry?.publishLog) ? entry.publishLog : [];
+    for (let index = publishLog.length - 1; index >= 0; index -= 1) {
+        const foundUrl = resolveSocialPlannerViewUrl(extractFirstUrlFromText(publishLog[index]?.details || ''));
+        if (foundUrl) {
+            return foundUrl;
+        }
+    }
+
+    return '';
+}
+
+function openSocialPlannerEntryFromCalendar(entry = {}) {
+    const entryId = String(entry?.id || '').trim();
+    if (!entryId) return;
+
+    const statusClass = toSocialPlannerStatusClass(entry?.status || 'draft');
+    if (statusClass === 'draft') {
+        window.editSocialPlannerEntry(entryId);
+        return;
+    }
+
+    if (isSocialPlannerPublishedLikeStatus(statusClass)) {
+        const viewUrl = getSocialPlannerEntryViewUrl(entry);
+        if (viewUrl) {
+            window.open(viewUrl, '_blank', 'noopener,noreferrer');
+            setSocialPlannerStatus('Åpnet publisert innlegg i ny fane.', 'success');
+            return;
+        }
+
+        setSocialPlannerStatus('Publisert innlegg mangler visningslenke. Åpner i redigering i stedet.', 'danger');
+        window.editSocialPlannerEntry(entryId);
+        return;
+    }
+
+    window.editSocialPlannerEntry(entryId);
+}
 
 function closeSocialPlannerComposer() {
     const modal = document.getElementById('sp-compose-modal');
@@ -2813,12 +3090,17 @@ function resetSocialPlannerEntryForm() {
 
     if (editIdInput) editIdInput.value = '';
     if (templateSelect) templateSelect.value = '';
+    const advancedSection = getSocialPlannerComposerAdvancedSection();
+    if (advancedSection) {
+        advancedSection.open = false;
+    }
     setSocialPlannerEntryFormVariants({});
     syncSocialPlannerComposerMeta();
     syncSocialPlannerScheduleFieldState();
     renderSocialPlannerComposerAccountChips();
     renderSocialPlannerEntryPreview();
     renderSocialPlannerComposerMediaPreview();
+    syncSocialPlannerTagPillState();
     socialPlannerAssistantInFlight = false;
     setSocialPlannerAssistantBusy(false);
     resetSocialPlannerAssistantState();
@@ -3093,19 +3375,339 @@ function renderSocialPlannerAccounts() {
     });
 }
 
+function ensureSocialPlannerCalendarCursor() {
+    const cursor = socialPlannerCalendarCursor instanceof Date && Number.isFinite(socialPlannerCalendarCursor.getTime())
+        ? new Date(socialPlannerCalendarCursor.getTime())
+        : new Date();
+    cursor.setDate(1);
+    cursor.setHours(12, 0, 0, 0);
+    socialPlannerCalendarCursor = cursor;
+    return cursor;
+}
+
+function applySocialPlannerStreamViewMode() {
+    const normalizedViewMode = normalizeSocialPlannerStreamViewMode(socialPlannerStreamViewMode);
+    socialPlannerStreamViewMode = normalizedViewMode;
+    const isCalendar = normalizedViewMode === 'calendar';
+    const isAnalytics = socialPlannerEntryFilter === 'analytics';
+
+    const listView = document.getElementById('sp-entries-feed');
+    const calendarView = document.getElementById('sp-calendar-view');
+    const analyticsPanel = document.getElementById('sp-analytics-panel');
+    const viewToggle = document.getElementById('sp-view-mode-toggle');
+    const streamFilters = document.querySelector('.social-planner-stream-filters');
+    if (listView) {
+        listView.hidden = isCalendar || isAnalytics;
+        listView.style.display = isCalendar || isAnalytics ? 'none' : '';
+    }
+    if (calendarView) {
+        calendarView.hidden = !isCalendar || isAnalytics;
+        calendarView.style.display = (!isCalendar || isAnalytics) ? 'none' : 'grid';
+    }
+    if (analyticsPanel) {
+        analyticsPanel.hidden = !isAnalytics;
+        analyticsPanel.style.display = isAnalytics ? 'grid' : 'none';
+    }
+    if (viewToggle) {
+        viewToggle.hidden = isAnalytics;
+        viewToggle.style.display = isAnalytics ? 'none' : '';
+    }
+    if (streamFilters) {
+        streamFilters.hidden = isAnalytics;
+        streamFilters.style.display = isAnalytics ? 'none' : '';
+    }
+
+    const viewButtons = document.querySelectorAll('#sp-view-mode-toggle .social-planner-view-btn');
+    viewButtons.forEach((button) => {
+        const viewMode = normalizeSocialPlannerStreamViewMode(button.dataset.view);
+        button.classList.toggle('active', viewMode === normalizedViewMode);
+    });
+}
+
+function renderSocialPlannerStreamFilterControls(entries = [], accounts = []) {
+    const scopedEntries = Array.isArray(entries) ? entries : [];
+    const scopedAccounts = Array.isArray(accounts) ? accounts : [];
+
+    const channelSelect = document.getElementById('sp-stream-channel-filter');
+    if (channelSelect) {
+        const nextChannelFilter = normalizeSocialPlannerChannelFilter(socialPlannerChannelFilter);
+        channelSelect.innerHTML = '';
+
+        const allOption = document.createElement('option');
+        allOption.value = 'all';
+        allOption.textContent = 'Kanaler';
+        channelSelect.appendChild(allOption);
+
+        scopedAccounts.forEach((account) => {
+            const option = document.createElement('option');
+            option.value = String(account.id);
+            option.textContent = account.displayName || account.id;
+            channelSelect.appendChild(option);
+        });
+
+        const hasSelectedChannel = nextChannelFilter === 'all'
+            || scopedAccounts.some((account) => String(account.id) === nextChannelFilter);
+        socialPlannerChannelFilter = hasSelectedChannel ? nextChannelFilter : 'all';
+        channelSelect.value = socialPlannerChannelFilter;
+    }
+
+    const tagSelect = document.getElementById('sp-stream-tag-filter');
+    if (tagSelect) {
+        const tags = new Map();
+        scopedEntries.forEach((entry) => {
+            const hashtags = Array.isArray(entry?.hashtags) ? entry.hashtags : [];
+            hashtags.forEach((tagValue) => {
+                const token = normalizeSocialPlannerTagFilter(tagValue);
+                if (!token || token === 'all') return;
+                if (!tags.has(token)) {
+                    tags.set(token, `#${token}`);
+                }
+            });
+        });
+
+        const sortedTags = Array.from(tags.entries()).sort((left, right) => left[0].localeCompare(right[0]));
+        tagSelect.innerHTML = '';
+
+        const allOption = document.createElement('option');
+        allOption.value = 'all';
+        allOption.textContent = 'Tagger';
+        tagSelect.appendChild(allOption);
+
+        sortedTags.forEach(([value, label]) => {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = label;
+            tagSelect.appendChild(option);
+        });
+
+        const nextTagFilter = normalizeSocialPlannerTagFilter(socialPlannerTagFilter);
+        const hasSelectedTag = nextTagFilter === 'all' || tags.has(nextTagFilter);
+        socialPlannerTagFilter = hasSelectedTag ? nextTagFilter : 'all';
+        tagSelect.value = socialPlannerTagFilter;
+    }
+
+    const timezoneSelect = document.getElementById('sp-stream-timezone-filter');
+    if (timezoneSelect) {
+        const workspaceTimezone = getSocialPlannerDefaultTimezone();
+        const browserTimezone = String(Intl.DateTimeFormat().resolvedOptions().timeZone || '').trim();
+        const options = new Map();
+
+        options.set(workspaceTimezone, `Arbeidsområde (${workspaceTimezone})`);
+        if (isValidSocialPlannerTimezone(browserTimezone)) {
+            options.set(browserTimezone, `Nettleser (${browserTimezone})`);
+        }
+        ['Europe/Oslo', 'Europe/Berlin', 'UTC', 'America/New_York', 'America/Los_Angeles'].forEach((value) => {
+            if (isValidSocialPlannerTimezone(value)) {
+                options.set(value, value);
+            }
+        });
+
+        const normalizedTimezone = getSocialPlannerDisplayTimezone();
+        if (!options.has(normalizedTimezone)) {
+            options.set(normalizedTimezone, normalizedTimezone);
+        }
+
+        timezoneSelect.innerHTML = '';
+        options.forEach((label, value) => {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = label;
+            timezoneSelect.appendChild(option);
+        });
+        timezoneSelect.value = normalizedTimezone;
+    }
+}
+
+window.shiftSocialPlannerCalendarMonth = function (delta = 0) {
+    const step = Number.parseInt(delta, 10);
+    if (!Number.isFinite(step) || step === 0) return;
+    const cursor = ensureSocialPlannerCalendarCursor();
+    cursor.setMonth(cursor.getMonth() + step);
+    socialPlannerCalendarCursor = cursor;
+    renderSocialPlannerEntries();
+};
+
+function renderSocialPlannerCalendarView(entries = []) {
+    const calendar = document.getElementById('sp-calendar-view');
+    if (!calendar) return;
+    calendar.innerHTML = '';
+
+    const scopedEntries = Array.isArray(entries) ? entries : [];
+    if (scopedEntries.length === 0) {
+        const empty = document.createElement('p');
+        empty.className = 'social-planner-list-empty social-planner-feed-empty';
+        if (socialPlannerEntrySearch) {
+            empty.textContent = `Ingen innlegg matcher søket "${socialPlannerEntrySearch}".`;
+        } else {
+            empty.textContent = 'Ingen innlegg i valgt filter.';
+        }
+        calendar.appendChild(empty);
+        return;
+    }
+
+    const locale = currentLang === 'en' ? 'en-GB' : 'nb-NO';
+    const timezone = getSocialPlannerDisplayTimezone();
+    const cursor = ensureSocialPlannerCalendarCursor();
+    const year = cursor.getFullYear();
+    const month = cursor.getMonth();
+    const monthStart = new Date(year, month, 1, 12, 0, 0, 0);
+    const monthEnd = new Date(year, month + 1, 0, 12, 0, 0, 0);
+    const daysInMonth = monthEnd.getDate();
+    const startWeekday = (monthStart.getDay() + 6) % 7;
+
+    const header = document.createElement('div');
+    header.className = 'social-planner-calendar-header';
+    const monthLabel = document.createElement('h4');
+    monthLabel.textContent = new Intl.DateTimeFormat(locale, {
+        timeZone: timezone,
+        month: 'long',
+        year: 'numeric'
+    }).format(monthStart);
+    const nav = document.createElement('div');
+    nav.className = 'social-planner-calendar-nav';
+    nav.innerHTML = `
+        <button type="button" class="action-btn" title="Forrige måned" aria-label="Forrige måned" onclick="shiftSocialPlannerCalendarMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+        <button type="button" class="action-btn" title="Neste måned" aria-label="Neste måned" onclick="shiftSocialPlannerCalendarMonth(1)"><i class="fas fa-chevron-right"></i></button>
+    `;
+    header.appendChild(monthLabel);
+    header.appendChild(nav);
+    calendar.appendChild(header);
+
+    const weekdays = document.createElement('div');
+    weekdays.className = 'social-planner-calendar-weekdays';
+    const weekdayLabels = currentLang === 'en'
+        ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        : ['man', 'tir', 'ons', 'tor', 'fre', 'lor', 'son'];
+    weekdayLabels.forEach((weekdayLabel) => {
+        const label = document.createElement('span');
+        label.textContent = weekdayLabel;
+        weekdays.appendChild(label);
+    });
+    calendar.appendChild(weekdays);
+
+    const entriesByDate = new Map();
+    scopedEntries.forEach((entry) => {
+        const primaryDate = getSocialPlannerEntryPrimaryDate(entry);
+        const key = getSocialPlannerDateKey(primaryDate);
+        if (!key || key === 'unknown') return;
+        if (!entriesByDate.has(key)) {
+            entriesByDate.set(key, []);
+        }
+        entriesByDate.get(key).push(entry);
+    });
+
+    entriesByDate.forEach((dayEntries) => {
+        dayEntries.sort((left, right) => getSocialPlannerEntryPrimaryTimestamp(right) - getSocialPlannerEntryPrimaryTimestamp(left));
+    });
+
+    const grid = document.createElement('div');
+    grid.className = 'social-planner-calendar-grid';
+
+    const cells = 42;
+    for (let cellIndex = 0; cellIndex < cells; cellIndex += 1) {
+        const dayOffset = cellIndex - startWeekday;
+        const cellDate = new Date(year, month, dayOffset + 1, 12, 0, 0, 0);
+        const cellParts = getSocialPlannerDateParts(cellDate);
+        const cellKey = cellParts?.key || '';
+        const dayEntries = entriesByDate.get(cellKey) || [];
+        const isCurrentMonth = dayOffset >= 0 && dayOffset < daysInMonth;
+
+        const dayCell = document.createElement('article');
+        dayCell.className = `social-planner-calendar-day${isCurrentMonth ? '' : ' is-outside'}`;
+        dayCell.tabIndex = 0;
+        dayCell.setAttribute('role', 'button');
+        const cellLabel = new Intl.DateTimeFormat(locale, {
+            timeZone: timezone,
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        }).format(cellDate);
+        dayCell.setAttribute('aria-label', `Nytt innlegg ${cellLabel}`);
+        dayCell.title = `Opprett innlegg ${cellLabel}`;
+        dayCell.addEventListener('click', () => {
+            openSocialPlannerComposerForDate(cellDate);
+        });
+        dayCell.addEventListener('keydown', (event) => {
+            if (event.key !== 'Enter' && event.key !== ' ') return;
+            event.preventDefault();
+            openSocialPlannerComposerForDate(cellDate);
+        });
+
+        const dayNumber = document.createElement('div');
+        dayNumber.className = 'social-planner-calendar-day-number';
+        dayNumber.textContent = String(cellParts?.day || cellDate.getDate());
+        dayCell.appendChild(dayNumber);
+
+        dayEntries.slice(0, 2).forEach((entry) => {
+            const statusClass = toSocialPlannerStatusClass(entry?.status || 'draft');
+            const item = document.createElement('button');
+            item.type = 'button';
+            item.className = 'social-planner-calendar-day-item';
+            item.title = statusClass === 'draft'
+                ? 'Åpne utkast for redigering'
+                : isSocialPlannerPublishedLikeStatus(statusClass)
+                    ? 'Se publisert innlegg'
+                    : 'Åpne innlegg';
+            item.setAttribute('aria-label', `${item.title}: ${String(entry?.title || 'Uten tittel')}`);
+            item.addEventListener('click', (event) => {
+                event.stopPropagation();
+                openSocialPlannerEntryFromCalendar(entry);
+            });
+
+            const title = document.createElement('strong');
+            title.textContent = truncateSocialPlannerText(entry.title || resolveSocialPlannerEntryCaption(entry) || 'Uten tittel', 56);
+            const time = document.createElement('span');
+            time.textContent = formatSocialPlannerTime(getSocialPlannerEntryPrimaryDate(entry));
+
+            item.appendChild(title);
+            item.appendChild(time);
+            dayCell.appendChild(item);
+        });
+
+        if (dayEntries.length > 2) {
+            const more = document.createElement('span');
+            more.className = 'social-planner-calendar-day-more';
+            more.textContent = `+${dayEntries.length - 2} flere`;
+            dayCell.appendChild(more);
+        }
+
+        grid.appendChild(dayCell);
+    }
+
+    calendar.appendChild(grid);
+}
+
 function renderSocialPlannerEntries() {
     const feed = document.getElementById('sp-entries-feed');
-    if (!feed) return;
+    const calendar = document.getElementById('sp-calendar-view');
+    const analyticsPanel = document.getElementById('sp-analytics-panel');
+    if (!feed || !calendar || !analyticsPanel) return;
 
     const scopedEntries = getSocialPlannerScopedEntries();
     const scopedAccounts = getSocialPlannerScopedAccounts();
     const accountLookup = new Map(scopedAccounts.map((account) => [String(account.id), account]));
-    renderSocialPlannerEntryFilters(scopedEntries);
+    renderSocialPlannerStreamFilterControls(scopedEntries, scopedAccounts);
 
-    const filteredEntries = scopedEntries.filter((entry) => {
-        return matchesSocialPlannerEntryFilter(entry, socialPlannerEntryFilter)
-            && matchesSocialPlannerEntrySearch(entry, socialPlannerEntrySearch);
+    const baseEntries = scopedEntries.filter((entry) => {
+        return matchesSocialPlannerEntrySearch(entry, socialPlannerEntrySearch)
+            && matchesSocialPlannerEntryChannelFilter(entry, socialPlannerChannelFilter)
+            && matchesSocialPlannerEntryTagFilter(entry, socialPlannerTagFilter);
     });
+    renderSocialPlannerEntryFilters(baseEntries);
+
+    const filteredEntries = baseEntries.filter((entry) => {
+        return matchesSocialPlannerEntryFilter(entry, socialPlannerEntryFilter);
+    });
+
+    if (socialPlannerEntryFilter === 'analytics') {
+        feed.innerHTML = '';
+        calendar.innerHTML = '';
+        renderSocialPlannerStats();
+        renderSocialPlannerTopEntries();
+        applySocialPlannerStreamViewMode();
+        return;
+    }
 
     const sortedEntries = filteredEntries.slice().sort((left, right) => {
         const rightTs = getSocialPlannerEntryPrimaryTimestamp(right);
@@ -3115,8 +3717,10 @@ function renderSocialPlannerEntries() {
         }
         return String(right?.updatedAt || '').localeCompare(String(left?.updatedAt || ''));
     });
+    const shouldRenderCalendar = normalizeSocialPlannerStreamViewMode(socialPlannerStreamViewMode) === 'calendar';
 
     feed.innerHTML = '';
+    calendar.innerHTML = '';
 
     if (sortedEntries.length === 0) {
         const empty = document.createElement('p');
@@ -3126,10 +3730,16 @@ function renderSocialPlannerEntries() {
             empty.textContent = 'Ingen innlegg i dette workspace enda. Opprett første innlegg for å komme i gang.';
         } else if (socialPlannerEntrySearch) {
             empty.textContent = `Ingen innlegg matcher søket "${socialPlannerEntrySearch}".`;
+        } else if (socialPlannerChannelFilter !== 'all' || socialPlannerTagFilter !== 'all') {
+            empty.textContent = 'Ingen innlegg matcher valgte kanal- eller tag-filtre.';
         } else {
             empty.textContent = 'Ingen innlegg i valgt statusfilter.';
         }
         feed.appendChild(empty);
+        if (shouldRenderCalendar) {
+            renderSocialPlannerCalendarView(sortedEntries);
+        }
+        applySocialPlannerStreamViewMode();
         return;
     }
 
@@ -3356,17 +3966,23 @@ function renderSocialPlannerEntries() {
             editBtn.className = 'action-btn';
             editBtn.title = 'Rediger innlegg';
             editBtn.innerHTML = '<i class="fas fa-pen"></i><span>Rediger</span>';
-            editBtn.addEventListener('click', () => {
+            editBtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
                 window.editSocialPlannerEntry(entry.id);
             });
 
             const publishBtn = document.createElement('button');
             publishBtn.type = 'button';
             publishBtn.className = 'action-btn';
-            publishBtn.title = 'Publiser nå';
-            publishBtn.innerHTML = '<i class="fas fa-paper-plane"></i><span>Publiser</span>';
-            publishBtn.disabled = statusClass === 'publishing';
-            publishBtn.addEventListener('click', () => {
+            const isPublishing = statusClass === 'publishing';
+            publishBtn.title = isPublishing ? 'Prøv publisering på nytt' : 'Publiser nå';
+            publishBtn.innerHTML = isPublishing
+                ? '<i class="fas fa-rotate-right"></i><span>Prøv igjen</span>'
+                : '<i class="fas fa-paper-plane"></i><span>Publiser</span>';
+            publishBtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
                 window.publishSocialPlannerEntry(entry.id);
             });
 
@@ -3375,7 +3991,9 @@ function renderSocialPlannerEntries() {
             deleteBtn.className = 'action-btn delete';
             deleteBtn.title = 'Slett innlegg';
             deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
-            deleteBtn.addEventListener('click', () => {
+            deleteBtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
                 window.deleteSocialPlannerEntry(entry.id);
             });
 
@@ -3399,11 +4017,20 @@ function renderSocialPlannerEntries() {
         groupSection.appendChild(list);
         feed.appendChild(groupSection);
     });
+
+    if (shouldRenderCalendar) {
+        renderSocialPlannerCalendarView(sortedEntries);
+    }
+    applySocialPlannerStreamViewMode();
 }
 
-window.setSocialPlannerEntryFilter = function (filter = 'all') {
+window.setSocialPlannerEntryFilter = async function (filter = 'queue') {
     socialPlannerEntryFilter = normalizeSocialPlannerEntryFilter(filter);
     renderSocialPlannerEntries();
+    if (socialPlannerEntryFilter === 'analytics') {
+        await fetchSocialPlannerAnalytics('7d', { silent: true });
+        renderSocialPlannerEntries();
+    }
 };
 
 function renderSocialPlannerStats() {
@@ -3477,6 +4104,11 @@ function renderSocialPlannerTopEntries() {
 
 function renderSocialPlannerTab() {
     socialPlannerEntryFilter = normalizeSocialPlannerEntryFilter(socialPlannerEntryFilter);
+    socialPlannerChannelFilter = normalizeSocialPlannerChannelFilter(socialPlannerChannelFilter);
+    socialPlannerTagFilter = normalizeSocialPlannerTagFilter(socialPlannerTagFilter);
+    socialPlannerStreamViewMode = normalizeSocialPlannerStreamViewMode(socialPlannerStreamViewMode);
+    socialPlannerDisplayTimezone = getSocialPlannerDisplayTimezone();
+    ensureSocialPlannerCalendarCursor();
     renderSocialPlannerWorkspaceSelect();
     renderSocialPlannerWorkspaceList();
     renderSocialPlannerTemplateSelect();
@@ -3488,8 +4120,6 @@ function renderSocialPlannerTab() {
         searchInput.value = socialPlannerEntrySearch;
     }
     renderSocialPlannerEntries();
-    renderSocialPlannerStats();
-    renderSocialPlannerTopEntries();
     syncSocialPlannerComposerMeta();
     renderSocialPlannerComposerAccountChips();
     syncSocialPlannerScheduleFieldState();
@@ -3537,7 +4167,15 @@ async function fetchSocialPlannerAnalytics(period = '7d', options = {}) {
 }
 
 async function refreshSocialPlannerState(options = {}) {
-    if (socialPlannerLoading) return;
+    if (socialPlannerLoading) {
+        if (options.retryOnBusy) {
+            const retryOptions = { ...options, retryOnBusy: false };
+            window.setTimeout(() => {
+                refreshSocialPlannerState(retryOptions);
+            }, 350);
+        }
+        return;
+    }
     socialPlannerLoading = true;
 
     const requestedWorkspaceId = String(options.workspaceId || getSocialPlannerWorkspaceIdCandidate() || 'default');
@@ -3563,9 +4201,10 @@ async function refreshSocialPlannerState(options = {}) {
         socialPlannerState = payload.state;
         socialPlannerLoaded = true;
         renderSocialPlannerTab();
-
-        const selectedPeriod = document.getElementById('sp-analytics-period')?.value || '7d';
-        await fetchSocialPlannerAnalytics(selectedPeriod, { silent: true });
+        if (socialPlannerEntryFilter === 'analytics') {
+            await fetchSocialPlannerAnalytics('7d', { silent: true });
+            renderSocialPlannerEntries();
+        }
 
         if (payload.scheduler && options.runScheduler) {
             const scheduler = payload.scheduler;
@@ -3613,11 +4252,18 @@ window.changeSocialPlannerWorkspace = async function (workspaceId) {
         resetSocialPlannerAccountForm();
         resetSocialPlannerEntryForm();
         closeSocialPlannerComposer();
-        socialPlannerEntryFilter = 'all';
+        socialPlannerEntryFilter = 'queue';
         socialPlannerEntrySearch = '';
+        socialPlannerChannelFilter = 'all';
+        socialPlannerTagFilter = 'all';
+        socialPlannerStreamViewMode = 'list';
+        socialPlannerDisplayTimezone = getSocialPlannerDefaultTimezone();
+        socialPlannerCalendarCursor = new Date();
         renderSocialPlannerTab();
-        const selectedPeriod = document.getElementById('sp-analytics-period')?.value || '7d';
-        await fetchSocialPlannerAnalytics(selectedPeriod, { silent: true });
+        if (socialPlannerEntryFilter === 'analytics') {
+            await fetchSocialPlannerAnalytics('7d', { silent: true });
+            renderSocialPlannerEntries();
+        }
         setSocialPlannerStatus('Workspace byttet.', 'success');
     } catch (error) {
         console.error('Error changing social planner workspace:', error);
@@ -4033,8 +4679,37 @@ window.deleteSocialPlannerAccount = async function (accountId) {
     }
 };
 
-window.createSocialPlannerEntry = async function (event) {
-    event.preventDefault();
+function setSocialPlannerComposerSubmitState(isSubmitting = false, action = 'save') {
+    const saveBtn = document.getElementById('sp-entry-save-btn');
+    const publishBtn = document.getElementById('sp-entry-publish-btn');
+
+    if (saveBtn) {
+        if (!saveBtn.dataset.defaultHtml) saveBtn.dataset.defaultHtml = saveBtn.innerHTML;
+        saveBtn.disabled = !!isSubmitting;
+        saveBtn.innerHTML = isSubmitting && action === 'save'
+            ? '<i class="fas fa-spinner fa-spin"></i> Lagrer...'
+            : saveBtn.dataset.defaultHtml;
+    }
+
+    if (publishBtn) {
+        if (!publishBtn.dataset.defaultHtml) publishBtn.dataset.defaultHtml = publishBtn.innerHTML;
+        publishBtn.disabled = !!isSubmitting;
+        publishBtn.innerHTML = isSubmitting && action === 'publish-now'
+            ? '<i class="fas fa-spinner fa-spin"></i> Publiserer...'
+            : publishBtn.dataset.defaultHtml;
+    }
+}
+
+window.createSocialPlannerEntry = async function (event, options = {}) {
+    if (event?.preventDefault) {
+        event.preventDefault();
+    }
+
+    const explicitAction = String(options?.action || '').trim().toLowerCase();
+    const submitter = !explicitAction && event ? event.submitter || null : null;
+    const action = explicitAction || String(submitter?.dataset?.action || '').trim().toLowerCase();
+    const publishNow = action === 'publish-now';
+    const saveDraft = action === 'save-draft';
 
     const editId = String(document.getElementById('sp-entry-edit-id')?.value || '').trim();
     const rawTitle = String(document.getElementById('sp-entry-title')?.value || '').trim();
@@ -4055,27 +4730,32 @@ window.createSocialPlannerEntry = async function (event) {
         return;
     }
 
-    if (status === 'scheduled' && !scheduledFor) {
+    if (!publishNow && status === 'scheduled' && !scheduledFor) {
         setSocialPlannerStatus('Velg tidspunkt når status er scheduled.', 'danger');
         return;
     }
 
     try {
+        setSocialPlannerComposerSubmitState(true, publishNow ? 'publish-now' : 'save');
+        const resolvedStatus = (publishNow || saveDraft) ? 'draft' : status;
         const payload = {
             workspaceId: getSocialPlannerActiveWorkspaceId(),
             title,
             masterText,
-            status,
+            status: resolvedStatus,
             hashtags,
             linkUrl,
             mediaUrl,
             variants,
             targetAccountIds
         };
-        if (scheduledFor) {
+        if (!publishNow && scheduledFor) {
             payload.scheduledFor = scheduledFor;
-        } else if (status !== 'scheduled') {
+        } else if (resolvedStatus !== 'scheduled') {
             payload.scheduledFor = '';
+        }
+        if (publishNow) {
+            payload.publishNow = true;
         }
 
         const requestPath = editId
@@ -4083,14 +4763,16 @@ window.createSocialPlannerEntry = async function (event) {
             : '/entries';
         const requestMethod = editId ? 'PATCH' : 'POST';
 
-        await requestSocialPlanner(requestPath, {
+        const apiResponse = await requestSocialPlanner(requestPath, {
             method: requestMethod,
             body: JSON.stringify(payload)
         }, 'Kunne ikke lagre innlegg.');
 
-        const createAnother = !editId && !!document.getElementById('sp-compose-create-another')?.checked;
+        const createAnother = !publishNow && !saveDraft && !editId && !!document.getElementById('sp-compose-create-another')?.checked;
         resetSocialPlannerEntryForm();
-        if (createAnother) {
+        if (publishNow) {
+            closeSocialPlannerComposer();
+        } else if (createAnother) {
             openSocialPlannerComposer({ reset: false, panel: 'preview' });
         } else {
             closeSocialPlannerComposer();
@@ -4099,14 +4781,56 @@ window.createSocialPlannerEntry = async function (event) {
             silent: true,
             workspaceId: getSocialPlannerActiveWorkspaceId()
         });
-        setSocialPlannerStatus(editId ? 'Innlegg oppdatert i planner.' : 'Innlegg lagret i planner.', 'success');
+        if (publishNow) {
+            closeSocialPlannerComposer();
+        }
+        const responseDetails = String(apiResponse?.details || '').trim();
+        if (publishNow) {
+            const detailsText = responseDetails ? ` ${responseDetails}` : '';
+            const message = `Innlegg publisert.${detailsText}`.trim();
+            setSocialPlannerStatus(message, 'success');
+            void showAdminNotice(message, {
+                title: 'Social Planner',
+                confirmText: 'OK',
+                variant: 'success'
+            });
+        } else if (saveDraft) {
+            const message = 'Innlegg lagret. Du kan åpne det senere fra Utkast.';
+            setSocialPlannerStatus(message, 'success');
+            void showAdminNotice(message, {
+                title: 'Social Planner',
+                confirmText: 'OK',
+                variant: 'success'
+            });
+        } else {
+            const message = editId ? 'Innlegg oppdatert i planner.' : 'Innlegg lagret i planner.';
+            setSocialPlannerStatus(message, 'success');
+            void showAdminNotice(message, {
+                title: 'Social Planner',
+                confirmText: 'OK',
+                variant: 'success'
+            });
+        }
     } catch (error) {
         console.error('Error creating social planner entry:', error);
-        setSocialPlannerStatus(
-            normalizeAdminErrorMessage(error, 'Kunne ikke lagre innlegg.'),
-            'danger'
-        );
+        const errorMessage = normalizeAdminErrorMessage(error, 'Kunne ikke lagre innlegg.');
+        setSocialPlannerStatus(errorMessage, 'danger');
+        void showAdminNotice(errorMessage, {
+            title: publishNow ? 'Publisering feilet' : 'Lagring feilet',
+            confirmText: 'OK',
+            variant: 'danger'
+        });
+    } finally {
+        setSocialPlannerComposerSubmitState(false);
     }
+};
+
+window.saveSocialPlannerDraft = function () {
+    return window.createSocialPlannerEntry(null, { action: 'save-draft' });
+};
+
+window.publishSocialPlannerFromComposer = function () {
+    return window.createSocialPlannerEntry(null, { action: 'publish-now' });
 };
 
 window.resetSocialPlannerEntryForm = resetSocialPlannerEntryForm;
@@ -4168,6 +4892,7 @@ window.editSocialPlannerEntry = function (entryId) {
     renderSocialPlannerComposerAccountChips();
     renderSocialPlannerEntryPreview();
     renderSocialPlannerComposerMediaPreview();
+    syncSocialPlannerTagPillState();
     openSocialPlannerComposer({ reset: false, panel: 'preview' });
 
     masterInput?.focus();
@@ -4179,6 +4904,7 @@ window.publishSocialPlannerEntry = async function (entryId) {
     if (!normalizedEntryId) return;
 
     try {
+        setSocialPlannerStatus('Publiserer innlegg...', 'info');
         const payload = await requestSocialPlanner(`/entries/${encodeURIComponent(normalizedEntryId)}/publish`, {
             method: 'POST',
             body: JSON.stringify({})
@@ -4190,19 +4916,36 @@ window.publishSocialPlannerEntry = async function (entryId) {
         });
 
         if (payload?.success) {
-            setSocialPlannerStatus('Innlegg publisert.', 'success');
+            closeSocialPlannerComposer();
+            const details = String(payload?.details || '').trim();
+            const hasAcceptedOnlySignal = /\baccepted\b/i.test(details) && !/\bok\b|published|publisert/i.test(details);
+            const successMessage = details
+                ? `Publisering sendt. ${details}`
+                : 'Innlegg publisert.';
+            setSocialPlannerStatus(successMessage, hasAcceptedOnlySignal ? 'info' : 'success');
+            void showAdminNotice(successMessage, {
+                title: 'Social Planner',
+                confirmText: 'OK',
+                variant: hasAcceptedOnlySignal ? 'info' : 'success'
+            });
         } else {
-            setSocialPlannerStatus(
-                String(payload?.error || 'Publisering feilet.'),
-                'danger'
-            );
+            const errorMessage = String(payload?.details || payload?.error || 'Publisering feilet.');
+            setSocialPlannerStatus(errorMessage, 'danger');
+            void showAdminNotice(errorMessage, {
+                title: 'Publisering feilet',
+                confirmText: 'OK',
+                variant: 'danger'
+            });
         }
     } catch (error) {
         console.error('Error publishing social planner entry:', error);
-        setSocialPlannerStatus(
-            normalizeAdminErrorMessage(error, 'Kunne ikke publisere innlegg.'),
-            'danger'
-        );
+        const errorMessage = normalizeAdminErrorMessage(error, 'Kunne ikke publisere innlegg.');
+        setSocialPlannerStatus(errorMessage, 'danger');
+        void showAdminNotice(errorMessage, {
+            title: 'Publisering feilet',
+            confirmText: 'OK',
+            variant: 'danger'
+        });
     }
 };
 
@@ -4221,10 +4964,24 @@ window.deleteSocialPlannerEntry = async function (entryId) {
     );
     if (!shouldDelete) return;
 
+    const removeEntryFromLocalState = () => {
+        if (!socialPlannerState || !Array.isArray(socialPlannerState.entries)) return false;
+        const previousLength = socialPlannerState.entries.length;
+        socialPlannerState.entries = socialPlannerState.entries.filter(
+            (entry) => String(entry?.id || '') !== normalizedEntryId
+        );
+        if (socialPlannerState.entries.length !== previousLength) {
+            renderSocialPlannerEntries();
+            return true;
+        }
+        return false;
+    };
+
     try {
         await requestSocialPlanner(`/entries/${encodeURIComponent(normalizedEntryId)}`, {
             method: 'DELETE'
         }, 'Kunne ikke slette innlegg.');
+        removeEntryFromLocalState();
 
         if (document.getElementById('sp-entry-edit-id')?.value === normalizedEntryId) {
             resetSocialPlannerEntryForm();
@@ -4232,10 +4989,35 @@ window.deleteSocialPlannerEntry = async function (entryId) {
 
         await refreshSocialPlannerState({
             silent: true,
-            workspaceId: getSocialPlannerActiveWorkspaceId()
+            workspaceId: getSocialPlannerActiveWorkspaceId(),
+            retryOnBusy: true
         });
         setSocialPlannerStatus('Innlegg slettet.', 'success');
+        void showAdminNotice('Innlegg slettet.', {
+            title: 'Social Planner',
+            confirmText: 'OK',
+            variant: 'success'
+        });
     } catch (error) {
+        const apiMessage = String(error?.message || '');
+        if (/Innlegg finnes ikke/i.test(apiMessage)) {
+            removeEntryFromLocalState();
+            if (document.getElementById('sp-entry-edit-id')?.value === normalizedEntryId) {
+                resetSocialPlannerEntryForm();
+            }
+            await refreshSocialPlannerState({
+                silent: true,
+                workspaceId: getSocialPlannerActiveWorkspaceId(),
+                retryOnBusy: true
+            });
+            setSocialPlannerStatus('Innlegg var allerede slettet.', 'info');
+            void showAdminNotice('Innlegg var allerede slettet.', {
+                title: 'Social Planner',
+                confirmText: 'OK',
+                variant: 'info'
+            });
+            return;
+        }
         console.error('Error deleting social planner entry:', error);
         setSocialPlannerStatus(
             normalizeAdminErrorMessage(error, 'Kunne ikke slette innlegg.'),
@@ -4874,7 +5656,50 @@ function updateHeaderActions(section) {
     }
 }
 
+function syncAdminScrollMode(section = '') {
+    const normalizedSection = String(section || '').trim().toLowerCase();
+    const activeSection = normalizedSection || String(document.querySelector('.nav-btn.active[data-tab]')?.dataset.tab || '').trim().toLowerCase();
+    const singleScrollMode = activeSection === 'social-planner';
+    document.body.classList.toggle('social-planner-single-scroll', singleScrollMode);
+}
+
+function setSocialPlannerRailOpen(open = false) {
+    const modal = document.getElementById('sp-rail-modal');
+    const button = document.getElementById('sp-rail-toggle-btn');
+    const isOpen = !!open;
+
+    if (modal) {
+        modal.hidden = !isOpen;
+        modal.classList.toggle('is-open', isOpen);
+    }
+
+    if (button) {
+        button.setAttribute('aria-expanded', String(isOpen));
+        button.setAttribute('aria-label', isOpen ? 'Lukk kontrollpanel' : 'Åpne kontrollpanel');
+        button.setAttribute('title', isOpen ? 'Lukk kontrollpanel' : 'Åpne kontrollpanel');
+        const icon = button.querySelector('i');
+        if (icon) {
+            icon.classList.remove('fa-angles-left', 'fa-angles-right');
+            icon.classList.add('fa-gear');
+        }
+    }
+}
+
+window.toggleSocialPlannerRail = function (forceOpen = null) {
+    const modal = document.getElementById('sp-rail-modal');
+    if (!modal) return;
+    const currentlyOpen = modal.classList.contains('is-open');
+    const nextOpen = typeof forceOpen === 'boolean'
+        ? forceOpen
+        : !currentlyOpen;
+    setSocialPlannerRailOpen(nextOpen);
+};
+
 let adminSidebarResizeBound = false;
+
+function isAdminMobileViewport() {
+    return window.matchMedia(`(max-width: ${ADMIN_MOBILE_BREAKPOINT}px)`).matches;
+}
 
 function getAdminSidebarCollapsedFromStorage() {
     try {
@@ -4924,14 +5749,20 @@ function updateAdminSidebarToggleButton(collapsed) {
 
 function setAdminSidebarCollapsed(collapsed, persist = true) {
     const normalizedCollapsed = !!collapsed;
+    const mobileViewport = isAdminMobileViewport();
     document.body.classList.toggle('admin-sidebar-collapsed', normalizedCollapsed);
+    document.body.classList.toggle('admin-mobile-menu-open', mobileViewport && !normalizedCollapsed);
     updateAdminSidebarToggleButton(normalizedCollapsed);
-    if (persist) {
+    if (persist && !mobileViewport) {
         setAdminSidebarCollapsedInStorage(normalizedCollapsed);
     }
 }
 
 function applyAdminSidebarViewportState() {
+    if (isAdminMobileViewport()) {
+        setAdminSidebarCollapsed(true, false);
+        return;
+    }
     const collapsed = getAdminSidebarCollapsedFromStorage();
     setAdminSidebarCollapsed(collapsed, false);
 }
@@ -4952,7 +5783,7 @@ function setupAdminSidebarToggle() {
                 : action === 'close'
                     ? true
                     : !currentlyCollapsed;
-            setAdminSidebarCollapsed(nextCollapsed, true);
+            setAdminSidebarCollapsed(nextCollapsed, !isAdminMobileViewport());
         });
     });
 
@@ -4967,7 +5798,7 @@ window.toggleAdminSidebar = function (forceCollapsed = null) {
     const nextCollapsed = typeof forceCollapsed === 'boolean'
         ? forceCollapsed
         : !currentCollapsed;
-    setAdminSidebarCollapsed(nextCollapsed, true);
+    setAdminSidebarCollapsed(nextCollapsed, !isAdminMobileViewport());
 };
 
 function setupEventListeners() {
@@ -5000,10 +5831,17 @@ function setupEventListeners() {
                 if (targetTab) targetTab.classList.add('active');
                 updateBreadcrumb(section);
                 updateHeaderActions(section);
+                syncAdminScrollMode(section);
                 if (section === 'social-planner') {
                     refreshSocialPlannerState({ silent: socialPlannerLoaded }).catch((error) => {
                         console.error('Error loading social planner tab:', error);
                     });
+                } else {
+                    setSocialPlannerRailOpen(false);
+                }
+
+                if (isAdminMobileViewport()) {
+                    setAdminSidebarCollapsed(true, false);
                 }
             }
         });
@@ -5068,9 +5906,20 @@ function setupEventListeners() {
             if (inputId === 'sp-entry-media') {
                 renderSocialPlannerComposerMediaPreview();
             }
+            if (inputId === 'sp-entry-hashtags') {
+                syncSocialPlannerTagPillState();
+            }
         });
     });
     renderSocialPlannerComposerMediaPreview();
+    syncSocialPlannerTagPillState();
+
+    const composerAdvancedSection = getSocialPlannerComposerAdvancedSection();
+    if (composerAdvancedSection) {
+        composerAdvancedSection.addEventListener('toggle', () => {
+            syncSocialPlannerTagPillState();
+        });
+    }
 
     const assistantPromptInput = document.getElementById('sp-assistant-prompt');
     if (assistantPromptInput) {
@@ -5085,7 +5934,15 @@ function setupEventListeners() {
     const plannerFilterTabs = document.querySelectorAll('#sp-status-tabs .social-planner-tab-btn');
     plannerFilterTabs.forEach((tab) => {
         tab.addEventListener('click', () => {
-            window.setSocialPlannerEntryFilter(tab.dataset.filter || 'all');
+            window.setSocialPlannerEntryFilter(tab.dataset.filter || 'queue');
+        });
+    });
+
+    const plannerViewButtons = document.querySelectorAll('#sp-view-mode-toggle .social-planner-view-btn');
+    plannerViewButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            socialPlannerStreamViewMode = normalizeSocialPlannerStreamViewMode(button.dataset.view);
+            renderSocialPlannerEntries();
         });
     });
 
@@ -5097,8 +5954,48 @@ function setupEventListeners() {
         });
     }
 
+    const plannerChannelFilter = document.getElementById('sp-stream-channel-filter');
+    if (plannerChannelFilter) {
+        plannerChannelFilter.addEventListener('change', () => {
+            socialPlannerChannelFilter = normalizeSocialPlannerChannelFilter(plannerChannelFilter.value || 'all');
+            renderSocialPlannerEntries();
+        });
+    }
+
+    const plannerTagFilter = document.getElementById('sp-stream-tag-filter');
+    if (plannerTagFilter) {
+        plannerTagFilter.addEventListener('change', () => {
+            socialPlannerTagFilter = normalizeSocialPlannerTagFilter(plannerTagFilter.value || 'all');
+            renderSocialPlannerEntries();
+        });
+    }
+
+    const plannerTimezoneFilter = document.getElementById('sp-stream-timezone-filter');
+    if (plannerTimezoneFilter) {
+        plannerTimezoneFilter.addEventListener('change', () => {
+            const nextTimezone = String(plannerTimezoneFilter.value || '').trim();
+            socialPlannerDisplayTimezone = isValidSocialPlannerTimezone(nextTimezone)
+                ? nextTimezone
+                : getSocialPlannerDefaultTimezone();
+            renderSocialPlannerEntries();
+        });
+    }
+
+    const socialPlannerRailToggleButton = document.getElementById('sp-rail-toggle-btn');
+    if (socialPlannerRailToggleButton) {
+        socialPlannerRailToggleButton.addEventListener('click', () => {
+            window.toggleSocialPlannerRail();
+        });
+    }
+    setSocialPlannerRailOpen(false);
+
     document.addEventListener('keydown', (event) => {
         if (event.key !== 'Escape') return;
+        const railModal = document.getElementById('sp-rail-modal');
+        if (railModal?.classList.contains('is-open')) {
+            window.toggleSocialPlannerRail(false);
+            return;
+        }
         const modal = document.getElementById('sp-compose-modal');
         if (modal?.classList.contains('is-open')) {
             closeSocialPlannerComposer();
@@ -5145,23 +6042,67 @@ function sanitizeStorageFileName(fileName = 'image') {
         .replace(/^-|-$/g, '') || 'image';
 }
 
+function normalizeStorageFolderName(folder = 'media') {
+    const normalized = String(folder || '')
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9/_-]+/g, '-')
+        .replace(/\/+/g, '/')
+        .replace(/^\/|\/$/g, '');
+    return normalized || 'media';
+}
+
+function isFirebaseStorageUnauthorizedError(error) {
+    const code = String(error?.code || '').toLowerCase();
+    const message = String(error?.message || error || '').toLowerCase();
+    return code.includes('unauthorized')
+        || message.includes('storage/unauthorized')
+        || (message.includes('permission') && message.includes('storage'));
+}
+
+async function uploadFileViaAdminApi(file, folder = 'media') {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', normalizeStorageFolderName(folder));
+
+    const response = await fetch(`${API_URL}/admin/storage/upload`, {
+        method: 'POST',
+        body: formData
+    });
+
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        throw new Error(payload?.details || payload?.error || `Server upload failed (${response.status})`);
+    }
+
+    if (!payload?.publicUrl) {
+        throw new Error('Server returnerte ikke en gyldig bilde-URL.');
+    }
+
+    return payload.publicUrl;
+}
+
 async function uploadFileToFirebaseStorage(file, folder = 'media') {
     if (!file) {
         throw new Error('Ingen fil valgt.');
     }
 
-    if (!window.adminAuthClient?.storage) {
-        throw new Error('Firebase Storage er ikke tilgjengelig.');
-    }
-
+    const normalizedFolder = normalizeStorageFolderName(folder);
     const safeName = sanitizeStorageFileName(file.name || 'image');
-    const filePath = `${folder}/${Date.now()}-${safeName}`;
+    const filePath = `${normalizedFolder}/${Date.now()}-${safeName}`;
+
+    if (!window.adminAuthClient?.storage) {
+        return uploadFileViaAdminApi(file, normalizedFolder);
+    }
 
     const { data, error: uploadError } = await window.adminAuthClient.storage
         .from('uploads')
         .upload(filePath, file);
 
     if (uploadError) {
+        if (isFirebaseStorageUnauthorizedError(uploadError)) {
+            return uploadFileViaAdminApi(file, normalizedFolder);
+        }
         throw uploadError;
     }
 
@@ -5174,6 +6115,9 @@ async function uploadFileToFirebaseStorage(file, folder = 'media') {
         .getPublicUrl(filePath);
 
     if (publicUrlError) {
+        if (isFirebaseStorageUnauthorizedError(publicUrlError)) {
+            return uploadFileViaAdminApi(file, normalizedFolder);
+        }
         throw publicUrlError;
     }
 
