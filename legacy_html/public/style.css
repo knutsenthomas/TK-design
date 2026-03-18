@@ -6488,6 +6488,19 @@ body.homepage-refresh .service-content .service-category {
     text-transform: uppercase;
 }
 
+body.homepage-refresh .info-card h4,
+body.homepage-refresh .info-card .info-card-label,
+body.homepage-refresh .project-category,
+body.homepage-refresh .meeting-contact-item div>span:first-child,
+body.homepage-refresh .service-content h5,
+body.homepage-refresh .service-content .service-category {
+    letter-spacing: 0 !important;
+    word-spacing: 0 !important;
+    text-transform: none !important;
+    font-kerning: none;
+    font-feature-settings: "kern" 0;
+}
+
 body.homepage-refresh .service-content h3,
 body.homepage-refresh .service-content h3 a {
     color: var(--refresh-heading) !important;
