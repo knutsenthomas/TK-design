@@ -21,6 +21,10 @@ let currentLang = 'no';
 let seoData = { global: {}, pages: {} };
 let socialPlannerState = null;
 let socialPlannerAnalytics = null;
+let siteAnalytics = null;
+let siteAnalyticsLoading = false;
+let siteAnalyticsPeriod = '30d';
+let siteAnalyticsErrorMessage = '';
 let socialPlannerLoaded = false;
 let socialPlannerLoading = false;
 let socialPlannerEntryFilter = 'queue';
@@ -33,6 +37,7 @@ let socialPlannerCalendarCursor = new Date();
 let socialPlannerComposerPanel = 'preview';
 let socialPlannerAssistantInFlight = false;
 const SOCIAL_PLANNER_UI_PLATFORMS = ['facebook', 'instagram', 'linkedin', 'x', 'tiktok'];
+const SITE_ANALYTICS_PERIODS = ['1d', '7d', '14d', '30d', '365d'];
 const ADMIN_SIDEBAR_COLLAPSE_KEY = 'tk_admin_sidebar_collapsed';
 const ADMIN_MOBILE_BREAKPOINT = 900;
 let quill; // Define quill globally but initialize later
@@ -78,6 +83,7 @@ const adminTranslations = {
         'nav_content': 'Sideinnhold',
         'nav_style': 'Design',
         'nav_seo': 'SEO',
+        'nav_analytics': 'Analyse',
         'nav_media': 'Media',
         'nav_social_planner': 'SoMe-planlegger',
         'nav_view_site': 'Se Nettside',
@@ -121,6 +127,33 @@ const adminTranslations = {
         'stats_read': 'Innlegg Lest',
         'stats_active': 'Aktive Brukere',
         'stats_time': 'Gj.snitt Tid',
+        'analytics_title': 'Nettstedsanalyse',
+        'analytics_intro': 'Følg trafikk, aktive brukere og hvilke sider som faktisk blir besøkt.',
+        'analytics_period_label': 'Periode',
+        'analytics_refresh': 'Oppdater',
+        'analytics_loading': 'Laster statistikk fra Google Analytics ...',
+        'analytics_ready': 'Viser data for',
+        'analytics_card_views': 'Sidevisninger',
+        'analytics_card_active_range': 'Aktive brukere',
+        'analytics_card_realtime': 'Sanntid nå',
+        'analytics_card_period': 'Periode',
+        'analytics_card_realtime_note': 'Akkurat nå i GA4',
+        'analytics_card_period_note': 'Valgt datoperiode',
+        'analytics_top_pages': 'Mest besøkte sider',
+        'analytics_top_pages_desc': 'Sider med flest visninger i valgt periode.',
+        'analytics_traffic_sources': 'Trafikkilder',
+        'analytics_traffic_sources_desc': 'Kanalgrupper som sender flest økter til nettsiden.',
+        'analytics_empty_pages': 'Ingen sidedata tilgjengelig ennå.',
+        'analytics_empty_sources': 'Ingen trafikkilder tilgjengelig ennå.',
+        'analytics_unconfigured_title': 'Google Analytics er ikke konfigurert',
+        'analytics_unconfigured_body': 'Legg inn GA4-property på serveren for å vise tall her.',
+        'analytics_error_title': 'Kunne ikke hente statistikk',
+        'analytics_unknown_label': 'Uten navn',
+        'analytics_period_1d': '1 dag',
+        'analytics_period_7d': '7 dager',
+        'analytics_period_14d': '14 dager',
+        'analytics_period_30d': '30 dager',
+        'analytics_period_365d': '1 år',
         'quick_actions': 'Hurtigvalg',
         'edit_hero': 'Rediger Forsidetekst',
         'upload_images': 'Last opp Bilder',
@@ -174,6 +207,7 @@ const adminTranslations = {
         'nav_content': 'Site Content',
         'nav_style': 'Design',
         'nav_seo': 'SEO',
+        'nav_analytics': 'Analytics',
         'nav_media': 'Media',
         'nav_social_planner': 'Social Planner',
         'nav_view_site': 'View Site',
@@ -217,6 +251,33 @@ const adminTranslations = {
         'stats_read': 'Posts Read',
         'stats_active': 'Active Users',
         'stats_time': 'Avg. Time',
+        'analytics_title': 'Website Analytics',
+        'analytics_intro': 'Track traffic, active users and which pages visitors actually spend time on.',
+        'analytics_period_label': 'Period',
+        'analytics_refresh': 'Refresh',
+        'analytics_loading': 'Loading Google Analytics data ...',
+        'analytics_ready': 'Showing data for',
+        'analytics_card_views': 'Page Views',
+        'analytics_card_active_range': 'Active Users',
+        'analytics_card_realtime': 'Realtime Now',
+        'analytics_card_period': 'Period',
+        'analytics_card_realtime_note': 'Right now in GA4',
+        'analytics_card_period_note': 'Selected date range',
+        'analytics_top_pages': 'Top Pages',
+        'analytics_top_pages_desc': 'Pages with the highest view count in the selected period.',
+        'analytics_traffic_sources': 'Traffic Sources',
+        'analytics_traffic_sources_desc': 'Channel groups sending the most sessions to the site.',
+        'analytics_empty_pages': 'No page data available yet.',
+        'analytics_empty_sources': 'No traffic sources available yet.',
+        'analytics_unconfigured_title': 'Google Analytics is not configured',
+        'analytics_unconfigured_body': 'Add a GA4 property on the server to show analytics here.',
+        'analytics_error_title': 'Could not load analytics',
+        'analytics_unknown_label': 'Untitled',
+        'analytics_period_1d': '1 day',
+        'analytics_period_7d': '7 days',
+        'analytics_period_14d': '14 days',
+        'analytics_period_30d': '30 days',
+        'analytics_period_365d': '1 year',
         'quick_actions': 'Quick Actions',
         'edit_hero': 'Edit Hero Text',
         'upload_images': 'Upload Images',
@@ -457,6 +518,11 @@ function showAdminConfirm(message, options = {}) {
     });
 }
 
+function getAdminTranslation(key, fallback = '') {
+    const t = adminTranslations[currentLang] || adminTranslations['no'];
+    return t[key] || fallback;
+}
+
 function updateDashboardLanguage() {
     const t = adminTranslations[currentLang] || adminTranslations['no'];
 
@@ -494,7 +560,10 @@ function updateDashboardLanguage() {
     const activeNav = document.querySelector('.nav-btn.active[data-tab]');
     if (activeNav?.dataset.tab) {
         updateBreadcrumb(activeNav.dataset.tab);
+        updateHeaderActions(activeNav.dataset.tab);
     }
+
+    renderAnalyticsTab();
 }
 
 // ==========================================
@@ -1963,6 +2032,12 @@ async function init() {
         renderDashboardOverview();
     } catch (error) {
         console.error('Error rendering dashboard overview:', error);
+    }
+
+    try {
+        renderAnalyticsTab();
+    } catch (error) {
+        console.error('Error rendering analytics tab:', error);
     }
 }
 
@@ -5556,6 +5631,199 @@ function renderDashboardOverview() {
     }
 }
 
+function normalizeSiteAnalyticsPeriod(period = '30d') {
+    const normalized = String(period || '30d').trim().toLowerCase();
+    return SITE_ANALYTICS_PERIODS.includes(normalized) ? normalized : '30d';
+}
+
+function getSiteAnalyticsPeriodOptions() {
+    return [
+        { value: '1d', label: getAdminTranslation('analytics_period_1d', '1 dag') },
+        { value: '7d', label: getAdminTranslation('analytics_period_7d', '7 dager') },
+        { value: '14d', label: getAdminTranslation('analytics_period_14d', '14 dager') },
+        { value: '30d', label: getAdminTranslation('analytics_period_30d', '30 dager') },
+        { value: '365d', label: getAdminTranslation('analytics_period_365d', '1 år') }
+    ];
+}
+
+function formatAnalyticsMetric(value = '—') {
+    if (value === null || value === undefined || value === '') return '—';
+    if (String(value).trim() === '—') return '—';
+    const numericValue = Number(value);
+    if (!Number.isFinite(numericValue)) {
+        return String(value);
+    }
+    return new Intl.NumberFormat(currentLang === 'en' ? 'en-GB' : 'nb-NO').format(numericValue);
+}
+
+function renderAnalyticsList(containerId, items = [], options = {}) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const { emptyKey, labelField, valueField } = options;
+    const safeItems = Array.isArray(items) ? items : [];
+
+    if (!safeItems.length) {
+        container.innerHTML = `<p class="analytics-list-empty">${escapeHtmlForUi(getAdminTranslation(emptyKey, 'Ingen data tilgjengelig ennå.'))}</p>`;
+        return;
+    }
+
+    const unknownLabel = getAdminTranslation('analytics_unknown_label', 'Uten navn');
+    container.innerHTML = safeItems.map((item, index) => {
+        const label = String(item?.[labelField] || '').trim() || unknownLabel;
+        const value = formatAnalyticsMetric(item?.[valueField]);
+        return `
+            <article class="analytics-list-item">
+                <span class="analytics-list-rank">${index + 1}</span>
+                <div class="analytics-list-meta">
+                    <strong>${escapeHtmlForUi(label)}</strong>
+                </div>
+                <div class="analytics-list-value">${escapeHtmlForUi(value)}</div>
+            </article>
+        `;
+    }).join('');
+}
+
+function renderAnalyticsTab() {
+    const analyticsTab = document.getElementById('analytics-tab');
+    if (!analyticsTab) return;
+
+    siteAnalyticsPeriod = normalizeSiteAnalyticsPeriod(siteAnalyticsPeriod);
+
+    const periodButtons = document.getElementById('analytics-period-buttons');
+    const rangeChip = document.getElementById('analytics-range-chip');
+    const statusMessage = document.getElementById('analytics-status-message');
+    const stateCard = document.getElementById('analytics-state-card');
+    const stateTitle = document.getElementById('analytics-state-title');
+    const stateBody = document.getElementById('analytics-state-body');
+
+    const range = siteAnalytics?.range || null;
+    const metricSuffix = range?.metricSuffix || getSiteAnalyticsPeriodOptions().find((option) => option.value === siteAnalyticsPeriod)?.label || '30 dager';
+    const shortLabel = range?.shortLabel || getSiteAnalyticsPeriodOptions().find((option) => option.value === siteAnalyticsPeriod)?.label || '30 dager';
+    const analyticsData = siteAnalytics?.data || {};
+
+    if (periodButtons) {
+        periodButtons.innerHTML = getSiteAnalyticsPeriodOptions().map((option) => `
+            <button
+                type="button"
+                class="analytics-period-btn ${option.value === siteAnalyticsPeriod ? 'active' : ''}"
+                onclick="setSiteAnalyticsPeriod('${option.value}')"
+                ${siteAnalyticsLoading ? 'disabled' : ''}
+            >
+                ${escapeHtmlForUi(option.label)}
+            </button>
+        `).join('');
+    }
+
+    const pageViewsEl = document.getElementById('analytics-screen-pageviews');
+    const activeUsersRangeEl = document.getElementById('analytics-active-users-range');
+    const realtimeUsersEl = document.getElementById('analytics-active-users-realtime');
+    const periodEl = document.getElementById('analytics-range-short');
+    const pageViewsNote = document.getElementById('analytics-screen-pageviews-note');
+    const activeUsersRangeNote = document.getElementById('analytics-active-users-range-note');
+    const realtimeUsersNote = document.getElementById('analytics-active-users-realtime-note');
+    const periodNote = document.getElementById('analytics-range-short-note');
+
+    if (pageViewsEl) pageViewsEl.textContent = formatAnalyticsMetric(analyticsData.screenPageViews);
+    if (activeUsersRangeEl) activeUsersRangeEl.textContent = formatAnalyticsMetric(analyticsData.activeUsersInRange);
+    if (realtimeUsersEl) realtimeUsersEl.textContent = formatAnalyticsMetric(analyticsData.activeUsers);
+    if (periodEl) periodEl.textContent = shortLabel;
+
+    if (pageViewsNote) pageViewsNote.textContent = metricSuffix;
+    if (activeUsersRangeNote) activeUsersRangeNote.textContent = metricSuffix;
+    if (realtimeUsersNote) realtimeUsersNote.textContent = getAdminTranslation('analytics_card_realtime_note', 'Akkurat nå i GA4');
+    if (periodNote) periodNote.textContent = getAdminTranslation('analytics_card_period_note', 'Valgt datoperiode');
+    if (rangeChip) rangeChip.textContent = shortLabel;
+
+    renderAnalyticsList('analytics-top-pages-list', analyticsData.topPages, {
+        emptyKey: 'analytics_empty_pages',
+        labelField: 'title',
+        valueField: 'views'
+    });
+    renderAnalyticsList('analytics-traffic-sources-list', analyticsData.trafficSources, {
+        emptyKey: 'analytics_empty_sources',
+        labelField: 'source',
+        valueField: 'sessions'
+    });
+
+    if (statusMessage) {
+        if (siteAnalyticsLoading) {
+            statusMessage.textContent = getAdminTranslation('analytics_loading', 'Laster statistikk fra Google Analytics ...');
+        } else if (siteAnalyticsErrorMessage) {
+            statusMessage.textContent = siteAnalyticsErrorMessage;
+        } else if (siteAnalytics?.status === 'unconfigured') {
+            statusMessage.textContent = siteAnalytics.message || getAdminTranslation('analytics_unconfigured_body', 'Google Analytics er ikke konfigurert.');
+        } else if (siteAnalytics?.status === 'success') {
+            statusMessage.textContent = `${getAdminTranslation('analytics_ready', 'Viser data for')} ${metricSuffix}.`;
+        } else {
+            statusMessage.textContent = '';
+        }
+    }
+
+    if (stateCard && stateTitle && stateBody) {
+        if (siteAnalytics?.status === 'unconfigured') {
+            stateCard.hidden = false;
+            stateCard.classList.remove('is-error');
+            stateTitle.textContent = getAdminTranslation('analytics_unconfigured_title', 'Google Analytics er ikke konfigurert');
+            stateBody.textContent = siteAnalytics.message || getAdminTranslation('analytics_unconfigured_body', 'Legg inn GA4-property på serveren for å vise tall her.');
+        } else if (siteAnalyticsErrorMessage) {
+            stateCard.hidden = false;
+            stateCard.classList.add('is-error');
+            stateTitle.textContent = getAdminTranslation('analytics_error_title', 'Kunne ikke hente statistikk');
+            stateBody.textContent = siteAnalyticsErrorMessage;
+        } else {
+            stateCard.hidden = true;
+            stateCard.classList.remove('is-error');
+            stateTitle.textContent = '';
+            stateBody.textContent = '';
+        }
+    }
+}
+
+async function fetchSiteAnalytics(period = siteAnalyticsPeriod) {
+    const nextPeriod = normalizeSiteAnalyticsPeriod(period);
+    const previousAnalytics = siteAnalytics;
+    siteAnalyticsPeriod = nextPeriod;
+    siteAnalyticsLoading = true;
+    siteAnalyticsErrorMessage = '';
+    renderAnalyticsTab();
+
+    try {
+        const params = new URLSearchParams({ period: nextPeriod });
+        const response = await fetch(`${API_URL}/analytics?${params.toString()}`);
+        if (!response.ok) {
+            const apiMessage = await parseApiErrorMessage(response, 'Kunne ikke hente statistikk.');
+            throw new Error(apiMessage);
+        }
+        const payload = await response.json();
+        siteAnalytics = payload && typeof payload === 'object' ? payload : null;
+        siteAnalyticsErrorMessage = '';
+        return siteAnalytics;
+    } catch (error) {
+        siteAnalytics = previousAnalytics;
+        siteAnalyticsErrorMessage = normalizeAdminErrorMessage(
+            error,
+            getAdminTranslation('analytics_error_title', 'Kunne ikke hente statistikk')
+        );
+        return null;
+    } finally {
+        siteAnalyticsLoading = false;
+        renderAnalyticsTab();
+    }
+}
+
+window.setSiteAnalyticsPeriod = async function (period) {
+    const nextPeriod = normalizeSiteAnalyticsPeriod(period);
+    if (nextPeriod === siteAnalyticsPeriod && siteAnalytics && !siteAnalyticsErrorMessage) {
+        return;
+    }
+    await fetchSiteAnalytics(nextPeriod);
+};
+
+window.refreshSiteAnalytics = async function () {
+    await fetchSiteAnalytics(siteAnalyticsPeriod);
+};
+
 function renderContentEditor() {
     const contentEditor = document.getElementById('content-editor');
     if (!contentEditor) return;
@@ -5951,6 +6219,7 @@ const breadcrumbConfig = {
         'content': ['Sideinnhold'],
         'style': ['Design'],
         'seo': ['SEO'],
+        'analytics': ['Analyse'],
         'media': ['Media'],
         'social-planner': ['SoMe-planlegger']
     },
@@ -5960,6 +6229,7 @@ const breadcrumbConfig = {
         'content': ['Site Content'],
         'style': ['Design'],
         'seo': ['SEO'],
+        'analytics': ['Analytics'],
         'media': ['Media'],
         'social-planner': ['Social Planner']
     }
@@ -5983,6 +6253,12 @@ function updateHeaderActions(section) {
 
     if (section === 'blog') {
         // Button moved to content area
+    } else if (section === 'analytics') {
+        actionsContainer.innerHTML = `
+            <button class="header-action-btn" type="button" onclick="refreshSiteAnalytics()">
+                <i class="fas fa-rotate"></i> ${getAdminTranslation('analytics_refresh', 'Oppdater')}
+            </button>
+        `;
     } else if (section === 'social-planner') {
         actionsContainer.innerHTML = `
             <button class="header-action-btn" type="button" onclick="refreshSocialPlanner()">
@@ -6154,6 +6430,7 @@ function setupEventListeners() {
             updateDashboardLanguage();
             renderContentEditor();
             renderDashboardOverview();
+            renderAnalyticsTab();
         });
     });
 
@@ -6171,7 +6448,15 @@ function setupEventListeners() {
                 updateBreadcrumb(section);
                 updateHeaderActions(section);
                 syncAdminScrollMode(section);
-                if (section === 'social-planner') {
+                if (section === 'analytics') {
+                    renderAnalyticsTab();
+                    if ((!siteAnalytics && !siteAnalyticsLoading) || siteAnalyticsErrorMessage) {
+                        fetchSiteAnalytics(siteAnalyticsPeriod).catch((error) => {
+                            console.error('Error loading analytics tab:', error);
+                        });
+                    }
+                    setSocialPlannerRailOpen(false);
+                } else if (section === 'social-planner') {
                     refreshSocialPlannerState({ silent: socialPlannerLoaded }).catch((error) => {
                         console.error('Error loading social planner tab:', error);
                     });
@@ -7354,6 +7639,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             updateDashboardLanguage(); // Update dashboard text
             renderContentEditor();
             renderDashboardOverview();
+            renderAnalyticsTab();
         });
     });
 

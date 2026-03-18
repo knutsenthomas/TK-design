@@ -488,6 +488,197 @@ header h1 {
     font-weight: 600;
 }
 
+.analytics-toolbar-card {
+    display: grid;
+    gap: 18px;
+}
+
+.analytics-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.analytics-toolbar-copy {
+    display: grid;
+    gap: 8px;
+    max-width: 720px;
+}
+
+.analytics-period-picker {
+    display: grid;
+    gap: 10px;
+    justify-items: end;
+}
+
+.analytics-toolbar-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.analytics-period-switcher {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.analytics-period-btn {
+    border: 1px solid var(--border-color);
+    background: #fff;
+    color: var(--text-color);
+    border-radius: 999px;
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.analytics-period-btn:hover:not(:disabled) {
+    border-color: rgba(249, 115, 22, 0.32);
+    color: var(--primary-color);
+}
+
+.analytics-period-btn.active {
+    border-color: rgba(249, 115, 22, 0.28);
+    background: #ffedd5;
+    color: var(--primary-color);
+    box-shadow: inset 0 0 0 1px rgba(249, 115, 22, 0.12);
+}
+
+.analytics-period-btn:disabled {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+.analytics-status-inline {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.analytics-panels-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.analytics-list-card {
+    display: grid;
+    gap: 18px;
+}
+
+.analytics-list-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.analytics-range-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid #fed7aa;
+    background: #fff7ed;
+    color: #c2410c;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.analytics-list {
+    display: grid;
+    gap: 12px;
+}
+
+.analytics-list-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.analytics-list-rank {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.analytics-list-meta {
+    min-width: 0;
+}
+
+.analytics-list-meta strong {
+    display: block;
+    font-size: 15px;
+    line-height: 1.35;
+    color: var(--text-color);
+    overflow-wrap: anywhere;
+}
+
+.analytics-list-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-color);
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+}
+
+.analytics-list-empty {
+    margin: 0;
+    padding: 18px 16px;
+    border-radius: 16px;
+    border: 1px dashed #dbe2ea;
+    background: #fff;
+    color: var(--text-muted);
+}
+
+.analytics-state-card {
+    display: grid;
+    gap: 8px;
+    border-style: dashed;
+}
+
+.analytics-state-card.is-error {
+    border-color: rgba(239, 68, 68, 0.32);
+    background: #fff7f7;
+}
+
+.analytics-state-card h3 {
+    margin: 0;
+    font-size: 20px;
+    line-height: 1.2;
+    color: var(--text-color);
+}
+
+.analytics-state-card p {
+    margin: 0;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
 /* Buttons */
 /* Buttons */
 .save-btn {
@@ -4590,6 +4781,32 @@ body.admin-dashboard-refresh .user-dropdown {
         grid-template-columns: 1fr !important;
     }
 
+    .analytics-toolbar {
+        align-items: stretch;
+    }
+
+    .analytics-period-picker {
+        width: 100%;
+        justify-items: start;
+    }
+
+    .analytics-period-switcher {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .analytics-period-btn {
+        flex: 1 1 140px;
+    }
+
+    .analytics-panels-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .analytics-list-head {
+        flex-direction: column;
+    }
+
     .social-planner-stats-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -4813,6 +5030,20 @@ body.admin-dashboard-refresh .user-dropdown {
     .upload-area button {
         width: 100%;
         min-width: 0;
+    }
+
+    .analytics-period-btn {
+        flex-basis: calc(50% - 8px);
+    }
+
+    .analytics-list-item {
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: start;
+    }
+
+    .analytics-list-value {
+        grid-column: 2;
+        white-space: normal;
     }
 
     .social-planner-stats-grid {
