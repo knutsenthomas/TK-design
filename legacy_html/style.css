@@ -6017,7 +6017,8 @@ body.homepage-refresh .info-card .info-card-label {
     margin-bottom: 10px;
     color: var(--refresh-accent);
     font-size: 0.95rem;
-    letter-spacing: 0.01em;
+    letter-spacing: normal;
+    word-spacing: normal;
     text-transform: none;
 }
 
@@ -6920,8 +6921,11 @@ body.homepage-refresh .project-content {
 
 body.homepage-refresh .project-category {
     color: #6d7c91;
+    font-size: 1rem;
     font-weight: 700;
-    letter-spacing: 0.01em;
+    line-height: 1.2;
+    letter-spacing: normal;
+    word-spacing: normal;
     text-transform: none;
 }
 
@@ -6969,7 +6973,8 @@ body.homepage-refresh .meeting-contact-item div>span:first-child {
     color: #718097 !important;
     font-size: 0.82rem;
     font-weight: 700;
-    letter-spacing: 0.01em;
+    letter-spacing: normal;
+    word-spacing: normal;
     text-transform: none;
 }
 
@@ -7032,7 +7037,8 @@ body.homepage-refresh .service-content .service-category {
     color: #718097 !important;
     font-size: 0.8rem;
     font-weight: 800;
-    letter-spacing: 0.01em;
+    letter-spacing: normal;
+    word-spacing: normal;
     text-transform: none;
 }
 
