@@ -130,6 +130,7 @@ const adminTranslations = {
         'blog_author': 'Forfatter',
         'blog_actions': 'Handlinger',
         'design_colors': 'Design & Farger',
+        'save_content': 'Lagre Sideinnhold',
         'save_design': 'Lagre Design',
         'color_base': 'Hovedfarge',
         'color_bg': 'Bakgrunnsfarge',
@@ -224,6 +225,7 @@ const adminTranslations = {
         'blog_author': 'Author',
         'blog_actions': 'Actions',
         'design_colors': 'Design & Colors',
+        'save_content': 'Save Content',
         'save_design': 'Save Design',
         'color_base': 'Main Color',
         'color_bg': 'Background Color',
@@ -5830,9 +5832,18 @@ if (fontHeadingSelect) {
 
 updateFontPreview();
 
-async function saveChanges() {
-    const saveBtn = document.getElementById('save-btn'); // Local definition for safety
-    if (saveBtn) saveBtn.innerText = 'Lagrer...';
+async function saveChanges(event) {
+    const saveBtn = event?.currentTarget || document.getElementById('save-btn');
+    const t = adminTranslations[currentLang] || adminTranslations['no'];
+    const defaultLabel = saveBtn?.dataset?.i18n && t[saveBtn.dataset.i18n]
+        ? t[saveBtn.dataset.i18n]
+        : (saveBtn?.dataset?.defaultLabel || saveBtn?.innerText || 'Lagre Endringer');
+
+    if (saveBtn) {
+        saveBtn.dataset.defaultLabel = defaultLabel;
+        saveBtn.innerText = currentLang === 'en' ? 'Saving...' : 'Lagrer...';
+        saveBtn.disabled = true;
+    }
     try {
         const contentResponse = await fetch(`${API_URL}/content`, {
             method: 'POST',
@@ -5899,7 +5910,10 @@ async function saveChanges() {
             }
         );
     } finally {
-        if (saveBtn) saveBtn.innerText = 'Lagre Endringer';
+        if (saveBtn) {
+            saveBtn.innerText = saveBtn.dataset.defaultLabel || 'Lagre Endringer';
+            saveBtn.disabled = false;
+        }
     }
 }
 
