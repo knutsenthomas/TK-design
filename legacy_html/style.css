@@ -3378,9 +3378,13 @@ img {
         font-size: 24px !important;
     }
 
-    /* Project Title Size (Mobile) */
-    .project-title {
-        font-size: 40px !important;
+    /* Keep dashboard-managed project titles readable on smaller screens */
+    .project-title,
+    .project-title a {
+        font-size: clamp(1.2rem, 4.4vw, 1.65rem) !important;
+        line-height: 1.12 !important;
+        letter-spacing: -0.03em !important;
+        text-wrap: balance;
     }
 
     /* Service Item Overrides */
@@ -6920,7 +6924,10 @@ body.homepage-refresh .project-category {
 body.homepage-refresh .project-title,
 body.homepage-refresh .project-title a {
     color: var(--refresh-heading);
-    font-size: clamp(1.3rem, 2vw, 2rem);
+    font-size: clamp(1.15rem, 1.55vw, 1.7rem);
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
 }
 
 body.homepage-refresh .meeting-bg {
