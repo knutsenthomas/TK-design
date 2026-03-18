@@ -1589,6 +1589,8 @@ header h1 {
     align-items: center;
     gap: 10px;
     margin-left: auto;
+    flex-wrap: wrap;
+    min-width: 0;
 }
 
 .social-planner-view-toggle {
@@ -1636,11 +1638,21 @@ header h1 {
     line-height: 1.03;
     letter-spacing: -0.04em;
     margin: 0 0 3px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .social-planner-stream-title p {
+    margin: 0;
     font-size: 15px;
     color: var(--text-muted);
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.social-planner-stream-title {
+    min-width: 0;
 }
 
 .social-planner-stream-head {
@@ -4603,14 +4615,22 @@ body.admin-dashboard-refresh .user-dropdown {
         align-items: stretch;
     }
 
-    .social-planner-buffer-actions {
+    .social-planner-buffer-title {
         width: 100%;
-        justify-content: space-between;
-        margin-left: 0;
+        align-items: flex-start;
     }
 
-    .social-planner-new-post-btn {
-        margin-left: auto;
+    .social-planner-buffer-actions {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        width: 100%;
+        margin-left: 0;
+        justify-content: stretch;
+    }
+
+    .social-planner-view-toggle {
+        width: 100%;
+        min-width: 0;
     }
 
     .social-planner-stream-head {
@@ -4800,11 +4820,12 @@ body.admin-dashboard-refresh .user-dropdown {
     }
 
     .social-planner-buffer-actions {
-        display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: center;
     }
 
     .social-planner-new-post-btn {
+        grid-column: 1 / -1;
         width: 100%;
         margin-left: 0;
     }
@@ -4821,6 +4842,48 @@ body.admin-dashboard-refresh .user-dropdown {
 
     .social-planner-stream-title h3 {
         font-size: 22px;
+    }
+
+    .social-planner-stream-title p {
+        font-size: 14px;
+    }
+
+    .social-planner-status-tabs {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        overflow: visible;
+        width: 100%;
+        padding-bottom: 0;
+    }
+
+    .social-planner-tab-btn {
+        justify-content: space-between;
+        min-width: 0;
+        margin-bottom: 0;
+        padding: 12px 14px;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        background: #ffffff;
+        font-size: 14px;
+        white-space: normal;
+        text-align: left;
+    }
+
+    .social-planner-tab-btn.active {
+        border-color: #86efac;
+        border-bottom-color: #86efac;
+        background: #f0fdf4;
+        box-shadow: 0 12px 24px -22px rgba(22, 163, 74, 0.6);
+    }
+
+    .social-planner-tab-btn[data-filter="analytics"] {
+        grid-column: 1 / -1;
+    }
+
+    .social-planner-search input,
+    .social-planner-select-filter select {
+        font-size: 16px;
     }
 
     .social-planner-compose-assistant-actions {

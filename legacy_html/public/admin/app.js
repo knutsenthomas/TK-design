@@ -79,6 +79,7 @@ const adminTranslations = {
         'nav_style': 'Design',
         'nav_seo': 'SEO',
         'nav_media': 'Media',
+        'nav_social_planner': 'SoMe-planlegger',
         'nav_view_site': 'Se Nettside',
         'nav_logout': 'Logg ut',
         'sidebar_menu': 'Meny',
@@ -174,6 +175,7 @@ const adminTranslations = {
         'nav_style': 'Design',
         'nav_seo': 'SEO',
         'nav_media': 'Media',
+        'nav_social_planner': 'Social Planner',
         'nav_view_site': 'View Site',
         'nav_logout': 'Logout',
         'sidebar_menu': 'Menu',
@@ -5926,7 +5928,7 @@ const breadcrumbConfig = {
         'style': ['Design'],
         'seo': ['SEO'],
         'media': ['Media'],
-        'social-planner': ['Social Planner']
+        'social-planner': ['SoMe-planlegger']
     },
     'en': {
         'home': ['Home'],

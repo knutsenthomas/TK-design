@@ -5443,8 +5443,8 @@ body.homepage-refresh .banner-content .subtitle {
     color: var(--refresh-heading);
     font-size: 0.88rem;
     font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    text-transform: none;
 }
 
 body.homepage-refresh .banner-content .subtitle::before {
@@ -5839,8 +5839,8 @@ body.homepage-refresh .hero-spotlight-label {
     color: #6d7c91;
     font-size: 0.78rem;
     font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    text-transform: none;
 }
 
 body.homepage-refresh .hero-spotlight strong {
@@ -5864,8 +5864,8 @@ body.homepage-refresh .section-subtitle-lines {
     font-family: var(--refresh-font-body);
     font-size: 0.82rem !important;
     font-weight: 800;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    text-transform: none;
 }
 
 body.homepage-refresh .section-subtitle-lines::before,
@@ -6017,8 +6017,8 @@ body.homepage-refresh .info-card .info-card-label {
     margin-bottom: 10px;
     color: var(--refresh-accent);
     font-size: 0.95rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    text-transform: none;
 }
 
 body.homepage-refresh .info-card p {
@@ -6921,8 +6921,8 @@ body.homepage-refresh .project-content {
 body.homepage-refresh .project-category {
     color: #6d7c91;
     font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    text-transform: none;
 }
 
 body.homepage-refresh .project-title,
@@ -6969,8 +6969,8 @@ body.homepage-refresh .meeting-contact-item div>span:first-child {
     color: #718097 !important;
     font-size: 0.82rem;
     font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    text-transform: none;
 }
 
 body.homepage-refresh .meeting-contact-item div>a,
@@ -7032,8 +7032,8 @@ body.homepage-refresh .service-content .service-category {
     color: #718097 !important;
     font-size: 0.8rem;
     font-weight: 800;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    text-transform: none;
 }
 
 body.homepage-refresh .service-content h3,
