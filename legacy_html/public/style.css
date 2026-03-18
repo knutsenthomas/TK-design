@@ -6503,8 +6503,9 @@ body.homepage-refresh .service-content .service-category {
 }
 
 body.homepage-refresh .brand-some-label {
-    letter-spacing: -0.08em !important;
-    word-spacing: 0 !important;
+    font-size: 1.08em !important;
+    letter-spacing: -0.045em !important;
+    word-spacing: normal !important;
     white-space: nowrap;
 }
 
