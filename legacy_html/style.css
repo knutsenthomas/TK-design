@@ -322,7 +322,7 @@ body.project-page-refresh .project-overview-label {
 body.project-page-refresh .project-overview-value {
     display: block;
     color: var(--refresh-heading);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading, var(--font-primary));
     font-size: 1.2rem;
     line-height: 1.35;
 }
@@ -461,7 +461,7 @@ body.project-page-refresh .project-nav-link strong {
     display: block;
     margin-top: 6px;
     color: var(--refresh-heading);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading, var(--font-primary));
     font-size: 1rem;
     line-height: 1.35;
 }
@@ -654,7 +654,7 @@ body.contact-page-refresh .contact-meta-card strong,
 body.contact-page-refresh .contact-direct-item a,
 body.contact-page-refresh .contact-direct-item strong {
     color: var(--refresh-heading);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading, var(--font-primary));
     font-size: 1rem;
     line-height: 1.5;
     text-decoration: none;
@@ -917,7 +917,7 @@ body.contact-page-refresh .contact-step-item strong {
     display: block;
     margin-bottom: 8px;
     color: var(--refresh-heading);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading, var(--font-primary));
     font-size: 1.02rem;
 }
 
@@ -1204,7 +1204,7 @@ body.blog-page-refresh .blog-overview-label {
 
 body.blog-page-refresh .blog-overview-value {
     color: var(--refresh-heading);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading, var(--font-primary));
     font-size: clamp(1.02rem, 2vw, 1.24rem);
     line-height: 1.35;
 }
@@ -1272,7 +1272,7 @@ body.blog-page-refresh .blog-rich-content h3,
 body.blog-page-refresh .blog-rich-content h4 {
     margin: 16px 0 8px;
     color: var(--refresh-heading);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading, var(--font-primary));
     line-height: 1.15;
 }
 
@@ -1880,7 +1880,7 @@ body.blog-list-page-refresh .blog-list-overview-label {
 
 body.blog-list-page-refresh .blog-list-overview-value {
     color: var(--refresh-heading);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading, var(--font-primary));
     font-size: clamp(1.4rem, 3vw, 2.3rem);
     line-height: 1.1;
 }
@@ -2656,7 +2656,7 @@ body.legal-page-refresh .legal-overview-label {
 
 body.legal-page-refresh .legal-overview-value {
     color: var(--refresh-heading);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading, var(--font-primary));
     font-size: clamp(1.02rem, 2vw, 1.24rem);
     line-height: 1.35;
 }
@@ -2776,7 +2776,7 @@ body.legal-page-refresh .legal-note-card .primary-cta {
 #cookie-consent-banner .cookie-banner-title {
     margin: 0;
     color: var(--refresh-heading, #11263c);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading, var(--font-primary));
     font-size: clamp(1.6rem, 2.6vw, 2.2rem);
     line-height: 1.1;
 }
@@ -5010,6 +5010,8 @@ img {
    HOMEPAGE LIGHT REFRESH
    ========================================= */
 body.homepage-refresh {
+    --refresh-font-body: var(--font-body, var(--font-primary));
+    --refresh-font-heading: var(--font-heading, var(--font-primary));
     --refresh-bg: #f3f7fb;
     --refresh-surface: rgba(255, 255, 255, 0.84);
     --refresh-surface-strong: #ffffff;
@@ -5025,7 +5027,7 @@ body.homepage-refresh {
         radial-gradient(circle at 85% 14%, rgba(255, 236, 214, 0.42), transparent 26%),
         linear-gradient(180deg, #f6fbff 0%, var(--refresh-bg) 40%, #eef4f9 100%);
     color: var(--refresh-text);
-    font-family: 'Manrope', sans-serif;
+    font-family: var(--refresh-font-body);
 }
 
 body.homepage-refresh h1,
@@ -5035,7 +5037,7 @@ body.homepage-refresh h4,
 body.homepage-refresh h5,
 body.homepage-refresh h6 {
     color: var(--refresh-heading);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--refresh-font-heading);
     letter-spacing: -0.03em;
 }
 
@@ -5087,13 +5089,14 @@ body.homepage-refresh .logo-icon {
 
 body.homepage-refresh .logo-text {
     color: var(--refresh-heading);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--refresh-font-heading);
     font-size: 1.2rem;
     font-weight: 700;
 }
 
 body.homepage-refresh .nav-desktop a {
     position: relative;
+    font-family: var(--refresh-font-heading);
     font-size: 0.95rem;
     font-weight: 700;
     color: var(--refresh-heading);
@@ -5288,6 +5291,7 @@ body.homepage-refresh .mobile-nav li {
 
 body.homepage-refresh .mobile-nav a {
     color: var(--refresh-heading);
+    font-family: var(--refresh-font-heading);
     font-size: 1.35rem;
     /* Litt mindre font */
     font-weight: 700;
@@ -5506,7 +5510,7 @@ body.homepage-refresh .hero-proof-value {
     border-radius: 14px;
     background: var(--refresh-accent-soft);
     color: var(--refresh-accent);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--refresh-font-heading);
     font-size: 1.25rem;
     font-weight: 700;
 }
@@ -5550,7 +5554,7 @@ body.homepage-refresh .hero-metric strong {
     display: block;
     margin-bottom: 6px;
     color: var(--refresh-heading);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--refresh-font-heading);
     font-size: 1.3rem;
 }
 
@@ -5842,7 +5846,7 @@ body.homepage-refresh .hero-spotlight-label {
 body.homepage-refresh .hero-spotlight strong {
     display: block;
     color: var(--refresh-heading);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--refresh-font-heading);
     font-size: 1rem;
     line-height: 1.5;
 }
@@ -5857,7 +5861,7 @@ body.homepage-refresh .section-subtitle-lines {
     white-space: nowrap;
     text-align: center;
     color: var(--refresh-accent);
-    font-family: 'Manrope', sans-serif;
+    font-family: var(--refresh-font-body);
     font-size: 0.82rem !important;
     font-weight: 800;
     letter-spacing: 0.14em;
@@ -5903,7 +5907,7 @@ body.homepage-refresh .marquee-content {
 body.homepage-refresh .marquee-item {
     padding-right: 56px;
     color: #6a6a70;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--refresh-font-heading);
     font-size: clamp(1.15rem, 2vw, 2rem);
     font-weight: 700;
 }
@@ -6226,7 +6230,7 @@ body.homepage-refresh .kudos-photo-thumb {
 
 body.homepage-refresh .kudos-photo-mark {
     color: #97c847;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--refresh-font-heading);
     font-size: clamp(3.4rem, 6.8vw, 5.6rem);
     font-weight: 700;
     line-height: 0.8;
@@ -6391,7 +6395,7 @@ body.homepage-refresh .kudos-mark {
     border-radius: 10px;
     background: rgba(171, 196, 112, 0.18);
     color: #7ea441;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--refresh-font-heading);
     font-size: 1.05rem;
     font-weight: 700;
 }
@@ -6473,7 +6477,7 @@ body.homepage-refresh .kudos-eyebrow {
 body.homepage-refresh .kudos-headline {
     max-width: 9ch;
     color: #fff;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--refresh-font-heading);
     font-size: clamp(1.2rem, 2vw, 2.05rem);
     font-weight: 700;
     line-height: 0.98;
@@ -6484,7 +6488,7 @@ body.homepage-refresh .kudos-subline {
     max-width: 12ch;
     margin-top: 10px;
     color: #bad97d;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--refresh-font-heading);
     font-size: clamp(0.82rem, 1vw, 1.05rem);
     font-weight: 700;
     line-height: 1.15;
@@ -6747,7 +6751,7 @@ body.homepage-refresh .hkm-copy {
 body.homepage-refresh .hkm-headline {
     max-width: 9ch;
     color: #fff;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--refresh-font-heading);
     font-size: clamp(1.45rem, 2.5vw, 2.35rem);
     font-weight: 700;
     line-height: 0.98;
@@ -6863,7 +6867,7 @@ body.homepage-refresh .mandal-copy {
 
 body.homepage-refresh .mandal-headline {
     color: #fff;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--refresh-font-heading);
     font-size: clamp(1.9rem, 3.6vw, 3.4rem);
     font-weight: 700;
     line-height: 0.98;
@@ -7020,7 +7024,7 @@ body.homepage-refresh .service-id {
     border-radius: 16px;
     background: var(--refresh-accent-soft);
     color: var(--refresh-accent);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--refresh-font-heading);
 }
 
 body.homepage-refresh .service-content h5,
