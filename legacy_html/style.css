@@ -6017,7 +6017,7 @@ body.homepage-refresh .info-card .info-card-label {
     margin-bottom: 10px;
     color: var(--refresh-accent);
     font-size: 0.95rem;
-    letter-spacing: normal;
+    letter-spacing: -0.02em;
     word-spacing: normal;
     text-transform: none;
 }
@@ -6924,7 +6924,7 @@ body.homepage-refresh .project-category {
     font-size: 1rem;
     font-weight: 700;
     line-height: 1.2;
-    letter-spacing: normal;
+    letter-spacing: -0.02em;
     word-spacing: normal;
     text-transform: none;
 }
@@ -6973,7 +6973,7 @@ body.homepage-refresh .meeting-contact-item div>span:first-child {
     color: #718097 !important;
     font-size: 0.82rem;
     font-weight: 700;
-    letter-spacing: normal;
+    letter-spacing: -0.02em;
     word-spacing: normal;
     text-transform: none;
 }
@@ -7037,7 +7037,7 @@ body.homepage-refresh .service-content .service-category {
     color: #718097 !important;
     font-size: 0.8rem;
     font-weight: 800;
-    letter-spacing: normal;
+    letter-spacing: -0.02em;
     word-spacing: normal;
     text-transform: none;
 }
