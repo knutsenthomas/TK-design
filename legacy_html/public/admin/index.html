@@ -486,8 +486,10 @@
             <div id="media-tab" class="tab-content">
                 <h2 data-i18n="media_lib">Mediebibliotek</h2>
                 <div class="upload-area">
-                    <input type="file" id="image-upload" accept="image/*">
-                    <button class="save-btn" onclick="uploadImage()" data-i18n="upload_img">Last opp Bilde</button>
+                    <div class="upload-area-controls">
+                        <input type="file" id="image-upload" accept="image/*">
+                        <button class="save-btn" onclick="uploadImage()" data-i18n="upload_img">Last opp Bilde</button>
+                    </div>
                 </div>
                 <div class="media-grid">
                     <!-- Images listed here -->

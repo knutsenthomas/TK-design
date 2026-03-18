@@ -1147,6 +1147,8 @@ header h1 {
     text-align: center;
     margin-bottom: 30px;
     transition: all 0.3s;
+    display: grid;
+    justify-items: center;
 }
 
 .upload-area:hover {
@@ -1154,16 +1156,25 @@ header h1 {
     background: rgba(249, 115, 22, 0.02);
 }
 
+.upload-area-controls {
+    width: min(100%, 640px);
+    display: grid;
+    gap: 16px;
+    justify-items: center;
+}
+
 .upload-area input[type="file"] {
-    display: inline-block;
-    padding: 10px 20px;
+    display: block;
+    width: 100%;
+    min-width: 0;
+    padding: 14px 18px;
     background: white;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
     color: var(--text-color);
-    margin-right: 10px;
+    margin-right: 0;
     transition: all 0.2s;
 }
 
@@ -1200,6 +1211,7 @@ header h1 {
     font-size: 14px;
     transition: all 0.2s;
     box-shadow: 0 2px 4px rgba(249, 115, 22, 0.2);
+    min-width: 220px;
 }
 
 .upload-area button:hover {
@@ -4775,6 +4787,32 @@ body.admin-dashboard-refresh .user-dropdown {
 @media (max-width: 640px) {
     .sidebar nav {
         grid-template-columns: 1fr;
+    }
+
+    .upload-area {
+        padding: 20px 16px;
+    }
+
+    .upload-area-controls {
+        width: 100%;
+        gap: 12px;
+    }
+
+    .upload-area input[type="file"] {
+        padding: 12px 14px;
+        font-size: 13px;
+    }
+
+    .upload-area input[type="file"]::file-selector-button,
+    .upload-area input[type="file"]::-webkit-file-upload-button {
+        margin-right: 8px;
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+
+    .upload-area button {
+        width: 100%;
+        min-width: 0;
     }
 
     .social-planner-stats-grid {
