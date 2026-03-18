@@ -3339,6 +3339,17 @@ body.social-planner-compose-open {
     background: #f9fafb;
 }
 
+.ql-table-embed {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.ql-table-embed .blog-table {
+    margin: 0;
+    min-width: 420px;
+}
+
 /* Video Embeds */
 .video-embed {
     width: 100%;

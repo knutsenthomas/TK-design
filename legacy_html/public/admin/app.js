@@ -36,6 +36,7 @@ const SOCIAL_PLANNER_UI_PLATFORMS = ['facebook', 'instagram', 'linkedin', 'x', '
 const ADMIN_SIDEBAR_COLLAPSE_KEY = 'tk_admin_sidebar_collapsed';
 const ADMIN_MOBILE_BREAKPOINT = 900;
 let quill; // Define quill globally but initialize later
+const TABLE_EMBED_CLASS = 'ql-table-embed';
 
 // Section Translations
 // Section Translations
@@ -639,7 +640,7 @@ window.openEditModal = function (index) {
     applyBlogDetailValuesToForm(post);
     applyEnglishValuesToForm(post);
 
-    if (quill) quill.root.innerHTML = post.content || '';
+    if (quill) setEditorHtmlContent(post.content || '');
 
     openModal();
 }
@@ -754,6 +755,84 @@ function normalizeManualHtmlContent(value = '') {
             .join('<br>');
         return `<p>${escapedLines}</p>`;
     }).join('');
+}
+
+function parseTableDimension(value, fallback = 3, max = 12) {
+    const parsed = Number.parseInt(value, 10);
+    if (!Number.isFinite(parsed) || parsed < 1) return fallback;
+    return Math.min(parsed, max);
+}
+
+function buildBlogTableHtml(rows = 3, cols = 3) {
+    const safeRows = parseTableDimension(rows, 3);
+    const safeCols = parseTableDimension(cols, 3);
+    let tableHTML = '<table class="blog-table"><tbody>';
+
+    for (let rowIndex = 0; rowIndex < safeRows; rowIndex++) {
+        tableHTML += '<tr>';
+        for (let colIndex = 0; colIndex < safeCols; colIndex++) {
+            const tagName = rowIndex === 0 ? 'th' : 'td';
+            tableHTML += `<${tagName}>Celle ${rowIndex + 1},${colIndex + 1}</${tagName}>`;
+        }
+        tableHTML += '</tr>';
+    }
+
+    tableHTML += '</tbody></table>';
+    return tableHTML;
+}
+
+function decodeTableHtmlValue(value = '') {
+    try {
+        return decodeURIComponent(String(value || ''));
+    } catch (error) {
+        return String(value || '');
+    }
+}
+
+function normalizeBlogTableHtml(value = '') {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+
+    const temp = document.createElement('div');
+    temp.innerHTML = raw;
+
+    const table = temp.querySelector('table');
+    if (!table) return '';
+
+    table.classList.add('blog-table');
+    return table.outerHTML;
+}
+
+function unwrapTableEmbedsFromHtml(value = '') {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+
+    const temp = document.createElement('div');
+    temp.innerHTML = raw;
+
+    temp.querySelectorAll(`.${TABLE_EMBED_CLASS}`).forEach((node) => {
+        const storedHtml = normalizeBlogTableHtml(decodeTableHtmlValue(node.getAttribute('data-table-html') || ''));
+        const fallbackHtml = normalizeBlogTableHtml(node.innerHTML);
+        node.outerHTML = storedHtml || fallbackHtml || '';
+    });
+
+    return temp.innerHTML.trim();
+}
+
+function setEditorHtmlContent(value = '') {
+    if (!quill) return;
+
+    const normalizedHtml = unwrapTableEmbedsFromHtml(value);
+    quill.setText('');
+
+    if (!normalizedHtml) return;
+
+    quill.clipboard.dangerouslyPasteHTML(0, normalizedHtml, Quill.sources.SILENT);
+}
+
+function getEditorHtmlContent() {
+    if (!quill) return '';
+    return unwrapTableEmbedsFromHtml(quill.root?.innerHTML || '');
 }
 
 function getTodayIsoDate() {
@@ -1175,7 +1254,7 @@ function buildPostPayload() {
     }
 
     const postId = currentEditingId || getNextPostId();
-    const content = quill ? quill.root.innerHTML.trim() : '';
+    const content = getEditorHtmlContent().trim();
     const dateInput = document.getElementById('post-date');
     const dateIso = normalizeIsoDate(dateInput?.value) || getTodayIsoDate();
     const categories = currentPostCategories.length ? [...currentPostCategories] : ['Generelt'];
@@ -1744,6 +1823,36 @@ function registerCustomBlots() {
     VideoBlot.blotName = 'video';
     VideoBlot.tagName = 'iframe';
     Quill.register(VideoBlot);
+
+    class TableEmbedBlot extends BlockEmbed {
+        static create(value) {
+            const node = super.create();
+            const tableHtml = normalizeBlogTableHtml(value) || buildBlogTableHtml(3, 3);
+            node.setAttribute('contenteditable', 'false');
+            node.setAttribute('data-table-html', encodeURIComponent(tableHtml));
+            node.innerHTML = tableHtml;
+            return node;
+        }
+
+        static value(node) {
+            return normalizeBlogTableHtml(
+                decodeTableHtmlValue(node.getAttribute('data-table-html') || '') || node.innerHTML
+            );
+        }
+    }
+
+    TableEmbedBlot.blotName = 'tableEmbed';
+    TableEmbedBlot.tagName = 'div';
+    TableEmbedBlot.className = TABLE_EMBED_CLASS;
+    Quill.register(TableEmbedBlot);
+
+    if (quill?.clipboard?.addMatcher) {
+        quill.clipboard.addMatcher('TABLE', (node, delta) => {
+            const tableHtml = normalizeBlogTableHtml(node.outerHTML || '');
+            if (!tableHtml) return delta;
+            return new Delta().insert({ tableEmbed: tableHtml });
+        });
+    }
 }
 
 
@@ -6474,7 +6583,7 @@ window.generateBlogDraftWithAi = async function () {
     const tone = String(toneSelect?.value || 'professional');
     const length = String(lengthSelect?.value || 'medium');
     const includeDraft = Boolean(includeDraftCheckbox?.checked);
-    const existingDraft = includeDraft && quill ? String(quill.root?.innerHTML || '').trim() : '';
+    const existingDraft = includeDraft ? getEditorHtmlContent().trim() : '';
 
     if (!topic && !existingDraft && aiContextFiles.length === 0) {
         await showAdminNotice('Skriv en prompt, legg ved filer, eller bruk eksisterende utkast som kontekst.', {
@@ -6517,7 +6626,7 @@ window.generateBlogDraftWithAi = async function () {
         }
 
         if (quill) {
-            quill.root.innerHTML = generatedContent;
+            setEditorHtmlContent(generatedContent);
             quill.focus();
             const endPos = Math.max(0, (quill.getLength?.() || 1) - 1);
             quill.setSelection(endPos, 0, Quill.sources.SILENT);
@@ -6630,20 +6739,20 @@ window.insertGallery = function () {
 
 window.insertTable = function () {
     if (!quill) return;
-    const rows = parseInt(prompt('Antall rader:', '3')) || 3;
-    const cols = parseInt(prompt('Antall kolonner:', '3')) || 3;
-    let tableHTML = '<table class="blog-table"><tbody>';
-    for (let i = 0; i < rows; i++) {
-        tableHTML += '<tr>';
-        for (let j = 0; j < cols; j++) {
-            const tag = i === 0 ? 'th' : 'td';
-            tableHTML += `<${tag}>Celle ${i + 1},${j + 1}</${tag}>`;
-        }
-        tableHTML += '</tr>';
-    }
-    tableHTML += '</tbody></table><p><br></p>';
+
+    const rowsInput = prompt('Antall rader:', '3');
+    if (rowsInput === null) return;
+
+    const colsInput = prompt('Antall kolonner:', '3');
+    if (colsInput === null) return;
+
+    const rows = parseTableDimension(rowsInput, 3);
+    const cols = parseTableDimension(colsInput, 3);
     const range = quill.getSelection(true);
-    quill.clipboard.dangerouslyPasteHTML(range.index, tableHTML, Quill.sources.USER);
+    const insertIndex = range ? range.index : quill.getLength();
+
+    quill.insertEmbed(insertIndex, 'tableEmbed', buildBlogTableHtml(rows, cols), Quill.sources.USER);
+    quill.setSelection(insertIndex + 1, 0, Quill.sources.SILENT);
 };
 
 window.insertAlert = function (type) {
