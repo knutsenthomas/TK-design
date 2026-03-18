@@ -26,17 +26,18 @@
     <!-- Modern Admin Header -->
     <header class="admin-header">
         <div class="header-left">
-            <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" data-admin-sidebar-toggle="toggle" type="button" title="Skjul meny" aria-label="Skjul meny" aria-expanded="true">
+            <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" data-admin-sidebar-toggle="toggle" type="button"
+                title="Skjul meny" aria-label="Skjul meny" aria-expanded="true">
                 <i class="fas fa-xmark"></i>
             </button>
             <button class="back-btn" onclick="navigateBack()" style="display: none;">
                 <i class="fas fa-arrow-left"></i> Tilbake
             </button>
-                <div class="admin-header-title-group">
-                    <div class="admin-brand-chip">
-                        <i class="fas fa-layer-group"></i>
-                        <span>tk-design Studio</span>
-                    </div>
+            <div class="admin-header-title-group">
+                <div class="admin-brand-chip">
+                    <i class="fas fa-layer-group"></i>
+                    <span>tk-design Studio</span>
+                </div>
                 <nav class="breadcrumb" id="breadcrumb">
                     <span class="breadcrumb-item active">Hjem</span>
                 </nav>
@@ -77,21 +78,19 @@
             </div>
         </div>
     </header>
-    <button class="mobile-menu-backdrop" data-admin-sidebar-toggle="close" type="button" aria-label="Lukk meny"></button>
 
     <div id="dashboard-container" class="admin-container">
         <!-- Sidebar -->
-        <aside class="sidebar" id="admin-sidebar">
-            <div class="sidebar-mobile-head">
-                <h2 data-i18n="sidebar_menu">Meny</h2>
-                <button class="sidebar-mobile-close-btn" data-admin-sidebar-toggle="close" type="button" title="Lukk meny" aria-label="Lukk meny">
-                    <i class="fas fa-xmark"></i>
-                </button>
-            </div>
+        <aside class="sidebar">
             <div class="logo sidebar-logo-row">
                 <h2 class="sidebar-menu-title" data-i18n="sidebar_menu">Meny</h2>
+                <button class="sidebar-inline-toggle-btn" id="sidebar-inline-toggle-btn"
+                    data-admin-sidebar-toggle="close" type="button" title="Skjul meny" aria-label="Skjul meny"
+                    aria-expanded="true">
+                    <i class="fas fa-angle-left"></i>
+                </button>
             </div>
-            <nav class="sidebar-nav-main">
+            <nav>
                 <button class="nav-btn active" data-tab="home" data-i18n="nav_home"><i class="fas fa-home"></i>
                     Hjem</button>
                 <button class="nav-btn" data-tab="blog" data-i18n="nav_blog"><i class="fas fa-pen-nib"></i>
@@ -106,16 +105,14 @@
                 <button class="nav-btn" data-tab="social-planner" data-i18n="nav_social_planner"><i
                         class="fas fa-share-nodes"></i>
                     SoMe-planlegger</button>
-            </nav>
-            <div class="sidebar-footer-links">
-                <p class="sidebar-footer-caption">tk-design Studio</p>
+                <div style="flex-grow: 1;"></div>
                 <button class="nav-btn" onclick="window.open('/', '_blank')" data-i18n="nav_view_site"><i
                         class="fas fa-external-link-alt"></i>
                     Se Nettside</button>
                 <button id="logout-btn" class="nav-btn" style="color: #ef4444;" data-i18n="nav_logout"><i
                         class="fas fa-sign-out-alt"></i>
                     Logg ut</button>
-            </div>
+            </nav>
         </aside>
         <!-- Main Content -->
         <main class="main-content">
@@ -124,8 +121,7 @@
             <div id="home-tab" class="tab-content active">
                 <header>
                     <h1 data-i18n="welcome">Velkommen tilbake, Thomas</h1>
-                    <button class="save-btn" onclick="startNewPost()"
-                        data-i18n="new_post">+ Nytt
+                    <button class="save-btn" onclick="startNewPost()" data-i18n="new_post">+ Nytt
                         Innlegg</button>
                 </header>
 
@@ -140,12 +136,14 @@
                         </div>
                         <div class="dashboard-summary-grid">
                             <div class="dashboard-mini-card">
-                                <span class="dashboard-mini-label" data-i18n="dashboard_latest_post">Siste innlegg</span>
+                                <span class="dashboard-mini-label" data-i18n="dashboard_latest_post">Siste
+                                    innlegg</span>
                                 <strong id="dashboard-latest-post">Laster inn...</strong>
                             </div>
                             <div class="dashboard-mini-card">
                                 <span class="dashboard-mini-label" data-i18n="dashboard_focus_label">Fokus nå</span>
-                                <strong data-i18n="dashboard_focus_value">Hold prosjekter, SEO og innhold oppdatert</strong>
+                                <strong data-i18n="dashboard_focus_value">Hold prosjekter, SEO og innhold
+                                    oppdatert</strong>
                             </div>
                         </div>
                     </div>
@@ -165,7 +163,8 @@
                     <div class="stat-card">
                         <h3 data-i18n="stats_services_live">Tjenestekort</h3>
                         <div class="value"><span id="dashboard-service-count">0</span></div>
-                        <p class="dashboard-stat-note" data-i18n="stats_services_live_note">Kort i innholdsredigeringen</p>
+                        <p class="dashboard-stat-note" data-i18n="stats_services_live_note">Kort i innholdsredigeringen
+                        </p>
                     </div>
                     <div class="stat-card">
                         <h3 data-i18n="stats_languages_live">Språk</h3>
@@ -180,7 +179,8 @@
                         hele nettsiden konsistent og oppdatert.</p>
                     <div class="dashboard-section-grid">
                         <div class="dashboard-section-card">
-                            <span class="dashboard-section-label" data-i18n="dashboard_section_home_label">Forside</span>
+                            <span class="dashboard-section-label"
+                                data-i18n="dashboard_section_home_label">Forside</span>
                             <h3 data-i18n="dashboard_section_home_title">Hero, tjenester og prosjekter</h3>
                             <p data-i18n="dashboard_section_home_desc">Oppdater innholdet som møter besøkende først.
                             </p>
@@ -191,7 +191,8 @@
                             </div>
                         </div>
                         <div class="dashboard-section-card">
-                            <span class="dashboard-section-label" data-i18n="dashboard_section_blog_label">Aktuelt</span>
+                            <span class="dashboard-section-label"
+                                data-i18n="dashboard_section_blog_label">Aktuelt</span>
                             <h3 data-i18n="dashboard_section_blog_title">Blogg og detaljsider</h3>
                             <p data-i18n="dashboard_section_blog_desc">Publiser, oppdater og rydd opp i innlegg.</p>
                             <div class="dashboard-section-actions">
@@ -201,7 +202,8 @@
                             </div>
                         </div>
                         <div class="dashboard-section-card">
-                            <span class="dashboard-section-label" data-i18n="dashboard_section_growth_label">Synlighet</span>
+                            <span class="dashboard-section-label"
+                                data-i18n="dashboard_section_growth_label">Synlighet</span>
                             <h3 data-i18n="dashboard_section_growth_title">SEO, design og media</h3>
                             <p data-i18n="dashboard_section_growth_desc">Juster metadata, farger og bilder for et
                                 helhetlig uttrykk.</p>
@@ -245,7 +247,8 @@
             <div id="blog-tab" class="tab-content">
                 <header>
                     <h1 data-i18n="blog_overview">Bloggoversikt</h1>
-                    <button class="save-btn" onclick="startNewPost()" data-i18n="new_post"><i class="fas fa-plus"></i> Nytt
+                    <button class="save-btn" onclick="startNewPost()" data-i18n="new_post"><i class="fas fa-plus"></i>
+                        Nytt
                         Innlegg</button>
                 </header>
 
@@ -498,79 +501,89 @@
 
             <div id="social-planner-tab" class="tab-content">
                 <div id="sp-rail-modal" class="social-planner-rail-modal" hidden>
-                    <button type="button" class="social-planner-rail-modal-backdrop" aria-label="Lukk kontrollpanel" onclick="toggleSocialPlannerRail(false)"></button>
-                    <div class="social-planner-rail-modal-dialog" role="dialog" aria-modal="true" aria-label="Kontrollpanel">
-                        <button type="button" class="social-planner-rail-modal-close" aria-label="Lukk kontrollpanel" title="Lukk" onclick="toggleSocialPlannerRail(false)">
+                    <button type="button" class="social-planner-rail-modal-backdrop" aria-label="Lukk kontrollpanel"
+                        onclick="toggleSocialPlannerRail(false)"></button>
+                    <div class="social-planner-rail-modal-dialog" role="dialog" aria-modal="true"
+                        aria-label="Kontrollpanel">
+                        <button type="button" class="social-planner-rail-modal-close" aria-label="Lukk kontrollpanel"
+                            title="Lukk" onclick="toggleSocialPlannerRail(false)">
                             <i class="fas fa-xmark"></i>
                         </button>
                         <aside class="card social-planner-rail">
-                        <div class="social-planner-rail-section">
-                            <h3>Kontrollpanel</h3>
-                            <div class="social-planner-field">
-                                <label for="sp-workspace-select">Workspace</label>
-                                <select id="sp-workspace-select" onchange="changeSocialPlannerWorkspace(this.value)">
-                                    <option value="default">Laster...</option>
-                                </select>
-                            </div>
-                            <div class="social-planner-inline-actions social-planner-toolbar-actions">
-                                <button class="save-btn" type="button" onclick="refreshSocialPlanner()">
-                                    <i class="fas fa-rotate"></i> Oppdater
-                                </button>
-                                <button class="save-btn" type="button" onclick="runSocialPlannerScheduler()">
-                                    <i class="fas fa-play"></i> Kjør scheduler
-                                </button>
-                            </div>
-                            <p class="social-planner-status" id="sp-status">Laster social planner-data...</p>
-                        </div>
-
-                        <div class="social-planner-rail-divider"></div>
-
-                        <div class="social-planner-rail-section">
-                            <h3>Koblede kanaler</h3>
-                            <div id="sp-accounts-list" class="social-planner-list-empty">Ingen kontoer lagt til.</div>
-                        </div>
-
-                        <div class="social-planner-rail-divider"></div>
-
-                        <div class="social-planner-rail-section">
-                            <h3>Koble konto</h3>
-                            <form id="sp-account-form" class="social-planner-form" onsubmit="createSocialPlannerAccount(event)">
-                                <input id="sp-account-edit-id" type="hidden">
+                            <div class="social-planner-rail-section">
+                                <h3>Kontrollpanel</h3>
                                 <div class="social-planner-field">
-                                    <label for="sp-account-name">Visningsnavn</label>
-                                    <input id="sp-account-name" type="text" maxlength="120" placeholder="f.eks. TK-design Facebook" required>
+                                    <label for="sp-workspace-select">Workspace</label>
+                                    <select id="sp-workspace-select"
+                                        onchange="changeSocialPlannerWorkspace(this.value)">
+                                        <option value="default">Laster...</option>
+                                    </select>
                                 </div>
-                                <div class="social-planner-form-row">
+                                <div class="social-planner-inline-actions social-planner-toolbar-actions">
+                                    <button class="save-btn" type="button" onclick="refreshSocialPlanner()">
+                                        <i class="fas fa-rotate"></i> Oppdater
+                                    </button>
+                                    <button class="save-btn" type="button" onclick="runSocialPlannerScheduler()">
+                                        <i class="fas fa-play"></i> Kjør scheduler
+                                    </button>
+                                </div>
+                                <p class="social-planner-status" id="sp-status">Laster social planner-data...</p>
+                            </div>
+
+                            <div class="social-planner-rail-divider"></div>
+
+                            <div class="social-planner-rail-section">
+                                <h3>Koblede kanaler</h3>
+                                <div id="sp-accounts-list" class="social-planner-list-empty">Ingen kontoer lagt til.
+                                </div>
+                            </div>
+
+                            <div class="social-planner-rail-divider"></div>
+
+                            <div class="social-planner-rail-section">
+                                <h3>Koble konto</h3>
+                                <form id="sp-account-form" class="social-planner-form"
+                                    onsubmit="createSocialPlannerAccount(event)">
+                                    <input id="sp-account-edit-id" type="hidden">
                                     <div class="social-planner-field">
-                                        <label for="sp-account-platform">Plattform</label>
-                                        <select id="sp-account-platform">
-                                            <option value="facebook">Facebook</option>
-                                            <option value="instagram">Instagram</option>
-                                            <option value="linkedin">LinkedIn</option>
-                                            <option value="x">X</option>
-                                            <option value="tiktok">TikTok</option>
-                                        </select>
+                                        <label for="sp-account-name">Visningsnavn</label>
+                                        <input id="sp-account-name" type="text" maxlength="120"
+                                            placeholder="f.eks. TK-design Facebook" required>
+                                    </div>
+                                    <div class="social-planner-form-row">
+                                        <div class="social-planner-field">
+                                            <label for="sp-account-platform">Plattform</label>
+                                            <select id="sp-account-platform">
+                                                <option value="facebook">Facebook</option>
+                                                <option value="instagram">Instagram</option>
+                                                <option value="linkedin">LinkedIn</option>
+                                                <option value="x">X</option>
+                                                <option value="tiktok">TikTok</option>
+                                            </select>
+                                        </div>
+                                        <div class="social-planner-field">
+                                            <label for="sp-account-status">Status</label>
+                                            <select id="sp-account-status">
+                                                <option value="active" selected>active</option>
+                                                <option value="expired">expired</option>
+                                                <option value="revoked">revoked</option>
+                                                <option value="error">error</option>
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="social-planner-field">
-                                        <label for="sp-account-status">Status</label>
-                                        <select id="sp-account-status">
-                                            <option value="active" selected>active</option>
-                                            <option value="expired">expired</option>
-                                            <option value="revoked">revoked</option>
-                                            <option value="error">error</option>
-                                        </select>
+                                        <label for="sp-account-external">External account ID</label>
+                                        <input id="sp-account-external" type="text" maxlength="180"
+                                            placeholder="Valgfritt">
                                     </div>
-                                </div>
-                                <div class="social-planner-field">
-                                    <label for="sp-account-external">External account ID</label>
-                                    <input id="sp-account-external" type="text" maxlength="180" placeholder="Valgfritt">
-                                </div>
-                                <div class="social-planner-inline-actions">
-                                    <button type="submit" class="save-btn" id="sp-account-submit-btn">Legg til konto</button>
-                                    <button type="button" class="save-btn secondary-action-btn" onclick="resetSocialPlannerAccountForm()">Nullstill</button>
-                                </div>
-                            </form>
-                        </div>
+                                    <div class="social-planner-inline-actions">
+                                        <button type="submit" class="save-btn" id="sp-account-submit-btn">Legg til
+                                            konto</button>
+                                        <button type="button" class="save-btn secondary-action-btn"
+                                            onclick="resetSocialPlannerAccountForm()">Nullstill</button>
+                                    </div>
+                                </form>
+                            </div>
                         </aside>
                     </div>
                 </div>
@@ -590,10 +603,13 @@
                                     </div>
                                 </div>
                                 <div class="social-planner-buffer-actions">
-                                    <button id="sp-rail-toggle-btn" class="social-planner-rail-toggle-btn" type="button" aria-label="Åpne kontrollpanel" title="Åpne kontrollpanel" aria-expanded="false">
+                                    <button id="sp-rail-toggle-btn" class="social-planner-rail-toggle-btn" type="button"
+                                        aria-label="Åpne kontrollpanel" title="Åpne kontrollpanel"
+                                        aria-expanded="false">
                                         <i class="fas fa-gear"></i>
                                     </button>
-                                    <div id="sp-view-mode-toggle" class="social-planner-view-toggle" role="tablist" aria-label="Visningsmodus">
+                                    <div id="sp-view-mode-toggle" class="social-planner-view-toggle" role="tablist"
+                                        aria-label="Visningsmodus">
                                         <button type="button" class="social-planner-view-btn active" data-view="list">
                                             <i class="fas fa-list"></i> Liste
                                         </button>
@@ -601,7 +617,8 @@
                                             <i class="fas fa-calendar"></i> Kalender
                                         </button>
                                     </div>
-                                    <button class="save-btn social-planner-new-post-btn" type="button" onclick="openSocialPlannerComposer()">
+                                    <button class="save-btn social-planner-new-post-btn" type="button"
+                                        onclick="openSocialPlannerComposer()">
                                         <i class="fas fa-plus"></i> Nytt innlegg
                                     </button>
                                 </div>
@@ -631,7 +648,8 @@
                                 <div class="social-planner-stream-tools">
                                     <label class="social-planner-search">
                                         <i class="fas fa-search"></i>
-                                        <input id="sp-entry-search" type="search" placeholder="Søk i innlegg, tagger eller feil">
+                                        <input id="sp-entry-search" type="search"
+                                            placeholder="Søk i innlegg, tagger eller feil">
                                     </label>
                                 </div>
                                 <div class="social-planner-stream-filter-group">
@@ -697,77 +715,101 @@
                             <div class="social-planner-grid social-planner-grid-manage">
                                 <section class="card social-planner-card">
                                     <h3>Workspaces</h3>
-                                    <form id="sp-workspace-form" class="social-planner-form" onsubmit="saveSocialPlannerWorkspace(event)">
+                                    <form id="sp-workspace-form" class="social-planner-form"
+                                        onsubmit="saveSocialPlannerWorkspace(event)">
                                         <input id="sp-workspace-edit-id" type="hidden">
                                         <div class="social-planner-form-row">
                                             <div class="social-planner-field">
                                                 <label for="sp-workspace-name">Navn</label>
-                                                <input id="sp-workspace-name" type="text" maxlength="100" placeholder="f.eks. TK-design" required>
+                                                <input id="sp-workspace-name" type="text" maxlength="100"
+                                                    placeholder="f.eks. TK-design" required>
                                             </div>
                                             <div class="social-planner-field">
                                                 <label for="sp-workspace-timezone">Tidssone</label>
-                                                <input id="sp-workspace-timezone" type="text" maxlength="60" placeholder="Europe/Oslo" value="Europe/Oslo" required>
+                                                <input id="sp-workspace-timezone" type="text" maxlength="60"
+                                                    placeholder="Europe/Oslo" value="Europe/Oslo" required>
                                             </div>
                                         </div>
                                         <div class="social-planner-inline-actions">
-                                            <button type="submit" class="save-btn" id="sp-workspace-submit-btn">Opprett workspace</button>
-                                            <button type="button" class="save-btn secondary-action-btn" onclick="resetSocialPlannerWorkspaceForm()">Nullstill</button>
+                                            <button type="submit" class="save-btn" id="sp-workspace-submit-btn">Opprett
+                                                workspace</button>
+                                            <button type="button" class="save-btn secondary-action-btn"
+                                                onclick="resetSocialPlannerWorkspaceForm()">Nullstill</button>
                                         </div>
                                     </form>
-                                    <div id="sp-workspaces-list" class="social-planner-list-empty">Ingen workspaces funnet.</div>
+                                    <div id="sp-workspaces-list" class="social-planner-list-empty">Ingen workspaces
+                                        funnet.</div>
                                 </section>
 
                                 <section class="card social-planner-card">
                                     <h3>Maler</h3>
-                                    <form id="sp-template-form" class="social-planner-form" onsubmit="saveSocialPlannerTemplate(event)">
+                                    <form id="sp-template-form" class="social-planner-form"
+                                        onsubmit="saveSocialPlannerTemplate(event)">
                                         <input id="sp-template-edit-id" type="hidden">
                                         <div class="social-planner-form-row">
                                             <div class="social-planner-field">
                                                 <label for="sp-template-name">Navn</label>
-                                                <input id="sp-template-name" type="text" maxlength="120" placeholder="f.eks. Produktlansering" required>
+                                                <input id="sp-template-name" type="text" maxlength="120"
+                                                    placeholder="f.eks. Produktlansering" required>
                                             </div>
                                             <div class="social-planner-field">
                                                 <label for="sp-template-category">Kategori</label>
-                                                <input id="sp-template-category" type="text" maxlength="40" placeholder="f.eks. salg">
+                                                <input id="sp-template-category" type="text" maxlength="40"
+                                                    placeholder="f.eks. salg">
                                             </div>
                                         </div>
                                         <div class="social-planner-field">
                                             <label for="sp-template-body">Template-tekst</label>
-                                            <textarea id="sp-template-body" rows="4" maxlength="5000" placeholder="Skriv maltekst med eventuelle variabler som {{title}} og {{url}}" required></textarea>
+                                            <textarea id="sp-template-body" rows="4" maxlength="5000"
+                                                placeholder="Skriv maltekst med eventuelle variabler som {{title}} og {{url}}"
+                                                required></textarea>
                                         </div>
                                         <div class="social-planner-inline-actions">
-                                            <button type="submit" class="save-btn" id="sp-template-submit-btn">Lagre mal</button>
-                                            <button type="button" class="save-btn secondary-action-btn" onclick="resetSocialPlannerTemplateForm()">Nullstill</button>
+                                            <button type="submit" class="save-btn" id="sp-template-submit-btn">Lagre
+                                                mal</button>
+                                            <button type="button" class="save-btn secondary-action-btn"
+                                                onclick="resetSocialPlannerTemplateForm()">Nullstill</button>
                                         </div>
                                     </form>
-                                    <div id="sp-templates-list" class="social-planner-list-empty">Ingen maler i dette workspace.</div>
+                                    <div id="sp-templates-list" class="social-planner-list-empty">Ingen maler i dette
+                                        workspace.</div>
                                 </section>
                             </div>
                         </details>
 
                         <div id="sp-compose-modal" class="social-planner-compose-modal" aria-hidden="true">
                             <div class="social-planner-compose-backdrop" onclick="closeSocialPlannerComposer()"></div>
-                            <form id="sp-entry-form" class="social-planner-compose-dialog" onsubmit="createSocialPlannerEntry(event)">
+                            <form id="sp-entry-form" class="social-planner-compose-dialog"
+                                onsubmit="createSocialPlannerEntry(event)">
                                 <input id="sp-entry-edit-id" type="hidden">
 
                                 <header class="social-planner-compose-head">
                                     <div class="social-planner-compose-head-left">
                                         <h3 id="sp-compose-title">Create Post</h3>
-                                        <button type="button" id="sp-compose-tag-pill" class="social-planner-compose-tag-pill" onclick="toggleSocialPlannerTagEditor()" aria-label="Åpne tags" aria-expanded="false">
+                                        <button type="button" id="sp-compose-tag-pill"
+                                            class="social-planner-compose-tag-pill"
+                                            onclick="toggleSocialPlannerTagEditor()" aria-label="Åpne tags"
+                                            aria-expanded="false">
                                             <i class="fas fa-tag"></i>
                                             <span>Tagger</span>
-                                            <span id="sp-compose-tag-count" class="social-planner-compose-tag-count">0</span>
+                                            <span id="sp-compose-tag-count"
+                                                class="social-planner-compose-tag-count">0</span>
                                             <i class="fas fa-chevron-down"></i>
                                         </button>
                                     </div>
                                     <div class="social-planner-compose-head-actions">
-                                        <button type="button" id="sp-compose-assistant-btn" class="social-planner-compose-head-btn" onclick="setSocialPlannerComposerPanel('assistant')">
+                                        <button type="button" id="sp-compose-assistant-btn"
+                                            class="social-planner-compose-head-btn"
+                                            onclick="setSocialPlannerComposerPanel('assistant')">
                                             <i class="fas fa-wand-magic-sparkles"></i> AI Assistant
                                         </button>
-                                        <button type="button" id="sp-compose-preview-btn" class="social-planner-compose-head-btn active" onclick="setSocialPlannerComposerPanel('preview')">
+                                        <button type="button" id="sp-compose-preview-btn"
+                                            class="social-planner-compose-head-btn active"
+                                            onclick="setSocialPlannerComposerPanel('preview')">
                                             <i class="fas fa-eye"></i> Preview
                                         </button>
-                                        <button type="button" class="social-planner-compose-head-btn icon-only" onclick="closeSocialPlannerComposer()" aria-label="Lukk composer">
+                                        <button type="button" class="social-planner-compose-head-btn icon-only"
+                                            onclick="closeSocialPlannerComposer()" aria-label="Lukk composer">
                                             <i class="fas fa-xmark"></i>
                                         </button>
                                     </div>
@@ -776,40 +818,55 @@
                                 <div class="social-planner-compose-body">
                                     <section class="social-planner-compose-left">
                                         <div id="sp-compose-account-chips" class="social-planner-compose-account-chips">
-                                            <p class="social-planner-list-empty">Ingen kontoer er koblet til i dette workspace.</p>
+                                            <p class="social-planner-list-empty">Ingen kontoer er koblet til i dette
+                                                workspace.</p>
                                         </div>
 
                                         <div class="social-planner-compose-editor">
-                                            <textarea id="sp-entry-master-text" rows="10" maxlength="6000" placeholder="What would you like to share?"></textarea>
+                                            <textarea id="sp-entry-master-text" rows="10" maxlength="6000"
+                                                placeholder="What would you like to share?"></textarea>
                                             <div class="social-planner-compose-upload">
                                                 <div class="social-planner-compose-upload-box">
                                                     <i class="fas fa-image"></i>
                                                     <span>Legg til bilde fra Unsplash eller last opp fil</span>
                                                     <div class="social-planner-compose-upload-actions">
-                                                        <button type="button" class="save-btn secondary-action-btn" onclick="openSocialPlannerMediaPicker('unsplash')">
+                                                        <button type="button" class="save-btn secondary-action-btn"
+                                                            onclick="openSocialPlannerMediaPicker('unsplash')">
                                                             <i class="fas fa-camera-retro"></i> Unsplash
                                                         </button>
-                                                        <button type="button" class="save-btn secondary-action-btn" onclick="openSocialPlannerMediaPicker('upload')">
+                                                        <button type="button" class="save-btn secondary-action-btn"
+                                                            onclick="openSocialPlannerMediaPicker('upload')">
                                                             <i class="fas fa-upload"></i> Last opp
                                                         </button>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="social-planner-compose-quick-actions">
-                                                <button type="button" class="social-planner-compose-quick-btn" onclick="openSocialPlannerMediaPicker('unsplash')" title="Legg til bilde fra Unsplash"><i class="fas fa-image"></i></button>
-                                                <button type="button" class="social-planner-compose-quick-btn" onclick="document.getElementById('sp-entry-link')?.focus()"><i class="fas fa-link"></i></button>
-                                                <button type="button" class="social-planner-compose-quick-btn" onclick="document.getElementById('sp-entry-hashtags')?.focus()"><i class="fas fa-hashtag"></i></button>
-                                                <button type="button" class="social-planner-compose-quick-btn" onclick="document.getElementById('sp-entry-template')?.focus()"><i class="fas fa-bolt"></i></button>
+                                                <button type="button" class="social-planner-compose-quick-btn"
+                                                    onclick="openSocialPlannerMediaPicker('unsplash')"
+                                                    title="Legg til bilde fra Unsplash"><i
+                                                        class="fas fa-image"></i></button>
+                                                <button type="button" class="social-planner-compose-quick-btn"
+                                                    onclick="document.getElementById('sp-entry-link')?.focus()"><i
+                                                        class="fas fa-link"></i></button>
+                                                <button type="button" class="social-planner-compose-quick-btn"
+                                                    onclick="document.getElementById('sp-entry-hashtags')?.focus()"><i
+                                                        class="fas fa-hashtag"></i></button>
+                                                <button type="button" class="social-planner-compose-quick-btn"
+                                                    onclick="document.getElementById('sp-entry-template')?.focus()"><i
+                                                        class="fas fa-bolt"></i></button>
                                             </div>
                                         </div>
 
-                                        <div id="sp-entry-media-preview" class="social-planner-compose-media-preview" hidden></div>
+                                        <div id="sp-entry-media-preview" class="social-planner-compose-media-preview"
+                                            hidden></div>
 
                                         <details class="social-planner-compose-advanced">
                                             <summary>Avanserte felt</summary>
                                             <div class="social-planner-field">
                                                 <label for="sp-entry-title">Tittel (valgfritt)</label>
-                                                <input id="sp-entry-title" type="text" maxlength="180" placeholder="Settes automatisk hvis tomt">
+                                                <input id="sp-entry-title" type="text" maxlength="180"
+                                                    placeholder="Settes automatisk hvis tomt">
                                             </div>
                                             <div class="social-planner-form-row">
                                                 <div class="social-planner-field">
@@ -820,22 +877,27 @@
                                                 </div>
                                                 <div class="social-planner-field">
                                                     <label>&nbsp;</label>
-                                                    <button type="button" class="save-btn secondary-action-btn" onclick="applySocialPlannerTemplateToEntry()">Bruk i master-tekst</button>
+                                                    <button type="button" class="save-btn secondary-action-btn"
+                                                        onclick="applySocialPlannerTemplateToEntry()">Bruk i
+                                                        master-tekst</button>
                                                 </div>
                                             </div>
                                             <div class="social-planner-form-row">
                                                 <div class="social-planner-field">
                                                     <label for="sp-entry-link">Lenke</label>
-                                                    <input id="sp-entry-link" type="text" maxlength="400" placeholder="https://...">
+                                                    <input id="sp-entry-link" type="text" maxlength="400"
+                                                        placeholder="https://...">
                                                 </div>
                                                 <div class="social-planner-field">
                                                     <label for="sp-entry-media">Media URL</label>
-                                                    <input id="sp-entry-media" type="text" maxlength="400" placeholder="https://...">
+                                                    <input id="sp-entry-media" type="text" maxlength="400"
+                                                        placeholder="https://...">
                                                 </div>
                                             </div>
                                             <div class="social-planner-field">
                                                 <label for="sp-entry-hashtags">Hashtags</label>
-                                                <input id="sp-entry-hashtags" type="text" maxlength="400" placeholder="#design #web #seo">
+                                                <input id="sp-entry-hashtags" type="text" maxlength="400"
+                                                    placeholder="#design #web #seo">
                                             </div>
                                             <div class="social-planner-field">
                                                 <label for="sp-entry-target-accounts">Kontoer</label>
@@ -846,23 +908,32 @@
                                                 <div class="social-planner-variants-grid">
                                                     <div class="social-planner-field">
                                                         <label for="sp-entry-variant-facebook">Facebook-variant</label>
-                                                        <textarea id="sp-entry-variant-facebook" rows="3" maxlength="3000" placeholder="Valgfri Facebook-spesifikk tekst"></textarea>
+                                                        <textarea id="sp-entry-variant-facebook" rows="3"
+                                                            maxlength="3000"
+                                                            placeholder="Valgfri Facebook-spesifikk tekst"></textarea>
                                                     </div>
                                                     <div class="social-planner-field">
-                                                        <label for="sp-entry-variant-instagram">Instagram-variant</label>
-                                                        <textarea id="sp-entry-variant-instagram" rows="3" maxlength="3000" placeholder="Valgfri Instagram-spesifikk tekst"></textarea>
+                                                        <label
+                                                            for="sp-entry-variant-instagram">Instagram-variant</label>
+                                                        <textarea id="sp-entry-variant-instagram" rows="3"
+                                                            maxlength="3000"
+                                                            placeholder="Valgfri Instagram-spesifikk tekst"></textarea>
                                                     </div>
                                                     <div class="social-planner-field">
                                                         <label for="sp-entry-variant-linkedin">LinkedIn-variant</label>
-                                                        <textarea id="sp-entry-variant-linkedin" rows="3" maxlength="3000" placeholder="Valgfri LinkedIn-spesifikk tekst"></textarea>
+                                                        <textarea id="sp-entry-variant-linkedin" rows="3"
+                                                            maxlength="3000"
+                                                            placeholder="Valgfri LinkedIn-spesifikk tekst"></textarea>
                                                     </div>
                                                     <div class="social-planner-field">
                                                         <label for="sp-entry-variant-x">X-variant</label>
-                                                        <textarea id="sp-entry-variant-x" rows="3" maxlength="3000" placeholder="Valgfri X-spesifikk tekst"></textarea>
+                                                        <textarea id="sp-entry-variant-x" rows="3" maxlength="3000"
+                                                            placeholder="Valgfri X-spesifikk tekst"></textarea>
                                                     </div>
                                                     <div class="social-planner-field">
                                                         <label for="sp-entry-variant-tiktok">TikTok-variant</label>
-                                                        <textarea id="sp-entry-variant-tiktok" rows="3" maxlength="3000" placeholder="Valgfri TikTok-spesifikk tekst"></textarea>
+                                                        <textarea id="sp-entry-variant-tiktok" rows="3" maxlength="3000"
+                                                            placeholder="Valgfri TikTok-spesifikk tekst"></textarea>
                                                     </div>
                                                 </div>
                                             </details>
@@ -870,9 +941,11 @@
                                     </section>
 
                                     <aside class="social-planner-compose-right">
-                                        <div id="sp-compose-panel-preview" class="social-planner-compose-panel is-active">
+                                        <div id="sp-compose-panel-preview"
+                                            class="social-planner-compose-panel is-active">
                                             <h4>Post Previews</h4>
-                                            <div id="sp-entry-preview-grid" class="social-planner-preview-grid social-planner-preview-grid-modal">
+                                            <div id="sp-entry-preview-grid"
+                                                class="social-planner-preview-grid social-planner-preview-grid-modal">
                                                 <p class="social-planner-list-empty">See your post's preview here</p>
                                             </div>
                                         </div>
@@ -889,7 +962,8 @@
                                             </div>
                                             <div class="social-planner-field">
                                                 <label for="sp-assistant-prompt">Instruks</label>
-                                                <textarea id="sp-assistant-prompt" rows="4" maxlength="1200" placeholder="F.eks: Skriv et engasjerende innlegg om ny tjeneste for små bedrifter."></textarea>
+                                                <textarea id="sp-assistant-prompt" rows="4" maxlength="1200"
+                                                    placeholder="F.eks: Skriv et engasjerende innlegg om ny tjeneste for små bedrifter."></textarea>
                                             </div>
                                             <div class="social-planner-form-row social-planner-assistant-meta-row">
                                                 <div class="social-planner-field">
@@ -905,27 +979,45 @@
                                                 </div>
                                             </div>
                                             <div class="social-planner-compose-assistant-actions">
-                                                <button type="button" class="save-btn secondary-action-btn social-planner-assistant-action-btn" data-action="write" onclick="runSocialPlannerAssistant('write')">
+                                                <button type="button"
+                                                    class="save-btn secondary-action-btn social-planner-assistant-action-btn"
+                                                    data-action="write" onclick="runSocialPlannerAssistant('write')">
                                                     <i class="fas fa-feather-pointed"></i> Skriv innlegg
                                                 </button>
-                                                <button type="button" class="save-btn secondary-action-btn social-planner-assistant-action-btn" data-action="improve" onclick="runSocialPlannerAssistant('improve')">
+                                                <button type="button"
+                                                    class="save-btn secondary-action-btn social-planner-assistant-action-btn"
+                                                    data-action="improve"
+                                                    onclick="runSocialPlannerAssistant('improve')">
                                                     <i class="fas fa-wand-magic"></i> Forbedre tekst
                                                 </button>
-                                                <button type="button" class="save-btn secondary-action-btn social-planner-assistant-action-btn" data-action="variants" onclick="runSocialPlannerAssistant('variants')">
+                                                <button type="button"
+                                                    class="save-btn secondary-action-btn social-planner-assistant-action-btn"
+                                                    data-action="variants"
+                                                    onclick="runSocialPlannerAssistant('variants')">
                                                     <i class="fas fa-shapes"></i> Lag varianter
                                                 </button>
-                                                <button type="button" class="save-btn secondary-action-btn social-planner-assistant-action-btn" data-action="shorten" onclick="runSocialPlannerAssistant('shorten')">
+                                                <button type="button"
+                                                    class="save-btn secondary-action-btn social-planner-assistant-action-btn"
+                                                    data-action="shorten"
+                                                    onclick="runSocialPlannerAssistant('shorten')">
                                                     <i class="fas fa-minimize"></i> Forkort
                                                 </button>
-                                                <button type="button" class="save-btn secondary-action-btn social-planner-assistant-action-btn" data-action="expand" onclick="runSocialPlannerAssistant('expand')">
+                                                <button type="button"
+                                                    class="save-btn secondary-action-btn social-planner-assistant-action-btn"
+                                                    data-action="expand" onclick="runSocialPlannerAssistant('expand')">
                                                     <i class="fas fa-maximize"></i> Utvid
                                                 </button>
-                                                <button type="button" class="save-btn secondary-action-btn social-planner-assistant-action-btn" data-action="hashtags" onclick="runSocialPlannerAssistant('hashtags')">
+                                                <button type="button"
+                                                    class="save-btn secondary-action-btn social-planner-assistant-action-btn"
+                                                    data-action="hashtags"
+                                                    onclick="runSocialPlannerAssistant('hashtags')">
                                                     <i class="fas fa-hashtag"></i> Foreslå hashtags
                                                 </button>
                                             </div>
-                                            <div id="sp-assistant-output" class="social-planner-compose-assistant-output">
-                                                <p class="social-planner-list-empty">Gi en instruks, og velg hva AI skal gjøre.</p>
+                                            <div id="sp-assistant-output"
+                                                class="social-planner-compose-assistant-output">
+                                                <p class="social-planner-list-empty">Gi en instruks, og velg hva AI skal
+                                                    gjøre.</p>
                                             </div>
                                         </div>
                                     </aside>
@@ -944,17 +1036,21 @@
                                                 <option value="scheduled">Planlegg tidspunkt</option>
                                             </select>
                                         </div>
-                                        <div class="social-planner-field social-planner-compose-schedule-field" id="sp-compose-schedule-wrap">
+                                        <div class="social-planner-field social-planner-compose-schedule-field"
+                                            id="sp-compose-schedule-wrap">
                                             <label for="sp-entry-scheduled-for">Tidspunkt</label>
                                             <input id="sp-entry-scheduled-for" type="datetime-local">
                                         </div>
-                                        <button type="button" class="save-btn secondary-action-btn" id="sp-entry-save-btn" onclick="saveSocialPlannerDraft()">
-                                            <i class="fas fa-save"></i> Lagre
+                                        <button type="button" class="save-btn secondary-action-btn"
+                                            id="sp-entry-save-btn" onclick="saveSocialPlannerDraft()">
+                                            <i class="fas fa-save"></i> Lagre kladd
                                         </button>
-                                        <button type="button" class="save-btn" id="sp-entry-publish-btn" onclick="publishSocialPlannerFromComposer()">
+                                        <button type="button" class="save-btn" id="sp-entry-publish-btn"
+                                            onclick="publishSocialPlannerFromComposer()">
                                             <i class="fas fa-paper-plane"></i> Publiser nå
                                         </button>
-                                        <button type="button" class="save-btn secondary-action-btn" onclick="resetSocialPlannerEntryForm()">Nullstill</button>
+                                        <button type="button" class="save-btn secondary-action-btn"
+                                            onclick="resetSocialPlannerEntryForm()">Nullstill</button>
                                     </div>
                                 </footer>
                             </form>
@@ -1266,18 +1362,22 @@
                         <button id="ai-generate-seo-btn" class="ai-generate-btn" onclick="generateSeoForCurrentDraft()">
                             <i class="fas fa-magic"></i> Generer SEO med Gemini
                         </button>
-                        <p class="ai-help-text">SEO kan genereres automatisk med Gemini før lagring/publisering. Du kan redigere feltene etterpå.</p>
+                        <p class="ai-help-text">SEO kan genereres automatisk med Gemini før lagring/publisering. Du kan
+                            redigere feltene etterpå.</p>
                     </div>
                     <div class="setting-group">
                         <label>Detaljside sammendrag (valgfritt)</label>
-                        <textarea id="post-detail-summary" rows="3" placeholder="Overstyr automatisk sammendrag for toppen av innlegget."
+                        <textarea id="post-detail-summary" rows="3"
+                            placeholder="Overstyr automatisk sammendrag for toppen av innlegget."
                             style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"></textarea>
                     </div>
                     <div class="setting-group">
                         <label>Kort oversikt punkter (valgfritt)</label>
-                        <textarea id="post-detail-outline" rows="5" placeholder="Ett punkt per linje. Tomt felt bruker automatisk Gemini-forslag."
+                        <textarea id="post-detail-outline" rows="5"
+                            placeholder="Ett punkt per linje. Tomt felt bruker automatisk Gemini-forslag."
                             style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"></textarea>
-                        <p class="ai-help-text">Hvis disse feltene er tomme, vises auto-generert innhold fra Gemini/innlegget.</p>
+                        <p class="ai-help-text">Hvis disse feltene er tomme, vises auto-generert innhold fra
+                            Gemini/innlegget.</p>
                     </div>
                 </div>
 

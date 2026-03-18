@@ -2147,7 +2147,7 @@ app.delete('/api/messages/:id', async (req, res) => {
 
 app.get('/api/posts', async (req, res) => {
     try {
-        const posts = await readSiteDataWithFallback('posts', readBlogPosts);
+        const posts = decorateBlogPostsWithResolvedLinks(await readSiteDataWithFallback('posts', readBlogPosts));
         res.json(posts);
     } catch (error) {
         console.error(error);
@@ -2157,7 +2157,7 @@ app.get('/api/posts', async (req, res) => {
 
 // API: Save Blog Posts
 app.post('/api/posts', async (req, res) => {
-    const newPosts = req.body;
+    const newPosts = decorateBlogPostsWithResolvedLinks(req.body);
 
     try {
         const result = await persistSiteData('posts', newPosts, writeBlogPosts);
@@ -2322,9 +2322,10 @@ app.get('/sitemap.xml', async (req, res) => {
         }
 
         (posts || []).forEach((post) => {
+            const postPath = normalizeStoredBlogPostLink(post.link, post.id, getBlogPostTitleForUrl(post));
             xml += `
     <url>
-        <loc>${baseUrl}/blog-details?id=${post.id}</loc>
+        <loc>${baseUrl}${postPath}</loc>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>`;
@@ -2339,19 +2340,7 @@ app.get('/sitemap.xml', async (req, res) => {
     }
 });
 
-// Server-Side Meta Injection + clean URL redirects
-app.get([...Object.keys(PAGE_ROUTE_MAP), ...Object.keys(LEGACY_REDIRECT_MAP)], async (req, res) => {
-    const redirectTarget = LEGACY_REDIRECT_MAP[req.path];
-    if (redirectTarget) {
-        const qs = Object.keys(req.query).length ? `?${new URLSearchParams(req.query).toString()}` : '';
-        return res.redirect(301, `${redirectTarget}${qs}`);
-    }
-
-    const reqFile = PAGE_ROUTE_MAP[req.path];
-    if (!reqFile) {
-        return res.status(404).send('Page not found');
-    }
-
+async function renderPageWithSeo(req, res, reqFile, matchedBlogPost = null) {
     let lang = 'no';
     const cookies = req.headers.cookie || '';
     const langMatch = cookies.match(/site_lang=(en|no)/);
@@ -2379,10 +2368,10 @@ app.get([...Object.keys(PAGE_ROUTE_MAP), ...Object.keys(LEGACY_REDIRECT_MAP)], a
     }
 
     // Specialized Logic for Blog Details
-    if (reqFile === 'blog-details.html' && req.query.id) {
+    if (reqFile === 'blog-details.html') {
         try {
-            const posts = await readSiteDataWithFallback('posts', readBlogPosts);
-            const post = posts.find(p => p.id == req.query.id);
+            const posts = matchedBlogPost ? [] : await readSiteDataWithFallback('posts', readBlogPosts);
+            const post = matchedBlogPost || posts.find(p => p.id == req.query.id);
             if (post) {
                 const isEn = lang === 'en';
                 const postTitle = isEn ? (post.titleEn || post.title) : post.title;
@@ -2396,7 +2385,7 @@ app.get([...Object.keys(PAGE_ROUTE_MAP), ...Object.keys(LEGACY_REDIRECT_MAP)], a
                 keywords = postSeoKeywords || globalSeo.defaultKeywords || '';
                 ogType = 'article';
 
-                const resolvedPostUrl = resolveAbsolutePostUrl(post.link, req, post.id);
+                const resolvedPostUrl = resolveAbsolutePostUrl(post.link, req, post.id, getBlogPostTitleForUrl(post));
                 if (resolvedPostUrl) {
                     ogUrl = resolvedPostUrl;
                 }
@@ -2509,6 +2498,53 @@ app.get([...Object.keys(PAGE_ROUTE_MAP), ...Object.keys(LEGACY_REDIRECT_MAP)], a
 
         res.send(injectedHtml);
     });
+}
+
+// Server-Side Meta Injection + clean URL redirects
+app.get('/blog/:postSlug', async (req, res) => {
+    try {
+        const posts = await readSiteDataWithFallback('posts', readBlogPosts);
+        const matchedPost = findBlogPostByRouteSegment(posts, req.params.postSlug);
+        if (!matchedPost) {
+            return res.status(404).send('Page not found');
+        }
+
+        return renderPageWithSeo(req, res, 'blog-details.html', matchedPost);
+    } catch (error) {
+        console.error('Error serving pretty blog URL:', error);
+        return res.status(500).send('Page not found');
+    }
+});
+
+app.get([...Object.keys(PAGE_ROUTE_MAP), ...Object.keys(LEGACY_REDIRECT_MAP)], async (req, res) => {
+    const redirectTarget = LEGACY_REDIRECT_MAP[req.path];
+    if (redirectTarget) {
+        const qs = Object.keys(req.query).length ? `?${new URLSearchParams(req.query).toString()}` : '';
+        return res.redirect(301, `${redirectTarget}${qs}`);
+    }
+
+    const reqFile = PAGE_ROUTE_MAP[req.path];
+    if (!reqFile) {
+        return res.status(404).send('Page not found');
+    }
+
+    if (reqFile === 'blog-details.html' && req.query.id) {
+        try {
+            const posts = await readSiteDataWithFallback('posts', readBlogPosts);
+            const matchedPost = posts.find((post) => Number(post.id) === Number(req.query.id));
+            if (matchedPost) {
+                return res.redirect(301, normalizeStoredBlogPostLink(
+                    matchedPost.link,
+                    matchedPost.id,
+                    getBlogPostTitleForUrl(matchedPost)
+                ));
+            }
+        } catch (error) {
+            console.error('Error redirecting legacy blog URL:', error);
+        }
+    }
+
+    return renderPageWithSeo(req, res, reqFile);
 });
 
 app.get('/translations.js', async (req, res) => {
@@ -2524,7 +2560,7 @@ app.get('/translations.js', async (req, res) => {
 
 app.get('/data/posts.json', async (req, res) => {
     try {
-        const posts = await readSiteDataWithFallback('posts', readBlogPosts);
+        const posts = decorateBlogPostsWithResolvedLinks(await readSiteDataWithFallback('posts', readBlogPosts));
         res.json(posts);
     } catch (error) {
         console.error('Error serving posts.json:', error);
@@ -3561,13 +3597,90 @@ function getSiteBaseUrl(req) {
     return `${protocol}://${host}`;
 }
 
-function resolveAbsolutePostUrl(linkValue, req, fallbackPostId) {
-    const siteBaseUrl = getSiteBaseUrl(req);
-    const fallbackPath = Number.isFinite(Number(fallbackPostId))
-        ? `/blog-details?id=${Number(fallbackPostId)}`
-        : '/blog';
+function normalizeBlogSlugPart(value = '') {
+    return String(value || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .replace(/-{2,}/g, '-');
+}
+
+function getBlogPostTitleForUrl(post = {}) {
+    return String(post.title || post.titleEn || '').trim();
+}
+
+function buildRelativePostUrl(postId, title = '') {
+    const numericId = Number(postId);
+    const fallbackSlug = Number.isFinite(numericId) && numericId > 0
+        ? `innlegg-${numericId}`
+        : 'innlegg';
+    const slug = normalizeBlogSlugPart(title) || fallbackSlug;
+
+    if (Number.isFinite(numericId) && numericId > 0) {
+        return `/blog/${slug}-${numericId}`;
+    }
+
+    return `/blog/${slug}`;
+}
+
+function isLegacyBlogPostLink(linkValue = '') {
+    return /(^|\/)blog-details(?:\.html)?(?:\?|$)/i.test(String(linkValue || '').trim());
+}
+
+function normalizeStoredBlogPostLink(linkValue, postId, postTitle = '') {
     const rawLink = String(linkValue || '').trim();
-    const candidate = rawLink || fallbackPath;
+    if (!rawLink || isLegacyBlogPostLink(rawLink)) {
+        return buildRelativePostUrl(postId, postTitle);
+    }
+
+    if (/^https?:\/\//i.test(rawLink)) {
+        return rawLink;
+    }
+
+    return rawLink.startsWith('/') ? rawLink : `/${rawLink}`;
+}
+
+function decorateBlogPostWithResolvedLink(post = {}) {
+    return {
+        ...post,
+        link: normalizeStoredBlogPostLink(post.link, post.id, getBlogPostTitleForUrl(post))
+    };
+}
+
+function decorateBlogPostsWithResolvedLinks(posts = []) {
+    return Array.isArray(posts) ? posts.map((post) => decorateBlogPostWithResolvedLink(post)) : posts;
+}
+
+function findBlogPostByRouteSegment(posts = [], routeSegment = '') {
+    let decodedSegment = String(routeSegment || '').trim();
+    try {
+        decodedSegment = decodeURIComponent(decodedSegment);
+    } catch (error) {
+        decodedSegment = String(routeSegment || '').trim();
+    }
+
+    const idMatch = decodedSegment.match(/-(\d+)$/);
+    if (idMatch) {
+        const matchedById = posts.find((post) => Number(post.id) === Number(idMatch[1]));
+        if (matchedById) {
+            return matchedById;
+        }
+    }
+
+    const normalizedSegment = normalizeBlogSlugPart(decodedSegment.replace(/-\d+$/, ''));
+    if (!normalizedSegment) {
+        return null;
+    }
+
+    return posts.find((post) => normalizeBlogSlugPart(getBlogPostTitleForUrl(post)) === normalizedSegment) || null;
+}
+
+function resolveAbsolutePostUrl(linkValue, req, fallbackPostId, fallbackTitle = '') {
+    const siteBaseUrl = getSiteBaseUrl(req);
+    const fallbackPath = normalizeStoredBlogPostLink(linkValue, fallbackPostId, fallbackTitle);
+    const candidate = fallbackPath || '/blog';
 
     try {
         if (/^https?:\/\//i.test(candidate)) {
@@ -5942,7 +6055,7 @@ app.post('/api/social-planner/metrics/sync', async (req, res) => {
 
 function buildSocialAutopostPayload(post = {}, req) {
     const postId = Number(post.id);
-    const postUrl = resolveAbsolutePostUrl(post.link, req, postId);
+    const postUrl = resolveAbsolutePostUrl(post.link, req, postId, getBlogPostTitleForUrl(post));
     const socialImage = resolveSocialImage(post, req);
     const titleNo = String(post.title || '').trim();
     const titleEn = String(post.titleEn || '').trim();

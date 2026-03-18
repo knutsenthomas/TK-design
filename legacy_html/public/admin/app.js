@@ -764,6 +764,30 @@ function normalizeManualHtmlContent(value = '') {
     }).join('');
 }
 
+function slugifyBlogPostTitle(value = '') {
+    return String(value || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .replace(/-{2,}/g, '-');
+}
+
+function buildBlogPostLink(postId, title = '') {
+    const numericId = Number(postId);
+    const fallbackSlug = Number.isFinite(numericId) && numericId > 0
+        ? `innlegg-${numericId}`
+        : 'innlegg';
+    const slug = slugifyBlogPostTitle(title) || fallbackSlug;
+
+    if (Number.isFinite(numericId) && numericId > 0) {
+        return `/blog/${slug}-${numericId}`;
+    }
+
+    return `/blog/${slug}`;
+}
+
 function parseTableDimension(value, fallback = 3, max = 12) {
     const parsed = Number.parseInt(value, 10);
     if (!Number.isFinite(parsed) || parsed < 1) return fallback;
@@ -1498,7 +1522,7 @@ function buildPostPayload() {
         showFeaturedImage,
         isFeatured,
         allowComments,
-        link: `blog-details.html?id=${postId}`
+        link: buildBlogPostLink(postId, title)
     };
 }
 

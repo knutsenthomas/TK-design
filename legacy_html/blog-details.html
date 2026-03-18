@@ -234,7 +234,7 @@
                     </div>
 
                     <div class="blog-post-nav">
-                        <a href="/blog-details?id=1" class="blog-post-nav-link prev-post" id="prevPostLink">
+                        <a href="/blog" class="blog-post-nav-link prev-post" id="prevPostLink">
                             <i class="fas fa-arrow-left"></i>
                             <div>
                                 <span data-i18n="blog_details.prev_post">Forrige innlegg</span>
@@ -244,7 +244,7 @@
                         <a href="/blog" class="grid-view blog-grid-view" aria-label="Tilbake til alle innlegg">
                             <i class="fas fa-th"></i>
                         </a>
-                        <a href="/blog-details?id=2" class="blog-post-nav-link next-post" id="nextPostLink">
+                        <a href="/blog" class="blog-post-nav-link next-post" id="nextPostLink">
                             <div>
                                 <span data-i18n="blog_details.next_post">Neste innlegg</span>
                                 <strong id="nextPostName">Neste innlegg</strong>
@@ -407,6 +407,53 @@
 
             const plainText = stripHtml(html);
             return plainText ? [plainText] : [];
+        }
+
+        function slugifyBlogPostTitle(value = '') {
+            return String(value || '')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .replace(/-{2,}/g, '-');
+        }
+
+        function resolveBlogPostUrl(post = {}) {
+            const rawLink = String(post.link || '').trim();
+            const title = String(post.title || post.titleEn || '').trim();
+            const numericId = Number(post.id);
+            const fallbackSlug = Number.isFinite(numericId) && numericId > 0 ? `innlegg-${numericId}` : 'innlegg';
+            const slug = slugifyBlogPostTitle(title) || fallbackSlug;
+
+            if (!rawLink || /(^|\/)blog-details(?:\.html)?(?:\?|$)/i.test(rawLink)) {
+                return Number.isFinite(numericId) && numericId > 0
+                    ? `/blog/${slug}-${numericId}`
+                    : `/blog/${slug}`;
+            }
+
+            if (/^https?:\/\//i.test(rawLink)) {
+                return rawLink;
+            }
+
+            return rawLink.startsWith('/') ? rawLink : `/${rawLink}`;
+        }
+
+        function getRequestedBlogPostContext() {
+            const params = new URLSearchParams(window.location.search);
+            const requestedId = Number(params.get('id') || 0);
+            const pathMatch = String(window.location.pathname || '').match(/^\/blog\/([^/?#]+)/);
+            const routeToken = pathMatch ? pathMatch[1] : '';
+            const routeIdMatch = routeToken.match(/-(\d+)$/);
+            const routeId = Number(routeIdMatch?.[1] || 0);
+            const requestedSlug = slugifyBlogPostTitle(routeToken.replace(/-\d+$/, ''));
+
+            return {
+                requestedId: Number.isFinite(requestedId) && requestedId > 0
+                    ? requestedId
+                    : (Number.isFinite(routeId) && routeId > 0 ? routeId : 0),
+                requestedSlug
+            };
         }
 
         function normalizeOutlineItems(value = [], maxItems = 6) {
@@ -922,7 +969,7 @@
             recentContainer.innerHTML = otherPosts.map((post) => {
                 const localizedPost = getLocalizedPost(post);
                 return `
-                <a href="/blog-details?id=${post.id}" class="blog-recent-link">
+                <a href="${resolveBlogPostUrl(post)}" class="blog-recent-link">
                     <span>${localizedPost.category || 'TK-design'}</span>
                     <strong>${localizedPost.title}</strong>
                     <em>${localizedPost.date || ''}</em>
@@ -948,12 +995,12 @@
             const localizedNext = getLocalizedPost(nextPost);
 
             if (prevLink && prevName) {
-                prevLink.href = `/blog-details?id=${prevPost.id}`;
+                prevLink.href = resolveBlogPostUrl(prevPost);
                 prevName.textContent = localizedPrev.title;
             }
 
             if (nextLink && nextName) {
-                nextLink.href = `/blog-details?id=${nextPost.id}`;
+                nextLink.href = resolveBlogPostUrl(nextPost);
                 nextName.textContent = localizedNext.title;
             }
         }
@@ -1086,19 +1133,26 @@
         }
 
         async function loadPostDetails() {
-            const params = new URLSearchParams(window.location.search);
-            const requestedId = Number(params.get('id') || 1);
+            const { requestedId, requestedSlug } = getRequestedBlogPostContext();
             currentPostId = requestedId;
 
             try {
                 blogPosts = await fetchBlogPosts();
-                const post = blogPosts.find((item) => Number(item.id) === requestedId);
+                const post = blogPosts.find((item) => {
+                    if (requestedId && Number(item.id) === requestedId) {
+                        return true;
+                    }
+
+                    return requestedSlug
+                        && slugifyBlogPostTitle(String(item.title || item.titleEn || '')) === requestedSlug;
+                });
 
                 if (!post) {
                     renderError(getBlogRuntimeText().notFound);
                     return;
                 }
 
+                currentPostId = Number(post.id) || requestedId || currentPostId;
                 renderPost(post);
             } catch (error) {
                 renderError(getBlogRuntimeText().loadError);

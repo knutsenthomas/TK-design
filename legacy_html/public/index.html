@@ -394,7 +394,7 @@
                             </a>
                         </div>
                         <div class="project-content">
-                            <span class="project-category" data-i18n="projects.p2_desc">Organisasjon</span>
+                            <span class="project-category" data-i18n="projects.p2_desc">Frivillig organisasjon</span>
                             <h3 class="project-title"><a href="project-details.html?project=hkm"
                                     data-i18n="projects.p2_title">His Kingdom Ministry</a></h3>
                         </div>
@@ -838,6 +838,36 @@
     <script src="script.js"></script>
     <script src="js/cookies.js"></script>
     <script>
+        function slugifyBlogPostTitle(value = '') {
+            return String(value || '')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .replace(/-{2,}/g, '-');
+        }
+
+        function resolveBlogPostUrl(post = {}) {
+            const rawLink = String(post.link || '').trim();
+            const title = String(post.title || post.titleEn || '').trim();
+            const numericId = Number(post.id);
+            const fallbackSlug = Number.isFinite(numericId) && numericId > 0 ? `innlegg-${numericId}` : 'innlegg';
+            const slug = slugifyBlogPostTitle(title) || fallbackSlug;
+
+            if (!rawLink || /(^|\/)blog-details(?:\.html)?(?:\?|$)/i.test(rawLink)) {
+                return Number.isFinite(numericId) && numericId > 0
+                    ? `/blog/${slug}-${numericId}`
+                    : `/blog/${slug}`;
+            }
+
+            if (/^https?:\/\//i.test(rawLink)) {
+                return rawLink;
+            }
+
+            return rawLink.startsWith('/') ? rawLink : `/${rawLink}`;
+        }
+
         // Dynamic Blog Loading
         async function loadBlogPosts() {
             try {
@@ -859,8 +889,8 @@
                     card.innerHTML = `
                         <div class="blog-img"><img src="${post.image}" alt="${post.title}"></div>
                         <span class="blog-date">${post.date}</span>
-                        <h3><a href="${post.link || `blog-details.html?id=${post.id}`}">${post.title}</a></h3>
-                        <a href="${post.link || `blog-details.html?id=${post.id}`}" class="award-link" style="justify-content: flex-start;">
+                        <h3><a href="${resolveBlogPostUrl(post)}">${post.title}</a></h3>
+                        <a href="${resolveBlogPostUrl(post)}" class="award-link" style="justify-content: flex-start;">
                             <span data-i18n="blog.read_more">Read More</span> <i class="fas fa-arrow-right"></i>
                         </a>
                     `;

@@ -130,7 +130,7 @@
                             <span id="blogFeaturedCategory">Webdesign</span>
                             <span id="blogFeaturedDate">2025</span>
                         </div>
-                        <a href="/blog-details?id=1" class="blog-list-spotlight-link" id="blogFeaturedLink">
+                        <a href="/blog" class="blog-list-spotlight-link" id="blogFeaturedLink">
                             <span id="blogFeaturedLinkText" data-i18n="blog_page.open_post">Åpne innlegg</span>
                             <i class="fas fa-arrow-right"></i>
                         </a>
@@ -259,6 +259,36 @@
             return (temp.textContent || temp.innerText || '').replace(/\s+/g, ' ').trim();
         }
 
+        function slugifyBlogPostTitle(value = '') {
+            return String(value || '')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .replace(/-{2,}/g, '-');
+        }
+
+        function resolveBlogPostUrl(post = {}) {
+            const rawLink = String(post.link || '').trim();
+            const title = String(post.title || post.titleEn || '').trim();
+            const numericId = Number(post.id);
+            const fallbackSlug = Number.isFinite(numericId) && numericId > 0 ? `innlegg-${numericId}` : 'innlegg';
+            const slug = slugifyBlogPostTitle(title) || fallbackSlug;
+
+            if (!rawLink || /(^|\/)blog-details(?:\.html)?(?:\?|$)/i.test(rawLink)) {
+                return Number.isFinite(numericId) && numericId > 0
+                    ? `/blog/${slug}-${numericId}`
+                    : `/blog/${slug}`;
+            }
+
+            if (/^https?:\/\//i.test(rawLink)) {
+                return rawLink;
+            }
+
+            return rawLink.startsWith('/') ? rawLink : `/${rawLink}`;
+        }
+
         function getLocalizedPost(post) {
             const isEn = typeof currentLang !== 'undefined' && currentLang === 'en';
             return {
@@ -336,7 +366,7 @@
                 date.textContent = localizedPost.date || '-';
             }
             if (link) {
-                link.href = localizedPost.link || `/blog-details?id=${localizedPost.id}`;
+                link.href = resolveBlogPostUrl(post);
             }
             if (linkText) {
                 linkText.textContent = getBlogPageText('open_post');
@@ -379,7 +409,7 @@
 
             grid.innerHTML = posts.map((post) => {
                 const localizedPost = getLocalizedPost(post);
-                const url = localizedPost.link || `/blog-details?id=${localizedPost.id}`;
+                const url = resolveBlogPostUrl(post);
                 return `
                     <article class="blog-list-card">
                         <a href="${url}" class="blog-list-image">
