@@ -307,6 +307,25 @@ function switchLanguage(lang) {
     document.dispatchEvent(new CustomEvent('languagechange', { detail: { lang } }));
 }
 
+function normalizeBrandLabels() {
+    const brandLabelSelectors = [
+        '.info-card-label',
+        '.project-category',
+        '.service-category',
+        '.meeting-contact-item div > span:first-child'
+    ];
+    const isSoMeLabel = /^so\s*me$/i;
+
+    document.querySelectorAll(brandLabelSelectors.join(',')).forEach((element) => {
+        const rawText = String(element.textContent || '').trim();
+        const matchesSoMe = isSoMeLabel.test(rawText);
+        element.classList.toggle('brand-some-label', matchesSoMe);
+        if (matchesSoMe && rawText !== 'SoMe') {
+            element.textContent = 'SoMe';
+        }
+    });
+}
+
 function applyLanguage(lang) {
     const elements = document.querySelectorAll('[data-i18n]');
 
@@ -321,6 +340,8 @@ function applyLanguage(lang) {
             }
         }
     });
+
+    normalizeBrandLabels();
 
     // Optional: Update html lang attribute
     document.documentElement.lang = lang;
