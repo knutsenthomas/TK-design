@@ -37,6 +37,9 @@ const ADMIN_SIDEBAR_COLLAPSE_KEY = 'tk_admin_sidebar_collapsed';
 const ADMIN_MOBILE_BREAKPOINT = 900;
 let quill; // Define quill globally but initialize later
 const TABLE_EMBED_CLASS = 'ql-table-embed';
+const TABLE_CELL_SELECTOR = `.${TABLE_EMBED_CLASS} th, .${TABLE_EMBED_CLASS} td`;
+let activeTableEditorCell = null;
+let activeTableEditorInput = null;
 
 // Section Translations
 // Section Translations
@@ -800,6 +803,11 @@ function normalizeBlogTableHtml(value = '') {
     if (!table) return '';
 
     table.classList.add('blog-table');
+    table.removeAttribute('contenteditable');
+    table.querySelectorAll('[contenteditable]').forEach((node) => node.removeAttribute('contenteditable'));
+    table.querySelectorAll('[spellcheck]').forEach((node) => node.removeAttribute('spellcheck'));
+    table.querySelectorAll('[tabindex]').forEach((node) => node.removeAttribute('tabindex'));
+    table.querySelectorAll('[data-table-cell]').forEach((node) => node.removeAttribute('data-table-cell'));
     return table.outerHTML;
 }
 
@@ -811,16 +819,198 @@ function unwrapTableEmbedsFromHtml(value = '') {
     temp.innerHTML = raw;
 
     temp.querySelectorAll(`.${TABLE_EMBED_CLASS}`).forEach((node) => {
+        const liveHtml = normalizeBlogTableHtml(node.innerHTML);
         const storedHtml = normalizeBlogTableHtml(decodeTableHtmlValue(node.getAttribute('data-table-html') || ''));
-        const fallbackHtml = normalizeBlogTableHtml(node.innerHTML);
-        node.outerHTML = storedHtml || fallbackHtml || '';
+        node.outerHTML = liveHtml || storedHtml || '';
     });
 
     return temp.innerHTML.trim();
 }
 
+function refreshTableEmbedValue(node) {
+    if (!(node instanceof HTMLElement)) return;
+    const normalizedHtml = normalizeBlogTableHtml(node.innerHTML) || buildBlogTableHtml(3, 3);
+    node.setAttribute('data-table-html', encodeURIComponent(normalizedHtml));
+}
+
+function prepareTableEmbedNode(node) {
+    if (!(node instanceof HTMLElement)) return;
+
+    const normalizedHtml = normalizeBlogTableHtml(
+        decodeTableHtmlValue(node.getAttribute('data-table-html') || '') || node.innerHTML
+    ) || buildBlogTableHtml(3, 3);
+
+    node.setAttribute('contenteditable', 'false');
+    node.innerHTML = normalizedHtml;
+
+    node.querySelectorAll('th, td').forEach((cell) => {
+        cell.setAttribute('data-table-cell', 'true');
+    });
+
+    refreshTableEmbedValue(node);
+}
+
+function getAdjacentTableCell(currentCell, direction = 1) {
+    const embed = currentCell?.closest?.(`.${TABLE_EMBED_CLASS}`);
+    if (!(embed instanceof HTMLElement)) return null;
+
+    const cells = Array.from(embed.querySelectorAll('th, td'));
+    const currentIndex = cells.indexOf(currentCell);
+    if (currentIndex === -1) return null;
+
+    const nextIndex = currentIndex + direction;
+    if (nextIndex < 0 || nextIndex >= cells.length) return null;
+
+    return cells[nextIndex] || null;
+}
+
+function getTableEditorInput() {
+    if (activeTableEditorInput) {
+        return activeTableEditorInput;
+    }
+
+    const input = document.createElement('textarea');
+    input.className = 'table-cell-editor-input';
+    input.setAttribute('aria-label', 'Rediger tabellcelle');
+
+    input.addEventListener('blur', () => {
+        closeTableCellEditor({ save: true });
+    });
+
+    input.addEventListener('keydown', (event) => {
+        if (event.key === 'Tab') {
+            event.preventDefault();
+            const nextCell = activeTableEditorCell
+                ? getAdjacentTableCell(activeTableEditorCell, event.shiftKey ? -1 : 1)
+                : null;
+            closeTableCellEditor({ save: true });
+            if (nextCell) {
+                openTableCellEditor(nextCell);
+            } else if (quill) {
+                quill.focus();
+            }
+            return;
+        }
+
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            closeTableCellEditor({ save: false });
+            if (quill) quill.focus();
+            return;
+        }
+
+        if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+            event.preventDefault();
+            closeTableCellEditor({ save: true });
+            if (quill) quill.focus();
+        }
+    });
+
+    input.addEventListener('paste', (event) => {
+        if (!activeTableEditorCell) return;
+        const clipboardText = event.clipboardData?.getData('text/plain') || '';
+        if (!clipboardText.includes('\t')) return;
+
+        event.preventDefault();
+        applyTableGridPaste(activeTableEditorCell, clipboardText);
+        closeTableCellEditor({ save: false });
+    });
+
+    document.body.appendChild(input);
+    activeTableEditorInput = input;
+    return input;
+}
+
+function positionTableEditorInput(cell) {
+    const input = getTableEditorInput();
+    const rect = cell.getBoundingClientRect();
+    input.style.display = 'block';
+    input.style.top = `${rect.top}px`;
+    input.style.left = `${rect.left}px`;
+    input.style.width = `${Math.max(rect.width, 120)}px`;
+    input.style.height = `${Math.max(rect.height, 52)}px`;
+}
+
+function setTableCellText(cell, value = '') {
+    if (!(cell instanceof HTMLElement)) return;
+
+    const normalizedValue = String(value || '').replace(/\r\n/g, '\n');
+    const lines = normalizedValue.split('\n');
+    cell.innerHTML = lines.map((line) => escapeHtmlForUi(line)).join('<br>');
+
+    const embed = cell.closest(`.${TABLE_EMBED_CLASS}`);
+    if (embed) {
+        refreshTableEmbedValue(embed);
+    }
+}
+
+function applyTableGridPaste(startCell, rawText = '') {
+    const embed = startCell?.closest?.(`.${TABLE_EMBED_CLASS}`);
+    const table = startCell?.closest?.('table');
+    if (!(embed instanceof HTMLElement) || !(table instanceof HTMLTableElement)) return;
+
+    const row = startCell.parentElement;
+    const startRowIndex = Array.from(table.rows).indexOf(row);
+    const startColIndex = Array.from(row?.cells || []).indexOf(startCell);
+    if (startRowIndex < 0 || startColIndex < 0) return;
+
+    const rows = String(rawText || '')
+        .replace(/\r\n/g, '\n')
+        .split('\n')
+        .filter((line, index, collection) => line.length > 0 || index < collection.length - 1)
+        .map((line) => line.split('\t'));
+
+    rows.forEach((columns, rowOffset) => {
+        const targetRow = table.rows[startRowIndex + rowOffset];
+        if (!targetRow) return;
+
+        columns.forEach((columnValue, colOffset) => {
+            const targetCell = targetRow.cells[startColIndex + colOffset];
+            if (!targetCell) return;
+            setTableCellText(targetCell, columnValue);
+        });
+    });
+
+    refreshTableEmbedValue(embed);
+}
+
+function openTableCellEditor(cell) {
+    if (!(cell instanceof HTMLElement)) return;
+
+    if (activeTableEditorCell && activeTableEditorCell !== cell) {
+        closeTableCellEditor({ save: true });
+    }
+
+    activeTableEditorCell = cell;
+    const input = getTableEditorInput();
+    input.value = String(cell.innerText || cell.textContent || '');
+    positionTableEditorInput(cell);
+    window.requestAnimationFrame(() => {
+        input.focus();
+        input.select();
+    });
+}
+
+function closeTableCellEditor({ save = true } = {}) {
+    if (!activeTableEditorInput || !activeTableEditorCell) {
+        return;
+    }
+
+    const currentCell = activeTableEditorCell;
+    const input = activeTableEditorInput;
+
+    if (save) {
+        setTableCellText(currentCell, input.value);
+    }
+
+    input.style.display = 'none';
+    activeTableEditorCell = null;
+}
+
 function setEditorHtmlContent(value = '') {
     if (!quill) return;
+
+    closeTableCellEditor({ save: true });
 
     const normalizedHtml = unwrapTableEmbedsFromHtml(value);
     quill.setText('');
@@ -832,6 +1022,7 @@ function setEditorHtmlContent(value = '') {
 
 function getEditorHtmlContent() {
     if (!quill) return '';
+    closeTableCellEditor({ save: true });
     return unwrapTableEmbedsFromHtml(quill.root?.innerHTML || '');
 }
 
@@ -1828,16 +2019,15 @@ function registerCustomBlots() {
         static create(value) {
             const node = super.create();
             const tableHtml = normalizeBlogTableHtml(value) || buildBlogTableHtml(3, 3);
-            node.setAttribute('contenteditable', 'false');
             node.setAttribute('data-table-html', encodeURIComponent(tableHtml));
             node.innerHTML = tableHtml;
+            prepareTableEmbedNode(node);
             return node;
         }
 
         static value(node) {
-            return normalizeBlogTableHtml(
-                decodeTableHtmlValue(node.getAttribute('data-table-html') || '') || node.innerHTML
-            );
+            return normalizeBlogTableHtml(node.innerHTML)
+                || normalizeBlogTableHtml(decodeTableHtmlValue(node.getAttribute('data-table-html') || ''));
         }
     }
 
@@ -6110,6 +6300,29 @@ function setupEventListeners() {
             closeSocialPlannerComposer();
         }
     });
+
+    if (quill?.root) {
+        quill.root.addEventListener('mousedown', (event) => {
+            const cell = event.target?.closest?.(TABLE_CELL_SELECTOR);
+            if (!cell) return;
+
+            event.preventDefault();
+            event.stopPropagation();
+            openTableCellEditor(cell);
+        }, true);
+
+        window.addEventListener('resize', () => {
+            if (activeTableEditorCell) {
+                positionTableEditorInput(activeTableEditorCell);
+            }
+        });
+
+        document.addEventListener('scroll', () => {
+            if (activeTableEditorCell) {
+                positionTableEditorInput(activeTableEditorCell);
+            }
+        }, true);
+    }
 }
 
 

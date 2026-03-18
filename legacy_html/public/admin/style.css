@@ -3350,6 +3350,40 @@ body.social-planner-compose-open {
     min-width: 420px;
 }
 
+.ql-table-embed th[data-table-cell="true"],
+.ql-table-embed td[data-table-cell="true"] {
+    cursor: text;
+    outline: none;
+}
+
+.ql-table-embed th[data-table-cell="true"]:hover,
+.ql-table-embed td[data-table-cell="true"]:hover {
+    background: #fff7ed;
+}
+
+.table-cell-editor-input {
+    position: fixed;
+    z-index: 2000;
+    display: none;
+    margin: 0;
+    padding: 10px 12px;
+    border: 2px solid rgba(249, 115, 22, 0.5);
+    border-radius: 10px;
+    background: #ffffff;
+    color: #1f2937;
+    font: inherit;
+    line-height: 1.5;
+    resize: none;
+    overflow: auto;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+}
+
+.table-cell-editor-input:focus {
+    outline: none;
+    border-color: #f97316;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+}
+
 /* Video Embeds */
 .video-embed {
     width: 100%;
