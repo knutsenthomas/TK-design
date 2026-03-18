@@ -12,9 +12,9 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=43">
+    <link rel="stylesheet" href="/style.css?v=43">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" type="image/png" href="img/logo/d.png">
+    <link rel="icon" type="image/png" href="/img/logo/d.png">
 
     <!-- Google Analytics GA4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-5RZVDEBBYM"></script>
@@ -32,7 +32,7 @@
         <div class="container nav-container">
             <a href="/" class="logo" aria-label="tk-design">
                 <span class="logo-icon">
-                    <img src="img/logo/d.png" alt="tk-design logo">
+                    <img src="/img/logo/d.png" alt="tk-design logo">
                 </span>
                 <span class="logo-text">tk-design</span>
             </a>
@@ -154,7 +154,7 @@
                     <div class="blog-detail-grid">
                         <article class="blog-article-shell">
                             <div class="blog-article-media">
-                                <img id="blogDetailImage" src="img/blog/bblog1.png" alt="Bloggbilde">
+                                <img id="blogDetailImage" src="/img/blog/bblog1.png" alt="Bloggbilde">
                             </div>
 
                             <div class="blog-article-head">
@@ -299,9 +299,9 @@
         </div>
     </footer>
 
-    <script src="translations.js"></script>
-    <script src="script.js"></script>
-    <script src="js/cookies.js"></script>
+    <script src="/translations.js"></script>
+    <script src="/script.js"></script>
+    <script src="/js/cookies.js"></script>
     <script>
         const BLOG_DETAIL_RUNTIME = {
             no: {
@@ -367,7 +367,7 @@
         }
 
         async function fetchBlogPosts() {
-            const sources = ['data/posts.json', 'http://localhost:3000/api/posts'];
+            const sources = ['/data/posts.json', 'http://localhost:3000/api/posts'];
 
             for (const source of sources) {
                 try {
@@ -439,6 +439,26 @@
             return rawLink.startsWith('/') ? rawLink : `/${rawLink}`;
         }
 
+        function resolveSiteAssetUrl(value = '') {
+            const rawValue = String(value || '').trim();
+            if (!rawValue) {
+                return '';
+            }
+
+            if (/^(?:[a-z]+:)?\/\//i.test(rawValue) || /^(?:data|blob|mailto|tel):/i.test(rawValue)) {
+                return rawValue;
+            }
+
+            return rawValue.startsWith('/') ? rawValue : `/${rawValue.replace(/^\.?\//, '')}`;
+        }
+
+        function normalizeRelativeAssetUrlsInHtml(html = '') {
+            return String(html || '').replace(
+                /\b(src|href)=["'](?![a-z]+:|\/|#)([^"']+)["']/gi,
+                (match, attr, url) => `${attr}="${resolveSiteAssetUrl(url)}"`
+            );
+        }
+
         function getRequestedBlogPostContext() {
             const params = new URLSearchParams(window.location.search);
             const requestedId = Number(params.get('id') || 0);
@@ -479,8 +499,9 @@
                 ...post,
                 title: isEn ? (post.titleEn || post.title) : post.title,
                 excerpt: isEn ? (post.excerptEn || post.excerpt) : post.excerpt,
-                content: isEn ? (post.contentEn || post.content) : post.content,
+                content: normalizeRelativeAssetUrlsInHtml(isEn ? (post.contentEn || post.content) : post.content),
                 category: isEn ? (post.categoryEn || post.category) : post.category,
+                image: resolveSiteAssetUrl(post.image),
                 seoTitle: isEn ? (post.seoTitleEn || post.seoTitle || post.titleEn || post.title) : (post.seoTitle || post.title),
                 seoDesc: isEn ? (post.seoDescEn || post.seoDesc || post.excerptEn || post.excerpt || '') : (post.seoDesc || post.excerpt || ''),
                 seoKeywords: isEn ? (post.seoKeywordsEn || post.seoKeywords || '') : (post.seoKeywords || ''),
@@ -1071,7 +1092,7 @@
             }
 
             if (detailImage && showFeaturedImage) {
-                detailImage.src = localizedPost.image || 'img/blog/bblog1.png';
+                detailImage.src = localizedPost.image || '/img/blog/bblog1.png';
                 detailImage.alt = localizedPost.title;
             }
 
