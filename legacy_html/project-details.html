@@ -130,25 +130,6 @@
         <section class="project-details-area pb_120">
             <div class="container">
                 <div class="project-details-wrapper">
-                    <div class="project-overview-grid">
-                        <div class="project-overview-card">
-                            <span class="project-overview-label" data-i18n="project_details.client_label">Kunde</span>
-                            <strong class="project-overview-value" id="projectClientValue">Kudos Regnskap AS</strong>
-                        </div>
-                        <div class="project-overview-card">
-                            <span class="project-overview-label" data-i18n="project_details.cat_label">Kategori</span>
-                            <strong class="project-overview-value" id="projectCategoryValue">Regnskap</strong>
-                        </div>
-                        <div class="project-overview-card">
-                            <span class="project-overview-label"
-                                data-i18n="project_details.timeline_label">Tidslinje</span>
-                            <strong class="project-overview-value" id="projectTimelineValue">2025</strong>
-                        </div>
-                        <div class="project-overview-card">
-                            <span class="project-overview-label" data-i18n="project_details.focus_label">Fokus</span>
-                            <strong class="project-overview-value" id="projectFocusValue">Tillit og tydelighet</strong>
-                        </div>
-                    </div>
 
                     <div class="project-detail-grid">
                         <article class="project-copy-card">
@@ -800,7 +781,7 @@
             if (breadcrumb) breadcrumb.textContent = content.title;
             if (categoryBadge) categoryBadge.textContent = content.category;
             if (previewTitle) previewTitle.textContent = content.focus;
-            if (previewLead) previewLead.textContent = content.goal;
+            if (previewLead) previewLead.textContent = `${project.client} — ${content.timeline} — ${content.category}`;
             if (clientValue) clientValue.textContent = project.client;
             if (categoryValue) categoryValue.textContent = content.category;
             if (timelineValue) timelineValue.textContent = content.timeline;
