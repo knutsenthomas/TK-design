@@ -799,8 +799,8 @@
             if (summary) summary.textContent = content.summary;
             if (breadcrumb) breadcrumb.textContent = content.title;
             if (categoryBadge) categoryBadge.textContent = content.category;
-            if (previewTitle) previewTitle.textContent = ''; // Fjerner redundant tittel
-            if (previewLead) previewLead.textContent = content.focus;
+            if (previewTitle) previewTitle.textContent = content.focus;
+            if (previewLead) previewLead.textContent = content.goal;
             if (clientValue) clientValue.textContent = project.client;
             if (categoryValue) categoryValue.textContent = content.category;
             if (timelineValue) timelineValue.textContent = content.timeline;
