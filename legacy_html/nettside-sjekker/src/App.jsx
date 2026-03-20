@@ -1190,35 +1190,33 @@ export default function App() {
                     </div>
                   </article>
 
-                  <div className="st-aside-stack">
-                    <article className="st-panel st-panel--dark">
-                      <p className="st-panel-kicker st-panel-kicker--dark">Handlingsplan</p>
-                      <h3>Dette ville jeg gjort først.</h3>
-                      <div className="st-plan-list">
-                        {activeReport.topFixes.map((fix, index) => (
-                          <FixItem key={fix.title} fix={fix} index={index} />
-                        ))}
-                      </div>
-                    </article>
+                  <article className="st-panel st-panel--dark">
+                    <p className="st-panel-kicker st-panel-kicker--dark">Handlingsplan</p>
+                    <h3>Dette ville jeg gjort først.</h3>
+                    <div className="st-plan-list">
+                      {activeReport.topFixes.map((fix, index) => (
+                        <FixItem key={fix.title} fix={fix} index={index} />
+                      ))}
+                    </div>
+                  </article>
 
-                    <article className="st-panel st-panel--light st-panel--cta">
-                      <p className="st-panel-kicker">Neste steg</p>
-                      <h3>Vil du ha hjelp til å rydde opp?</h3>
-                      <p>
-                        Vi kan gjøre rapporten om til en konkret prioriteringsliste for design, kode, SEO og lastetid.
-                      </p>
-                      <div className="st-cta-actions">
-                        <a href={`mailto:thomas@tk-design.no?subject=${mailSubject}`} className="st-button st-button--primary">
-                          Send rapporten på e-post
-                          <Mail size={18} />
-                        </a>
-                        <a href="/contact" className="st-button st-button--secondary">
-                          Book en gjennomgang
-                          <ExternalLink size={18} />
-                        </a>
-                      </div>
-                    </article>
-                  </div>
+                  <article className="st-panel st-panel--light st-panel--cta">
+                    <p className="st-panel-kicker">Neste steg</p>
+                    <h3>Vil du ha hjelp til å rydde opp?</h3>
+                    <p>
+                      Vi kan gjøre rapporten om til en konkret prioriteringsliste for design, kode, SEO og lastetid.
+                    </p>
+                    <div className="st-cta-actions">
+                      <a href={`mailto:thomas@tk-design.no?subject=${mailSubject}`} className="st-button st-button--primary">
+                        Send rapporten på e-post
+                        <Mail size={18} />
+                      </a>
+                      <a href="/contact" className="st-button st-button--secondary">
+                        Book en gjennomgang
+                        <ExternalLink size={18} />
+                      </a>
+                    </div>
+                  </article>
                 </div>
               </Motion.div>
             </AnimatePresence>

@@ -688,6 +688,10 @@ body.homepage-refresh.speed-test-page .st-results-grid--secondary {
   align-items: start;
 }
 
+body.homepage-refresh.speed-test-page .st-results-grid--secondary .st-panel--cta {
+  grid-column: 1 / -1;
+}
+
 body.homepage-refresh.speed-test-page .st-panel {
   display: grid;
   align-content: start;
