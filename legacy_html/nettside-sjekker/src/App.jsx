@@ -1492,7 +1492,19 @@ export default function App() {
                   <span className="st-stage-device">{getStrategyLabel(activeReport.strategy)}</span>
                 </div>
 
-                <h2>{results ? `Rapport klar for ${activeReport.analyzedUrl}` : 'Dette får du tilbake etter testen'}</h2>
+                <h2>
+                  {results ? (
+                    <>
+                      Rapport klar for
+                      {' '}
+                      <span className="st-inline-domain st-inline-domain--stage">
+                        {activeReport.analyzedUrl}
+                      </span>
+                    </>
+                  ) : (
+                    'Dette får du tilbake etter testen'
+                  )}
+                </h2>
                 <p>
                   {results
                     ? activeReport.summary
@@ -1540,7 +1552,13 @@ export default function App() {
                 <span className="st-chip st-chip--light">{results ? 'Din rapport' : 'Eksempelrapport'}</span>
                 <h2>
                   {results
-                    ? `Dette er det neste du bør fikse på ${activeReport.analyzedUrl}`
+                    ? (
+                      <>
+                        Dette er det neste du bør fikse på
+                        {' '}
+                        <span className="st-inline-domain">{activeReport.analyzedUrl}</span>
+                      </>
+                    )
                     : 'Slik er rapporten bygget når testen er ferdig.'}
                 </h2>
                 <p>
@@ -1569,7 +1587,19 @@ export default function App() {
                   <article className="st-panel st-panel--light">
                     <div className="st-panel-head">
                       <div>
-                        <p className="st-panel-kicker">{results ? `Analysert domene: ${activeReport.analyzedUrl}` : 'Scoreoversikt'}</p>
+                        <p className="st-panel-kicker">
+                          {results ? (
+                            <>
+                              Analysert domene:
+                              {' '}
+                              <span className="st-inline-domain st-inline-domain--kicker">
+                                {activeReport.analyzedUrl}
+                              </span>
+                            </>
+                          ) : (
+                            'Scoreoversikt'
+                          )}
+                        </p>
                         <h3>{results ? 'Her ser du hvor friksjonen ligger akkurat nå' : 'Først får du et raskt overblikk over kvaliteten.'}</h3>
                         <p>
                           Fire scorekort gir deg et tydelig bilde av ytelse, tilgjengelighet, beste praksis og SEO i ett blikk.

@@ -497,6 +497,8 @@ body.homepage-refresh.speed-test-page .st-stage-card h2 {
   font-size: clamp(2rem, 2.8vw, 2.8rem);
   font-weight: 900;
   line-height: 1.02;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 body.homepage-refresh.speed-test-page .st-stage-card > p {
@@ -574,6 +576,8 @@ body.homepage-refresh.speed-test-page .st-section-head h2 {
   font-weight: 900;
   line-height: 0.98;
   letter-spacing: -0.045em;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 body.homepage-refresh.speed-test-page .st-section-head p {
@@ -743,6 +747,22 @@ body.homepage-refresh.speed-test-page .st-panel--dark > p:not(.st-panel-kicker) 
 
 body.homepage-refresh.speed-test-page .st-panel-kicker {
   color: #6b7280;
+}
+
+body.homepage-refresh.speed-test-page .st-inline-domain {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+body.homepage-refresh.speed-test-page .st-inline-domain--stage {
+  display: block;
+  max-width: 100%;
+}
+
+body.homepage-refresh.speed-test-page .st-inline-domain--kicker {
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 800;
 }
 
 body.homepage-refresh.speed-test-page .st-panel-kicker--dark {
