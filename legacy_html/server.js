@@ -115,6 +115,7 @@ const SEO_PAGE_DEFAULTS = {
         keywords: 'pagespeed test, lighthouse, nettside hastighet, ytelse, tk-design'
     }
 };
+const PUBLIC_HOSTNAME_REGEX = /^(?=.{1,253}$)(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i;
 
 // Middleware
 app.use(bodyParser.json());
@@ -154,6 +155,99 @@ async function getFetch() {
 
     const fetchModule = await import('node-fetch');
     return fetchModule.default;
+}
+
+function getPagespeedApiKey() {
+    return String(
+        process.env.PAGESPEED_API_KEY
+        || process.env.GOOGLE_PAGESPEED_API_KEY
+        || process.env.PAGESPEEDONLINE_API_KEY
+        || process.env.VITE_PAGESPEED_API_KEY
+        || ''
+    ).trim();
+}
+
+function normalizePagespeedUrl(raw = '') {
+    const trimmed = String(raw || '').trim();
+
+    if (!trimmed) {
+        const error = new Error('URL mangler.');
+        error.code = 'missing_url';
+        throw error;
+    }
+
+    const withProtocol = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+    let parsedUrl;
+
+    try {
+        parsedUrl = new URL(withProtocol);
+    } catch (error) {
+        const nextError = new Error('URL-en er ugyldig.');
+        nextError.code = 'invalid_url';
+        throw nextError;
+    }
+
+    if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+        const error = new Error('Kun http og https er støttet.');
+        error.code = 'invalid_url';
+        throw error;
+    }
+
+    const hostname = String(parsedUrl.hostname || '').replace(/\.$/, '');
+    if (!PUBLIC_HOSTNAME_REGEX.test(hostname)) {
+        const error = new Error('URL-en må være et offentlig domene.');
+        error.code = 'invalid_url';
+        throw error;
+    }
+
+    parsedUrl.hash = '';
+    return parsedUrl.toString();
+}
+
+function mapPagespeedUpstreamError(message = '', statusCode = 0) {
+    const normalizedMessage = String(message || '');
+
+    if (statusCode === 429 || /quota exceeded|resource_exhausted|rate_limit_exceeded/i.test(normalizedMessage)) {
+        return {
+            httpStatus: 503,
+            code: 'quota_exceeded',
+            error: 'Google PageSpeed-kvoten er brukt opp akkurat nå.'
+        };
+    }
+
+    if (/API_KEY_INVALID|API key not valid|key not valid/i.test(normalizedMessage)) {
+        return {
+            httpStatus: 503,
+            code: 'invalid_api_key',
+            error: 'Google PageSpeed API-nøkkelen er ugyldig.'
+        };
+    }
+
+    if (/SERVICE_DISABLED|API has not been used|is not enabled|PERMISSION_DENIED/i.test(normalizedMessage)) {
+        return {
+            httpStatus: 503,
+            code: 'api_not_configured',
+            error: 'Google PageSpeed API er ikke aktivert for denne nøkkelen.'
+        };
+    }
+
+    if (
+        /INVALID_ARGUMENT|Unable to resolve host|Requested URL is not available|DNS|ERR_NAME_NOT_RESOLVED|could not resolve/i.test(
+            normalizedMessage
+        )
+    ) {
+        return {
+            httpStatus: 400,
+            code: 'invalid_url',
+            error: 'URL-en kunne ikke analyseres. Sjekk at domenet finnes og er offentlig tilgjengelig.'
+        };
+    }
+
+    return {
+        httpStatus: 502,
+        code: 'pagespeed_request_failed',
+        error: 'Kunne ikke hente Lighthouse-data fra Google akkurat nå.'
+    };
 }
 
 function escapeHtml(value = '') {
@@ -256,6 +350,83 @@ app.get('/api/debug-env', (req, res) => {
             metricsSyncToken: !!String(process.env.SOCIAL_METRICS_SYNC_TOKEN || '').trim()
         }
     });
+});
+
+app.post('/api/pagespeed', async (req, res) => {
+    const strategy = req.body?.strategy === 'desktop' ? 'desktop' : 'mobile';
+    let normalizedUrl = '';
+
+    try {
+        normalizedUrl = normalizePagespeedUrl(req.body?.url || '');
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            code: error.code || 'invalid_url',
+            error: 'Lim inn en gyldig URL, for eksempel tk-design.no.',
+            details: error.message
+        });
+    }
+
+    const apiKey = getPagespeedApiKey();
+    if (!apiKey) {
+        return res.status(503).json({
+            success: false,
+            code: 'missing_api_key',
+            error: 'Speed-testen mangler Google PageSpeed API-nøkkel på serveren.'
+        });
+    }
+
+    try {
+        const fetch = await getFetch();
+        const apiEndpoint = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(
+            normalizedUrl
+        )}&strategy=${strategy}&category=performance&category=accessibility&category=best-practices&category=seo&key=${apiKey}`;
+        const response = await fetch(apiEndpoint, {
+            headers: {
+                Accept: 'application/json'
+            }
+        });
+        const rawBody = await response.text();
+        let data = null;
+
+        try {
+            data = rawBody ? JSON.parse(rawBody) : null;
+        } catch (error) {
+            data = null;
+        }
+
+        if (!response.ok || data?.error) {
+            const details = String(data?.error?.message || rawBody || `PageSpeed request failed with ${response.status}`);
+            const mappedError = mapPagespeedUpstreamError(details, response.status);
+            return res.status(mappedError.httpStatus).json({
+                success: false,
+                code: mappedError.code,
+                error: mappedError.error,
+                details
+            });
+        }
+
+        if (!data?.lighthouseResult?.categories || !data?.lighthouseResult?.audits) {
+            return res.status(502).json({
+                success: false,
+                code: 'invalid_response',
+                error: 'Google returnerte et ugyldig Lighthouse-svar.'
+            });
+        }
+
+        return res.json({
+            success: true,
+            data
+        });
+    } catch (error) {
+        console.error('[PageSpeed] Request failed:', error);
+        return res.status(500).json({
+            success: false,
+            code: 'pagespeed_request_failed',
+            error: 'Kunne ikke analysere nettstedet akkurat nå.',
+            details: error.message
+        });
+    }
 });
 
 function getFirebaseWebConfig() {

@@ -301,6 +301,8 @@ const getHostLabel = (input) => {
   }
 };
 
+const PUBLIC_HOSTNAME_REGEX = /^(?=.{1,253}$)(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i;
+
 const normalizeUrl = (raw) => {
   const trimmed = raw.trim();
 
@@ -309,7 +311,57 @@ const normalizeUrl = (raw) => {
   }
 
   const withProtocol = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
-  return new URL(withProtocol).toString();
+  const parsedUrl = new URL(withProtocol);
+
+  if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+    throw new Error('invalid-url');
+  }
+
+  if (!PUBLIC_HOSTNAME_REGEX.test(parsedUrl.hostname.replace(/\.$/, ''))) {
+    throw new Error('invalid-url');
+  }
+
+  parsedUrl.hash = '';
+  return parsedUrl.toString();
+};
+
+const getAnalysisErrorMessage = (requestError) => {
+  const code = String(requestError?.code || '').trim().toLowerCase();
+  const details = String(requestError?.details || requestError?.message || '').trim();
+
+  if (code === 'invalid_url' || code === 'missing_url') {
+    return 'URL-en ser ikke gyldig ut. Sjekk domenet og prøv igjen, for eksempel tk-design.no.';
+  }
+
+  if (code === 'missing_api_key') {
+    return 'Speed-testen er ikke koblet til Google PageSpeed API ennå. Legg inn en API-nøkkel på serveren for å kjøre tester.';
+  }
+
+  if (code === 'quota_exceeded') {
+    return 'Google PageSpeed-kvoten er brukt opp akkurat nå. Prøv igjen senere eller oppdater API-nøkkelen.';
+  }
+
+  if (code === 'invalid_api_key' || code === 'api_not_configured') {
+    return 'Google PageSpeed API er ikke riktig konfigurert på serveren akkurat nå.';
+  }
+
+  if (code === 'pagespeed_request_failed' || code === 'invalid_response') {
+    return 'Google klarte ikke å levere Lighthouse-data akkurat nå. Prøv igjen om litt.';
+  }
+
+  if (/quota exceeded|resource_exhausted|rate_limit_exceeded/i.test(details)) {
+    return 'Google PageSpeed-kvoten er brukt opp akkurat nå. Prøv igjen senere.';
+  }
+
+  if (/api key|service_disabled|permission_denied/i.test(details)) {
+    return 'Google PageSpeed API er ikke riktig konfigurert på serveren akkurat nå.';
+  }
+
+  if (/unable to resolve host|requested url is not available|dns|invalid_argument/i.test(details)) {
+    return 'URL-en kunne ikke analyseres. Sjekk at domenet finnes og er offentlig tilgjengelig.';
+  }
+
+  return 'Kunne ikke analysere nettstedet akkurat nå. Prøv igjen om litt.';
 };
 
 const getSummaryText = (score, strategy) => {
@@ -786,20 +838,26 @@ export default function App() {
     setResults(null);
 
     try {
-      const apiKey = import.meta.env.VITE_PAGESPEED_API_KEY || '';
-      const apiEndpoint = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(
-        normalizedUrl,
-      )}&strategy=${strategy}&category=performance&category=accessibility&category=best-practices&category=seo${
-        apiKey ? `&key=${apiKey}` : ''
-      }`;
+      const response = await fetch('/api/pagespeed', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          url: normalizedUrl,
+          strategy,
+        }),
+      });
+      const payload = await response.json().catch(() => null);
 
-      const response = await fetch(apiEndpoint);
-      const data = await response.json();
-
-      if (!response.ok || data.error) {
-        throw new Error(data.error?.message || 'Kunne ikke hente PageSpeed-data.');
+      if (!response.ok || !payload?.success) {
+        const nextError = new Error(payload?.error || 'Kunne ikke hente PageSpeed-data.');
+        nextError.code = payload?.code || 'pagespeed_request_failed';
+        nextError.details = payload?.details || '';
+        throw nextError;
       }
 
+      const data = payload.data;
       if (!data.lighthouseResult?.categories || !data.lighthouseResult?.audits) {
         throw new Error('Mangler Lighthouse-data i svaret.');
       }
@@ -818,7 +876,7 @@ export default function App() {
       }
     } catch (requestError) {
       console.error(requestError);
-      setError('Kunne ikke analysere nettstedet akkurat nå. Sjekk URL-en og prøv igjen.');
+      setError(getAnalysisErrorMessage(requestError));
     } finally {
       setLoading(false);
     }
@@ -905,7 +963,12 @@ export default function App() {
                         type="text"
                         value={url}
                         onChange={(event) => setUrl(event.target.value)}
+                        autoCapitalize="none"
+                        autoComplete="url"
+                        autoCorrect="off"
+                        inputMode="url"
                         placeholder="f.eks. tk-design.no"
+                        spellCheck={false}
                       />
                     </span>
                   </label>
@@ -948,7 +1011,7 @@ export default function App() {
                 </div>
 
                 <div className="st-form-meta">
-                  <p>Ingen data lagres. Vi henter bare offentlig Lighthouse-data direkte fra Google.</p>
+                  <p>Ingen data lagres. Vi henter bare offentlig Lighthouse-data fra Google.</p>
                   <a href="#resultat">
                     Se eksempelrapport
                     <ArrowRight size={15} />
@@ -974,7 +1037,12 @@ export default function App() {
                 )}
 
                 {error && (
-                  <Motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="st-error">
+                  <Motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    aria-live="polite"
+                    className="st-error"
+                  >
                     <AlertCircle size={18} />
                     <p>{error}</p>
                   </Motion.div>
