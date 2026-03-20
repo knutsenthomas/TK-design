@@ -567,15 +567,15 @@ body.homepage-refresh.speed-test-page .st-section-head--compact {
 }
 
 body.homepage-refresh.speed-test-page .st-section-head--compact > div {
-  max-width: 64rem;
+  max-width: 76rem;
 }
 
 body.homepage-refresh.speed-test-page .st-section-head--compact h2 {
-  max-width: 16ch;
+  max-width: 20ch;
 }
 
 body.homepage-refresh.speed-test-page .st-section-head--compact p {
-  max-width: 52rem;
+  max-width: 58rem;
 }
 
 body.homepage-refresh.speed-test-page .st-section-head h2 {
@@ -1098,7 +1098,7 @@ body.homepage-refresh.speed-test-page .st-button--secondary:hover {
   }
 
   body.homepage-refresh.speed-test-page .st-section-head--compact h2 {
-    max-width: 14ch;
+    max-width: 16ch;
   }
 
   body.homepage-refresh.speed-test-page .st-lead {
