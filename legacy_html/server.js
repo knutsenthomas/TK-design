@@ -53,7 +53,8 @@ const PAGE_ROUTE_MAP = {
     '/contact': 'contact.html',
     '/service-details': 'service-details.html',
     '/privacy': 'privacy.html',
-    '/accessibility': 'accessibility.html'
+    '/accessibility': 'accessibility.html',
+    '/speed-test': 'public/speed-test/index.html'
 };
 const LEGACY_REDIRECT_MAP = {
     '/index.html': '/',
