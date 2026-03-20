@@ -1361,6 +1361,7 @@ function buildSpeedTestReportEmailMarkup(reportPayload, req) {
         .header { padding: 36px 36px 20px; background: linear-gradient(135deg, #102033 0%, #173651 100%); color: #ffffff; }
         .kicker { display: inline-block; padding: 8px 12px; border-radius: 999px; background: rgba(255, 255, 255, 0.10); color: rgba(255, 255, 255, 0.80); font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
         .header h1 { margin: 16px 0 0; font-size: 34px; line-height: 1.02; }
+        .header h1 a { color: #9dd9e8 !important; text-decoration: underline; text-decoration-color: rgba(157, 217, 232, 0.55); text-underline-offset: 0.12em; }
         .header p { margin: 14px 0 0; color: rgba(255, 255, 255, 0.76); font-size: 16px; line-height: 1.6; }
         .summary-box { margin-top: 18px; padding: 16px 18px; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 18px; background: rgba(255, 255, 255, 0.08); }
         .summary-box strong { display: block; font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255, 255, 255, 0.72); }
@@ -1407,7 +1408,7 @@ function buildSpeedTestReportEmailMarkup(reportPayload, req) {
         <div class="card">
             <div class="header">
                 <span class="kicker">Speed-test rapport</span>
-                <h1>${escapeHtml(reportPayload.analyzedUrl)}</h1>
+                <h1><a href="${escapeHtml(reportPayload.requestedUrl)}">${escapeHtml(reportPayload.analyzedUrl)}</a></h1>
                 <p>${escapeHtml(openingText)}</p>
                 <div class="summary-box">
                     <strong>Oppsummert</strong>
