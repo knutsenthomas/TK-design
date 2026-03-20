@@ -566,18 +566,6 @@ body.homepage-refresh.speed-test-page .st-section-head--compact {
   margin-bottom: 1.25rem;
 }
 
-body.homepage-refresh.speed-test-page .st-section-head--compact > div {
-  max-width: 76rem;
-}
-
-body.homepage-refresh.speed-test-page .st-section-head--compact h2 {
-  max-width: 20ch;
-}
-
-body.homepage-refresh.speed-test-page .st-section-head--compact p {
-  max-width: 58rem;
-}
-
 body.homepage-refresh.speed-test-page .st-section-head h2 {
   max-width: 11ch;
   font-size: clamp(2.35rem, 4vw, 4rem);
@@ -590,6 +578,18 @@ body.homepage-refresh.speed-test-page .st-section-head p {
   max-width: 44rem;
   color: #5b6676;
   line-height: 1.75;
+}
+
+body.homepage-refresh.speed-test-page .st-section-head.st-section-head--compact > div {
+  max-width: 80rem;
+}
+
+body.homepage-refresh.speed-test-page .st-section-head.st-section-head--compact h2 {
+  max-width: 24ch;
+}
+
+body.homepage-refresh.speed-test-page .st-section-head.st-section-head--compact p {
+  max-width: 64rem;
 }
 
 body.homepage-refresh.speed-test-page .st-feature-grid,
@@ -1101,8 +1101,8 @@ body.homepage-refresh.speed-test-page .st-button--secondary:hover {
     font-size: clamp(2.6rem, 5vw, 4.5rem);
   }
 
-  body.homepage-refresh.speed-test-page .st-section-head--compact h2 {
-    max-width: 16ch;
+  body.homepage-refresh.speed-test-page .st-section-head.st-section-head--compact h2 {
+    max-width: 18ch;
   }
 
   body.homepage-refresh.speed-test-page .st-lead {
