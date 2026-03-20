@@ -71,382 +71,1020 @@ input::placeholder {
   min-height: 100vh;
 }
 
-.speed-test-shell {
-  overflow: clip;
-}
-
-body.homepage-refresh.speed-test-page {
-  background:
-    radial-gradient(circle at top right, rgba(98, 182, 203, 0.18), transparent 28%),
-    radial-gradient(circle at 10% 18%, rgba(255, 106, 27, 0.14), transparent 24%),
-    #f6f3ed;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-shell {
+body.homepage-refresh.speed-test-page .st-page {
   position: relative;
+  min-height: 100vh;
+  overflow: clip;
   isolation: isolate;
+  color: #102033;
 }
 
-body.homepage-refresh.speed-test-page .speed-test-shell :is(h1, h2, h3, h4, h5, h6, p) {
+body.homepage-refresh.speed-test-page .st-page :is(h1, h2, h3, h4, h5, h6) {
+  margin: 0;
+  color: inherit;
+  hyphens: none;
+  word-break: normal;
+  overflow-wrap: normal;
+  text-wrap: balance;
+}
+
+body.homepage-refresh.speed-test-page .st-page :is(p, ul, li) {
+  margin: 0;
   word-break: normal;
   overflow-wrap: normal;
 }
 
-body.homepage-refresh.speed-test-page .speed-test-shell :is(h1, h2, h3, h4, h5, h6) {
-  color: inherit;
-  hyphens: none;
-  text-wrap: balance;
+body.homepage-refresh.speed-test-page .st-bg-orb,
+body.homepage-refresh.speed-test-page .st-bg-wash {
+  position: absolute;
+  pointer-events: none;
 }
 
-body.homepage-refresh.speed-test-page .speed-test-main {
-  display: block;
-  width: 100%;
-  padding-bottom: clamp(4rem, 7vw, 8rem);
+body.homepage-refresh.speed-test-page .st-bg-orb {
+  border-radius: 999px;
+  filter: blur(72px);
+  opacity: 0.9;
 }
 
-body.homepage-refresh.speed-test-page .speed-test-container {
-  width: min(100% - 40px, var(--container-width, 1350px));
+body.homepage-refresh.speed-test-page .st-bg-orb--warm {
+  top: 8rem;
+  left: -8rem;
+  width: 22rem;
+  height: 22rem;
+  background: rgba(255, 106, 27, 0.15);
+}
+
+body.homepage-refresh.speed-test-page .st-bg-orb--cool {
+  top: 3rem;
+  right: -7rem;
+  width: 18rem;
+  height: 18rem;
+  background: rgba(98, 182, 203, 0.16);
+}
+
+body.homepage-refresh.speed-test-page .st-bg-wash {
+  inset: 0 0 auto;
+  height: 52rem;
+  background:
+    radial-gradient(circle at top right, rgba(98, 182, 203, 0.24), transparent 32%),
+    radial-gradient(circle at 12% 12%, rgba(255, 106, 27, 0.14), transparent 24%),
+    linear-gradient(180deg, rgba(255, 253, 248, 0.96) 0%, rgba(246, 243, 237, 0) 100%);
+}
+
+body.homepage-refresh.speed-test-page .st-app {
+  position: relative;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+body.homepage-refresh.speed-test-page .st-main {
+  flex: 1;
+  padding-bottom: clamp(4rem, 6vw, 7rem);
+}
+
+body.homepage-refresh.speed-test-page .st-shell {
+  width: min(100% - 2.5rem, 1320px);
   margin-inline: auto;
 }
 
-body.homepage-refresh.speed-test-page .speed-test-section {
-  padding-block: clamp(2rem, 4vw, 4rem);
+body.homepage-refresh.speed-test-page .st-section {
+  padding-top: clamp(3rem, 5vw, 5rem);
 }
 
-body.homepage-refresh.speed-test-page .speed-test-hero-grid {
+body.homepage-refresh.speed-test-page .st-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.4rem;
+  padding: 0 0.9rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+body.homepage-refresh.speed-test-page .st-chip--light {
+  border: 1px solid rgba(16, 32, 51, 0.1);
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 18px 42px rgba(16, 32, 51, 0.08);
+}
+
+body.homepage-refresh.speed-test-page .st-chip--dark {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.82);
+}
+
+body.homepage-refresh.speed-test-page .st-hero {
   display: grid;
-  gap: clamp(2rem, 4vw, 4.25rem);
+  gap: clamp(2rem, 4vw, 4rem);
   align-items: start;
-  padding-top: clamp(2rem, 4vw, 4.25rem);
+  padding-top: clamp(2.5rem, 5vw, 4.5rem);
 }
 
-body.homepage-refresh.speed-test-page .speed-test-intro {
+body.homepage-refresh.speed-test-page .st-hero-copy {
   min-width: 0;
-  max-width: 50rem;
+  max-width: 46rem;
 }
 
-body.homepage-refresh.speed-test-page .speed-test-handwritten {
-  font-size: clamp(1.8rem, 2.4vw, 2.4rem);
-  line-height: 1.02;
+body.homepage-refresh.speed-test-page .st-script {
+  margin-top: 1.25rem;
+  color: #ff6a1b;
+  font-family: 'Caveat', cursive;
+  font-size: clamp(2rem, 2.8vw, 2.8rem);
+  line-height: 1;
 }
 
-body.homepage-refresh.speed-test-page .speed-test-hero-title {
-  max-width: 10.8ch;
-  font-size: clamp(2.85rem, 5vw, 5.15rem);
+body.homepage-refresh.speed-test-page .st-title {
+  margin-top: 0.9rem;
+  max-width: 10.2ch;
+  font-size: clamp(3rem, 5.5vw, 5.6rem);
+  font-weight: 900;
   line-height: 0.94;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.055em;
 }
 
-body.homepage-refresh.speed-test-page .speed-test-hero-lead,
-body.homepage-refresh.speed-test-page .speed-test-section-lead {
-  max-width: 39rem;
-  font-size: clamp(1rem, 1.25vw, 1.1rem);
-  line-height: 1.75;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-form {
-  padding: clamp(1rem, 2vw, 1.35rem);
-}
-
-body.homepage-refresh.speed-test-page .speed-test-form-grid {
-  display: grid;
-  gap: 1rem;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-field {
-  min-width: 0;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-input-shell,
-body.homepage-refresh.speed-test-page .speed-test-strategy-toggle {
-  min-height: 4rem;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-submit {
-  width: 100%;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-preview-column {
-  width: 100%;
-  max-width: 29rem;
-  display: grid;
-  gap: 1rem;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-preview-shell {
-  position: relative;
-  padding: clamp(1.5rem, 2vw, 1.9rem);
-}
-
-body.homepage-refresh.speed-test-page .speed-test-preview-content {
-  position: relative;
-  display: grid;
-  gap: 0;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-preview-meta {
-  align-items: center;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-preview-title {
-  max-width: 9.8ch;
-  font-size: clamp(2rem, 2.4vw, 2.65rem);
-  line-height: 1.04;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-preview-text {
-  max-width: 31ch;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-preview-score-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-body.homepage-refresh.speed-test-page .speed-test-priority-card {
-  width: 100%;
-  margin-top: 0;
-  margin-left: 0;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-highlights-section {
-  padding-top: 0;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-highlights-grid,
-body.homepage-refresh.speed-test-page .speed-test-report-grid,
-body.homepage-refresh.speed-test-page .speed-test-detail-grid,
-body.homepage-refresh.speed-test-page .speed-test-side-stack,
-body.homepage-refresh.speed-test-page .speed-test-score-grid,
-body.homepage-refresh.speed-test-page .speed-test-metrics-grid {
-  display: grid;
-  gap: 1.5rem;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-highlight-card,
-body.homepage-refresh.speed-test-page .speed-test-metric-card,
-body.homepage-refresh.speed-test-page .speed-test-score-card,
-body.homepage-refresh.speed-test-page .speed-test-fix-item {
-  min-width: 0;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-highlight-card {
-  height: 100%;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-highlight-title,
-body.homepage-refresh.speed-test-page .speed-test-metric-title,
-body.homepage-refresh.speed-test-page .speed-test-fix-title {
-  line-height: 1.08;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-results-section {
-  padding-top: clamp(2.5rem, 5vw, 5rem);
-}
-
-body.homepage-refresh.speed-test-page .speed-test-results-header {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-results-copy {
-  max-width: 48rem;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-section-title {
-  max-width: 10.5ch;
-  font-size: clamp(2.35rem, 4vw, 3.75rem);
-  line-height: 0.96;
-  letter-spacing: -0.045em;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-score-header {
-  align-items: start;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-score-copy {
+body.homepage-refresh.speed-test-page .st-lead {
+  margin-top: 1.5rem;
   max-width: 40rem;
+  color: #5b6676;
+  font-size: clamp(1rem, 1.25vw, 1.14rem);
+  line-height: 1.8;
 }
 
-body.homepage-refresh.speed-test-page .speed-test-score-grid {
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-}
-
-body.homepage-refresh.speed-test-page .speed-test-score-card {
-  min-height: 10.25rem;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-score-card-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+body.homepage-refresh.speed-test-page .st-trust-grid {
+  display: grid;
   gap: 1rem;
-  min-width: 0;
+  margin-top: 2rem;
 }
 
-body.homepage-refresh.speed-test-page .speed-test-score-copy {
-  min-width: 0;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-score-label {
-  line-height: 1.45;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-score-pill {
-  align-self: flex-start;
-  max-width: 100%;
-  text-align: left;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-score-ring {
-  width: 5.5rem;
-  height: 5.5rem;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-metrics-grid {
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-}
-
-body.homepage-refresh.speed-test-page .speed-test-metric-card {
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-metric-head {
-  display: flex;
-  align-items: start;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-metric-copy {
-  min-width: 0;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-metric-title {
-  max-width: 10ch;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-metric-pill {
-  flex-shrink: 0;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-metric-value {
-  font-size: clamp(2.25rem, 3vw, 3rem);
-}
-
-body.homepage-refresh.speed-test-page .speed-test-side-stack {
-  grid-auto-rows: min-content;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-fix-item {
-  padding: 1.15rem 1.25rem;
-}
-
-body.homepage-refresh.speed-test-page .speed-test-fix-row {
+body.homepage-refresh.speed-test-page .st-trust-card {
   display: grid;
   grid-template-columns: 3rem minmax(0, 1fr);
   gap: 1rem;
   align-items: start;
+  min-height: 100%;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(16, 32, 51, 0.08);
+  border-radius: 1.35rem;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 16px 40px rgba(16, 32, 51, 0.08);
 }
 
-body.homepage-refresh.speed-test-page .speed-test-fix-copy {
+body.homepage-refresh.speed-test-page .st-trust-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 1rem;
+  background: #102033;
+  color: #fff;
+}
+
+body.homepage-refresh.speed-test-page .st-trust-copy {
+  display: grid;
+  gap: 0.25rem;
+}
+
+body.homepage-refresh.speed-test-page .st-trust-copy strong {
+  color: #102033;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+body.homepage-refresh.speed-test-page .st-trust-copy span {
+  color: #5b6676;
+  font-size: 0.96rem;
+  line-height: 1.6;
+}
+
+body.homepage-refresh.speed-test-page .st-form {
+  margin-top: 2rem;
+  padding: clamp(1rem, 2vw, 1.35rem);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 2rem;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 30px 80px rgba(16, 32, 51, 0.12);
+  backdrop-filter: blur(12px);
+}
+
+body.homepage-refresh.speed-test-page .st-form-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+body.homepage-refresh.speed-test-page .st-field {
+  display: grid;
+  gap: 0.55rem;
   min-width: 0;
 }
 
-@media (min-width: 640px) {
-  body.homepage-refresh.speed-test-page .speed-test-form-grid {
-    grid-template-columns: minmax(0, 1fr);
+body.homepage-refresh.speed-test-page .st-label {
+  color: #6b7280;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+body.homepage-refresh.speed-test-page .st-input {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 4rem;
+  padding: 0 1.1rem;
+  border: 1px solid rgba(16, 32, 51, 0.1);
+  border-radius: 1.5rem;
+  background: #f7f3ee;
+  color: #7b8794;
+}
+
+body.homepage-refresh.speed-test-page .st-input input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: #102033;
+  font-size: 1rem;
+  font-weight: 600;
+  outline: none;
+}
+
+body.homepage-refresh.speed-test-page .st-toggle {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.25rem;
+  min-height: 4rem;
+  padding: 0.25rem;
+  border: 1px solid rgba(16, 32, 51, 0.1);
+  border-radius: 1.5rem;
+  background: #f7f3ee;
+}
+
+body.homepage-refresh.speed-test-page .st-toggle button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 3.35rem;
+  border: 0;
+  border-radius: 1.2rem;
+  background: transparent;
+  color: #708090;
+  font-size: 0.96rem;
+  font-weight: 700;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+body.homepage-refresh.speed-test-page .st-toggle button.is-active {
+  background: #fff;
+  color: #102033;
+  box-shadow: 0 10px 24px rgba(16, 32, 51, 0.08);
+}
+
+body.homepage-refresh.speed-test-page .st-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  min-height: 4rem;
+  padding: 0 1.5rem;
+  border: 0;
+  border-radius: 1.5rem;
+  background: #102033;
+  color: #fff;
+  font-size: 0.98rem;
+  font-weight: 700;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+body.homepage-refresh.speed-test-page .st-submit:hover {
+  transform: translateY(-1px);
+  background: #173651;
+  box-shadow: 0 16px 36px rgba(16, 32, 51, 0.18);
+}
+
+body.homepage-refresh.speed-test-page .st-spinner {
+  width: 1.15rem;
+  height: 1.15rem;
+  border: 2px solid rgba(255, 255, 255, 0.24);
+  border-top-color: #fff;
+  border-radius: 999px;
+  animation: st-spin 0.9s linear infinite;
+}
+
+body.homepage-refresh.speed-test-page .st-form-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  color: #5f6c7b;
+  font-size: 0.94rem;
+}
+
+body.homepage-refresh.speed-test-page .st-form-meta a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 700;
+  color: #102033;
+}
+
+body.homepage-refresh.speed-test-page .st-progress {
+  margin-top: 1rem;
+}
+
+body.homepage-refresh.speed-test-page .st-progress-track {
+  height: 0.5rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e4e7eb;
+}
+
+body.homepage-refresh.speed-test-page .st-progress-bar {
+  height: 100%;
+  border-radius: 999px;
+  background: #62b6cb;
+}
+
+body.homepage-refresh.speed-test-page .st-progress p {
+  margin-top: 0.75rem;
+  color: #5f6c7b;
+  font-size: 0.9rem;
+}
+
+body.homepage-refresh.speed-test-page .st-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid #f0d0c8;
+  border-radius: 1.4rem;
+  background: #fff1ee;
+  color: #d04b2c;
+  font-size: 0.94rem;
+}
+
+body.homepage-refresh.speed-test-page .st-stage {
+  display: grid;
+  gap: 1rem;
+  width: 100%;
+  max-width: 31rem;
+  margin-inline: auto;
+}
+
+body.homepage-refresh.speed-test-page .st-stage-card,
+body.homepage-refresh.speed-test-page .st-stage-callout {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2rem;
+}
+
+body.homepage-refresh.speed-test-page .st-stage-card {
+  padding: 1.55rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(circle at top right, rgba(98, 182, 203, 0.28), transparent 30%),
+    radial-gradient(circle at bottom left, rgba(255, 106, 27, 0.18), transparent 36%),
+    #102033;
+  color: #fff;
+  box-shadow: 0 30px 80px rgba(16, 32, 51, 0.28);
+}
+
+body.homepage-refresh.speed-test-page .st-stage-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+body.homepage-refresh.speed-test-page .st-stage-device {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.2rem;
+  padding: 0 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+body.homepage-refresh.speed-test-page .st-stage-card h2 {
+  margin-top: 1.4rem;
+  max-width: 10ch;
+  font-size: clamp(2rem, 2.8vw, 2.8rem);
+  font-weight: 900;
+  line-height: 1.02;
+}
+
+body.homepage-refresh.speed-test-page .st-stage-card > p {
+  margin-top: 0.85rem;
+  max-width: 30ch;
+  color: rgba(255, 255, 255, 0.74);
+  line-height: 1.7;
+}
+
+body.homepage-refresh.speed-test-page .st-stage-scores {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin-top: 1.5rem;
+}
+
+body.homepage-refresh.speed-test-page .st-stage-callout {
+  padding: 1.4rem;
+  border: 1px solid rgba(16, 32, 51, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 22px 60px rgba(16, 32, 51, 0.12);
+}
+
+body.homepage-refresh.speed-test-page .st-callout-kicker,
+body.homepage-refresh.speed-test-page .st-panel-kicker,
+body.homepage-refresh.speed-test-page .st-metric-kicker,
+body.homepage-refresh.speed-test-page .st-plan-kicker {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+body.homepage-refresh.speed-test-page .st-callout-kicker {
+  color: #6b7280;
+}
+
+body.homepage-refresh.speed-test-page .st-stage-callout h3 {
+  margin-top: 0.7rem;
+  color: #102033;
+  font-size: 1.9rem;
+  font-weight: 900;
+  line-height: 1.04;
+}
+
+body.homepage-refresh.speed-test-page .st-stage-callout p:not(.st-callout-kicker) {
+  margin-top: 0.75rem;
+  color: #5b6676;
+  line-height: 1.72;
+}
+
+body.homepage-refresh.speed-test-page .st-stage-callout a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 1rem;
+  font-weight: 700;
+  color: #102033;
+}
+
+body.homepage-refresh.speed-test-page .st-section-head {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+body.homepage-refresh.speed-test-page .st-section-head--compact {
+  margin-bottom: 1.25rem;
+}
+
+body.homepage-refresh.speed-test-page .st-section-head h2 {
+  max-width: 11ch;
+  font-size: clamp(2.35rem, 4vw, 4rem);
+  font-weight: 900;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+}
+
+body.homepage-refresh.speed-test-page .st-section-head p {
+  max-width: 44rem;
+  color: #5b6676;
+  line-height: 1.75;
+}
+
+body.homepage-refresh.speed-test-page .st-feature-grid,
+body.homepage-refresh.speed-test-page .st-score-grid,
+body.homepage-refresh.speed-test-page .st-metric-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+body.homepage-refresh.speed-test-page .st-feature-grid {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+body.homepage-refresh.speed-test-page .st-feature-card {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr);
+  gap: 1rem;
+  height: 100%;
+  padding: 1.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.68);
+  border-radius: 1.8rem;
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: 0 24px 60px rgba(16, 32, 51, 0.08);
+  backdrop-filter: blur(12px);
+}
+
+body.homepage-refresh.speed-test-page .st-feature-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 1rem;
+  background: #102033;
+  color: #fff;
+}
+
+body.homepage-refresh.speed-test-page .st-feature-body {
+  display: grid;
+  gap: 0.45rem;
+}
+
+body.homepage-refresh.speed-test-page .st-feature-body h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+body.homepage-refresh.speed-test-page .st-feature-body p {
+  color: #5b6676;
+  line-height: 1.68;
+}
+
+body.homepage-refresh.speed-test-page .st-meta-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+body.homepage-refresh.speed-test-page .st-meta-pills span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.4rem;
+  padding: 0 0.95rem;
+  border: 1px solid rgba(16, 32, 51, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #102033;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+body.homepage-refresh.speed-test-page .st-results-stack {
+  display: grid;
+  gap: 1.5rem;
+}
+
+body.homepage-refresh.speed-test-page .st-results-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+body.homepage-refresh.speed-test-page .st-panel {
+  display: grid;
+  gap: 1.5rem;
+  min-width: 0;
+  padding: clamp(1.4rem, 2vw, 1.8rem);
+  border-radius: 2rem;
+}
+
+body.homepage-refresh.speed-test-page .st-panel--light {
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 30px 80px rgba(16, 32, 51, 0.12);
+  backdrop-filter: blur(12px);
+}
+
+body.homepage-refresh.speed-test-page .st-panel--dark {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #102033;
+  color: #fff;
+  box-shadow: 0 30px 80px rgba(16, 32, 51, 0.22);
+}
+
+body.homepage-refresh.speed-test-page .st-panel--cta {
+  gap: 1rem;
+}
+
+body.homepage-refresh.speed-test-page .st-panel-head {
+  display: grid;
+  gap: 1rem;
+}
+
+body.homepage-refresh.speed-test-page .st-panel-head h3,
+body.homepage-refresh.speed-test-page .st-panel--dark h3 {
+  font-size: clamp(1.8rem, 2.4vw, 2.55rem);
+  font-weight: 900;
+  line-height: 1.03;
+}
+
+body.homepage-refresh.speed-test-page .st-panel-head p:not(.st-panel-kicker),
+body.homepage-refresh.speed-test-page .st-panel--light > p:not(.st-panel-kicker),
+body.homepage-refresh.speed-test-page .st-panel--dark > p:not(.st-panel-kicker) {
+  color: #5b6676;
+  line-height: 1.72;
+}
+
+body.homepage-refresh.speed-test-page .st-panel-kicker {
+  color: #6b7280;
+}
+
+body.homepage-refresh.speed-test-page .st-panel-kicker--dark {
+  color: rgba(255, 255, 255, 0.52);
+}
+
+body.homepage-refresh.speed-test-page .st-panel--dark .st-panel-kicker + h3,
+body.homepage-refresh.speed-test-page .st-panel--dark h3 + p {
+  color: #fff;
+}
+
+body.homepage-refresh.speed-test-page .st-panel--dark > p:not(.st-panel-kicker),
+body.homepage-refresh.speed-test-page .st-panel--dark li,
+body.homepage-refresh.speed-test-page .st-plan-copy p {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+body.homepage-refresh.speed-test-page .st-priority-box {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1rem 1.05rem;
+  border: 1px solid rgba(16, 32, 51, 0.08);
+  border-radius: 1.45rem;
+  background: #f7f3ee;
+}
+
+body.homepage-refresh.speed-test-page .st-priority-box span {
+  color: #6b7280;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+body.homepage-refresh.speed-test-page .st-priority-box strong {
+  color: #102033;
+  font-size: 1.05rem;
+  line-height: 1.35;
+}
+
+body.homepage-refresh.speed-test-page .st-score-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+body.homepage-refresh.speed-test-page .st-score-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 10rem;
+  padding: 1.1rem;
+  border: 1px solid rgba(16, 32, 51, 0.08);
+  border-radius: 1.7rem;
+  background: #fff;
+}
+
+body.homepage-refresh.speed-test-page .st-score-card.is-dark {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+body.homepage-refresh.speed-test-page .st-score-copy {
+  display: grid;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+body.homepage-refresh.speed-test-page .st-score-label {
+  color: #6b7280;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+body.homepage-refresh.speed-test-page .st-score-card.is-dark .st-score-label {
+  color: rgba(255, 255, 255, 0.56);
+}
+
+body.homepage-refresh.speed-test-page .st-score-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-height: 2rem;
+  padding: 0 0.75rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+body.homepage-refresh.speed-test-page .st-score-ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 5.4rem;
+  height: 5.4rem;
+  flex: 0 0 5.4rem;
+}
+
+body.homepage-refresh.speed-test-page .st-score-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+body.homepage-refresh.speed-test-page .st-score-value {
+  position: absolute;
+  color: #102033;
+  font-size: 1.8rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+body.homepage-refresh.speed-test-page .st-score-card.is-dark .st-score-value {
+  color: #fff;
+}
+
+body.homepage-refresh.speed-test-page .st-reading-list {
+  display: grid;
+  gap: 0.85rem;
+  padding: 0;
+  list-style: none;
+}
+
+body.homepage-refresh.speed-test-page .st-reading-list li {
+  position: relative;
+  padding-left: 1.25rem;
+  line-height: 1.7;
+}
+
+body.homepage-refresh.speed-test-page .st-reading-list li::before {
+  content: '';
+  position: absolute;
+  top: 0.72rem;
+  left: 0;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: #62b6cb;
+}
+
+body.homepage-refresh.speed-test-page .st-ghost-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+  min-height: 3.25rem;
+  padding: 0 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-weight: 700;
+}
+
+body.homepage-refresh.speed-test-page .st-metric-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+body.homepage-refresh.speed-test-page .st-metric-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 100%;
+  padding: 1.35rem;
+  border: 1px solid;
+  border-radius: 1.7rem;
+}
+
+body.homepage-refresh.speed-test-page .st-metric-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+body.homepage-refresh.speed-test-page .st-metric-kicker {
+  color: #6b7280;
+}
+
+body.homepage-refresh.speed-test-page .st-metric-card h4 {
+  margin-top: 0.35rem;
+  max-width: 10ch;
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+body.homepage-refresh.speed-test-page .st-metric-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2rem;
+  padding: 0 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+body.homepage-refresh.speed-test-page .st-metric-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+}
+
+body.homepage-refresh.speed-test-page .st-metric-value {
+  color: #102033;
+  font-size: clamp(2.2rem, 3vw, 3rem);
+  font-weight: 900;
+  line-height: 1;
+}
+
+body.homepage-refresh.speed-test-page .st-metric-text {
+  color: #5b6676;
+  line-height: 1.7;
+}
+
+body.homepage-refresh.speed-test-page .st-aside-stack,
+body.homepage-refresh.speed-test-page .st-plan-list,
+body.homepage-refresh.speed-test-page .st-cta-actions {
+  display: grid;
+  gap: 1rem;
+}
+
+body.homepage-refresh.speed-test-page .st-plan-item {
+  display: grid;
+  grid-template-columns: 2.85rem minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+body.homepage-refresh.speed-test-page .st-plan-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.85rem;
+  height: 2.85rem;
+  border-radius: 1rem;
+  background: rgba(98, 182, 203, 0.16);
+  color: #62b6cb;
+}
+
+body.homepage-refresh.speed-test-page .st-plan-copy {
+  display: grid;
+  gap: 0.3rem;
+}
+
+body.homepage-refresh.speed-test-page .st-plan-kicker {
+  color: rgba(255, 255, 255, 0.48);
+}
+
+body.homepage-refresh.speed-test-page .st-plan-copy h4 {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+body.homepage-refresh.speed-test-page .st-plan-copy p {
+  line-height: 1.68;
+}
+
+body.homepage-refresh.speed-test-page .st-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 3.75rem;
+  padding: 0 1.15rem;
+  border-radius: 1.35rem;
+  font-weight: 700;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+body.homepage-refresh.speed-test-page .st-button:hover {
+  transform: translateY(-1px);
+}
+
+body.homepage-refresh.speed-test-page .st-button--primary {
+  background: #102033;
+  color: #fff;
+}
+
+body.homepage-refresh.speed-test-page .st-button--primary:hover {
+  background: #173651;
+}
+
+body.homepage-refresh.speed-test-page .st-button--secondary {
+  border: 1px solid rgba(16, 32, 51, 0.1);
+  background: #f7f3ee;
+  color: #102033;
+}
+
+body.homepage-refresh.speed-test-page .st-button--secondary:hover {
+  border-color: rgba(16, 32, 51, 0.18);
+}
+
+@media (min-width: 700px) {
+  body.homepage-refresh.speed-test-page .st-trust-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  body.homepage-refresh.speed-test-page .st-form-meta {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
   }
 }
 
-@media (min-width: 768px) {
-  body.homepage-refresh.speed-test-page .speed-test-highlights-grid,
-  body.homepage-refresh.speed-test-page .speed-test-metrics-grid,
-  body.homepage-refresh.speed-test-page .speed-test-preview-score-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  body.homepage-refresh.speed-test-page .speed-test-results-header {
-    flex-direction: row;
+@media (min-width: 920px) {
+  body.homepage-refresh.speed-test-page .st-form-grid {
+    grid-template-columns: minmax(0, 1.4fr) minmax(220px, 0.8fr) minmax(205px, auto);
     align-items: end;
-    justify-content: space-between;
-  }
-
-  body.homepage-refresh.speed-test-page .speed-test-results-meta {
-    justify-content: flex-end;
   }
 }
 
 @media (min-width: 980px) {
-  body.homepage-refresh.speed-test-page .speed-test-highlights-grid {
+  body.homepage-refresh.speed-test-page .st-feature-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  body.homepage-refresh.speed-test-page .speed-test-form-grid {
-    grid-template-columns: minmax(0, 1.45fr) minmax(220px, 0.78fr) minmax(200px, auto);
-    align-items: end;
-  }
-
-  body.homepage-refresh.speed-test-page .speed-test-score-header {
-    display: flex;
-    flex-direction: row;
-    align-items: end;
-    justify-content: space-between;
-    gap: 1.5rem;
   }
 }
 
-@media (min-width: 1240px) {
-  body.homepage-refresh.speed-test-page .speed-test-hero-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(24rem, 29rem);
+@media (min-width: 1160px) {
+  body.homepage-refresh.speed-test-page .st-hero {
+    grid-template-columns: minmax(0, 1.05fr) minmax(24rem, 29rem);
     align-items: center;
   }
 
-  body.homepage-refresh.speed-test-page .speed-test-report-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(22rem, 25rem);
+  body.homepage-refresh.speed-test-page .st-results-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(21rem, 25rem);
   }
 
-  body.homepage-refresh.speed-test-page .speed-test-detail-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(22rem, 25rem);
+  body.homepage-refresh.speed-test-page .st-panel-head {
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 18rem);
+    align-items: end;
+  }
+
+  body.homepage-refresh.speed-test-page .st-panel-head--stack {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 @media (max-width: 767px) {
-  body.homepage-refresh.speed-test-page .speed-test-container {
-    width: min(100% - 24px, var(--container-width, 1350px));
+  body.homepage-refresh.speed-test-page .st-shell {
+    width: min(100% - 1.5rem, 1320px);
   }
 
-  body.homepage-refresh.speed-test-page .speed-test-hero-title {
-    max-width: 8.3ch;
-    font-size: clamp(2.4rem, 12vw, 3.8rem);
+  body.homepage-refresh.speed-test-page .st-title {
+    max-width: 8.6ch;
+    font-size: clamp(2.5rem, 12vw, 4rem);
     line-height: 0.96;
   }
 
-  body.homepage-refresh.speed-test-page .speed-test-section-title {
-    max-width: 9ch;
+  body.homepage-refresh.speed-test-page .st-section-head h2 {
+    max-width: 9.5ch;
     font-size: clamp(2rem, 9vw, 3rem);
   }
 
-  body.homepage-refresh.speed-test-page .speed-test-score-card-inner,
-  body.homepage-refresh.speed-test-page .speed-test-metric-head {
+  body.homepage-refresh.speed-test-page .st-score-card,
+  body.homepage-refresh.speed-test-page .st-metric-top {
+    align-items: flex-start;
+  }
+
+  body.homepage-refresh.speed-test-page .st-score-card {
     flex-direction: column;
-    align-items: start;
   }
 
-  body.homepage-refresh.speed-test-page .speed-test-score-ring {
-    width: 5rem;
-    height: 5rem;
-  }
-
-  body.homepage-refresh.speed-test-page .speed-test-fix-row {
+  body.homepage-refresh.speed-test-page .st-plan-item,
+  body.homepage-refresh.speed-test-page .st-feature-card,
+  body.homepage-refresh.speed-test-page .st-trust-card {
     grid-template-columns: 1fr;
-    gap: 0.75rem;
   }
+}
 
-  body.homepage-refresh.speed-test-page .speed-test-submit {
-    min-height: 3.75rem;
+@keyframes st-spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 

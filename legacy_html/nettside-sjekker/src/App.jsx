@@ -94,6 +94,30 @@ const PAGE_HIGHLIGHTS = [
   },
 ];
 
+const TRUST_POINTS = [
+  {
+    title: 'Mobil og desktop',
+    text: 'Bytt mellom enhetene og se hvor opplevelsen glipper først.',
+    icon: Smartphone,
+  },
+  {
+    title: 'Tydelig plan',
+    text: 'Du får tre prioriterte grep i stedet for en bunke rådata.',
+    icon: Zap,
+  },
+  {
+    title: 'Ingen lagring',
+    text: 'Vi henter bare offentlig Lighthouse-data direkte fra Google.',
+    icon: Shield,
+  },
+];
+
+const REPORT_POINTS = [
+  'Ytelse viser hvor raskt brukeren faktisk ser og kan bruke siden.',
+  'Tilgjengelighet og beste praksis avslører friksjon som også påvirker tillit.',
+  'Handlingsplanen er sortert etter grep som vanligvis rydder mest først.',
+];
+
 const NAV_ITEMS = [
   { href: '/', label: 'Home' },
   { href: '/?section=about', label: 'About' },
@@ -225,27 +249,33 @@ const getScoreTone = (score) => {
 const getMetricTone = (status) => {
   if (status === 'pass') {
     return {
-      surface: 'bg-[#eefaf3]',
-      border: 'border-[#cdeedb]',
-      text: 'text-[#18794f]',
-      dot: 'bg-[#19b46b]',
+      surface: '#eefaf3',
+      border: '#cdeedb',
+      text: '#18794f',
+      dot: '#19b46b',
+      pill: 'rgba(25, 180, 107, 0.14)',
+      label: 'Bra',
     };
   }
 
   if (status === 'warn') {
     return {
-      surface: 'bg-[#fff7eb]',
-      border: 'border-[#f2dfbf]',
-      text: 'text-[#c67a00]',
-      dot: 'bg-[#ffb02e]',
+      surface: '#fff7eb',
+      border: '#f2dfbf',
+      text: '#c67a00',
+      dot: '#ffb02e',
+      pill: 'rgba(255, 176, 46, 0.16)',
+      label: 'Se på dette',
     };
   }
 
   return {
-    surface: 'bg-[#fff1ee]',
-    border: 'border-[#f0d0c8]',
-    text: 'text-[#d04b2c]',
-    dot: 'bg-[#ef6a4a]',
+    surface: '#fff1ee',
+    border: '#f0d0c8',
+    text: '#d04b2c',
+    dot: '#ef6a4a',
+    pill: 'rgba(239, 106, 74, 0.14)',
+    label: 'Viktig',
   };
 };
 
@@ -582,78 +612,61 @@ const HighlightCard = ({ item, index }) => {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.08, duration: 0.45 }}
       viewport={{ once: true, amount: 0.35 }}
-      className="speed-test-highlight-card rounded-[30px] border border-white/60 bg-white/85 p-6 shadow-[0_24px_60px_rgba(16,32,51,0.08)] backdrop-blur"
+      className="st-feature-card"
     >
-      <div className="speed-test-highlight-icon flex h-12 w-12 items-center justify-center rounded-2xl bg-[#102033] text-white">
+      <div className="st-feature-icon">
         <Icon size={22} />
       </div>
-      <h3 className="speed-test-highlight-title mt-5 text-xl font-bold text-[#102033]">{item.title}</h3>
-      <p className="speed-test-highlight-text mt-3 text-[15px] leading-7 text-[#5b6676]">{item.text}</p>
+      <div className="st-feature-body">
+        <h3>{item.title}</h3>
+        <p>{item.text}</p>
+      </div>
     </Motion.article>
   );
 };
 
 const ScoreCard = ({ label, score, dark = false }) => {
   const tone = getScoreTone(score);
-  const radius = 36;
+  const radius = 34;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;
 
   return (
-    <div
-      className={`speed-test-score-card rounded-[28px] border p-5 ${
-        dark ? 'border-white/10 bg-white/5' : 'border-[#102033]/10 bg-white'
-      }`}
-    >
-      <div className="speed-test-score-card-inner">
-        <div className="speed-test-score-copy">
-          <p
-            className={`speed-test-score-label text-[11px] font-semibold uppercase tracking-[0.22em] ${
-              dark ? 'text-white/55' : 'text-[#6b7280]'
-            }`}
-          >
-            {label}
-          </p>
-          <span
-            className="speed-test-score-pill mt-3 inline-flex rounded-full px-3 py-1 text-xs font-semibold"
-            style={{ backgroundColor: tone.soft, color: tone.accent }}
-          >
-            {tone.label}
-          </span>
-        </div>
-
-        <div className="speed-test-score-ring relative shrink-0">
-          <svg viewBox="0 0 96 96" className="h-full w-full -rotate-90">
-            <circle
-              cx="48"
-              cy="48"
-              r={radius}
-              fill="transparent"
-              stroke={dark ? 'rgba(255,255,255,0.12)' : 'rgba(16,32,51,0.1)'}
-              strokeWidth="8"
-            />
-            <Motion.circle
-              cx="48"
-              cy="48"
-              r={radius}
-              fill="transparent"
-              stroke={tone.accent}
-              strokeWidth="8"
-              strokeLinecap="round"
-              strokeDasharray={circumference}
-              initial={{ strokeDashoffset: circumference }}
-              animate={{ strokeDashoffset: offset }}
-              transition={{ duration: 1.1, ease: 'easeOut' }}
-            />
-          </svg>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className={`text-2xl font-black ${dark ? 'text-white' : 'text-[#102033]'}`}>
-              {score}
-            </span>
-          </div>
-        </div>
+    <article className={`st-score-card${dark ? ' is-dark' : ''}`}>
+      <div className="st-score-copy">
+        <p className="st-score-label">{label}</p>
+        <span className="st-score-pill" style={{ backgroundColor: tone.soft, color: tone.accent }}>
+          {tone.label}
+        </span>
       </div>
-    </div>
+
+      <div className="st-score-ring">
+        <svg viewBox="0 0 96 96" className="st-score-svg">
+          <circle
+            cx="48"
+            cy="48"
+            r={radius}
+            fill="transparent"
+            stroke={dark ? 'rgba(255,255,255,0.12)' : 'rgba(16,32,51,0.08)'}
+            strokeWidth="8"
+          />
+          <Motion.circle
+            cx="48"
+            cy="48"
+            r={radius}
+            fill="transparent"
+            stroke={tone.accent}
+            strokeWidth="8"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            initial={{ strokeDashoffset: circumference }}
+            animate={{ strokeDashoffset: offset }}
+            transition={{ duration: 1.1, ease: 'easeOut' }}
+          />
+        </svg>
+        <span className="st-score-value">{score}</span>
+      </div>
+    </article>
   );
 };
 
@@ -661,23 +674,23 @@ const MetricCard = ({ metric }) => {
   const tone = getMetricTone(metric.status);
 
   return (
-    <div className={`speed-test-metric-card rounded-[28px] border p-6 ${tone.surface} ${tone.border}`}>
-      <div className="speed-test-metric-head">
-        <div className="speed-test-metric-copy">
-          <p className="speed-test-metric-label text-[11px] font-semibold uppercase tracking-[0.22em] text-[#6b7280]">
-            {metric.label}
-          </p>
-          <h4 className="speed-test-metric-title mt-2 text-xl font-bold text-[#102033]">{metric.title}</h4>
+    <article
+      className="st-metric-card"
+      style={{ backgroundColor: tone.surface, borderColor: tone.border }}
+    >
+      <div className="st-metric-top">
+        <div>
+          <p className="st-metric-kicker">{metric.label}</p>
+          <h4>{metric.title}</h4>
         </div>
-        <span className={`speed-test-metric-pill inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${tone.text}`}>
-          <span className={`h-2.5 w-2.5 rounded-full ${tone.dot}`} />
-          {metric.status === 'pass' ? 'Bra' : metric.status === 'warn' ? 'Se på dette' : 'Viktig'}
+        <span className="st-metric-pill" style={{ color: tone.text, backgroundColor: tone.pill }}>
+          <span className="st-metric-dot" style={{ backgroundColor: tone.dot }} />
+          {tone.label}
         </span>
       </div>
-
-      <p className="speed-test-metric-value mt-6 text-4xl font-black leading-none text-[#102033]">{metric.value}</p>
-      <p className="speed-test-metric-text mt-4 text-[15px] leading-7 text-[#5b6676]">{metric.description}</p>
-    </div>
+      <p className="st-metric-value">{metric.value}</p>
+      <p className="st-metric-text">{metric.description}</p>
+    </article>
   );
 };
 
@@ -685,20 +698,16 @@ const FixItem = ({ fix, index }) => {
   const Icon = fix.icon;
 
   return (
-    <div className="speed-test-fix-item rounded-[28px] border border-white/10 bg-white/8 p-5">
-      <div className="speed-test-fix-row">
-        <div className="speed-test-fix-icon flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#62B6CB]/20 text-[#62B6CB]">
-          <Icon size={22} />
-        </div>
-        <div className="speed-test-fix-copy">
-          <p className="speed-test-fix-label text-[11px] font-semibold uppercase tracking-[0.22em] text-white/50">
-            Prioritet {index + 1}
-          </p>
-          <h4 className="speed-test-fix-title mt-2 text-lg font-bold text-white">{fix.title}</h4>
-          <p className="speed-test-fix-text mt-2 text-sm leading-7 text-white/70">{fix.description}</p>
-        </div>
+    <article className="st-plan-item">
+      <div className="st-plan-icon">
+        <Icon size={20} />
       </div>
-    </div>
+      <div className="st-plan-copy">
+        <p className="st-plan-kicker">Prioritet {index + 1}</p>
+        <h4>{fix.title}</h4>
+        <p>{fix.description}</p>
+      </div>
+    </article>
   );
 };
 
@@ -826,18 +835,12 @@ export default function App() {
   };
 
   return (
-    <div className="speed-test-shell relative min-h-screen overflow-hidden text-[#102033]">
-      <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-[760px]"
-        style={{
-          background:
-            'radial-gradient(circle at top right, rgba(98, 182, 203, 0.28), transparent 32%), radial-gradient(circle at 12% 18%, rgba(255, 106, 27, 0.16), transparent 24%), linear-gradient(180deg, rgba(255, 253, 248, 0.95) 0%, rgba(246, 243, 237, 0) 100%)',
-        }}
-      />
-      <div className="pointer-events-none absolute left-[-140px] top-[280px] h-[360px] w-[360px] rounded-full bg-[#62B6CB]/10 blur-3xl" />
-      <div className="pointer-events-none absolute right-[-100px] top-[130px] h-[260px] w-[260px] rounded-full bg-[#ff6a1b]/10 blur-3xl" />
+    <div className="st-page">
+      <div className="st-bg-orb st-bg-orb--warm" />
+      <div className="st-bg-orb st-bg-orb--cool" />
+      <div className="st-bg-wash" />
 
-      <div className="relative flex min-h-screen flex-col">
+      <div className="st-app">
         <Header
           isScrolled={headerScrolled}
           isMobileMenuOpen={isMobileMenuOpen}
@@ -847,92 +850,81 @@ export default function App() {
           onToggleMobileMenu={() => setIsMobileMenuOpen((current) => !current)}
         />
 
-        <main className="speed-test-main flex-1">
-          <section className="speed-test-container speed-test-section speed-test-hero-grid">
-            <div className="speed-test-intro">
-              <Motion.div
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="inline-flex items-center gap-2 rounded-full border border-[#102033]/10 bg-white/70 px-4 py-2 text-sm font-semibold text-[#102033] shadow-[0_16px_40px_rgba(16,32,51,0.08)] backdrop-blur"
-              >
-                <Shield size={16} className="text-[#ff6a1b]" />
+        <main className="st-main">
+          <section className="st-shell st-hero">
+            <Motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45 }}
+              className="st-hero-copy"
+            >
+              <div className="st-chip st-chip--light">
+                <Shield size={15} />
                 Drevet av Google Lighthouse API
-              </Motion.div>
+              </div>
 
-              <Motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.08, duration: 0.55 }}
-                className="mt-7"
-              >
-                <p
-                  className="speed-test-handwritten text-[#ff6a1b]"
-                  style={{ fontFamily: "'Caveat', cursive" }}
-                >
-                  Finn friksjonen før kunden gjør det
-                </p>
-                <h1 className="speed-test-hero-title mt-3 font-black text-[#102033]">
-                  <span className="block">Er nettsiden din</span>
-                  <span className="block">rask nok til å holde</span>
-                  <span className="block">på oppmerksomheten?</span>
-                </h1>
-                <p className="speed-test-hero-lead mt-6 text-[#5b6676]">
-                  Lim inn en URL og få en visuell rapport som viser hvor opplevelsen bremser opp på mobil
-                  eller desktop, og hvilke grep som gir mest effekt først.
-                </p>
-              </Motion.div>
+              <p className="st-script">Finn friksjonen før kunden gjør det</p>
+              <h1 className="st-title">Se hvor nettsiden taper fart før brukeren gjør det.</h1>
+              <p className="st-lead">
+                Lim inn en URL og få en tydelig rapport som viser hva som bremser opplevelsen,
+                hvilke tall som betyr noe og hva som bør ryddes først.
+              </p>
+
+              <div className="st-trust-grid">
+                {TRUST_POINTS.map((item) => {
+                  const Icon = item.icon;
+
+                  return (
+                    <div key={item.title} className="st-trust-card">
+                      <div className="st-trust-icon">
+                        <Icon size={18} />
+                      </div>
+                      <div className="st-trust-copy">
+                        <strong>{item.title}</strong>
+                        <span>{item.text}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
 
               <Motion.form
-                initial={{ opacity: 0, y: 36 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.16, duration: 0.55 }}
+                transition={{ delay: 0.08, duration: 0.45 }}
                 onSubmit={testSite}
-                className="speed-test-form mt-10 rounded-[34px] border border-white/70 bg-white/90 p-4 shadow-[0_30px_80px_rgba(16,32,51,0.12)] backdrop-blur"
+                className="st-form"
               >
-                <div className="speed-test-form-grid">
-                  <div className="speed-test-field speed-test-field--url">
-                    <label htmlFor="speed-url" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#6b7280]">
-                      Nettadresse
-                    </label>
-                    <div className="speed-test-input-shell mt-2 flex items-center gap-3 rounded-[24px] border border-[#102033]/10 bg-[#f7f3ee] px-4 py-4">
-                      <Search size={18} className="shrink-0 text-[#7b8794]" />
+                <div className="st-form-grid">
+                  <label className="st-field st-field--url" htmlFor="speed-url">
+                    <span className="st-label">Nettadresse</span>
+                    <span className="st-input">
+                      <Search size={18} />
                       <input
                         id="speed-url"
                         type="text"
                         value={url}
                         onChange={(event) => setUrl(event.target.value)}
                         placeholder="f.eks. tk-design.no"
-                        className="w-full bg-transparent text-base font-semibold text-[#102033] outline-none"
                       />
-                    </div>
-                  </div>
-
-                  <div className="speed-test-field speed-test-field--strategy">
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#6b7280]">
-                      Analyser for
                     </span>
-                    <div className="speed-test-strategy-toggle mt-2 inline-flex w-full rounded-[24px] border border-[#102033]/10 bg-[#f7f3ee] p-1">
+                  </label>
+
+                  <div className="st-field st-field--strategy">
+                    <span className="st-label">Analyser for</span>
+                    <div className="st-toggle">
                       <button
                         type="button"
+                        className={strategy === 'mobile' ? 'is-active' : ''}
                         onClick={() => setStrategy('mobile')}
-                        className={`inline-flex flex-1 items-center justify-center gap-2 rounded-[18px] px-4 py-3 text-sm font-semibold transition-all ${
-                          strategy === 'mobile'
-                            ? 'bg-white text-[#102033] shadow-[0_8px_20px_rgba(16,32,51,0.08)]'
-                            : 'text-[#708090] hover:text-[#102033]'
-                        }`}
                       >
                         <Smartphone size={17} />
                         Mobil
                       </button>
                       <button
                         type="button"
+                        className={strategy === 'desktop' ? 'is-active' : ''}
                         onClick={() => setStrategy('desktop')}
-                        className={`inline-flex flex-1 items-center justify-center gap-2 rounded-[18px] px-4 py-3 text-sm font-semibold transition-all ${
-                          strategy === 'desktop'
-                            ? 'bg-white text-[#102033] shadow-[0_8px_20px_rgba(16,32,51,0.08)]'
-                            : 'text-[#708090] hover:text-[#102033]'
-                        }`}
                       >
                         <Monitor size={17} />
                         Desktop
@@ -940,14 +932,10 @@ export default function App() {
                     </div>
                   </div>
 
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="speed-test-submit inline-flex h-[60px] items-center justify-center gap-2 rounded-[22px] bg-[#102033] px-7 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#173651] disabled:cursor-not-allowed disabled:opacity-60"
-                  >
+                  <button type="submit" disabled={loading} className="st-submit">
                     {loading ? (
                       <>
-                        <span className="h-5 w-5 rounded-full border-2 border-white/25 border-t-white animate-spin" />
+                        <span className="st-spinner" />
                         Kjører test
                       </>
                     ) : (
@@ -959,11 +947,11 @@ export default function App() {
                   </button>
                 </div>
 
-                <div className="mt-4 flex flex-col gap-2 text-sm text-[#5f6c7b] md:flex-row md:items-center md:justify-between">
-                  <p>Ingen data lagres. Vi henter kun offentlig Lighthouse-data direkte fra Google.</p>
-                  <a href="#resultat" className="inline-flex items-center gap-2 font-semibold text-[#102033] transition-colors hover:text-[#ff6a1b]">
+                <div className="st-form-meta">
+                  <p>Ingen data lagres. Vi henter bare offentlig Lighthouse-data direkte fra Google.</p>
+                  <a href="#resultat">
                     Se eksempelrapport
-                    <ArrowRight size={16} />
+                    <ArrowRight size={15} />
                   </a>
                 </div>
 
@@ -972,263 +960,196 @@ export default function App() {
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="mt-5 overflow-hidden"
+                    className="st-progress"
                   >
-                    <div className="h-2 overflow-hidden rounded-full bg-[#e4e7eb]">
+                    <div className="st-progress-track">
                       <Motion.div
-                        className="h-full rounded-full bg-[#62B6CB]"
+                        className="st-progress-bar"
                         animate={{ width: `${progress}%` }}
                         transition={{ ease: 'easeOut' }}
                       />
                     </div>
-                    <p className="mt-3 text-sm text-[#5f6c7b]">
-                      Henter Lighthouse-data fra Google. Dette tar vanligvis 10-15 sekunder.
-                    </p>
+                    <p>Henter Lighthouse-data. Dette tar vanligvis 10 til 15 sekunder.</p>
                   </Motion.div>
                 )}
 
                 {error && (
-                  <Motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-5 flex items-start gap-3 rounded-[22px] border border-[#f0d0c8] bg-[#fff1ee] px-4 py-3 text-sm text-[#d04b2c]"
-                  >
-                    <AlertCircle size={18} className="mt-0.5 shrink-0" />
+                  <Motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="st-error">
+                    <AlertCircle size={18} />
                     <p>{error}</p>
                   </Motion.div>
                 )}
               </Motion.form>
-            </div>
+            </Motion.div>
 
-            <Motion.div
-              initial={{ opacity: 0, x: 24 }}
+            <Motion.aside
+              initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.22, duration: 0.55 }}
-              className="speed-test-preview-column relative mx-auto w-full xl:ml-auto"
+              transition={{ delay: 0.14, duration: 0.45 }}
+              className="st-stage"
             >
-              <div className="speed-test-preview-shell overflow-hidden rounded-[38px] border border-white/10 bg-[#102033] p-8 text-white shadow-[0_30px_80px_rgba(16,32,51,0.28)]">
-                <div
-                  className="pointer-events-none absolute inset-0"
-                  style={{
-                    background:
-                      'radial-gradient(circle at top right, rgba(98, 182, 203, 0.36), transparent 34%), radial-gradient(circle at bottom left, rgba(255, 106, 27, 0.2), transparent 38%)',
-                  }}
-                />
-                <div className="speed-test-preview-content relative">
-                  <div className="speed-test-preview-meta flex flex-wrap items-center justify-between gap-3">
-                    <span className="inline-flex rounded-full border border-white/10 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/80">
-                      Live Lighthouse
-                    </span>
-                    <span className="inline-flex rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-semibold text-white/80">
-                      {getStrategyLabel(activeReport.strategy)}
-                    </span>
-                  </div>
+              <div className="st-stage-card">
+                <div className="st-stage-top">
+                  <span className="st-chip st-chip--dark">Live Lighthouse</span>
+                  <span className="st-stage-device">{getStrategyLabel(activeReport.strategy)}</span>
+                </div>
 
-                  <h2 className="speed-test-preview-title mt-6 text-3xl font-black leading-tight">
-                    {results ? `Rapport klar for ${activeReport.analyzedUrl}` : 'Se hvordan rapporten er bygget opp'}
-                  </h2>
-                  <p className="speed-test-preview-text mt-3 text-sm leading-7 text-white/70">
-                    {results
-                      ? activeReport.summary
-                      : 'Du får scorekort, nøkkelmålinger og en prioritert handlingsplan i ett og samme overblikk.'}
-                  </p>
+                <h2>{results ? `Rapport klar for ${activeReport.analyzedUrl}` : 'Dette får du tilbake etter testen'}</h2>
+                <p>
+                  {results
+                    ? activeReport.summary
+                    : 'En kompakt rapport med scorekort, nøkkelmålinger og en prioriteringsliste du faktisk kan bruke.'}
+                </p>
 
-                  <div className="speed-test-preview-score-grid mt-8 grid grid-cols-2 gap-4">
-                    {SCORE_DEFINITIONS.map(({ key, label }) => (
-                      <ScoreCard key={key} label={label} score={activeReport.scores[key]} dark />
-                    ))}
-                  </div>
+                <div className="st-stage-scores">
+                  {SCORE_DEFINITIONS.map(({ key, label }) => (
+                    <ScoreCard key={key} label={label} score={activeReport.scores[key]} dark />
+                  ))}
                 </div>
               </div>
 
-              <div className="speed-test-priority-card relative rounded-[30px] border border-[#102033]/10 bg-white/95 p-6 shadow-[0_24px_60px_rgba(16,32,51,0.12)] backdrop-blur">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#6b7280]">
-                  Prioritet nå
-                </p>
-                <h3 className="mt-3 text-2xl font-black text-[#102033]">{activeReport.topFixes[0].title}</h3>
-                <p className="mt-3 text-[15px] leading-7 text-[#5b6676]">{activeReport.topFixes[0].description}</p>
-                <a
-                  href="#resultat"
-                  className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#102033] transition-colors hover:text-[#ff6a1b]"
-                >
+              <div className="st-stage-callout">
+                <p className="st-callout-kicker">Første grep</p>
+                <h3>{activeReport.topFixes[0].title}</h3>
+                <p>{activeReport.topFixes[0].description}</p>
+                <a href="#resultat">
                   Se hele rapporten
                   <ArrowRight size={16} />
                 </a>
               </div>
-            </Motion.div>
+            </Motion.aside>
           </section>
 
-          <section id="fordeler" className="speed-test-container speed-test-section speed-test-highlights-section">
-            <div className="speed-test-highlights-grid">
+          <section id="fordeler" className="st-shell st-section">
+            <div className="st-section-head st-section-head--compact">
+              <span className="st-chip st-chip--light">Hva du får</span>
+              <div>
+                <h2>Rapporten er laget for beslutninger, ikke bare scores.</h2>
+                <p>Vi oversetter Lighthouse-data til språk, prioriteringer og tiltak som faktisk kan brukes videre.</p>
+              </div>
+            </div>
+
+            <div className="st-feature-grid">
               {PAGE_HIGHLIGHTS.map((item, index) => (
                 <HighlightCard key={item.title} item={item} index={index} />
               ))}
             </div>
           </section>
 
-          <section id="resultat" className="speed-test-container speed-test-section speed-test-results-section">
-            <div className="speed-test-results-header mb-8">
-              <div className="speed-test-results-copy">
-                <span className="inline-flex rounded-full border border-[#102033]/10 bg-white/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#102033] shadow-[0_16px_40px_rgba(16,32,51,0.08)] backdrop-blur">
-                  {results ? 'Din rapport' : 'Eksempelrapport'}
-                </span>
-                <h2 className="speed-test-section-title mt-5 font-black text-[#102033]">
+          <section id="resultat" className="st-shell st-section st-results">
+            <div className="st-section-head">
+              <div>
+                <span className="st-chip st-chip--light">{results ? 'Din rapport' : 'Eksempelrapport'}</span>
+                <h2>
                   {results
                     ? `Dette er det neste du bør fikse på ${activeReport.analyzedUrl}`
-                    : 'Kjør testen for å erstatte eksempeltallene med dine egne.'}
+                    : 'Slik er rapporten bygget når testen er ferdig.'}
                 </h2>
-                <p className="speed-test-section-lead mt-4 text-[#5b6676]">
+                <p>
                   {results
                     ? activeReport.summary
-                    : 'Under ser du hvordan Lighthouse-data presenteres når testen er ferdig: scorekort, nøkkelmålinger og en prioritert plan for hva som bør tas først.'}
+                    : 'Under ser du hvordan vi pakker Lighthouse-data om til scorekort, nøkkelmålinger og en konkret handlingsplan.'}
                 </p>
               </div>
 
-              <div className="speed-test-results-meta flex flex-wrap gap-3">
-                <span className="inline-flex rounded-full border border-[#102033]/10 bg-white/75 px-4 py-2 text-sm font-semibold text-[#102033]">
-                  {getStrategyLabel(activeReport.strategy)}
-                </span>
-                <span className="inline-flex rounded-full border border-[#102033]/10 bg-white/75 px-4 py-2 text-sm font-semibold text-[#5b6676]">
-                  {formatTimestamp(activeReport.fetchedAt)}
-                </span>
+              <div className="st-meta-pills">
+                <span>{getStrategyLabel(activeReport.strategy)}</span>
+                <span>{formatTimestamp(activeReport.fetchedAt)}</span>
               </div>
             </div>
 
             <AnimatePresence mode="wait">
               <Motion.div
                 key={results ? activeReport.fetchedAt : 'preview'}
-                initial={{ opacity: 0, y: 28 }}
+                initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.45 }}
-                className="space-y-6"
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.4 }}
+                className="st-results-stack"
               >
-                <div className="speed-test-report-grid">
-                  <div className="rounded-[38px] border border-white/70 bg-white/90 p-8 shadow-[0_30px_80px_rgba(16,32,51,0.12)] backdrop-blur">
-                    <div className="speed-test-score-header flex flex-col gap-6">
-                      <div className="speed-test-score-copy">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#6b7280]">
-                          {results ? `Analysert domene: ${activeReport.analyzedUrl}` : 'Demooppsett'}
-                        </p>
-                        <h3 className="mt-3 text-3xl font-black text-[#102033]">
-                          {results ? 'Scoreoversikt' : 'Slik ser scoreoversikten ut'}
-                        </h3>
-                        <p className="mt-3 text-[15px] leading-7 text-[#5b6676]">
-                          {results
-                            ? 'Fire scorekort gir deg et raskt overblikk over hva som fungerer, og hvor du taper mest friksjonsfritt tempo.'
-                            : 'Når rapporten er klar, ser du med en gang om problemet ligger i ren ytelse, teknisk kvalitet, SEO eller tilgjengelighet.'}
+                <div className="st-results-grid">
+                  <article className="st-panel st-panel--light">
+                    <div className="st-panel-head">
+                      <div>
+                        <p className="st-panel-kicker">{results ? `Analysert domene: ${activeReport.analyzedUrl}` : 'Scoreoversikt'}</p>
+                        <h3>{results ? 'Her ser du hvor friksjonen ligger akkurat nå' : 'Først får du et raskt overblikk over kvaliteten.'}</h3>
+                        <p>
+                          Fire scorekort gir deg et tydelig bilde av ytelse, tilgjengelighet, beste praksis og SEO i ett blikk.
                         </p>
                       </div>
-
-                      <div className="rounded-[28px] border border-[#102033]/10 bg-[#f7f3ee] px-5 py-4">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#6b7280]">
-                          Første prioritet
-                        </p>
-                        <p className="mt-2 text-lg font-bold text-[#102033]">{activeReport.topFixes[0].title}</p>
+                      <div className="st-priority-box">
+                        <span>Første prioritet</span>
+                        <strong>{activeReport.topFixes[0].title}</strong>
                       </div>
                     </div>
 
-                    <div className="speed-test-score-grid mt-8">
+                    <div className="st-score-grid">
                       {SCORE_DEFINITIONS.map(({ key, label }) => (
                         <ScoreCard key={key} label={label} score={activeReport.scores[key]} />
                       ))}
                     </div>
-                  </div>
+                  </article>
 
-                  <div className="rounded-[38px] border border-white/10 bg-[#102033] p-8 text-white shadow-[0_30px_80px_rgba(16,32,51,0.22)]">
-                    <p className="inline-flex rounded-full border border-white/10 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/80">
-                      Tolkning
-                    </p>
-                    <h3 className="mt-5 text-3xl font-black leading-tight">
-                      {results ? 'Hva betyr tallene i praksis?' : 'Rapporten er laget for å kunne brukes med en gang.'}
-                    </h3>
-                    <div className="mt-6 space-y-4 text-sm leading-7 text-white/70">
-                      <p>Ytelse viser hvor raskt brukeren ser og kan bruke siden.</p>
-                      <p>Tilgjengelighet og beste praksis peker ofte på friksjon som også påvirker kvalitet og tillit.</p>
-                      <p>Handlingsplanen under er prioritert etter grep som vanligvis gir størst effekt først.</p>
-                    </div>
-                    <a
-                      href={results ? '/contact' : '#fordeler'}
-                      className="mt-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-white/15"
-                    >
+                  <article className="st-panel st-panel--dark">
+                    <p className="st-panel-kicker st-panel-kicker--dark">Tolkning</p>
+                    <h3>{results ? 'Hva betyr tallene i praksis?' : 'Rapporten er laget for å kunne brukes umiddelbart.'}</h3>
+                    <ul className="st-reading-list">
+                      {REPORT_POINTS.map((point) => (
+                        <li key={point}>{point}</li>
+                      ))}
+                    </ul>
+                    <a href={results ? '/contact' : '#fordeler'} className="st-ghost-link">
                       {results ? 'Vil du ha hjelp til å fikse dette?' : 'Se hva du får med testen'}
                       <ArrowRight size={16} />
                     </a>
-                  </div>
+                  </article>
                 </div>
 
-                <div className="speed-test-detail-grid">
-                  <div className="rounded-[38px] border border-white/70 bg-white/90 p-8 shadow-[0_30px_80px_rgba(16,32,51,0.12)] backdrop-blur">
-                    <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                <div className="st-results-grid st-results-grid--secondary">
+                  <article className="st-panel st-panel--light">
+                    <div className="st-panel-head st-panel-head--stack">
                       <div>
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#6b7280]">
-                          Nøkkelmålinger
-                        </p>
-                        <h3 className="mt-3 text-3xl font-black text-[#102033]">
-                          Målinger som styrer opplevelsen
-                        </h3>
+                        <p className="st-panel-kicker">Nøkkelmålinger</p>
+                        <h3>Målingene som styrer førsteinntrykket.</h3>
+                        <p>Vi viser kun tallene som betyr mest for fart, respons og stabilitet.</p>
                       </div>
-                      <p className="max-w-[20rem] text-sm leading-7 text-[#5b6676]">
-                        Vi viser kun tallene som betyr mest for førsteinntrykk, respons og stabilitet.
-                      </p>
                     </div>
 
-                    <div className="speed-test-metrics-grid mt-8">
+                    <div className="st-metric-grid">
                       {activeReport.metrics.map((metric) => (
                         <MetricCard key={metric.key} metric={metric} />
                       ))}
                     </div>
-                  </div>
+                  </article>
 
-                  <div className="speed-test-side-stack">
-                    <div className="rounded-[38px] border border-white/10 bg-[#102033] p-8 text-white shadow-[0_30px_80px_rgba(16,32,51,0.22)]">
-                      <div className="flex items-center gap-4">
-                        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#62B6CB]/20 text-[#62B6CB]">
-                          <Zap size={24} />
-                        </div>
-                        <div>
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/50">
-                            Handlingsplan
-                          </p>
-                          <h3 className="mt-1 text-2xl font-black">Det jeg ville gjort først</h3>
-                        </div>
-                      </div>
-
-                      <div className="mt-8 space-y-4">
+                  <div className="st-aside-stack">
+                    <article className="st-panel st-panel--dark">
+                      <p className="st-panel-kicker st-panel-kicker--dark">Handlingsplan</p>
+                      <h3>Dette ville jeg gjort først.</h3>
+                      <div className="st-plan-list">
                         {activeReport.topFixes.map((fix, index) => (
                           <FixItem key={fix.title} fix={fix} index={index} />
                         ))}
                       </div>
-                    </div>
+                    </article>
 
-                    <div className="rounded-[38px] border border-white/70 bg-white/90 p-8 shadow-[0_30px_80px_rgba(16,32,51,0.12)] backdrop-blur">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#6b7280]">
-                        Neste steg
+                    <article className="st-panel st-panel--light st-panel--cta">
+                      <p className="st-panel-kicker">Neste steg</p>
+                      <h3>Vil du ha hjelp til å rydde opp?</h3>
+                      <p>
+                        Vi kan gjøre rapporten om til en konkret prioriteringsliste for design, kode, SEO og lastetid.
                       </p>
-                      <h3 className="mt-4 text-2xl font-black text-[#102033]">
-                        Vil du ha hjelp til å rydde opp?
-                      </h3>
-                      <p className="mt-4 text-[15px] leading-7 text-[#5b6676]">
-                        Vi kan gjøre rapporten om til en gjennomførbar prioriteringsliste for design, kode, SEO og lastetid.
-                      </p>
-
-                      <div className="mt-7 flex flex-col gap-3">
-                        <a
-                          href={`mailto:thomas@tk-design.no?subject=${mailSubject}`}
-                          className="inline-flex items-center justify-between rounded-[22px] bg-[#102033] px-5 py-4 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#173651]"
-                        >
+                      <div className="st-cta-actions">
+                        <a href={`mailto:thomas@tk-design.no?subject=${mailSubject}`} className="st-button st-button--primary">
                           Send rapporten på e-post
                           <Mail size={18} />
                         </a>
-                        <a
-                          href="/contact"
-                          className="inline-flex items-center justify-between rounded-[22px] border border-[#102033]/10 bg-[#f7f3ee] px-5 py-4 text-sm font-semibold text-[#102033] transition-all hover:-translate-y-0.5 hover:border-[#102033]/20"
-                        >
+                        <a href="/contact" className="st-button st-button--secondary">
                           Book en gjennomgang
                           <ExternalLink size={18} />
                         </a>
                       </div>
-                    </div>
+                    </article>
                   </div>
                 </div>
               </Motion.div>
