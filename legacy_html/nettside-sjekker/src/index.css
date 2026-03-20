@@ -566,6 +566,18 @@ body.homepage-refresh.speed-test-page .st-section-head--compact {
   margin-bottom: 1.25rem;
 }
 
+body.homepage-refresh.speed-test-page .st-section-head--compact > div {
+  max-width: 64rem;
+}
+
+body.homepage-refresh.speed-test-page .st-section-head--compact h2 {
+  max-width: 16ch;
+}
+
+body.homepage-refresh.speed-test-page .st-section-head--compact p {
+  max-width: 52rem;
+}
+
 body.homepage-refresh.speed-test-page .st-section-head h2 {
   max-width: 11ch;
   font-size: clamp(2.35rem, 4vw, 4rem);
@@ -1066,6 +1078,10 @@ body.homepage-refresh.speed-test-page .st-button--secondary:hover {
   body.homepage-refresh.speed-test-page .st-title {
     max-width: 11.8ch;
     font-size: clamp(2.6rem, 5vw, 4.5rem);
+  }
+
+  body.homepage-refresh.speed-test-page .st-section-head--compact h2 {
+    max-width: 14ch;
   }
 
   body.homepage-refresh.speed-test-page .st-lead {
