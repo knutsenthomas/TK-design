@@ -186,30 +186,30 @@ body.homepage-refresh.speed-test-page .st-hero {
 
 body.homepage-refresh.speed-test-page .st-hero-copy {
   min-width: 0;
-  max-width: 48rem;
+  max-width: 58rem;
 }
 
 body.homepage-refresh.speed-test-page .st-script {
   margin-top: 1.25rem;
   color: #ff6a1b;
   font-family: 'Caveat', cursive;
-  max-width: 22ch;
-  font-size: clamp(1.7rem, 2.2vw, 2.45rem);
+  max-width: 28ch;
+  font-size: clamp(1.65rem, 2vw, 2.3rem);
   line-height: 1;
 }
 
 body.homepage-refresh.speed-test-page .st-title {
   margin-top: 0.9rem;
-  max-width: 11.4ch;
-  font-size: clamp(2.7rem, 4.9vw, 5rem);
+  max-width: 12.8ch;
+  font-size: clamp(2.5rem, 4.5vw, 4.7rem);
   font-weight: 900;
-  line-height: 0.96;
-  letter-spacing: -0.05em;
+  line-height: 0.97;
+  letter-spacing: -0.045em;
 }
 
 body.homepage-refresh.speed-test-page .st-lead {
   margin-top: 1.5rem;
-  max-width: 38rem;
+  max-width: 46rem;
   color: #5b6676;
   font-size: clamp(1rem, 1.25vw, 1.14rem);
   line-height: 1.8;
@@ -1033,8 +1033,8 @@ body.homepage-refresh.speed-test-page .st-button--secondary:hover {
 
 @media (min-width: 1160px) {
   body.homepage-refresh.speed-test-page .st-hero {
-    grid-template-columns: minmax(0, 1.05fr) minmax(24rem, 29rem);
-    align-items: center;
+    grid-template-columns: minmax(0, 1.14fr) minmax(21rem, 25rem);
+    align-items: start;
   }
 
   body.homepage-refresh.speed-test-page .st-results-grid {
@@ -1052,13 +1052,21 @@ body.homepage-refresh.speed-test-page .st-button--secondary:hover {
 }
 
 @media (max-width: 1279px) and (min-width: 768px) {
+  body.homepage-refresh.speed-test-page .st-hero-copy {
+    max-width: 62rem;
+  }
+
+  body.homepage-refresh.speed-test-page .st-script {
+    max-width: 32ch;
+  }
+
   body.homepage-refresh.speed-test-page .st-title {
-    max-width: 11.8ch;
-    font-size: clamp(2.6rem, 5vw, 4.5rem);
+    max-width: 13.4ch;
+    font-size: clamp(2.45rem, 4.3vw, 4.15rem);
   }
 
   body.homepage-refresh.speed-test-page .st-lead {
-    max-width: 34rem;
+    max-width: 42rem;
   }
 }
 
@@ -1068,8 +1076,8 @@ body.homepage-refresh.speed-test-page .st-button--secondary:hover {
   }
 
   body.homepage-refresh.speed-test-page .st-title {
-    max-width: 9.1ch;
-    font-size: clamp(2.35rem, 11vw, 3.7rem);
+    max-width: 10ch;
+    font-size: clamp(2.2rem, 10.5vw, 3.45rem);
     line-height: 0.96;
   }
 
