@@ -186,30 +186,30 @@ body.homepage-refresh.speed-test-page .st-hero {
 
 body.homepage-refresh.speed-test-page .st-hero-copy {
   min-width: 0;
-  max-width: 58rem;
+  max-width: 48rem;
 }
 
 body.homepage-refresh.speed-test-page .st-script {
   margin-top: 1.25rem;
   color: #ff6a1b;
   font-family: 'Caveat', cursive;
-  max-width: 28ch;
-  font-size: clamp(1.65rem, 2vw, 2.3rem);
+  max-width: 22ch;
+  font-size: clamp(1.7rem, 2.2vw, 2.45rem);
   line-height: 1;
 }
 
 body.homepage-refresh.speed-test-page .st-title {
   margin-top: 0.9rem;
-  max-width: 12.8ch;
-  font-size: clamp(2.5rem, 4.5vw, 4.7rem);
+  max-width: 11.4ch;
+  font-size: clamp(2.7rem, 4.9vw, 5rem);
   font-weight: 900;
-  line-height: 0.97;
-  letter-spacing: -0.045em;
+  line-height: 0.96;
+  letter-spacing: -0.05em;
 }
 
 body.homepage-refresh.speed-test-page .st-lead {
   margin-top: 1.5rem;
-  max-width: 46rem;
+  max-width: 38rem;
   color: #5b6676;
   font-size: clamp(1rem, 1.25vw, 1.14rem);
   line-height: 1.8;
@@ -747,12 +747,12 @@ body.homepage-refresh.speed-test-page .st-score-grid {
 }
 
 body.homepage-refresh.speed-test-page .st-score-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
   gap: 1rem;
-  min-height: 10rem;
-  padding: 1.1rem;
+  min-height: 11rem;
+  padding: 1.2rem;
   border: 1px solid rgba(16, 32, 51, 0.08);
   border-radius: 1.7rem;
   background: #fff;
@@ -767,6 +767,7 @@ body.homepage-refresh.speed-test-page .st-score-copy {
   display: grid;
   gap: 0.6rem;
   min-width: 0;
+  align-self: start;
 }
 
 body.homepage-refresh.speed-test-page .st-score-label {
@@ -775,6 +776,7 @@ body.homepage-refresh.speed-test-page .st-score-label {
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
+  line-height: 1.45;
 }
 
 body.homepage-refresh.speed-test-page .st-score-card.is-dark .st-score-label {
@@ -786,20 +788,24 @@ body.homepage-refresh.speed-test-page .st-score-pill {
   align-items: center;
   justify-content: center;
   width: fit-content;
+  max-width: 100%;
   min-height: 2rem;
   padding: 0 0.75rem;
   border-radius: 999px;
   font-size: 0.82rem;
   font-weight: 700;
+  text-align: left;
 }
 
 body.homepage-refresh.speed-test-page .st-score-ring {
   position: relative;
   display: grid;
   place-items: center;
-  width: 5.4rem;
-  height: 5.4rem;
-  flex: 0 0 5.4rem;
+  align-self: end;
+  justify-self: end;
+  width: 5.15rem;
+  height: 5.15rem;
+  flex: 0 0 5.15rem;
 }
 
 body.homepage-refresh.speed-test-page .st-score-svg {
@@ -1033,8 +1039,8 @@ body.homepage-refresh.speed-test-page .st-button--secondary:hover {
 
 @media (min-width: 1160px) {
   body.homepage-refresh.speed-test-page .st-hero {
-    grid-template-columns: minmax(0, 1.14fr) minmax(21rem, 25rem);
-    align-items: start;
+    grid-template-columns: minmax(0, 1.05fr) minmax(24rem, 29rem);
+    align-items: center;
   }
 
   body.homepage-refresh.speed-test-page .st-results-grid {
@@ -1052,21 +1058,13 @@ body.homepage-refresh.speed-test-page .st-button--secondary:hover {
 }
 
 @media (max-width: 1279px) and (min-width: 768px) {
-  body.homepage-refresh.speed-test-page .st-hero-copy {
-    max-width: 62rem;
-  }
-
-  body.homepage-refresh.speed-test-page .st-script {
-    max-width: 32ch;
-  }
-
   body.homepage-refresh.speed-test-page .st-title {
-    max-width: 13.4ch;
-    font-size: clamp(2.45rem, 4.3vw, 4.15rem);
+    max-width: 11.8ch;
+    font-size: clamp(2.6rem, 5vw, 4.5rem);
   }
 
   body.homepage-refresh.speed-test-page .st-lead {
-    max-width: 42rem;
+    max-width: 34rem;
   }
 }
 
@@ -1076,8 +1074,8 @@ body.homepage-refresh.speed-test-page .st-button--secondary:hover {
   }
 
   body.homepage-refresh.speed-test-page .st-title {
-    max-width: 10ch;
-    font-size: clamp(2.2rem, 10.5vw, 3.45rem);
+    max-width: 9.1ch;
+    font-size: clamp(2.35rem, 11vw, 3.7rem);
     line-height: 0.96;
   }
 
@@ -1092,7 +1090,13 @@ body.homepage-refresh.speed-test-page .st-button--secondary:hover {
   }
 
   body.homepage-refresh.speed-test-page .st-score-card {
-    flex-direction: column;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    min-height: 0;
+  }
+
+  body.homepage-refresh.speed-test-page .st-score-ring {
+    justify-self: start;
   }
 
   body.homepage-refresh.speed-test-page .st-plan-item,
