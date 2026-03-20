@@ -394,6 +394,348 @@ const getSummaryText = (score, strategy) => {
   return `Her mister du sannsynligvis oppmerksomhet tidlig. Prioriter ${deviceLabel}-opplevelsen før du bruker mer budsjett på trafikk.`;
 };
 
+const CATEGORY_CONFIG = {
+  performance: {
+    label: 'Ytelse',
+    icon: Zap,
+    basePriority: 320,
+  },
+  accessibility: {
+    label: 'Tilgjengelighet',
+    icon: Shield,
+    basePriority: 240,
+  },
+  'best-practices': {
+    label: 'Beste praksis',
+    icon: Monitor,
+    basePriority: 200,
+  },
+  seo: {
+    label: 'SEO',
+    icon: Search,
+    basePriority: 180,
+  },
+};
+
+const normalizeDisplayValue = (value) => String(value || '').replace(/\u00a0/g, ' ').trim();
+
+const formatNumber = (value, options = {}) => new Intl.NumberFormat('nb-NO', options).format(value);
+
+const formatDuration = (value) => {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric) || numeric <= 0) {
+    return '';
+  }
+
+  if (numeric >= 1000) {
+    return `${formatNumber(numeric / 1000, { maximumFractionDigits: numeric >= 10000 ? 0 : 1 })} s`;
+  }
+
+  return `${formatNumber(numeric, { maximumFractionDigits: 0 })} ms`;
+};
+
+const formatBytes = (value) => {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric) || numeric <= 0) {
+    return '';
+  }
+
+  if (numeric >= 1024 * 1024) {
+    return `${formatNumber(numeric / (1024 * 1024), { maximumFractionDigits: 1 })} MiB`;
+  }
+
+  return `${formatNumber(numeric / 1024, { maximumFractionDigits: 0 })} KiB`;
+};
+
+const stripMarkdownLinks = (value) =>
+  String(value || '')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+const summarizeAuditDescription = (audit) => {
+  const description = stripMarkdownLinks(audit?.description || '');
+  if (!description) {
+    return 'Se detaljene i Lighthouse for eksakte elementer og ressurser som er berørt.';
+  }
+
+  const [firstSentence] = description.split(/(?<=[.!?])\s+/);
+  return firstSentence || description;
+};
+
+const getTotalMetricSavings = (audit) =>
+  Object.values(audit?.metricSavings || {}).reduce((sum, value) => sum + (Number(value) || 0), 0);
+
+const getOverallSavingsMs = (audit) => Number(audit?.details?.overallSavingsMs || 0);
+
+const getOverallSavingsBytes = (audit) => Number(audit?.details?.overallSavingsBytes || 0);
+
+const getForcedReflowDuration = (audit) =>
+  (audit?.details?.items || []).reduce((total, section) => {
+    const items = Array.isArray(section?.items) ? section.items : [];
+    return total + items.reduce((sum, item) => sum + (Number(item?.reflowTime) || 0), 0);
+  }, 0);
+
+const getLongestNetworkChainDuration = (audit) => {
+  const sections = Array.isArray(audit?.details?.items) ? audit.details.items : [];
+  for (const section of sections) {
+    const duration = Number(section?.value?.longestChain?.duration || 0);
+    if (duration > 0) {
+      return duration;
+    }
+  }
+
+  return 0;
+};
+
+const getDominantLcpBreakdown = (audit) => {
+  const sections = Array.isArray(audit?.details?.items) ? audit.details.items : [];
+  const table = sections.find((section) => Array.isArray(section?.items));
+  const items = Array.isArray(table?.items) ? table.items : [];
+
+  return items.reduce((dominant, item) => {
+    const duration = Number(item?.duration || 0);
+    if (!dominant || duration > dominant.duration) {
+      return {
+        label: String(item?.label || '').trim(),
+        duration,
+      };
+    }
+
+    return dominant;
+  }, null);
+};
+
+const getAuditImpactScore = (audit, meta) => {
+  const score = typeof audit?.score === 'number' ? audit.score : 1;
+  const severityScore = Math.round((1 - Math.max(0, Math.min(1, score))) * 120);
+  const weightScore = Math.round((Number(meta?.weight) || 0) * 100);
+  const savingsScore = Math.round(getOverallSavingsMs(audit) / 25) + Math.round(getTotalMetricSavings(audit) / 25);
+  const bytesScore = Math.round(getOverallSavingsBytes(audit) / 18000);
+  const insightScore = Math.round(getForcedReflowDuration(audit) / 25) + Math.round(getLongestNetworkChainDuration(audit) / 25);
+
+  return (meta?.basePriority || 100) + weightScore + severityScore + savingsScore + bytesScore + insightScore;
+};
+
+const getAuditMetaMap = (categories) => {
+  const metaMap = new Map();
+
+  Object.entries(CATEGORY_CONFIG).forEach(([categoryKey, config]) => {
+    const refs = Array.isArray(categories?.[categoryKey]?.auditRefs) ? categories[categoryKey].auditRefs : [];
+
+    refs.forEach((ref) => {
+      const nextMeta = {
+        categoryKey,
+        categoryLabel: config.label,
+        icon: config.icon,
+        basePriority: config.basePriority,
+        weight: Number(ref?.weight) || 0,
+      };
+      const currentMeta = metaMap.get(ref.id);
+
+      if (!currentMeta || nextMeta.weight > currentMeta.weight || nextMeta.basePriority > currentMeta.basePriority) {
+        metaMap.set(ref.id, nextMeta);
+      }
+    });
+  });
+
+  return metaMap;
+};
+
+const shouldUseAuditAsFix = (auditId, audit) => {
+  const displayMode = String(audit?.scoreDisplayMode || '').trim();
+  const score = typeof audit?.score === 'number' ? audit.score : null;
+  const msSavings = getOverallSavingsMs(audit) + getTotalMetricSavings(audit);
+  const byteSavings = getOverallSavingsBytes(audit);
+  const reflowDuration = getForcedReflowDuration(audit);
+  const chainDuration = getLongestNetworkChainDuration(audit);
+  const dominantLcpPart = getDominantLcpBreakdown(audit);
+
+  if (!displayMode || displayMode === 'notApplicable' || displayMode === 'manual' || displayMode === 'error') {
+    return false;
+  }
+
+  if (score !== null && score < 0.9 && displayMode !== 'informative') {
+    return true;
+  }
+
+  switch (auditId) {
+    case 'unused-javascript':
+    case 'unused-css-rules':
+    case 'modern-image-formats':
+    case 'uses-optimized-images':
+    case 'uses-responsive-images':
+    case 'offscreen-images':
+    case 'uses-webp-images':
+    case 'render-blocking-resources':
+    case 'server-response-time':
+      return msSavings >= 250 || byteSavings >= 32 * 1024;
+    case 'forced-reflow-insight':
+      return reflowDuration >= 120;
+    case 'network-dependency-tree-insight':
+      return chainDuration >= 1500;
+    case 'lcp-breakdown-insight':
+      return Number(dominantLcpPart?.duration || 0) >= 800;
+    default:
+      return false;
+  }
+};
+
+const buildFallbackFix = (auditId, audit, meta) => {
+  const Icon = meta?.icon || Gauge;
+  const displayValue = normalizeDisplayValue(audit?.displayValue);
+  const prefix = meta?.categoryLabel ? `${meta.categoryLabel} peker på` : 'Lighthouse peker på';
+  const description = displayValue
+    ? `${prefix} "${audit.title}" (${displayValue}). ${summarizeAuditDescription(audit)}`
+    : `${prefix} "${audit.title}". ${summarizeAuditDescription(audit)}`;
+
+  return {
+    group: auditId,
+    icon: Icon,
+    title: audit?.title || 'Se nærmere på audit-funnet',
+    description,
+  };
+};
+
+const buildMappedFix = (auditId, audit, meta) => {
+  const displayValue = normalizeDisplayValue(audit?.displayValue);
+  const bytesSaved = formatBytes(getOverallSavingsBytes(audit));
+  const msSaved = formatDuration(getOverallSavingsMs(audit) + getTotalMetricSavings(audit));
+
+  switch (auditId) {
+    case 'largest-contentful-paint':
+      return {
+        group: 'largest-contentful-paint',
+        icon: Zap,
+        title: 'Få ned Largest Contentful Paint',
+        description: `LCP er nå ${displayValue || 'for treg'}. Prioriter innholdet over bretten og fjern tunge ressurser før hero-seksjonen vises.`,
+      };
+    case 'first-contentful-paint':
+      return {
+        group: 'first-contentful-paint',
+        icon: Zap,
+        title: 'Vis første innhold raskere',
+        description: `Første innhold dukker opp etter ${displayValue || 'for lang tid'}. Kutt tidlige avhengigheter og få tekst eller grafikk raskere inn i viewporten.`,
+      };
+    case 'speed-index':
+      return {
+        group: 'speed-index',
+        icon: Gauge,
+        title: 'Fyll det synlige skjermbildet raskere',
+        description: `Speed Index er ${displayValue || 'høy'}. Reduser det som forsinker innholdet brukeren faktisk ser først.`,
+      };
+    case 'total-blocking-time':
+    case 'interactive':
+    case 'bootup-time':
+    case 'mainthread-work-breakdown':
+      return {
+        group: 'main-thread',
+        icon: Gauge,
+        title: 'Kutt blokkering på hovedtråden',
+        description: `Hovedtråden er opptatt${displayValue ? ` i ${displayValue}` : ''}. Del opp tung JavaScript og flytt ikke-kritisk kode ut av første last.`,
+      };
+    case 'render-blocking-resources':
+      return {
+        group: 'render-blocking',
+        icon: Gauge,
+        title: 'Fjern render-blokkerende ressurser',
+        description: `Google anslår at du kan spare ${displayValue || msSaved || 'merkbar tid'} ved å utsette CSS og JS som blokkerer første tegning.`,
+      };
+    case 'unused-javascript':
+      return {
+        group: 'unused-javascript',
+        icon: Gauge,
+        title: 'Reduser ubrukt JavaScript',
+        description: `Det ligger igjen ${displayValue || bytesSaved || 'unødvendig mye JavaScript'} i første last. Kutt biblioteker og moduler som ikke trengs med en gang.`,
+      };
+    case 'unused-css-rules':
+      return {
+        group: 'unused-css',
+        icon: Monitor,
+        title: 'Reduser ubrukt CSS',
+        description: `Styles som ikke brukes med en gang tar fortsatt plass${displayValue ? ` (${displayValue})` : ''}. Del opp eller fjern CSS som ikke trengs i første skjermbilde.`,
+      };
+    case 'modern-image-formats':
+    case 'uses-optimized-images':
+    case 'uses-responsive-images':
+    case 'offscreen-images':
+    case 'uses-webp-images':
+      return {
+        group: 'images',
+        icon: Monitor,
+        title: 'Optimaliser bildene',
+        description: `Bildene kan fortsatt strammes inn${displayValue ? ` (${displayValue})` : bytesSaved ? ` med rundt ${bytesSaved} mulig besparelse` : ''}. Bruk riktige formater, størrelser og lazy loading.`,
+      };
+    case 'cumulative-layout-shift':
+      return {
+        group: 'layout-shift',
+        icon: Shield,
+        title: 'Stabiliser layouten',
+        description: `CLS er ${displayValue || 'for høy'}. Reserver plass til bilder, embeds og moduler så innholdet ikke hopper under lasting.`,
+      };
+    case 'server-response-time':
+      return {
+        group: 'server-response-time',
+        icon: Search,
+        title: 'Kort ned server-responstiden',
+        description: `${displayValue || 'Første svar fra serveren kommer for sent'}. Se på caching, hosting og backend-kall før resten av optimaliseringen.`,
+      };
+    case 'network-dependency-tree-insight': {
+      const chainDuration = formatDuration(getLongestNetworkChainDuration(audit));
+      return {
+        group: 'network-chain',
+        icon: Search,
+        title: 'Bryt opp kritiske request-kjeder',
+        description: `Kritiske ressurser ligger i en kjede på ${chainDuration || 'for lang tid'}. Utsett fonter, tredjepartsskript og andre ikke-kritiske kall.`,
+      };
+    }
+    case 'forced-reflow-insight': {
+      const reflowDuration = formatDuration(getForcedReflowDuration(audit));
+      return {
+        group: 'forced-reflow',
+        icon: Gauge,
+        title: 'Fjern tvungen reflow',
+        description: `JavaScript utløser minst ${reflowDuration || 'merkbar'} layoutberegning. Unngå å lese layout rett etter DOM-endringer og flytt tung målelogikk ut av kritisk sti.`,
+      };
+    }
+    case 'lcp-breakdown-insight': {
+      const dominantPart = getDominantLcpBreakdown(audit);
+      return {
+        group: 'lcp-breakdown',
+        icon: Zap,
+        title: dominantPart?.label ? `Prioriter ${dominantPart.label.toLowerCase()} i LCP-kjeden` : 'Se hva som drar ut LCP',
+        description: dominantPart
+          ? `${dominantPart.label} bruker ${formatDuration(dominantPart.duration)} i LCP-kjeden. Begynn der i stedet for å gjøre bred, generell tuning.`
+          : summarizeAuditDescription(audit),
+      };
+    }
+    case 'errors-in-console':
+      return {
+        group: 'errors-in-console',
+        icon: Shield,
+        title: 'Rydd opp i nettleserfeil',
+        description: 'Runtime-feil i konsollen skjuler ofte følgeproblemer og kan slå ut på både ytelse og stabilitet. Fjern dem før du finjusterer videre.',
+      };
+    case 'label-content-name-mismatch':
+      return {
+        group: 'a11y-labels',
+        icon: Shield,
+        title: 'Sørg for at synlige etiketter matcher',
+        description: 'Synlig tekst og tilgjengelige navn peker ikke på det samme. Da kan skjermlesere lese noe annet enn brukeren faktisk ser.',
+      };
+    case 'td-has-header':
+      return {
+        group: 'a11y-table',
+        icon: Shield,
+        title: 'Gjør tabeller forståelige for hjelpemidler',
+        description: 'Store tabeller mangler kobling mellom celler og overskrifter. Legg inn riktige th-elementer og scope/headers der det trengs.',
+      };
+    default:
+      return buildFallbackFix(auditId, audit, meta);
+  }
+};
+
 const buildMetricList = (audits) =>
   METRIC_DEFINITIONS.map((definition) => {
     const audit = audits[definition.key];
@@ -408,57 +750,37 @@ const buildMetricList = (audits) =>
     };
   });
 
-const buildTopFixes = (audits) => {
-  const fixes = [];
+const buildTopFixes = (audits, categories) => {
+  const auditMetaMap = getAuditMetaMap(categories);
+  const candidates = Object.entries(audits)
+    .filter(([auditId, audit]) => shouldUseAuditAsFix(auditId, audit))
+    .map(([auditId, audit]) => {
+      const meta = auditMetaMap.get(auditId) || CATEGORY_CONFIG.performance;
 
-  if ((audits['largest-contentful-paint']?.score ?? 1) < 0.9) {
-    fixes.push({
-      title: 'Få hovedinnholdet raskere på plass',
-      description: 'Komprimer hero-medier, prioriter innholdet over bretten og kutt alt som forsinker første skjermbilde.',
-      icon: Zap,
+      return {
+        ...buildMappedFix(auditId, audit, meta),
+        impactScore: getAuditImpactScore(audit, meta),
+      };
+    })
+    .sort((left, right) => right.impactScore - left.impactScore);
+
+  const uniqueFixes = [];
+  const seenGroups = new Set();
+
+  candidates.forEach((candidate) => {
+    if (seenGroups.has(candidate.group)) {
+      return;
+    }
+
+    seenGroups.add(candidate.group);
+    uniqueFixes.push({
+      title: candidate.title,
+      description: candidate.description,
+      icon: candidate.icon,
     });
-  }
+  });
 
-  if (
-    (audits['unused-javascript']?.score ?? 1) < 0.9 ||
-    (audits['render-blocking-resources']?.score ?? 1) < 0.9
-  ) {
-    fixes.push({
-      title: 'Fjern kode som blokkerer visning',
-      description: 'Last inn unødvendig JavaScript og CSS senere, og del opp det som faktisk må være med fra start.',
-      icon: Gauge,
-    });
-  }
-
-  if (
-    (audits['modern-image-formats']?.score ?? 1) < 0.9 ||
-    (audits['uses-optimized-images']?.score ?? 1) < 0.9 ||
-    (audits['uses-responsive-images']?.score ?? 1) < 0.9
-  ) {
-    fixes.push({
-      title: 'Optimaliser bildene bedre',
-      description: 'Bruk moderne bildeformater, riktige størrelser og unngå at store desktop-bilder sendes til mobil.',
-      icon: Monitor,
-    });
-  }
-
-  if ((audits['cumulative-layout-shift']?.score ?? 1) < 0.9) {
-    fixes.push({
-      title: 'Stopp elementer som hopper under lasting',
-      description: 'Gi bilder, moduler og embeds reserverte dimensjoner før innholdet lastes inn.',
-      icon: Shield,
-    });
-  }
-
-  if ((audits['server-response-time']?.score ?? 1) < 0.9) {
-    fixes.push({
-      title: 'Reduser ventetiden fra serveren',
-      description: 'Se på hosting, caching og tunge integrasjoner som forsinker første svar fra serveren.',
-      icon: Search,
-    });
-  }
-
-  return fixes.concat(DEFAULT_FIXES).slice(0, 3);
+  return uniqueFixes.concat(DEFAULT_FIXES).slice(0, 3);
 };
 
 const buildReport = (lighthouse, requestedUrl, strategy) => {
@@ -480,7 +802,7 @@ const buildReport = (lighthouse, requestedUrl, strategy) => {
     summary: getSummaryText(scores.performance, strategy),
     scores,
     metrics: buildMetricList(audits),
-    topFixes: buildTopFixes(audits),
+    topFixes: buildTopFixes(audits, categories),
   };
 };
 
