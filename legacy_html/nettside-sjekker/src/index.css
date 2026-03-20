@@ -725,6 +725,12 @@ body.homepage-refresh.speed-test-page .st-section-head--compact {
   margin-bottom: 1.25rem;
 }
 
+body.homepage-refresh.speed-test-page .st-section-head > .st-chip {
+  width: fit-content;
+  max-width: 100%;
+  align-self: flex-start;
+}
+
 body.homepage-refresh.speed-test-page .st-section-head h2 {
   max-width: 11ch;
   font-size: clamp(2.35rem, 4vw, 4rem);
