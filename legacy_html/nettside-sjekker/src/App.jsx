@@ -351,6 +351,10 @@ const getAnalysisErrorMessage = (requestError) => {
     return 'Google klarte ikke å levere Lighthouse-data akkurat nå. Prøv igjen om litt.';
   }
 
+  if (code === 'report_build_failed') {
+    return 'Lighthouse-data kom tilbake, men rapporten kunne ikke bygges akkurat nå. Prøv igjen om litt.';
+  }
+
   if (/quota exceeded|resource_exhausted|rate_limit_exceeded/i.test(details)) {
     return 'Google PageSpeed-kvoten er brukt opp akkurat nå. Prøv igjen senere.';
   }
@@ -361,6 +365,10 @@ const getAnalysisErrorMessage = (requestError) => {
 
   if (/unable to resolve host|requested url is not available|dns|invalid_argument/i.test(details)) {
     return 'URL-en kunne ikke analyseres. Sjekk at domenet finnes og er offentlig tilgjengelig.';
+  }
+
+  if (/failed to fetch|load failed|networkerror/i.test(details)) {
+    return 'Kunne ikke kontakte analysetjenesten akkurat nå. Prøv igjen om litt.';
   }
 
   return 'Kunne ikke analysere nettstedet akkurat nå. Prøv igjen om litt.';
@@ -464,21 +472,31 @@ const summarizeAuditDescription = (audit) => {
   return firstSentence || description;
 };
 
+const getCollectionValues = (value) => {
+  if (!value || typeof value !== 'object') {
+    return [];
+  }
+
+  return Object.values(value);
+};
+
+const getArray = (value) => (Array.isArray(value) ? value : []);
+
 const getTotalMetricSavings = (audit) =>
-  Object.values(audit?.metricSavings || {}).reduce((sum, value) => sum + (Number(value) || 0), 0);
+  getCollectionValues(audit?.metricSavings).reduce((sum, value) => sum + (Number(value) || 0), 0);
 
 const getOverallSavingsMs = (audit) => Number(audit?.details?.overallSavingsMs || 0);
 
 const getOverallSavingsBytes = (audit) => Number(audit?.details?.overallSavingsBytes || 0);
 
 const getForcedReflowDuration = (audit) =>
-  (audit?.details?.items || []).reduce((total, section) => {
-    const items = Array.isArray(section?.items) ? section.items : [];
+  getArray(audit?.details?.items).reduce((total, section) => {
+    const items = getArray(section?.items);
     return total + items.reduce((sum, item) => sum + (Number(item?.reflowTime) || 0), 0);
   }, 0);
 
 const getLongestNetworkChainDuration = (audit) => {
-  const sections = Array.isArray(audit?.details?.items) ? audit.details.items : [];
+  const sections = getArray(audit?.details?.items);
   for (const section of sections) {
     const duration = Number(section?.value?.longestChain?.duration || 0);
     if (duration > 0) {
@@ -490,9 +508,9 @@ const getLongestNetworkChainDuration = (audit) => {
 };
 
 const getDominantLcpBreakdown = (audit) => {
-  const sections = Array.isArray(audit?.details?.items) ? audit.details.items : [];
+  const sections = getArray(audit?.details?.items);
   const table = sections.find((section) => Array.isArray(section?.items));
-  const items = Array.isArray(table?.items) ? table.items : [];
+  const items = getArray(table?.items);
 
   return items.reduce((dominant, item) => {
     const duration = Number(item?.duration || 0);
@@ -753,14 +771,25 @@ const buildMetricList = (audits) =>
 const buildTopFixes = (audits, categories) => {
   const auditMetaMap = getAuditMetaMap(categories);
   const candidates = Object.entries(audits)
-    .filter(([auditId, audit]) => shouldUseAuditAsFix(auditId, audit))
-    .map(([auditId, audit]) => {
+    .flatMap(([auditId, audit]) => {
+      if (!shouldUseAuditAsFix(auditId, audit)) {
+        return [];
+      }
+
       const meta = auditMetaMap.get(auditId) || CATEGORY_CONFIG.performance;
 
-      return {
-        ...buildMappedFix(auditId, audit, meta),
-        impactScore: getAuditImpactScore(audit, meta),
-      };
+      try {
+        return [{
+          ...buildMappedFix(auditId, audit, meta),
+          impactScore: getAuditImpactScore(audit, meta),
+        }];
+      } catch (error) {
+        console.error('[speed-test] Failed to map Lighthouse audit', auditId, error);
+        return [{
+          ...buildFallbackFix(auditId, audit, meta),
+          impactScore: Number(meta?.basePriority) || 100,
+        }];
+      }
     })
     .sort((left, right) => right.impactScore - left.impactScore);
 
@@ -1208,7 +1237,18 @@ export default function App() {
         throw new Error('Mangler Lighthouse-data i svaret.');
       }
 
-      const nextReport = buildReport(data.lighthouseResult, normalizedUrl, strategy);
+      let nextReport;
+
+      try {
+        nextReport = buildReport(data.lighthouseResult, normalizedUrl, strategy);
+      } catch (reportError) {
+        console.error('[speed-test] Failed to build report from Lighthouse data', reportError);
+        const nextError = new Error('Kunne ikke bygge rapporten fra Lighthouse-data.');
+        nextError.code = 'report_build_failed';
+        nextError.details = reportError?.message || '';
+        throw nextError;
+      }
+
       setProgress(100);
 
       startTransition(() => {
