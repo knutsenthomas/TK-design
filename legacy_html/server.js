@@ -1189,6 +1189,32 @@ function normalizeSpeedTestReportPayload(payload = {}) {
     };
 }
 
+function normalizeSpeedTestRecipientEmail(rawValue) {
+    const normalizedEmail = String(rawValue || '').trim().toLowerCase();
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!normalizedEmail) {
+        return {
+            valid: false,
+            code: 'missing_recipient_email',
+            error: 'Legg inn en e-postadresse før rapporten kan sendes.'
+        };
+    }
+
+    if (!emailPattern.test(normalizedEmail)) {
+        return {
+            valid: false,
+            code: 'invalid_recipient_email',
+            error: 'E-postadressen er ikke gyldig.'
+        };
+    }
+
+    return {
+        valid: true,
+        value: normalizedEmail
+    };
+}
+
 function formatSpeedTestTimestamp(timestamp) {
     if (!timestamp) {
         return 'Ikke oppgitt';
@@ -1377,7 +1403,7 @@ function buildSpeedTestReportEmailMarkup(reportPayload, req) {
     return { subject, html, text };
 }
 
-async function sendSpeedTestReportNotification(reportPayload, req) {
+async function sendSpeedTestReportNotification(reportPayload, recipientEmail, req) {
     const resendApiKey = process.env.RESEND_API_KEY;
     if (!resendApiKey) {
         return {
@@ -1386,10 +1412,12 @@ async function sendSpeedTestReportNotification(reportPayload, req) {
         };
     }
 
-    const toEmail = String(process.env.CONTACT_TO_EMAIL || 'thomas@tk-design.no').trim() || 'thomas@tk-design.no';
+    const toEmail = String(recipientEmail || '').trim().toLowerCase();
+    const internalCopyEmail = String(process.env.CONTACT_TO_EMAIL || '').trim().toLowerCase();
     const fromEmail = process.env.RESEND_FROM_EMAIL || 'TK-design <onboarding@resend.dev>';
     const fetch = await getFetch();
     const emailContent = buildSpeedTestReportEmailMarkup(reportPayload, req);
+    const bccList = internalCopyEmail && internalCopyEmail !== toEmail ? [internalCopyEmail] : undefined;
 
     const response = await fetch('https://api.resend.com/emails', {
         method: 'POST',
@@ -1400,9 +1428,11 @@ async function sendSpeedTestReportNotification(reportPayload, req) {
         body: JSON.stringify({
             from: fromEmail,
             to: [toEmail],
+            ...(bccList ? { bcc: bccList } : {}),
             subject: emailContent.subject,
             html: emailContent.html,
-            text: emailContent.text
+            text: emailContent.text,
+            reply_to: internalCopyEmail || undefined
         })
     });
 
@@ -6645,6 +6675,7 @@ app.post('/api/social/autopost', async (req, res) => {
 app.post('/api/speed-test/report-email', async (req, res) => {
     try {
         const reportPayload = normalizeSpeedTestReportPayload(req.body?.report);
+        const recipientEmailResult = normalizeSpeedTestRecipientEmail(req.body?.recipientEmail);
 
         if (!reportPayload) {
             return res.status(400).json({
@@ -6654,7 +6685,15 @@ app.post('/api/speed-test/report-email', async (req, res) => {
             });
         }
 
-        const notificationResult = await sendSpeedTestReportNotification(reportPayload, req);
+        if (!recipientEmailResult.valid) {
+            return res.status(400).json({
+                success: false,
+                code: recipientEmailResult.code,
+                error: recipientEmailResult.error
+            });
+        }
+
+        const notificationResult = await sendSpeedTestReportNotification(reportPayload, recipientEmailResult.value, req);
 
         if (!notificationResult.sent) {
             return res.status(503).json({

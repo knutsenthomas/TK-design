@@ -289,6 +289,7 @@ const getCookie = (name) => {
 };
 
 const getStrategyLabel = (strategy) => (strategy === 'desktop' ? 'Desktop' : 'Mobil');
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const clampScore = (value) => {
   if (typeof value !== 'number' || Number.isNaN(value)) {
@@ -453,6 +454,14 @@ const getReportEmailErrorMessage = (requestError) => {
 
   if (code === 'missing_report' || code === 'invalid_report_payload') {
     return 'Kjør testen først, så kan rapporten sendes på e-post.';
+  }
+
+  if (code === 'missing_recipient_email') {
+    return 'Legg inn en e-postadresse før du sender rapporten.';
+  }
+
+  if (code === 'invalid_recipient_email') {
+    return 'E-postadressen ser ikke gyldig ut. Sjekk den og prøv igjen.';
   }
 
   if (code === 'missing_email_config') {
@@ -1273,6 +1282,7 @@ export default function App() {
   const [error, setError] = useState(null);
   const [sendingReport, setSendingReport] = useState(false);
   const [reportEmailFeedback, setReportEmailFeedback] = useState(null);
+  const [reportEmail, setReportEmail] = useState('');
   const [language, setLanguage] = useState('no');
   const [headerScrolled, setHeaderScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -1280,6 +1290,7 @@ export default function App() {
   useEffect(() => {
     const storedLang = getCookie('site_lang') || window.localStorage.getItem('site_lang') || 'no';
     setLanguage(storedLang === 'en' ? 'en' : 'no');
+    setReportEmail(window.localStorage.getItem('speed_test_report_email') || '');
   }, []);
 
   useEffect(() => {
@@ -1408,6 +1419,23 @@ export default function App() {
       return;
     }
 
+    const normalizedEmail = reportEmail.trim().toLowerCase();
+    if (!normalizedEmail) {
+      setReportEmailFeedback({
+        type: 'error',
+        message: 'Legg inn en e-postadresse før du sender rapporten.',
+      });
+      return;
+    }
+
+    if (!EMAIL_PATTERN.test(normalizedEmail)) {
+      setReportEmailFeedback({
+        type: 'error',
+        message: 'E-postadressen ser ikke gyldig ut. Sjekk den og prøv igjen.',
+      });
+      return;
+    }
+
     setSendingReport(true);
     setReportEmailFeedback(null);
 
@@ -1419,6 +1447,7 @@ export default function App() {
         },
         body: JSON.stringify({
           report: activeReport,
+          recipientEmail: normalizedEmail,
         }),
       });
       const payload = await response.json().catch(() => null);
@@ -1431,8 +1460,9 @@ export default function App() {
 
       setReportEmailFeedback({
         type: 'success',
-        message: 'Rapporten ble sendt til TK-design på e-post.',
+        message: `Rapporten ble sendt til ${normalizedEmail}.`,
       });
+      window.localStorage.setItem('speed_test_report_email', normalizedEmail);
     } catch (requestError) {
       console.error(requestError);
       setReportEmailFeedback({
@@ -1833,6 +1863,29 @@ export default function App() {
                     <p>
                       Vi kan gjøre rapporten om til en konkret prioriteringsliste for design, kode, SEO og lastetid.
                     </p>
+                    <label className="st-cta-field" htmlFor="report-email">
+                      <span className="st-label">Send rapport til</span>
+                      <span className="st-cta-input">
+                        <Mail size={18} />
+                        <input
+                          id="report-email"
+                          type="email"
+                          value={reportEmail}
+                          onChange={(event) => {
+                            setReportEmail(event.target.value);
+                            if (reportEmailFeedback) {
+                              setReportEmailFeedback(null);
+                            }
+                          }}
+                          autoCapitalize="none"
+                          autoComplete="email"
+                          autoCorrect="off"
+                          inputMode="email"
+                          placeholder="navn@firma.no"
+                          spellCheck={false}
+                        />
+                      </span>
+                    </label>
                     <div className="st-cta-actions">
                       <button
                         type="button"
