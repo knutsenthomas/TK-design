@@ -582,13 +582,13 @@ const HighlightCard = ({ item, index }) => {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.08, duration: 0.45 }}
       viewport={{ once: true, amount: 0.35 }}
-      className="rounded-[30px] border border-white/60 bg-white/85 p-6 shadow-[0_24px_60px_rgba(16,32,51,0.08)] backdrop-blur"
+      className="speed-test-highlight-card rounded-[30px] border border-white/60 bg-white/85 p-6 shadow-[0_24px_60px_rgba(16,32,51,0.08)] backdrop-blur"
     >
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#102033] text-white">
+      <div className="speed-test-highlight-icon flex h-12 w-12 items-center justify-center rounded-2xl bg-[#102033] text-white">
         <Icon size={22} />
       </div>
-      <h3 className="mt-5 text-xl font-bold text-[#102033]">{item.title}</h3>
-      <p className="mt-3 text-[15px] leading-7 text-[#5b6676]">{item.text}</p>
+      <h3 className="speed-test-highlight-title mt-5 text-xl font-bold text-[#102033]">{item.title}</h3>
+      <p className="speed-test-highlight-text mt-3 text-[15px] leading-7 text-[#5b6676]">{item.text}</p>
     </Motion.article>
   );
 };
@@ -601,28 +601,28 @@ const ScoreCard = ({ label, score, dark = false }) => {
 
   return (
     <div
-      className={`rounded-[28px] border p-5 ${
+      className={`speed-test-score-card rounded-[28px] border p-5 ${
         dark ? 'border-white/10 bg-white/5' : 'border-[#102033]/10 bg-white'
       }`}
     >
-      <div className="flex items-center justify-between gap-4">
-        <div>
+      <div className="speed-test-score-card-inner">
+        <div className="speed-test-score-copy">
           <p
-            className={`text-[11px] font-semibold uppercase tracking-[0.22em] ${
+            className={`speed-test-score-label text-[11px] font-semibold uppercase tracking-[0.22em] ${
               dark ? 'text-white/55' : 'text-[#6b7280]'
             }`}
           >
             {label}
           </p>
           <span
-            className="mt-3 inline-flex rounded-full px-3 py-1 text-xs font-semibold"
+            className="speed-test-score-pill mt-3 inline-flex rounded-full px-3 py-1 text-xs font-semibold"
             style={{ backgroundColor: tone.soft, color: tone.accent }}
           >
             {tone.label}
           </span>
         </div>
 
-        <div className="relative h-24 w-24 shrink-0">
+        <div className="speed-test-score-ring relative shrink-0">
           <svg viewBox="0 0 96 96" className="h-full w-full -rotate-90">
             <circle
               cx="48"
@@ -661,22 +661,22 @@ const MetricCard = ({ metric }) => {
   const tone = getMetricTone(metric.status);
 
   return (
-    <div className={`rounded-[28px] border p-6 ${tone.surface} ${tone.border}`}>
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#6b7280]">
+    <div className={`speed-test-metric-card rounded-[28px] border p-6 ${tone.surface} ${tone.border}`}>
+      <div className="speed-test-metric-head">
+        <div className="speed-test-metric-copy">
+          <p className="speed-test-metric-label text-[11px] font-semibold uppercase tracking-[0.22em] text-[#6b7280]">
             {metric.label}
           </p>
-          <h4 className="mt-2 text-xl font-bold text-[#102033]">{metric.title}</h4>
+          <h4 className="speed-test-metric-title mt-2 text-xl font-bold text-[#102033]">{metric.title}</h4>
         </div>
-        <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${tone.text}`}>
+        <span className={`speed-test-metric-pill inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${tone.text}`}>
           <span className={`h-2.5 w-2.5 rounded-full ${tone.dot}`} />
           {metric.status === 'pass' ? 'Bra' : metric.status === 'warn' ? 'Se på dette' : 'Viktig'}
         </span>
       </div>
 
-      <p className="mt-6 text-4xl font-black leading-none text-[#102033]">{metric.value}</p>
-      <p className="mt-4 text-[15px] leading-7 text-[#5b6676]">{metric.description}</p>
+      <p className="speed-test-metric-value mt-6 text-4xl font-black leading-none text-[#102033]">{metric.value}</p>
+      <p className="speed-test-metric-text mt-4 text-[15px] leading-7 text-[#5b6676]">{metric.description}</p>
     </div>
   );
 };
@@ -685,17 +685,17 @@ const FixItem = ({ fix, index }) => {
   const Icon = fix.icon;
 
   return (
-    <div className="rounded-[28px] border border-white/10 bg-white/8 p-5">
-      <div className="flex items-start gap-4">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#62B6CB]/20 text-[#62B6CB]">
+    <div className="speed-test-fix-item rounded-[28px] border border-white/10 bg-white/8 p-5">
+      <div className="speed-test-fix-row">
+        <div className="speed-test-fix-icon flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#62B6CB]/20 text-[#62B6CB]">
           <Icon size={22} />
         </div>
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/50">
+        <div className="speed-test-fix-copy">
+          <p className="speed-test-fix-label text-[11px] font-semibold uppercase tracking-[0.22em] text-white/50">
             Prioritet {index + 1}
           </p>
-          <h4 className="mt-2 text-lg font-bold text-white">{fix.title}</h4>
-          <p className="mt-2 text-sm leading-7 text-white/70">{fix.description}</p>
+          <h4 className="speed-test-fix-title mt-2 text-lg font-bold text-white">{fix.title}</h4>
+          <p className="speed-test-fix-text mt-2 text-sm leading-7 text-white/70">{fix.description}</p>
         </div>
       </div>
     </div>
@@ -848,7 +848,7 @@ export default function App() {
         />
 
         <main className="speed-test-main flex-1">
-          <section className="container speed-test-container speed-test-section speed-test-hero-grid">
+          <section className="speed-test-container speed-test-section speed-test-hero-grid">
             <div className="speed-test-intro">
               <Motion.div
                 initial={{ opacity: 0, y: 24 }}
@@ -873,10 +873,9 @@ export default function App() {
                   Finn friksjonen før kunden gjør det
                 </p>
                 <h1 className="speed-test-hero-title mt-3 font-black text-[#102033]">
-                  <span className="block">Er nettsiden</span>
-                  <span className="block">din rask nok til</span>
-                  <span className="block">å holde på</span>
-                  <span className="block">oppmerksomheten?</span>
+                  <span className="block">Er nettsiden din</span>
+                  <span className="block">rask nok til å holde</span>
+                  <span className="block">på oppmerksomheten?</span>
                 </h1>
                 <p className="speed-test-hero-lead mt-6 text-[#5b6676]">
                   Lim inn en URL og få en visuell rapport som viser hvor opplevelsen bremser opp på mobil
@@ -889,14 +888,14 @@ export default function App() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.16, duration: 0.55 }}
                 onSubmit={testSite}
-                className="mt-10 rounded-[34px] border border-white/70 bg-white/90 p-4 shadow-[0_30px_80px_rgba(16,32,51,0.12)] backdrop-blur"
+                className="speed-test-form mt-10 rounded-[34px] border border-white/70 bg-white/90 p-4 shadow-[0_30px_80px_rgba(16,32,51,0.12)] backdrop-blur"
               >
-                <div className="flex flex-col gap-4 xl:flex-row xl:items-end">
-                  <div className="min-w-0 flex-1">
+                <div className="speed-test-form-grid">
+                  <div className="speed-test-field speed-test-field--url">
                     <label htmlFor="speed-url" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#6b7280]">
                       Nettadresse
                     </label>
-                    <div className="mt-2 flex items-center gap-3 rounded-[24px] border border-[#102033]/10 bg-[#f7f3ee] px-4 py-4">
+                    <div className="speed-test-input-shell mt-2 flex items-center gap-3 rounded-[24px] border border-[#102033]/10 bg-[#f7f3ee] px-4 py-4">
                       <Search size={18} className="shrink-0 text-[#7b8794]" />
                       <input
                         id="speed-url"
@@ -909,11 +908,11 @@ export default function App() {
                     </div>
                   </div>
 
-                  <div className="xl:min-w-[240px]">
+                  <div className="speed-test-field speed-test-field--strategy">
                     <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#6b7280]">
                       Analyser for
                     </span>
-                    <div className="mt-2 inline-flex w-full rounded-[24px] border border-[#102033]/10 bg-[#f7f3ee] p-1">
+                    <div className="speed-test-strategy-toggle mt-2 inline-flex w-full rounded-[24px] border border-[#102033]/10 bg-[#f7f3ee] p-1">
                       <button
                         type="button"
                         onClick={() => setStrategy('mobile')}
@@ -944,7 +943,7 @@ export default function App() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="inline-flex h-[60px] items-center justify-center gap-2 rounded-[22px] bg-[#102033] px-7 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#173651] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="speed-test-submit inline-flex h-[60px] items-center justify-center gap-2 rounded-[22px] bg-[#102033] px-7 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#173651] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {loading ? (
                       <>
@@ -1002,11 +1001,11 @@ export default function App() {
             </div>
 
             <Motion.div
-                initial={{ opacity: 0, x: 24 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.22, duration: 0.55 }}
-                className="speed-test-preview-column relative mx-auto w-full xl:ml-auto"
-              >
+              initial={{ opacity: 0, x: 24 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.22, duration: 0.55 }}
+              className="speed-test-preview-column relative mx-auto w-full xl:ml-auto"
+            >
               <div className="speed-test-preview-shell overflow-hidden rounded-[38px] border border-white/10 bg-[#102033] p-8 text-white shadow-[0_30px_80px_rgba(16,32,51,0.28)]">
                 <div
                   className="pointer-events-none absolute inset-0"
@@ -1015,8 +1014,8 @@ export default function App() {
                       'radial-gradient(circle at top right, rgba(98, 182, 203, 0.36), transparent 34%), radial-gradient(circle at bottom left, rgba(255, 106, 27, 0.2), transparent 38%)',
                   }}
                 />
-                <div className="relative">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="speed-test-preview-content relative">
+                  <div className="speed-test-preview-meta flex flex-wrap items-center justify-between gap-3">
                     <span className="inline-flex rounded-full border border-white/10 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/80">
                       Live Lighthouse
                     </span>
@@ -1025,16 +1024,16 @@ export default function App() {
                     </span>
                   </div>
 
-                  <h2 className="mt-6 max-w-[12ch] text-3xl font-black leading-tight">
+                  <h2 className="speed-test-preview-title mt-6 text-3xl font-black leading-tight">
                     {results ? `Rapport klar for ${activeReport.analyzedUrl}` : 'Se hvordan rapporten er bygget opp'}
                   </h2>
-                  <p className="mt-3 max-w-[30ch] text-sm leading-7 text-white/70">
+                  <p className="speed-test-preview-text mt-3 text-sm leading-7 text-white/70">
                     {results
                       ? activeReport.summary
                       : 'Du får scorekort, nøkkelmålinger og en prioritert handlingsplan i ett og samme overblikk.'}
                   </p>
 
-                  <div className="mt-8 grid grid-cols-2 gap-4">
+                  <div className="speed-test-preview-score-grid mt-8 grid grid-cols-2 gap-4">
                     {SCORE_DEFINITIONS.map(({ key, label }) => (
                       <ScoreCard key={key} label={label} score={activeReport.scores[key]} dark />
                     ))}
@@ -1059,7 +1058,7 @@ export default function App() {
             </Motion.div>
           </section>
 
-          <section id="fordeler" className="container speed-test-container speed-test-section speed-test-highlights-section">
+          <section id="fordeler" className="speed-test-container speed-test-section speed-test-highlights-section">
             <div className="speed-test-highlights-grid">
               {PAGE_HIGHLIGHTS.map((item, index) => (
                 <HighlightCard key={item.title} item={item} index={index} />
@@ -1067,7 +1066,7 @@ export default function App() {
             </div>
           </section>
 
-          <section id="resultat" className="container speed-test-container speed-test-section speed-test-results-section">
+          <section id="resultat" className="speed-test-container speed-test-section speed-test-results-section">
             <div className="speed-test-results-header mb-8">
               <div className="speed-test-results-copy">
                 <span className="inline-flex rounded-full border border-[#102033]/10 bg-white/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#102033] shadow-[0_16px_40px_rgba(16,32,51,0.08)] backdrop-blur">
@@ -1076,7 +1075,7 @@ export default function App() {
                 <h2 className="speed-test-section-title mt-5 font-black text-[#102033]">
                   {results
                     ? `Dette er det neste du bør fikse på ${activeReport.analyzedUrl}`
-                    : 'Kjør testen for å bytte ut eksempeltallene med dine egne.'}
+                    : 'Kjør testen for å erstatte eksempeltallene med dine egne.'}
                 </h2>
                 <p className="speed-test-section-lead mt-4 text-[#5b6676]">
                   {results

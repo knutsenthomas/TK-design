@@ -115,46 +115,97 @@ body.homepage-refresh.speed-test-page .speed-test-section {
 
 body.homepage-refresh.speed-test-page .speed-test-hero-grid {
   display: grid;
-  gap: clamp(2rem, 4vw, 4.5rem);
+  gap: clamp(2rem, 4vw, 4.25rem);
   align-items: start;
-  padding-top: clamp(2.25rem, 5vw, 5rem);
+  padding-top: clamp(2rem, 4vw, 4.25rem);
 }
 
 body.homepage-refresh.speed-test-page .speed-test-intro {
   min-width: 0;
+  max-width: 50rem;
 }
 
 body.homepage-refresh.speed-test-page .speed-test-handwritten {
-  font-size: clamp(2rem, 2.8vw, 2.75rem);
-  line-height: 1;
+  font-size: clamp(1.8rem, 2.4vw, 2.4rem);
+  line-height: 1.02;
 }
 
 body.homepage-refresh.speed-test-page .speed-test-hero-title {
-  max-width: 12ch;
-  font-size: clamp(3rem, 6vw, 6rem);
-  line-height: 0.92;
-  letter-spacing: -0.055em;
+  max-width: 10.8ch;
+  font-size: clamp(2.85rem, 5vw, 5.15rem);
+  line-height: 0.94;
+  letter-spacing: -0.05em;
 }
 
 body.homepage-refresh.speed-test-page .speed-test-hero-lead,
 body.homepage-refresh.speed-test-page .speed-test-section-lead {
-  max-width: 42rem;
-  font-size: clamp(1rem, 1.45vw, 1.15rem);
-  line-height: 1.8;
+  max-width: 39rem;
+  font-size: clamp(1rem, 1.25vw, 1.1rem);
+  line-height: 1.75;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-form {
+  padding: clamp(1rem, 2vw, 1.35rem);
+}
+
+body.homepage-refresh.speed-test-page .speed-test-form-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-field {
+  min-width: 0;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-input-shell,
+body.homepage-refresh.speed-test-page .speed-test-strategy-toggle {
+  min-height: 4rem;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-submit {
+  width: 100%;
 }
 
 body.homepage-refresh.speed-test-page .speed-test-preview-column {
   width: 100%;
-  max-width: 36rem;
+  max-width: 29rem;
+  display: grid;
+  gap: 1rem;
 }
 
 body.homepage-refresh.speed-test-page .speed-test-preview-shell {
   position: relative;
+  padding: clamp(1.5rem, 2vw, 1.9rem);
+}
+
+body.homepage-refresh.speed-test-page .speed-test-preview-content {
+  position: relative;
+  display: grid;
+  gap: 0;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-preview-meta {
+  align-items: center;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-preview-title {
+  max-width: 9.8ch;
+  font-size: clamp(2rem, 2.4vw, 2.65rem);
+  line-height: 1.04;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-preview-text {
+  max-width: 31ch;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-preview-score-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 body.homepage-refresh.speed-test-page .speed-test-priority-card {
-  width: min(100%, 26rem);
-  margin-top: 1rem;
+  width: 100%;
+  margin-top: 0;
+  margin-left: 0;
 }
 
 body.homepage-refresh.speed-test-page .speed-test-highlights-section {
@@ -169,6 +220,23 @@ body.homepage-refresh.speed-test-page .speed-test-score-grid,
 body.homepage-refresh.speed-test-page .speed-test-metrics-grid {
   display: grid;
   gap: 1.5rem;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-highlight-card,
+body.homepage-refresh.speed-test-page .speed-test-metric-card,
+body.homepage-refresh.speed-test-page .speed-test-score-card,
+body.homepage-refresh.speed-test-page .speed-test-fix-item {
+  min-width: 0;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-highlight-card {
+  height: 100%;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-highlight-title,
+body.homepage-refresh.speed-test-page .speed-test-metric-title,
+body.homepage-refresh.speed-test-page .speed-test-fix-title {
+  line-height: 1.08;
 }
 
 body.homepage-refresh.speed-test-page .speed-test-results-section {
@@ -186,9 +254,9 @@ body.homepage-refresh.speed-test-page .speed-test-results-copy {
 }
 
 body.homepage-refresh.speed-test-page .speed-test-section-title {
-  max-width: 12ch;
-  font-size: clamp(2.5rem, 4.8vw, 4.5rem);
-  line-height: 0.94;
+  max-width: 10.5ch;
+  font-size: clamp(2.35rem, 4vw, 3.75rem);
+  line-height: 0.96;
   letter-spacing: -0.045em;
 }
 
@@ -201,27 +269,102 @@ body.homepage-refresh.speed-test-page .speed-test-score-copy {
 }
 
 body.homepage-refresh.speed-test-page .speed-test-score-grid {
-  grid-template-columns: repeat(1, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+body.homepage-refresh.speed-test-page .speed-test-score-card {
+  min-height: 10.25rem;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-score-card-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-width: 0;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-score-copy {
+  min-width: 0;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-score-label {
+  line-height: 1.45;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-score-pill {
+  align-self: flex-start;
+  max-width: 100%;
+  text-align: left;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-score-ring {
+  width: 5.5rem;
+  height: 5.5rem;
 }
 
 body.homepage-refresh.speed-test-page .speed-test-metrics-grid {
-  grid-template-columns: repeat(1, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+body.homepage-refresh.speed-test-page .speed-test-metric-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-metric-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-metric-copy {
+  min-width: 0;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-metric-title {
+  max-width: 10ch;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-metric-pill {
+  flex-shrink: 0;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-metric-value {
+  font-size: clamp(2.25rem, 3vw, 3rem);
+}
+
+body.homepage-refresh.speed-test-page .speed-test-side-stack {
+  grid-auto-rows: min-content;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-fix-item {
+  padding: 1.15rem 1.25rem;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-fix-row {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-fix-copy {
+  min-width: 0;
 }
 
 @media (min-width: 640px) {
-  body.homepage-refresh.speed-test-page .speed-test-priority-card {
-    margin-top: -3rem;
-    margin-left: 1.25rem;
-  }
-
-  body.homepage-refresh.speed-test-page .speed-test-score-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  body.homepage-refresh.speed-test-page .speed-test-form-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 @media (min-width: 768px) {
   body.homepage-refresh.speed-test-page .speed-test-highlights-grid,
-  body.homepage-refresh.speed-test-page .speed-test-metrics-grid {
+  body.homepage-refresh.speed-test-page .speed-test-metrics-grid,
+  body.homepage-refresh.speed-test-page .speed-test-preview-score-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -236,9 +379,14 @@ body.homepage-refresh.speed-test-page .speed-test-metrics-grid {
   }
 }
 
-@media (min-width: 960px) {
+@media (min-width: 980px) {
   body.homepage-refresh.speed-test-page .speed-test-highlights-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  body.homepage-refresh.speed-test-page .speed-test-form-grid {
+    grid-template-columns: minmax(0, 1.45fr) minmax(220px, 0.78fr) minmax(200px, auto);
+    align-items: end;
   }
 
   body.homepage-refresh.speed-test-page .speed-test-score-header {
@@ -250,29 +398,18 @@ body.homepage-refresh.speed-test-page .speed-test-metrics-grid {
   }
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 1240px) {
   body.homepage-refresh.speed-test-page .speed-test-hero-grid {
-    grid-template-columns: minmax(0, 1.06fr) minmax(24rem, 32rem);
+    grid-template-columns: minmax(0, 1fr) minmax(24rem, 29rem);
     align-items: center;
   }
 
-  body.homepage-refresh.speed-test-page .speed-test-priority-card {
-    margin-left: auto;
-    margin-right: 0;
-  }
-
   body.homepage-refresh.speed-test-page .speed-test-report-grid {
-    grid-template-columns: minmax(0, 1.1fr) minmax(22rem, 0.9fr);
+    grid-template-columns: minmax(0, 1fr) minmax(22rem, 25rem);
   }
 
   body.homepage-refresh.speed-test-page .speed-test-detail-grid {
-    grid-template-columns: minmax(0, 1.08fr) minmax(22rem, 0.92fr);
-  }
-}
-
-@media (min-width: 1440px) {
-  body.homepage-refresh.speed-test-page .speed-test-score-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr) minmax(22rem, 25rem);
   }
 }
 
@@ -282,19 +419,34 @@ body.homepage-refresh.speed-test-page .speed-test-metrics-grid {
   }
 
   body.homepage-refresh.speed-test-page .speed-test-hero-title {
-    max-width: 8.5ch;
-    font-size: clamp(2.45rem, 13vw, 4rem);
-    line-height: 0.95;
+    max-width: 8.3ch;
+    font-size: clamp(2.4rem, 12vw, 3.8rem);
+    line-height: 0.96;
   }
 
   body.homepage-refresh.speed-test-page .speed-test-section-title {
-    max-width: 9.5ch;
-    font-size: clamp(2.2rem, 10vw, 3.25rem);
+    max-width: 9ch;
+    font-size: clamp(2rem, 9vw, 3rem);
   }
 
-  body.homepage-refresh.speed-test-page .speed-test-preview-column,
-  body.homepage-refresh.speed-test-page .speed-test-priority-card {
-    max-width: none;
+  body.homepage-refresh.speed-test-page .speed-test-score-card-inner,
+  body.homepage-refresh.speed-test-page .speed-test-metric-head {
+    flex-direction: column;
+    align-items: start;
+  }
+
+  body.homepage-refresh.speed-test-page .speed-test-score-ring {
+    width: 5rem;
+    height: 5rem;
+  }
+
+  body.homepage-refresh.speed-test-page .speed-test-fix-row {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  body.homepage-refresh.speed-test-page .speed-test-submit {
+    min-height: 3.75rem;
   }
 }
 
