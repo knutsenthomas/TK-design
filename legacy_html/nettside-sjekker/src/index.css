@@ -667,13 +667,30 @@ body.homepage-refresh.speed-test-page .st-results-stack {
   gap: 1.5rem;
 }
 
+body.homepage-refresh.speed-test-page .st-results .st-section-head > div {
+  max-width: 72rem;
+}
+
+body.homepage-refresh.speed-test-page .st-results .st-section-head h2 {
+  max-width: 17ch;
+}
+
+body.homepage-refresh.speed-test-page .st-results .st-section-head p {
+  max-width: 56rem;
+}
+
 body.homepage-refresh.speed-test-page .st-results-grid {
   display: grid;
   gap: 1.5rem;
 }
 
+body.homepage-refresh.speed-test-page .st-results-grid--secondary {
+  align-items: start;
+}
+
 body.homepage-refresh.speed-test-page .st-panel {
   display: grid;
+  align-content: start;
   gap: 1.5rem;
   min-width: 0;
   padding: clamp(1.4rem, 2vw, 1.8rem);
@@ -1103,6 +1120,10 @@ body.homepage-refresh.speed-test-page .st-button--secondary:hover {
   body.homepage-refresh.speed-test-page .st-section-head h2 {
     max-width: 9.5ch;
     font-size: clamp(2rem, 9vw, 3rem);
+  }
+
+  body.homepage-refresh.speed-test-page .st-results .st-section-head h2 {
+    max-width: 9.8ch;
   }
 
   body.homepage-refresh.speed-test-page .st-score-card,
