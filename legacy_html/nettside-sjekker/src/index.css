@@ -35,6 +35,10 @@ body {
   color: #102033;
 }
 
+body.speed-test-page {
+  overflow-x: hidden;
+}
+
 img {
   display: block;
   max-width: 100%;
@@ -65,6 +69,10 @@ input::placeholder {
 
 #root {
   min-height: 100vh;
+}
+
+.speed-test-shell {
+  overflow: clip;
 }
 
 ::selection {

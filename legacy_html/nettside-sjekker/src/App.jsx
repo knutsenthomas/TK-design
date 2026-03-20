@@ -3,14 +3,18 @@ import { AnimatePresence, motion as Motion } from 'framer-motion';
 import {
   AlertCircle,
   ArrowRight,
-  CheckCircle2,
   ExternalLink,
+  Facebook,
   Gauge,
+  Instagram,
+  Linkedin,
   Mail,
+  Menu,
   Monitor,
   Search,
   Shield,
   Smartphone,
+  X,
   Zap,
 } from 'lucide-react';
 
@@ -90,6 +94,34 @@ const PAGE_HIGHLIGHTS = [
   },
 ];
 
+const NAV_ITEMS = [
+  { href: '/', label: 'Home' },
+  { href: '/?section=about', label: 'About' },
+  { href: '/?section=services', label: 'Services' },
+  { href: '/?section=projects', label: 'Portfolio' },
+  { href: '/?section=testimonial', label: 'Testimonial' },
+  { href: '/blog', label: 'Blog' },
+  { href: '/contact', label: 'Contact' },
+];
+
+const SOCIAL_LINKS = [
+  {
+    href: 'https://www.facebook.com/profile.php?id=61574614704737&locale=nb_NO',
+    label: 'Facebook',
+    icon: Facebook,
+  },
+  {
+    href: 'https://www.instagram.com/tkdesign777',
+    label: 'Instagram',
+    icon: Instagram,
+  },
+  {
+    href: 'https://www.linkedin.com/in/thomas-knutsen-a6aa2793/',
+    label: 'LinkedIn',
+    icon: Linkedin,
+  },
+];
+
 const PREVIEW_REPORT = {
   analyzedUrl: 'din-side.no',
   strategy: 'mobile',
@@ -144,6 +176,16 @@ const PREVIEW_REPORT = {
     },
   ],
   topFixes: DEFAULT_FIXES,
+};
+
+const getCookie = (name) => {
+  if (typeof document === 'undefined') {
+    return '';
+  }
+
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  return parts.length === 2 ? parts.pop().split(';').shift() : '';
 };
 
 const getStrategyLabel = (strategy) => (strategy === 'desktop' ? 'Desktop' : 'Mobil');
@@ -354,90 +396,176 @@ const formatTimestamp = (timestamp) => {
   }).format(new Date(timestamp));
 };
 
-const Header = () => (
-  <header className="sticky top-0 z-40 border-b border-[#102033]/10 bg-[rgba(246,243,237,0.82)] backdrop-blur-xl">
-    <div className="mx-auto flex max-w-[1240px] items-center justify-between gap-6 px-5 py-4 md:px-8">
-      <a href="/" className="flex items-center gap-3 text-[#102033] transition-transform hover:-translate-y-0.5">
-        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#ff6a1b] shadow-[0_18px_40px_rgba(255,106,27,0.26)]">
-          <img src="/img/logo/d.webp" alt="TK-design" className="h-7 w-7 object-contain" />
-        </span>
-        <span className="flex flex-col leading-none">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#6b7280]">
-            TK-design
+const Header = ({
+  isScrolled,
+  isMobileMenuOpen,
+  language,
+  onCloseMobileMenu,
+  onLanguageChange,
+  onToggleMobileMenu,
+}) => (
+  <>
+    <header className={`header${isScrolled ? ' scrolled' : ''}`}>
+      <div className="container nav-container">
+        <a href="/" className="logo" aria-label="tk-design">
+          <span className="logo-icon">
+            <img src="/img/logo/d.webp" alt="tk-design logo" />
           </span>
-          <span className="mt-1 text-lg font-bold">Speed Test</span>
-        </span>
-      </a>
+          <span className="logo-text">tk-design</span>
+        </a>
 
-      <nav className="hidden items-center gap-8 text-sm font-semibold text-[#546171] lg:flex">
-        <a href="#fordeler" className="transition-colors hover:text-[#102033]">
-          Hvorfor testen
-        </a>
-        <a href="#resultat" className="transition-colors hover:text-[#102033]">
-          Rapporten
-        </a>
-        <a href="#kontakt" className="transition-colors hover:text-[#102033]">
-          Kontakt
-        </a>
-      </nav>
+        <nav className="nav-desktop">
+          <ul>
+            {NAV_ITEMS.map((item) => (
+              <li key={item.href}>
+                <a href={item.href}>{item.label}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
-      <div className="flex items-center gap-3">
-        <a
-          href="/contact"
-          className="hidden rounded-full border border-[#102033]/10 bg-white/80 px-4 py-2 text-sm font-semibold text-[#102033] transition-all hover:-translate-y-0.5 hover:border-[#102033]/20 md:inline-flex"
+        <div className="lang-switch-desktop">
+          <button
+            type="button"
+            className={`lang-btn${language === 'en' ? ' active' : ''}`}
+            onClick={() => onLanguageChange('en')}
+          >
+            EN
+          </button>
+          <button
+            type="button"
+            className={`lang-btn${language === 'no' ? ' active' : ''}`}
+            onClick={() => onLanguageChange('no')}
+          >
+            NO
+          </button>
+        </div>
+
+        <button
+          type="button"
+          className="menu-trigger"
+          aria-label={isMobileMenuOpen ? 'Lukk meny' : 'Åpne meny'}
+          aria-expanded={isMobileMenuOpen}
+          onClick={onToggleMobileMenu}
         >
-          Snakk med oss
-        </a>
-        <a
-          href="/"
-          className="inline-flex items-center gap-2 rounded-full bg-[#102033] px-4 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#173651]"
-        >
-          Til forsiden
-          <ArrowRight size={16} />
-        </a>
+          {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+        </button>
       </div>
+    </header>
+
+    <div className={`mobile-menu-overlay${isMobileMenuOpen ? ' active' : ''}`}>
+      <nav className="mobile-nav">
+        <ul>
+          {NAV_ITEMS.map((item) => (
+            <li key={item.href}>
+              <a href={item.href} onClick={onCloseMobileMenu}>
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <div className="lang-switch-mobile">
+          <button
+            type="button"
+            className={`lang-btn${language === 'en' ? ' active' : ''}`}
+            onClick={() => onLanguageChange('en')}
+          >
+            EN
+          </button>
+          <button
+            type="button"
+            className={`lang-btn${language === 'no' ? ' active' : ''}`}
+            onClick={() => onLanguageChange('no')}
+          >
+            NO
+          </button>
+        </div>
+
+        <div className="mobile-menu-footer">
+          <div className="mobile-contact-info">
+            <a href="mailto:thomas@tk-design.no" onClick={onCloseMobileMenu}>
+              thomas@tk-design.no
+            </a>
+            <a href="tel:+4793094615" onClick={onCloseMobileMenu}>
+              930 94 615
+            </a>
+          </div>
+          <div className="mobile-social-links">
+            {SOCIAL_LINKS.slice(0, 2).map((link) => {
+              const Icon = link.icon;
+
+              return (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  target="_blank"
+                  rel="nofollow noopener noreferrer"
+                  aria-label={link.label}
+                >
+                  <Icon size={18} />
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      </nav>
     </div>
-  </header>
+  </>
 );
 
 const Footer = () => (
-  <footer id="kontakt" className="relative border-t border-[#102033]/10 bg-white/70">
-    <div className="mx-auto max-w-[1240px] px-5 py-12 md:px-8">
-      <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-        <div className="max-w-[30rem]">
-          <p
-            className="text-2xl font-bold text-[#102033]"
-            style={{ fontFamily: "'Caveat', cursive" }}
-          >
-            Vil du ha hjelp til å rydde opp i ytelsen?
-          </p>
-          <p className="mt-3 text-[15px] leading-7 text-[#5b6676]">
-            Vi bruker samme rammeverk som i testen, men gjør funnene om til konkrete grep i design,
-            kode og innholdsstruktur.
+  <footer id="kontakt" className="footer pt_120 pb_120" style={{ borderTop: '1px solid var(--clr-border)' }}>
+    <div className="container">
+      <div className="footer-cta">
+        <h2>La oss starte</h2>
+      </div>
+
+      <div className="footer-content">
+        <div className="footer-info">
+          <p style={{ fontSize: '20px', color: 'var(--clr-base)', marginBottom: '20px' }}>
+            Vi bygger din digitale identitet med skreddersydd webdesign, SEO og SoMe-strategi.
           </p>
           <a
             href="mailto:thomas@tk-design.no"
-            className="mt-5 inline-flex items-center gap-2 text-lg font-bold text-[#102033] underline decoration-[#ff6a1b] decoration-2 underline-offset-4"
+            style={{ fontSize: '30px', textDecoration: 'underline', color: 'var(--clr-base)' }}
           >
             thomas@tk-design.no
-            <Mail size={18} />
           </a>
         </div>
 
-        <div className="flex flex-wrap gap-3">
-          <a
-            href="mailto:thomas@tk-design.no?subject=Jeg%20vil%20ha%20en%20full%20ytelsesrapport"
-            className="inline-flex items-center gap-2 rounded-full bg-[#102033] px-5 py-3 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#173651]"
-          >
-            Be om full rapport
-            <ArrowRight size={16} />
+        <div className="footer-links" style={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+          {SOCIAL_LINKS.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="social-link"
+              target="_blank"
+              rel="nofollow noopener noreferrer"
+            >
+              <span>{link.label}</span>
+              <ArrowRight size={16} />
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <div
+        className="flex flex-wrap justify-between items-center"
+        style={{ borderTop: '1px solid var(--clr-border)', paddingTop: '30px' }}
+      >
+        <p>
+          Copyright © 2026 <a href="/" style={{ color: 'var(--clr-base)' }}>TK-design</a> All rights reserved.
+        </p>
+        <div className="flex gap-4">
+          <a href="/accessibility" style={{ color: 'var(--clr-base)' }}>
+            Accessibility Statement
           </a>
-          <a
-            href="/contact"
-            className="inline-flex items-center gap-2 rounded-full border border-[#102033]/10 bg-white px-5 py-3 text-sm font-semibold text-[#102033] transition-all hover:-translate-y-0.5 hover:border-[#102033]/20"
-          >
-            Book gjennomgang
-            <ExternalLink size={16} />
+          <a href="/privacy" style={{ color: 'var(--clr-base)' }}>
+            Privacy Policy
+          </a>
+          <a href="/admin/" className="admin-secret" style={{ color: '#777', fontSize: '0.8em' }}>
+            Admin
           </a>
         </div>
       </div>
@@ -581,6 +709,35 @@ export default function App() {
   const [progress, setProgress] = useState(0);
   const [results, setResults] = useState(null);
   const [error, setError] = useState(null);
+  const [language, setLanguage] = useState('no');
+  const [headerScrolled, setHeaderScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const storedLang = getCookie('site_lang') || window.localStorage.getItem('site_lang') || 'no';
+    setLanguage(storedLang === 'en' ? 'en' : 'no');
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => {
+      setHeaderScrolled(window.scrollY > 50);
+    };
+
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    document.body.classList.toggle('mobile-menu-active', isMobileMenuOpen);
+    document.body.style.overflow = isMobileMenuOpen ? 'hidden' : '';
+
+    return () => {
+      document.body.classList.remove('mobile-menu-active');
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
 
   useEffect(() => {
     if (!loading) {
@@ -661,8 +818,15 @@ export default function App() {
   const activeReport = results ?? PREVIEW_REPORT;
   const mailSubject = encodeURIComponent(`Rapport for ${activeReport.analyzedUrl}`);
 
+  const handleLanguageChange = (nextLanguage) => {
+    const resolvedLanguage = nextLanguage === 'en' ? 'en' : 'no';
+    setLanguage(resolvedLanguage);
+    window.localStorage.setItem('site_lang', resolvedLanguage);
+    document.cookie = `site_lang=${resolvedLanguage}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+  };
+
   return (
-    <div className="relative min-h-screen overflow-hidden text-[#102033]">
+    <div className="speed-test-shell relative min-h-screen overflow-hidden text-[#102033]">
       <div
         className="pointer-events-none absolute inset-x-0 top-0 h-[760px]"
         style={{
@@ -674,10 +838,17 @@ export default function App() {
       <div className="pointer-events-none absolute right-[-100px] top-[130px] h-[260px] w-[260px] rounded-full bg-[#ff6a1b]/10 blur-3xl" />
 
       <div className="relative flex min-h-screen flex-col">
-        <Header />
+        <Header
+          isScrolled={headerScrolled}
+          isMobileMenuOpen={isMobileMenuOpen}
+          language={language}
+          onCloseMobileMenu={() => setIsMobileMenuOpen(false)}
+          onLanguageChange={handleLanguageChange}
+          onToggleMobileMenu={() => setIsMobileMenuOpen((current) => !current)}
+        />
 
         <main className="flex-1">
-          <section className="mx-auto grid max-w-[1240px] gap-10 px-5 pb-16 pt-14 md:px-8 lg:grid-cols-[minmax(0,1.08fr)_430px] lg:items-start lg:pt-20">
+          <section className="mx-auto grid max-w-[1240px] gap-12 px-5 pb-16 pt-14 md:px-8 xl:grid-cols-[minmax(0,1.08fr)_430px] xl:items-start xl:pt-20">
             <div>
               <Motion.div
                 initial={{ opacity: 0, y: 24 }}
@@ -701,8 +872,11 @@ export default function App() {
                 >
                   Finn friksjonen før kunden gjør det
                 </p>
-                <h1 className="mt-2 text-[clamp(3.3rem,7vw,6.3rem)] font-black leading-[0.93] tracking-[-0.04em] text-[#102033]">
-                  Er nettsiden din rask nok til å holde på oppmerksomheten?
+                <h1 className="mt-3 max-w-[10.8ch] text-[clamp(2.9rem,6vw,5.5rem)] font-black leading-[0.98] tracking-[-0.045em] text-[#102033]">
+                  <span className="block">Er nettsiden</span>
+                  <span className="block">din rask nok til</span>
+                  <span className="block">å holde på</span>
+                  <span className="block">oppmerksomheten?</span>
                 </h1>
                 <p className="mt-6 max-w-[38rem] text-lg leading-8 text-[#5b6676]">
                   Lim inn en URL og få en visuell rapport som viser hvor opplevelsen bremser opp på mobil
@@ -831,7 +1005,7 @@ export default function App() {
               initial={{ opacity: 0, x: 24 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.22, duration: 0.55 }}
-              className="relative"
+              className="relative mx-auto w-full max-w-[32rem] xl:ml-auto"
             >
               <div className="overflow-hidden rounded-[38px] border border-white/10 bg-[#102033] p-8 text-white shadow-[0_30px_80px_rgba(16,32,51,0.28)]">
                 <div
@@ -868,7 +1042,7 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="relative -mt-12 ml-5 rounded-[30px] border border-[#102033]/10 bg-white/95 p-6 shadow-[0_24px_60px_rgba(16,32,51,0.12)] backdrop-blur">
+              <div className="relative mt-4 rounded-[30px] border border-[#102033]/10 bg-white/95 p-6 shadow-[0_24px_60px_rgba(16,32,51,0.12)] backdrop-blur sm:-mt-12 sm:ml-5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#6b7280]">
                   Prioritet nå
                 </p>
@@ -899,7 +1073,7 @@ export default function App() {
                 <span className="inline-flex rounded-full border border-[#102033]/10 bg-white/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#102033] shadow-[0_16px_40px_rgba(16,32,51,0.08)] backdrop-blur">
                   {results ? 'Din rapport' : 'Eksempelrapport'}
                 </span>
-                <h2 className="mt-5 text-[clamp(2.4rem,4.8vw,4.2rem)] font-black leading-[0.96] tracking-[-0.04em] text-[#102033]">
+                <h2 className="mt-5 max-w-[11ch] text-[clamp(2.4rem,4.4vw,4rem)] font-black leading-[0.99] tracking-[-0.04em] text-[#102033]">
                   {results
                     ? `Dette er det neste du bør fikse på ${activeReport.analyzedUrl}`
                     : 'Kjør testen for å bytte ut eksempeltallene med dine egne.'}
@@ -932,7 +1106,7 @@ export default function App() {
               >
                 <div className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_0.9fr]">
                   <div className="rounded-[38px] border border-white/70 bg-white/90 p-8 shadow-[0_30px_80px_rgba(16,32,51,0.12)] backdrop-blur">
-                    <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                    <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
                       <div className="max-w-[40rem]">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#6b7280]">
                           {results ? `Analysert domene: ${activeReport.analyzedUrl}` : 'Demooppsett'}
@@ -984,7 +1158,7 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="grid gap-6 lg:grid-cols-[minmax(0,1.08fr)_0.92fr]">
+                <div className="grid gap-6 xl:grid-cols-[minmax(0,1.08fr)_0.92fr]">
                   <div className="rounded-[38px] border border-white/70 bg-white/90 p-8 shadow-[0_30px_80px_rgba(16,32,51,0.12)] backdrop-blur">
                     <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                       <div>
