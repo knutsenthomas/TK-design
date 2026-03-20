@@ -965,10 +965,16 @@ body.homepage-refresh.speed-test-page .st-metric-text {
 }
 
 body.homepage-refresh.speed-test-page .st-aside-stack,
-body.homepage-refresh.speed-test-page .st-plan-list,
-body.homepage-refresh.speed-test-page .st-cta-actions {
+body.homepage-refresh.speed-test-page .st-plan-list {
   display: grid;
   gap: 1rem;
+}
+
+body.homepage-refresh.speed-test-page .st-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
 }
 
 body.homepage-refresh.speed-test-page .st-plan-item {
@@ -1017,6 +1023,9 @@ body.homepage-refresh.speed-test-page .st-button {
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
+  width: fit-content;
+  min-width: 18rem;
+  max-width: 100%;
   min-height: 3.75rem;
   padding: 0 1.15rem;
   border-radius: 1.35rem;
@@ -1149,6 +1158,15 @@ body.homepage-refresh.speed-test-page .st-button--secondary:hover {
   body.homepage-refresh.speed-test-page .st-feature-card,
   body.homepage-refresh.speed-test-page .st-trust-card {
     grid-template-columns: 1fr;
+  }
+
+  body.homepage-refresh.speed-test-page .st-cta-actions {
+    display: grid;
+  }
+
+  body.homepage-refresh.speed-test-page .st-button {
+    width: 100%;
+    min-width: 0;
   }
 }
 
