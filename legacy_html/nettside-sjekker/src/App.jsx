@@ -120,13 +120,13 @@ const REPORT_POINTS = [
 ];
 
 const NAV_ITEMS = [
-  { href: '/', label: 'Home' },
-  { href: '/?section=about', label: 'About' },
-  { href: '/?section=services', label: 'Services' },
-  { href: '/?section=projects', label: 'Portfolio' },
-  { href: '/?section=testimonial', label: 'Testimonial' },
-  { href: '/blog', label: 'Blog' },
-  { href: '/contact', label: 'Contact' },
+  { href: '/', label: { no: 'Hjem', en: 'Home' } },
+  { href: '/?section=about', label: { no: 'Om oss', en: 'About us' } },
+  { href: '/?section=services', label: { no: 'Tjenester', en: 'Services' } },
+  { href: '/?section=projects', label: { no: 'Prosjekter', en: 'Projects' } },
+  { href: '/?section=testimonial', label: { no: 'Hvorfor oss', en: 'Why us' } },
+  { href: '/blog', label: { no: 'Aktuelt', en: 'News' } },
+  { href: '/contact', label: { no: 'Kontakt', en: 'Contact' } },
 ];
 
 const SOCIAL_LINKS = [
@@ -502,8 +502,11 @@ const Header = ({
   onCloseMobileMenu,
   onLanguageChange,
   onToggleMobileMenu,
-}) => (
-  <>
+}) => {
+  const resolvedLanguage = language === 'en' ? 'en' : 'no';
+
+  return (
+    <>
     <header className={`header${isScrolled ? ' scrolled' : ''}`}>
       <div className="container nav-container">
         <a href="/" className="logo" aria-label="tk-design">
@@ -517,7 +520,7 @@ const Header = ({
           <ul>
             {NAV_ITEMS.map((item) => (
               <li key={item.href}>
-                <a href={item.href}>{item.label}</a>
+                <a href={item.href}>{item.label[resolvedLanguage]}</a>
               </li>
             ))}
           </ul>
@@ -558,7 +561,7 @@ const Header = ({
           {NAV_ITEMS.map((item) => (
             <li key={item.href}>
               <a href={item.href} onClick={onCloseMobileMenu}>
-                {item.label}
+                {item.label[resolvedLanguage]}
               </a>
             </li>
           ))}
@@ -611,7 +614,8 @@ const Header = ({
       </nav>
     </div>
   </>
-);
+  );
+};
 
 const Footer = () => (
   <footer id="kontakt" className="footer pt_120 pb_120" style={{ borderTop: '1px solid var(--clr-border)' }}>
