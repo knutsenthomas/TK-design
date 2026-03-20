@@ -847,9 +847,9 @@ export default function App() {
           onToggleMobileMenu={() => setIsMobileMenuOpen((current) => !current)}
         />
 
-        <main className="flex-1">
-          <section className="mx-auto grid max-w-[1240px] gap-12 px-5 pb-16 pt-14 md:px-8 xl:grid-cols-[minmax(0,1.08fr)_430px] xl:items-start xl:pt-20">
-            <div>
+        <main className="speed-test-main flex-1">
+          <section className="container speed-test-container speed-test-section speed-test-hero-grid">
+            <div className="speed-test-intro">
               <Motion.div
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -864,21 +864,21 @@ export default function App() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.08, duration: 0.55 }}
-                className="mt-7 max-w-[42rem]"
+                className="mt-7"
               >
                 <p
-                  className="text-3xl text-[#ff6a1b]"
+                  className="speed-test-handwritten text-[#ff6a1b]"
                   style={{ fontFamily: "'Caveat', cursive" }}
                 >
                   Finn friksjonen før kunden gjør det
                 </p>
-                <h1 className="mt-3 max-w-[10.8ch] text-[clamp(2.9rem,6vw,5.5rem)] font-black leading-[0.98] tracking-[-0.045em] text-[#102033]">
+                <h1 className="speed-test-hero-title mt-3 font-black text-[#102033]">
                   <span className="block">Er nettsiden</span>
                   <span className="block">din rask nok til</span>
                   <span className="block">å holde på</span>
                   <span className="block">oppmerksomheten?</span>
                 </h1>
-                <p className="mt-6 max-w-[38rem] text-lg leading-8 text-[#5b6676]">
+                <p className="speed-test-hero-lead mt-6 text-[#5b6676]">
                   Lim inn en URL og få en visuell rapport som viser hvor opplevelsen bremser opp på mobil
                   eller desktop, og hvilke grep som gir mest effekt først.
                 </p>
@@ -1002,12 +1002,12 @@ export default function App() {
             </div>
 
             <Motion.div
-              initial={{ opacity: 0, x: 24 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.22, duration: 0.55 }}
-              className="relative mx-auto w-full max-w-[32rem] xl:ml-auto"
-            >
-              <div className="overflow-hidden rounded-[38px] border border-white/10 bg-[#102033] p-8 text-white shadow-[0_30px_80px_rgba(16,32,51,0.28)]">
+                initial={{ opacity: 0, x: 24 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.22, duration: 0.55 }}
+                className="speed-test-preview-column relative mx-auto w-full xl:ml-auto"
+              >
+              <div className="speed-test-preview-shell overflow-hidden rounded-[38px] border border-white/10 bg-[#102033] p-8 text-white shadow-[0_30px_80px_rgba(16,32,51,0.28)]">
                 <div
                   className="pointer-events-none absolute inset-0"
                   style={{
@@ -1042,7 +1042,7 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="relative mt-4 rounded-[30px] border border-[#102033]/10 bg-white/95 p-6 shadow-[0_24px_60px_rgba(16,32,51,0.12)] backdrop-blur sm:-mt-12 sm:ml-5">
+              <div className="speed-test-priority-card relative rounded-[30px] border border-[#102033]/10 bg-white/95 p-6 shadow-[0_24px_60px_rgba(16,32,51,0.12)] backdrop-blur">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#6b7280]">
                   Prioritet nå
                 </p>
@@ -1059,33 +1059,33 @@ export default function App() {
             </Motion.div>
           </section>
 
-          <section id="fordeler" className="mx-auto max-w-[1240px] px-5 pb-20 md:px-8">
-            <div className="grid gap-4 md:grid-cols-3">
+          <section id="fordeler" className="container speed-test-container speed-test-section speed-test-highlights-section">
+            <div className="speed-test-highlights-grid">
               {PAGE_HIGHLIGHTS.map((item, index) => (
                 <HighlightCard key={item.title} item={item} index={index} />
               ))}
             </div>
           </section>
 
-          <section id="resultat" className="mx-auto max-w-[1240px] px-5 pb-24 md:px-8">
-            <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-              <div className="max-w-[44rem]">
+          <section id="resultat" className="container speed-test-container speed-test-section speed-test-results-section">
+            <div className="speed-test-results-header mb-8">
+              <div className="speed-test-results-copy">
                 <span className="inline-flex rounded-full border border-[#102033]/10 bg-white/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#102033] shadow-[0_16px_40px_rgba(16,32,51,0.08)] backdrop-blur">
                   {results ? 'Din rapport' : 'Eksempelrapport'}
                 </span>
-                <h2 className="mt-5 max-w-[11ch] text-[clamp(2.4rem,4.4vw,4rem)] font-black leading-[0.99] tracking-[-0.04em] text-[#102033]">
+                <h2 className="speed-test-section-title mt-5 font-black text-[#102033]">
                   {results
                     ? `Dette er det neste du bør fikse på ${activeReport.analyzedUrl}`
                     : 'Kjør testen for å bytte ut eksempeltallene med dine egne.'}
                 </h2>
-                <p className="mt-4 text-base leading-8 text-[#5b6676]">
+                <p className="speed-test-section-lead mt-4 text-[#5b6676]">
                   {results
                     ? activeReport.summary
                     : 'Under ser du hvordan Lighthouse-data presenteres når testen er ferdig: scorekort, nøkkelmålinger og en prioritert plan for hva som bør tas først.'}
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-3">
+              <div className="speed-test-results-meta flex flex-wrap gap-3">
                 <span className="inline-flex rounded-full border border-[#102033]/10 bg-white/75 px-4 py-2 text-sm font-semibold text-[#102033]">
                   {getStrategyLabel(activeReport.strategy)}
                 </span>
@@ -1104,10 +1104,10 @@ export default function App() {
                 transition={{ duration: 0.45 }}
                 className="space-y-6"
               >
-                <div className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_0.9fr]">
+                <div className="speed-test-report-grid">
                   <div className="rounded-[38px] border border-white/70 bg-white/90 p-8 shadow-[0_30px_80px_rgba(16,32,51,0.12)] backdrop-blur">
-                    <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-                      <div className="max-w-[40rem]">
+                    <div className="speed-test-score-header flex flex-col gap-6">
+                      <div className="speed-test-score-copy">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#6b7280]">
                           {results ? `Analysert domene: ${activeReport.analyzedUrl}` : 'Demooppsett'}
                         </p>
@@ -1129,7 +1129,7 @@ export default function App() {
                       </div>
                     </div>
 
-                    <div className="mt-8 grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
+                    <div className="speed-test-score-grid mt-8">
                       {SCORE_DEFINITIONS.map(({ key, label }) => (
                         <ScoreCard key={key} label={label} score={activeReport.scores[key]} />
                       ))}
@@ -1158,7 +1158,7 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="grid gap-6 xl:grid-cols-[minmax(0,1.08fr)_0.92fr]">
+                <div className="speed-test-detail-grid">
                   <div className="rounded-[38px] border border-white/70 bg-white/90 p-8 shadow-[0_30px_80px_rgba(16,32,51,0.12)] backdrop-blur">
                     <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                       <div>
@@ -1174,14 +1174,14 @@ export default function App() {
                       </p>
                     </div>
 
-                    <div className="mt-8 grid gap-4 md:grid-cols-2">
+                    <div className="speed-test-metrics-grid mt-8">
                       {activeReport.metrics.map((metric) => (
                         <MetricCard key={metric.key} metric={metric} />
                       ))}
                     </div>
                   </div>
 
-                  <div className="grid gap-6">
+                  <div className="speed-test-side-stack">
                     <div className="rounded-[38px] border border-white/10 bg-[#102033] p-8 text-white shadow-[0_30px_80px_rgba(16,32,51,0.22)]">
                       <div className="flex items-center gap-4">
                         <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#62B6CB]/20 text-[#62B6CB]">

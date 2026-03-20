@@ -75,6 +75,229 @@ input::placeholder {
   overflow: clip;
 }
 
+body.homepage-refresh.speed-test-page {
+  background:
+    radial-gradient(circle at top right, rgba(98, 182, 203, 0.18), transparent 28%),
+    radial-gradient(circle at 10% 18%, rgba(255, 106, 27, 0.14), transparent 24%),
+    #f6f3ed;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-shell {
+  position: relative;
+  isolation: isolate;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-shell :is(h1, h2, h3, h4, h5, h6, p) {
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-shell :is(h1, h2, h3, h4, h5, h6) {
+  color: inherit;
+  hyphens: none;
+  text-wrap: balance;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-main {
+  display: block;
+  width: 100%;
+  padding-bottom: clamp(4rem, 7vw, 8rem);
+}
+
+body.homepage-refresh.speed-test-page .speed-test-container {
+  width: min(100% - 40px, var(--container-width, 1350px));
+  margin-inline: auto;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-section {
+  padding-block: clamp(2rem, 4vw, 4rem);
+}
+
+body.homepage-refresh.speed-test-page .speed-test-hero-grid {
+  display: grid;
+  gap: clamp(2rem, 4vw, 4.5rem);
+  align-items: start;
+  padding-top: clamp(2.25rem, 5vw, 5rem);
+}
+
+body.homepage-refresh.speed-test-page .speed-test-intro {
+  min-width: 0;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-handwritten {
+  font-size: clamp(2rem, 2.8vw, 2.75rem);
+  line-height: 1;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-hero-title {
+  max-width: 12ch;
+  font-size: clamp(3rem, 6vw, 6rem);
+  line-height: 0.92;
+  letter-spacing: -0.055em;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-hero-lead,
+body.homepage-refresh.speed-test-page .speed-test-section-lead {
+  max-width: 42rem;
+  font-size: clamp(1rem, 1.45vw, 1.15rem);
+  line-height: 1.8;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-preview-column {
+  width: 100%;
+  max-width: 36rem;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-preview-shell {
+  position: relative;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-priority-card {
+  width: min(100%, 26rem);
+  margin-top: 1rem;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-highlights-section {
+  padding-top: 0;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-highlights-grid,
+body.homepage-refresh.speed-test-page .speed-test-report-grid,
+body.homepage-refresh.speed-test-page .speed-test-detail-grid,
+body.homepage-refresh.speed-test-page .speed-test-side-stack,
+body.homepage-refresh.speed-test-page .speed-test-score-grid,
+body.homepage-refresh.speed-test-page .speed-test-metrics-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-results-section {
+  padding-top: clamp(2.5rem, 5vw, 5rem);
+}
+
+body.homepage-refresh.speed-test-page .speed-test-results-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-results-copy {
+  max-width: 48rem;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-section-title {
+  max-width: 12ch;
+  font-size: clamp(2.5rem, 4.8vw, 4.5rem);
+  line-height: 0.94;
+  letter-spacing: -0.045em;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-score-header {
+  align-items: start;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-score-copy {
+  max-width: 40rem;
+}
+
+body.homepage-refresh.speed-test-page .speed-test-score-grid {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+body.homepage-refresh.speed-test-page .speed-test-metrics-grid {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 640px) {
+  body.homepage-refresh.speed-test-page .speed-test-priority-card {
+    margin-top: -3rem;
+    margin-left: 1.25rem;
+  }
+
+  body.homepage-refresh.speed-test-page .speed-test-score-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  body.homepage-refresh.speed-test-page .speed-test-highlights-grid,
+  body.homepage-refresh.speed-test-page .speed-test-metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.homepage-refresh.speed-test-page .speed-test-results-header {
+    flex-direction: row;
+    align-items: end;
+    justify-content: space-between;
+  }
+
+  body.homepage-refresh.speed-test-page .speed-test-results-meta {
+    justify-content: flex-end;
+  }
+}
+
+@media (min-width: 960px) {
+  body.homepage-refresh.speed-test-page .speed-test-highlights-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  body.homepage-refresh.speed-test-page .speed-test-score-header {
+    display: flex;
+    flex-direction: row;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  body.homepage-refresh.speed-test-page .speed-test-hero-grid {
+    grid-template-columns: minmax(0, 1.06fr) minmax(24rem, 32rem);
+    align-items: center;
+  }
+
+  body.homepage-refresh.speed-test-page .speed-test-priority-card {
+    margin-left: auto;
+    margin-right: 0;
+  }
+
+  body.homepage-refresh.speed-test-page .speed-test-report-grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(22rem, 0.9fr);
+  }
+
+  body.homepage-refresh.speed-test-page .speed-test-detail-grid {
+    grid-template-columns: minmax(0, 1.08fr) minmax(22rem, 0.92fr);
+  }
+}
+
+@media (min-width: 1440px) {
+  body.homepage-refresh.speed-test-page .speed-test-score-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  body.homepage-refresh.speed-test-page .speed-test-container {
+    width: min(100% - 24px, var(--container-width, 1350px));
+  }
+
+  body.homepage-refresh.speed-test-page .speed-test-hero-title {
+    max-width: 8.5ch;
+    font-size: clamp(2.45rem, 13vw, 4rem);
+    line-height: 0.95;
+  }
+
+  body.homepage-refresh.speed-test-page .speed-test-section-title {
+    max-width: 9.5ch;
+    font-size: clamp(2.2rem, 10vw, 3.25rem);
+  }
+
+  body.homepage-refresh.speed-test-page .speed-test-preview-column,
+  body.homepage-refresh.speed-test-page .speed-test-priority-card {
+    max-width: none;
+  }
+}
+
 ::selection {
   background: rgba(255, 106, 27, 0.22);
   color: #102033;
