@@ -159,6 +159,7 @@ body.homepage-refresh.speed-test-page .st-chip {
   min-height: 2.4rem;
   padding: 0 0.9rem;
   border-radius: 999px;
+  white-space: nowrap;
   font-size: 0.76rem;
   font-weight: 700;
   letter-spacing: 0.16em;
@@ -193,9 +194,10 @@ body.homepage-refresh.speed-test-page .st-script {
   margin-top: 1.25rem;
   color: #ff6a1b;
   font-family: 'Caveat', cursive;
-  max-width: 22ch;
+  max-width: none;
   font-size: clamp(1.7rem, 2.2vw, 2.45rem);
   line-height: 1;
+  white-space: nowrap;
 }
 
 body.homepage-refresh.speed-test-page .st-title {
@@ -447,7 +449,7 @@ body.homepage-refresh.speed-test-page .st-stage {
   display: grid;
   gap: 1rem;
   width: 100%;
-  max-width: 31rem;
+  max-width: 33rem;
   margin-inline: auto;
 }
 
@@ -491,7 +493,7 @@ body.homepage-refresh.speed-test-page .st-stage-device {
 
 body.homepage-refresh.speed-test-page .st-stage-card h2 {
   margin-top: 1.4rem;
-  max-width: 10ch;
+  max-width: 13ch;
   font-size: clamp(2rem, 2.8vw, 2.8rem);
   font-weight: 900;
   line-height: 1.02;
@@ -499,7 +501,7 @@ body.homepage-refresh.speed-test-page .st-stage-card h2 {
 
 body.homepage-refresh.speed-test-page .st-stage-card > p {
   margin-top: 0.85rem;
-  max-width: 30ch;
+  max-width: 38ch;
   color: rgba(255, 255, 255, 0.74);
   line-height: 1.7;
 }
@@ -581,11 +583,12 @@ body.homepage-refresh.speed-test-page .st-section-head p {
 }
 
 body.homepage-refresh.speed-test-page .st-section-head.st-section-head--compact > div {
-  max-width: 80rem;
+  width: 100%;
+  max-width: none;
 }
 
 body.homepage-refresh.speed-test-page .st-section-head.st-section-head--compact h2 {
-  max-width: 24ch;
+  max-width: 30ch;
 }
 
 body.homepage-refresh.speed-test-page .st-section-head.st-section-head--compact p {
@@ -1036,6 +1039,12 @@ body.homepage-refresh.speed-test-page .st-button {
     border-color 0.2s ease;
 }
 
+body.homepage-refresh.speed-test-page .st-button:disabled {
+  opacity: 0.68;
+  transform: none;
+  box-shadow: none;
+}
+
 body.homepage-refresh.speed-test-page .st-button:hover {
   transform: translateY(-1px);
 }
@@ -1057,6 +1066,33 @@ body.homepage-refresh.speed-test-page .st-button--secondary {
 
 body.homepage-refresh.speed-test-page .st-button--secondary:hover {
   border-color: rgba(16, 32, 51, 0.18);
+}
+
+body.homepage-refresh.speed-test-page .st-feedback {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 1.3rem;
+  font-size: 0.95rem;
+}
+
+body.homepage-refresh.speed-test-page .st-feedback p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+body.homepage-refresh.speed-test-page .st-feedback--success {
+  border-color: #cdeedb;
+  background: #eefaf3;
+  color: #18794f;
+}
+
+body.homepage-refresh.speed-test-page .st-feedback--error {
+  border-color: #f0d0c8;
+  background: #fff1ee;
+  color: #d04b2c;
 }
 
 @media (min-width: 700px) {
@@ -1111,7 +1147,7 @@ body.homepage-refresh.speed-test-page .st-button--secondary:hover {
   }
 
   body.homepage-refresh.speed-test-page .st-section-head.st-section-head--compact h2 {
-    max-width: 18ch;
+    max-width: 24ch;
   }
 
   body.homepage-refresh.speed-test-page .st-lead {
@@ -1128,6 +1164,11 @@ body.homepage-refresh.speed-test-page .st-button--secondary:hover {
     max-width: 9.1ch;
     font-size: clamp(2.35rem, 11vw, 3.7rem);
     line-height: 0.96;
+  }
+
+  body.homepage-refresh.speed-test-page .st-script {
+    max-width: 12ch;
+    white-space: normal;
   }
 
   body.homepage-refresh.speed-test-page .st-section-head h2 {

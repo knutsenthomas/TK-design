@@ -1102,6 +1102,318 @@ async function sendContactNotification(messagePayload) {
     return { sent: true };
 }
 
+function clampSpeedTestScore(value) {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) {
+        return 0;
+    }
+
+    return Math.max(0, Math.min(100, Math.round(numeric)));
+}
+
+function normalizeSpeedTestReportPayload(payload = {}) {
+    if (!payload || typeof payload !== 'object') {
+        return null;
+    }
+
+    const analyzedUrl = String(payload.analyzedUrl || '').trim();
+    const requestedUrl = String(payload.requestedUrl || '').trim() || (analyzedUrl ? `https://${analyzedUrl}` : '');
+    const summary = String(payload.summary || '').trim();
+    const strategy = payload.strategy === 'desktop' ? 'desktop' : 'mobile';
+    const fetchedAtRaw = String(payload.fetchedAt || '').trim();
+    let fetchedAt = null;
+
+    if (fetchedAtRaw) {
+        const parsedDate = new Date(fetchedAtRaw);
+        if (!Number.isNaN(parsedDate.getTime())) {
+            fetchedAt = parsedDate.toISOString();
+        }
+    }
+
+    if (!analyzedUrl || !requestedUrl) {
+        return null;
+    }
+
+    const scores = {
+        performance: clampSpeedTestScore(payload.scores?.performance),
+        accessibility: clampSpeedTestScore(payload.scores?.accessibility),
+        bestPractices: clampSpeedTestScore(payload.scores?.bestPractices),
+        seo: clampSpeedTestScore(payload.scores?.seo)
+    };
+
+    const metrics = Array.isArray(payload.metrics)
+        ? payload.metrics.slice(0, 8).map((metric) => {
+            const label = String(metric?.label || '').trim();
+            const title = String(metric?.title || '').trim();
+            const value = String(metric?.value || '').trim();
+            const description = String(metric?.description || '').trim();
+
+            if (!label || !title || !value) {
+                return null;
+            }
+
+            return {
+                label: label.slice(0, 60),
+                title: title.slice(0, 120),
+                value: value.slice(0, 80),
+                description: description.slice(0, 240)
+            };
+        }).filter(Boolean)
+        : [];
+
+    const topFixes = Array.isArray(payload.topFixes)
+        ? payload.topFixes.slice(0, 5).map((fix) => {
+            const title = String(fix?.title || '').trim();
+            const description = String(fix?.description || '').trim();
+
+            if (!title || !description) {
+                return null;
+            }
+
+            return {
+                title: title.slice(0, 120),
+                description: description.slice(0, 280)
+            };
+        }).filter(Boolean)
+        : [];
+
+    return {
+        analyzedUrl: analyzedUrl.slice(0, 255),
+        requestedUrl: requestedUrl.slice(0, 2048),
+        strategy,
+        fetchedAt,
+        summary: summary.slice(0, 1200),
+        scores,
+        metrics,
+        topFixes
+    };
+}
+
+function formatSpeedTestTimestamp(timestamp) {
+    if (!timestamp) {
+        return 'Ikke oppgitt';
+    }
+
+    try {
+        return new Intl.DateTimeFormat('nb-NO', {
+            dateStyle: 'medium',
+            timeStyle: 'short',
+            timeZone: 'Europe/Oslo'
+        }).format(new Date(timestamp));
+    } catch (error) {
+        return timestamp;
+    }
+}
+
+function buildSpeedTestReportEmailMarkup(reportPayload, req) {
+    const deviceLabel = reportPayload.strategy === 'desktop' ? 'Desktop' : 'Mobil';
+    const fetchedLabel = formatSpeedTestTimestamp(reportPayload.fetchedAt);
+    const siteBaseUrl = getSiteBaseUrl(req) || 'https://tk-design.no';
+    const reportPageUrl = `${siteBaseUrl.replace(/\/+$/, '')}/speed-test`;
+    const scoreDefinitions = [
+        { key: 'performance', label: 'Ytelse' },
+        { key: 'accessibility', label: 'Tilgjengelighet' },
+        { key: 'bestPractices', label: 'Beste praksis' },
+        { key: 'seo', label: 'SEO' }
+    ];
+
+    const scoreRowsHtml = scoreDefinitions.map(({ key, label }) => `
+        <div class="score-card">
+            <span class="score-label">${escapeHtml(label)}</span>
+            <strong class="score-value">${escapeHtml(reportPayload.scores[key])}</strong>
+        </div>
+    `).join('');
+
+    const metricRowsHtml = reportPayload.metrics.length > 0
+        ? reportPayload.metrics.map((metric) => `
+            <div class="metric-row">
+                <div class="metric-head">
+                    <span class="metric-label">${escapeHtml(metric.label)}</span>
+                    <strong class="metric-value">${escapeHtml(metric.value)}</strong>
+                </div>
+                <p class="metric-title">${escapeHtml(metric.title)}</p>
+                <p class="metric-description">${escapeHtml(metric.description)}</p>
+            </div>
+        `).join('')
+        : '<p class="empty-copy">Ingen nøkkelmålinger fulgte med rapporten.</p>';
+
+    const fixRowsHtml = reportPayload.topFixes.length > 0
+        ? reportPayload.topFixes.map((fix, index) => `
+            <div class="fix-row">
+                <span class="fix-index">Prioritet ${index + 1}</span>
+                <strong>${escapeHtml(fix.title)}</strong>
+                <p>${escapeHtml(fix.description)}</p>
+            </div>
+        `).join('')
+        : '<p class="empty-copy">Ingen konkrete tiltak fulgte med rapporten.</p>';
+
+    const summary = reportPayload.summary || 'Rapporten ble sendt fra speed-testen på tk-design.no.';
+    const subject = `Speed-test rapport: ${reportPayload.analyzedUrl} (${deviceLabel})`;
+    const html = `
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { margin: 0; padding: 0; background: #f4f6f8; color: #102033; font-family: Helvetica, Arial, sans-serif; }
+        .wrapper { width: 100%; padding: 32px 16px; background: #f4f6f8; }
+        .card { max-width: 720px; margin: 0 auto; background: #ffffff; border: 1px solid #e5e9ef; border-radius: 24px; overflow: hidden; box-shadow: 0 22px 60px rgba(16, 32, 51, 0.10); }
+        .header { padding: 36px 36px 20px; background: linear-gradient(135deg, #102033 0%, #173651 100%); color: #ffffff; }
+        .kicker { display: inline-block; padding: 8px 12px; border-radius: 999px; background: rgba(255, 255, 255, 0.10); color: rgba(255, 255, 255, 0.80); font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+        .header h1 { margin: 16px 0 0; font-size: 34px; line-height: 1.02; }
+        .header p { margin: 14px 0 0; color: rgba(255, 255, 255, 0.76); font-size: 16px; line-height: 1.6; }
+        .content { padding: 32px 36px 36px; }
+        .info-grid { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 24px; }
+        .info-card { padding: 16px 18px; border: 1px solid #e5e9ef; border-radius: 18px; background: #fbfcfd; }
+        .info-card span { display: block; margin-bottom: 6px; color: #6b7280; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+        .info-card strong { display: block; color: #102033; font-size: 16px; line-height: 1.45; word-break: break-word; }
+        .section { margin-top: 28px; }
+        .section h2 { margin: 0 0 12px; font-size: 22px; line-height: 1.1; color: #102033; }
+        .section p { margin: 0; color: #5b6676; font-size: 15px; line-height: 1.7; }
+        .score-grid { display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 16px; }
+        .score-card { padding: 16px; border: 1px solid #e5e9ef; border-radius: 18px; background: #f7f9fb; text-align: center; }
+        .score-label { display: block; color: #6b7280; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+        .score-value { display: block; margin-top: 10px; color: #102033; font-size: 32px; line-height: 1; }
+        .stack { display: grid; gap: 12px; margin-top: 16px; }
+        .metric-row, .fix-row { padding: 16px 18px; border: 1px solid #e5e9ef; border-radius: 18px; background: #fbfcfd; }
+        .metric-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .metric-label, .fix-index { color: #6b7280; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+        .metric-value { color: #102033; font-size: 18px; }
+        .metric-title, .fix-row strong { display: block; margin-top: 10px; color: #102033; font-size: 18px; line-height: 1.3; }
+        .metric-description, .fix-row p { margin-top: 8px; color: #5b6676; font-size: 14px; line-height: 1.65; }
+        .empty-copy { color: #5b6676; }
+        .cta { margin-top: 32px; text-align: center; }
+        .button { display: inline-block; padding: 15px 26px; border-radius: 999px; background: #102033; color: #ffffff !important; font-size: 15px; font-weight: 700; text-decoration: none; }
+        .footer { margin-top: 28px; color: #7b8794; font-size: 12px; line-height: 1.6; text-align: center; }
+        @media (max-width: 640px) {
+            .header, .content { padding-left: 22px; padding-right: 22px; }
+            .info-grid, .score-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="card">
+            <div class="header">
+                <span class="kicker">Speed-test rapport</span>
+                <h1>${escapeHtml(reportPayload.analyzedUrl)}</h1>
+                <p>${escapeHtml(summary)}</p>
+            </div>
+
+            <div class="content">
+                <div class="info-grid">
+                    <div class="info-card">
+                        <span>Analysert URL</span>
+                        <strong>${escapeHtml(reportPayload.requestedUrl)}</strong>
+                    </div>
+                    <div class="info-card">
+                        <span>Strategi</span>
+                        <strong>${escapeHtml(deviceLabel)}</strong>
+                    </div>
+                    <div class="info-card">
+                        <span>Kjørt</span>
+                        <strong>${escapeHtml(fetchedLabel)}</strong>
+                    </div>
+                    <div class="info-card">
+                        <span>Kilde</span>
+                        <strong>Google PageSpeed Insights</strong>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Scoreoversikt</h2>
+                    <div class="score-grid">${scoreRowsHtml}</div>
+                </div>
+
+                <div class="section">
+                    <h2>Nøkkelmålinger</h2>
+                    <div class="stack">${metricRowsHtml}</div>
+                </div>
+
+                <div class="section">
+                    <h2>Dette bør ryddes opp først</h2>
+                    <div class="stack">${fixRowsHtml}</div>
+                </div>
+
+                <div class="cta">
+                    <a class="button" href="${escapeHtml(reportPageUrl)}">Åpne speed-testen</a>
+                </div>
+
+                <div class="footer">
+                    Automatisk sendt fra speed-testen på tk-design.no.
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+    `;
+    const text = [
+        `Speed-test rapport for ${reportPayload.analyzedUrl}`,
+        '',
+        `Analysert URL: ${reportPayload.requestedUrl}`,
+        `Strategi: ${deviceLabel}`,
+        `Kjørt: ${fetchedLabel}`,
+        '',
+        summary,
+        '',
+        'Scores:',
+        ...scoreDefinitions.map(({ key, label }) => `- ${label}: ${reportPayload.scores[key]}`),
+        '',
+        'Nøkkelmålinger:',
+        ...(reportPayload.metrics.length > 0
+            ? reportPayload.metrics.map((metric) => `- ${metric.label} ${metric.value}: ${metric.title}. ${metric.description}`)
+            : ['- Ingen nøkkelmålinger fulgte med rapporten.']),
+        '',
+        'Første prioriteringer:',
+        ...(reportPayload.topFixes.length > 0
+            ? reportPayload.topFixes.map((fix, index) => `- Prioritet ${index + 1}: ${fix.title}. ${fix.description}`)
+            : ['- Ingen konkrete tiltak fulgte med rapporten.']),
+        '',
+        `Åpne speed-testen: ${reportPageUrl}`
+    ].join('\n');
+
+    return { subject, html, text };
+}
+
+async function sendSpeedTestReportNotification(reportPayload, req) {
+    const resendApiKey = process.env.RESEND_API_KEY;
+    if (!resendApiKey) {
+        return {
+            sent: false,
+            reason: 'RESEND_API_KEY mangler i .env'
+        };
+    }
+
+    const toEmail = String(process.env.CONTACT_TO_EMAIL || 'thomas@tk-design.no').trim() || 'thomas@tk-design.no';
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'TK-design <onboarding@resend.dev>';
+    const fetch = await getFetch();
+    const emailContent = buildSpeedTestReportEmailMarkup(reportPayload, req);
+
+    const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${resendApiKey}`
+        },
+        body: JSON.stringify({
+            from: fromEmail,
+            to: [toEmail],
+            subject: emailContent.subject,
+            html: emailContent.html,
+            text: emailContent.text
+        })
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Resend request failed: ${response.status} ${errorText}`);
+    }
+
+    return { sent: true };
+}
+
 function logContactPipelineConfig() {
     const hasResendApiKey = Boolean(String(process.env.RESEND_API_KEY || '').trim());
     const targetEmail = String(process.env.CONTACT_TO_EMAIL || 'thomas@tk-design.no').trim() || 'thomas@tk-design.no';
@@ -6324,6 +6636,45 @@ app.post('/api/social/autopost', async (req, res) => {
         return res.status(500).json({
             sent: false,
             error: 'Failed to trigger social auto-post',
+            details: error.message
+        });
+    }
+});
+
+// API: Speed Test Report Email
+app.post('/api/speed-test/report-email', async (req, res) => {
+    try {
+        const reportPayload = normalizeSpeedTestReportPayload(req.body?.report);
+
+        if (!reportPayload) {
+            return res.status(400).json({
+                success: false,
+                code: 'invalid_report_payload',
+                error: 'Rapporten mangler data. Kjør testen på nytt og prøv igjen.'
+            });
+        }
+
+        const notificationResult = await sendSpeedTestReportNotification(reportPayload, req);
+
+        if (!notificationResult.sent) {
+            return res.status(503).json({
+                success: false,
+                code: 'missing_email_config',
+                error: 'E-postutsending er ikke konfigurert på serveren ennå.',
+                details: notificationResult.reason || ''
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            sent: true
+        });
+    } catch (error) {
+        console.error('Speed test report email error:', error);
+        return res.status(500).json({
+            success: false,
+            code: 'report_email_failed',
+            error: 'Kunne ikke sende rapporten på e-post akkurat nå.',
             details: error.message
         });
     }

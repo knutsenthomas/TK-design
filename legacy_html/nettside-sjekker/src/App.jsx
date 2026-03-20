@@ -3,6 +3,7 @@ import { AnimatePresence, motion as Motion } from 'framer-motion';
 import {
   AlertCircle,
   ArrowRight,
+  CheckCircle2,
   ExternalLink,
   Facebook,
   Gauge,
@@ -148,6 +149,7 @@ const SOCIAL_LINKS = [
 
 const PREVIEW_REPORT = {
   analyzedUrl: 'din-side.no',
+  requestedUrl: 'https://din-side.no',
   strategy: 'mobile',
   fetchedAt: null,
   summary: 'Slik ser en ferdig rapport ut når testen er kjørt.',
@@ -364,6 +366,20 @@ const getAnalysisErrorMessage = (requestError) => {
   return 'Kunne ikke analysere nettstedet akkurat nå. Prøv igjen om litt.';
 };
 
+const getReportEmailErrorMessage = (requestError) => {
+  const code = String(requestError?.code || '').trim().toLowerCase();
+
+  if (code === 'missing_report' || code === 'invalid_report_payload') {
+    return 'Kjør testen først, så kan rapporten sendes på e-post.';
+  }
+
+  if (code === 'missing_email_config') {
+    return 'Rapporten kan ikke sendes ennå fordi e-post ikke er konfigurert på serveren.';
+  }
+
+  return 'Kunne ikke sende rapporten akkurat nå. Prøv igjen om litt.';
+};
+
 const getSummaryText = (score, strategy) => {
   const deviceLabel = getStrategyLabel(strategy).toLowerCase();
 
@@ -458,6 +474,7 @@ const buildReport = (lighthouse, requestedUrl, strategy) => {
 
   return {
     analyzedUrl: getHostLabel(requestedUrl),
+    requestedUrl,
     strategy,
     fetchedAt: new Date().toISOString(),
     summary: getSummaryText(scores.performance, strategy),
@@ -770,6 +787,8 @@ export default function App() {
   const [progress, setProgress] = useState(0);
   const [results, setResults] = useState(null);
   const [error, setError] = useState(null);
+  const [sendingReport, setSendingReport] = useState(false);
+  const [reportEmailFeedback, setReportEmailFeedback] = useState(null);
   const [language, setLanguage] = useState('no');
   const [headerScrolled, setHeaderScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -836,6 +855,7 @@ export default function App() {
     setLoading(true);
     setError(null);
     setResults(null);
+    setReportEmailFeedback(null);
 
     try {
       const response = await fetch('/api/pagespeed', {
@@ -883,7 +903,51 @@ export default function App() {
   };
 
   const activeReport = results ?? PREVIEW_REPORT;
-  const mailSubject = encodeURIComponent(`Rapport for ${activeReport.analyzedUrl}`);
+
+  const handleSendReportEmail = async () => {
+    if (!results) {
+      setReportEmailFeedback({
+        type: 'error',
+        message: 'Kjør testen først, så kan rapporten sendes på e-post.',
+      });
+      return;
+    }
+
+    setSendingReport(true);
+    setReportEmailFeedback(null);
+
+    try {
+      const response = await fetch('/api/speed-test/report-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          report: activeReport,
+        }),
+      });
+      const payload = await response.json().catch(() => null);
+
+      if (!response.ok || !payload?.success) {
+        const nextError = new Error(payload?.error || 'Kunne ikke sende rapporten.');
+        nextError.code = payload?.code || 'report_email_failed';
+        throw nextError;
+      }
+
+      setReportEmailFeedback({
+        type: 'success',
+        message: 'Rapporten ble sendt til TK-design på e-post.',
+      });
+    } catch (requestError) {
+      console.error(requestError);
+      setReportEmailFeedback({
+        type: 'error',
+        message: getReportEmailErrorMessage(requestError),
+      });
+    } finally {
+      setSendingReport(false);
+    }
+  };
 
   const handleLanguageChange = (nextLanguage) => {
     const resolvedLanguage = nextLanguage === 'en' ? 'en' : 'no';
@@ -918,7 +982,7 @@ export default function App() {
             >
               <div className="st-chip st-chip--light">
                 <Shield size={15} />
-                Drevet av Google Lighthouse API
+                Drevet av Google PageSpeed Insights
               </div>
 
               <p className="st-script">Finn friksjonen før kunden gjør det</p>
@@ -1207,15 +1271,35 @@ export default function App() {
                       Vi kan gjøre rapporten om til en konkret prioriteringsliste for design, kode, SEO og lastetid.
                     </p>
                     <div className="st-cta-actions">
-                      <a href={`mailto:thomas@tk-design.no?subject=${mailSubject}`} className="st-button st-button--primary">
-                        Send rapporten på e-post
+                      <button
+                        type="button"
+                        className="st-button st-button--primary"
+                        onClick={handleSendReportEmail}
+                        disabled={!results || sendingReport}
+                      >
+                        {sendingReport
+                          ? 'Sender rapport...'
+                          : results
+                            ? 'Send rapporten på e-post'
+                            : 'Kjør testen først'}
                         <Mail size={18} />
-                      </a>
+                      </button>
                       <a href="/contact" className="st-button st-button--secondary">
                         Book en gjennomgang
                         <ExternalLink size={18} />
                       </a>
                     </div>
+                    {reportEmailFeedback && (
+                      <Motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        aria-live="polite"
+                        className={`st-feedback st-feedback--${reportEmailFeedback.type}`}
+                      >
+                        {reportEmailFeedback.type === 'success' ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
+                        <p>{reportEmailFeedback.message}</p>
+                      </Motion.div>
+                    )}
                   </article>
                 </div>
               </Motion.div>
