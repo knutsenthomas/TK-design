@@ -54,7 +54,7 @@ const PAGE_ROUTE_MAP = {
     '/service-details': 'service-details.html',
     '/privacy': 'privacy.html',
     '/accessibility': 'accessibility.html',
-    '/speed-test': 'public/speed-test/index.html'
+    '/speed-test': 'speed-test/index.html'
 };
 const LEGACY_REDIRECT_MAP = {
     '/index.html': '/',
