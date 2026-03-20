@@ -205,16 +205,16 @@ body.homepage-refresh.speed-test-page .st-title {
   max-width: 11.4ch;
   font-size: clamp(2.7rem, 4.9vw, 5rem);
   font-weight: 900;
-  line-height: 0.96;
+  line-height: 1.03;
   letter-spacing: -0.05em;
 }
 
 body.homepage-refresh.speed-test-page .st-lead {
-  margin-top: 1.5rem;
+  margin-top: 1.85rem;
   max-width: 38rem;
   color: #5b6676;
   font-size: clamp(1rem, 1.25vw, 1.14rem);
-  line-height: 1.8;
+  line-height: 1.95;
 }
 
 body.homepage-refresh.speed-test-page .st-trust-grid {
