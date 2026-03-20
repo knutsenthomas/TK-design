@@ -108,6 +108,11 @@ const SEO_PAGE_DEFAULTS = {
         title: 'Tilgjengelighet',
         description: 'Tilgjengelighetserklæring for TK-design med informasjon om universell utforming.',
         keywords: 'tilgjengelighet, universell utforming, tilgjengelighetserklæring'
+    },
+    'speed-test/index.html': {
+        title: 'Nettside-sjekker',
+        description: 'Test hvor rask nettsiden din er med Lighthouse-data og få en konkret handlingsplan fra TK-design.',
+        keywords: 'pagespeed test, lighthouse, nettside hastighet, ytelse, tk-design'
     }
 };
 
@@ -160,6 +165,10 @@ function escapeHtml(value = '') {
         .replace(/'/g, '&#39;');
 }
 
+function escapeRegExp(value = '') {
+    return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 function upsertHeadMetaTag(html = '', attrName = 'name', attrValue = '', content = '') {
     const safeAttrName = String(attrName || '').trim();
     const safeAttrValue = String(attrValue || '').trim();
@@ -167,8 +176,11 @@ function upsertHeadMetaTag(html = '', attrName = 'name', attrValue = '', content
 
     const safeContent = escapeHtml(content || '');
     const tag = `<meta ${safeAttrName}="${safeAttrValue}" content="${safeContent}">`;
-    const regex = new RegExp(`<meta\\s+${safeAttrName}="${safeAttrValue}"\\s+content="[\\s\\S]*?">`, 'i');
     const input = String(html || '');
+    const regex = new RegExp(
+        `<meta\\b(?=[^>]*\\b${escapeRegExp(safeAttrName)}=["']${escapeRegExp(safeAttrValue)}["'])[^>]*\\/?>`,
+        'i'
+    );
 
     if (regex.test(input)) {
         return input.replace(regex, tag);
