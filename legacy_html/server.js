@@ -1231,24 +1231,97 @@ function formatSpeedTestTimestamp(timestamp) {
     }
 }
 
+function getSpeedTestEmailScoreMeta(score) {
+    const numericScore = clampSpeedTestScore(score);
+
+    if (numericScore >= 90) {
+        return {
+            label: 'Sterk',
+            accent: '#19b46b',
+            soft: '#eefaf3',
+            border: '#cdeedb'
+        };
+    }
+
+    if (numericScore >= 50) {
+        return {
+            label: 'Kan forbedres',
+            accent: '#e38800',
+            soft: '#fff7eb',
+            border: '#f2dfbf'
+        };
+    }
+
+    return {
+        label: 'Krever tiltak',
+        accent: '#d04b2c',
+        soft: '#fff1ee',
+        border: '#f0d0c8'
+    };
+}
+
+function getSpeedTestEmailOpening(reportPayload) {
+    const performanceScore = clampSpeedTestScore(reportPayload?.scores?.performance);
+    const deviceLabel = reportPayload?.strategy === 'desktop' ? 'desktop' : 'mobil';
+
+    if (performanceScore >= 90) {
+        return `Nettsiden leverer et sterkt førsteinntrykk på ${deviceLabel}. Rapporten under viser hva som allerede fungerer, og hva som fortsatt kan finjusteres.`;
+    }
+
+    if (performanceScore >= 50) {
+        return `Nettsiden har et brukbart utgangspunkt på ${deviceLabel}, men det er fortsatt noen tydelige flaskehalser som bremser opplevelsen.`;
+    }
+
+    return `Rapporten viser at ${deviceLabel}-opplevelsen mister fart tidlig. Her er det ekstra viktig å prioritere førsteinntrykk, stabilitet og lastetid riktig.`;
+}
+
 function buildSpeedTestReportEmailMarkup(reportPayload, req) {
     const deviceLabel = reportPayload.strategy === 'desktop' ? 'Desktop' : 'Mobil';
     const fetchedLabel = formatSpeedTestTimestamp(reportPayload.fetchedAt);
     const siteBaseUrl = getSiteBaseUrl(req) || 'https://tk-design.no';
     const reportPageUrl = `${siteBaseUrl.replace(/\/+$/, '')}/speed-test`;
+    const contactPageUrl = `${siteBaseUrl.replace(/\/+$/, '')}/contact`;
     const scoreDefinitions = [
-        { key: 'performance', label: 'Ytelse' },
-        { key: 'accessibility', label: 'Tilgjengelighet' },
-        { key: 'bestPractices', label: 'Beste praksis' },
-        { key: 'seo', label: 'SEO' }
+        {
+            key: 'performance',
+            label: 'Ytelse',
+            description: 'Hvor raskt brukeren faktisk ser og kan bruke siden.'
+        },
+        {
+            key: 'accessibility',
+            label: 'Tilgjengelighet',
+            description: 'Hvor lett siden er å forstå og bruke for flere typer brukere.'
+        },
+        {
+            key: 'bestPractices',
+            label: 'Beste praksis',
+            description: 'Teknisk kvalitet, trygghet og robuste implementasjoner.'
+        },
+        {
+            key: 'seo',
+            label: 'SEO',
+            description: 'Hvor godt siden er rigget for synlighet og tydelighet for søk.'
+        }
     ];
+    const primaryFix = reportPayload.topFixes[0] || null;
+    const summary = reportPayload.summary || 'Rapporten ble sendt fra speed-testen på tk-design.no.';
+    const openingText = getSpeedTestEmailOpening(reportPayload);
+    const previewText = primaryFix
+        ? `${reportPayload.analyzedUrl}: ${primaryFix.title}`
+        : `${reportPayload.analyzedUrl}: speed-test rapport`;
 
-    const scoreRowsHtml = scoreDefinitions.map(({ key, label }) => `
-        <div class="score-card">
+    const scoreRowsHtml = scoreDefinitions.map(({ key, label, description }) => {
+        const meta = getSpeedTestEmailScoreMeta(reportPayload.scores[key]);
+
+        return `
+        <div class="score-card" style="border-color:${meta.border}; background:${meta.soft};">
             <span class="score-label">${escapeHtml(label)}</span>
-            <strong class="score-value">${escapeHtml(reportPayload.scores[key])}</strong>
+            <strong class="score-value" style="color:${meta.accent};">${escapeHtml(reportPayload.scores[key])}</strong>
+            <span class="score-badge" style="background:${meta.soft}; color:${meta.accent}; border-color:${meta.border};">${escapeHtml(meta.label)}</span>
+            <p class="score-description">${escapeHtml(description)}</p>
         </div>
-    `).join('');
+    `;
+    }).join('');
 
     const metricRowsHtml = reportPayload.metrics.length > 0
         ? reportPayload.metrics.map((metric) => `
@@ -1273,7 +1346,6 @@ function buildSpeedTestReportEmailMarkup(reportPayload, req) {
         `).join('')
         : '<p class="empty-copy">Ingen konkrete tiltak fulgte med rapporten.</p>';
 
-    const summary = reportPayload.summary || 'Rapporten ble sendt fra speed-testen på tk-design.no.';
     const subject = `Speed-test rapport: ${reportPayload.analyzedUrl} (${deviceLabel})`;
     const html = `
 <!DOCTYPE html>
@@ -1284,11 +1356,15 @@ function buildSpeedTestReportEmailMarkup(reportPayload, req) {
     <style>
         body { margin: 0; padding: 0; background: #f4f6f8; color: #102033; font-family: Helvetica, Arial, sans-serif; }
         .wrapper { width: 100%; padding: 32px 16px; background: #f4f6f8; }
+        .preheader { display: none !important; visibility: hidden; opacity: 0; color: transparent; height: 0; width: 0; overflow: hidden; mso-hide: all; }
         .card { max-width: 720px; margin: 0 auto; background: #ffffff; border: 1px solid #e5e9ef; border-radius: 24px; overflow: hidden; box-shadow: 0 22px 60px rgba(16, 32, 51, 0.10); }
         .header { padding: 36px 36px 20px; background: linear-gradient(135deg, #102033 0%, #173651 100%); color: #ffffff; }
         .kicker { display: inline-block; padding: 8px 12px; border-radius: 999px; background: rgba(255, 255, 255, 0.10); color: rgba(255, 255, 255, 0.80); font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
         .header h1 { margin: 16px 0 0; font-size: 34px; line-height: 1.02; }
         .header p { margin: 14px 0 0; color: rgba(255, 255, 255, 0.76); font-size: 16px; line-height: 1.6; }
+        .summary-box { margin-top: 18px; padding: 16px 18px; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 18px; background: rgba(255, 255, 255, 0.08); }
+        .summary-box strong { display: block; font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255, 255, 255, 0.72); }
+        .summary-box p { margin-top: 8px; }
         .content { padding: 32px 36px 36px; }
         .info-grid { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 24px; }
         .info-card { padding: 16px 18px; border: 1px solid #e5e9ef; border-radius: 18px; background: #fbfcfd; }
@@ -1298,9 +1374,11 @@ function buildSpeedTestReportEmailMarkup(reportPayload, req) {
         .section h2 { margin: 0 0 12px; font-size: 22px; line-height: 1.1; color: #102033; }
         .section p { margin: 0; color: #5b6676; font-size: 15px; line-height: 1.7; }
         .score-grid { display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 16px; }
-        .score-card { padding: 16px; border: 1px solid #e5e9ef; border-radius: 18px; background: #f7f9fb; text-align: center; }
+        .score-card { padding: 16px; border: 1px solid #e5e9ef; border-radius: 18px; text-align: left; }
         .score-label { display: block; color: #6b7280; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
-        .score-value { display: block; margin-top: 10px; color: #102033; font-size: 32px; line-height: 1; }
+        .score-value { display: block; margin-top: 10px; font-size: 32px; line-height: 1; }
+        .score-badge { display: inline-block; margin-top: 10px; padding: 6px 10px; border: 1px solid #e5e9ef; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+        .score-description { margin-top: 12px !important; color: #5b6676; font-size: 13px !important; line-height: 1.6 !important; }
         .stack { display: grid; gap: 12px; margin-top: 16px; }
         .metric-row, .fix-row { padding: 16px 18px; border: 1px solid #e5e9ef; border-radius: 18px; background: #fbfcfd; }
         .metric-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -1308,23 +1386,33 @@ function buildSpeedTestReportEmailMarkup(reportPayload, req) {
         .metric-value { color: #102033; font-size: 18px; }
         .metric-title, .fix-row strong { display: block; margin-top: 10px; color: #102033; font-size: 18px; line-height: 1.3; }
         .metric-description, .fix-row p { margin-top: 8px; color: #5b6676; font-size: 14px; line-height: 1.65; }
+        .cta-panel { margin-top: 32px; padding: 22px; border: 1px solid #e5e9ef; border-radius: 22px; background: linear-gradient(180deg, #fbfcfd 0%, #f6f3ed 100%); }
+        .cta-panel h2 { margin: 0; font-size: 24px; line-height: 1.1; }
+        .cta-panel p { margin: 12px 0 0; color: #5b6676; font-size: 15px; line-height: 1.7; }
+        .button-row { margin-top: 18px; }
         .empty-copy { color: #5b6676; }
-        .cta { margin-top: 32px; text-align: center; }
-        .button { display: inline-block; padding: 15px 26px; border-radius: 999px; background: #102033; color: #ffffff !important; font-size: 15px; font-weight: 700; text-decoration: none; }
-        .footer { margin-top: 28px; color: #7b8794; font-size: 12px; line-height: 1.6; text-align: center; }
+        .button { display: inline-block; margin-right: 10px; margin-bottom: 10px; padding: 15px 26px; border-radius: 999px; background: #102033; color: #ffffff !important; font-size: 15px; font-weight: 700; text-decoration: none; }
+        .button-secondary { background: #f7f3ee; color: #102033 !important; border: 1px solid #d9e0e7; }
+        .footer { margin-top: 28px; padding-top: 20px; border-top: 1px solid #e5e9ef; color: #7b8794; font-size: 12px; line-height: 1.6; text-align: center; }
         @media (max-width: 640px) {
             .header, .content { padding-left: 22px; padding-right: 22px; }
             .info-grid, .score-grid { grid-template-columns: 1fr; }
+            .button { display: block; margin-right: 0; text-align: center; }
         }
     </style>
 </head>
 <body>
     <div class="wrapper">
+        <div class="preheader">${escapeHtml(previewText)}</div>
         <div class="card">
             <div class="header">
                 <span class="kicker">Speed-test rapport</span>
                 <h1>${escapeHtml(reportPayload.analyzedUrl)}</h1>
-                <p>${escapeHtml(summary)}</p>
+                <p>${escapeHtml(openingText)}</p>
+                <div class="summary-box">
+                    <strong>Oppsummert</strong>
+                    <p>${escapeHtml(summary)}</p>
+                </div>
             </div>
 
             <div class="content">
@@ -1349,25 +1437,33 @@ function buildSpeedTestReportEmailMarkup(reportPayload, req) {
 
                 <div class="section">
                     <h2>Scoreoversikt</h2>
+                    <p>Fire områder gir deg et raskt bilde av hvor siden taper fart, tillit eller tydelighet.</p>
                     <div class="score-grid">${scoreRowsHtml}</div>
                 </div>
 
                 <div class="section">
                     <h2>Nøkkelmålinger</h2>
+                    <p>Disse målingene sier mest om hvordan førsteinntrykket oppleves i praksis.</p>
                     <div class="stack">${metricRowsHtml}</div>
                 </div>
 
                 <div class="section">
                     <h2>Dette bør ryddes opp først</h2>
+                    <p>${primaryFix ? `Start med "${primaryFix.title}" før du finjusterer resten.` : 'Begynn med tiltakene under før du finjusterer resten.'}</p>
                     <div class="stack">${fixRowsHtml}</div>
                 </div>
 
-                <div class="cta">
-                    <a class="button" href="${escapeHtml(reportPageUrl)}">Åpne speed-testen</a>
+                <div class="cta-panel">
+                    <h2>Vil du gå fra rapport til tiltak?</h2>
+                    <p>TK-design kan hjelpe med å oversette funnene til en konkret plan for design, kode, SEO og lastetid.</p>
+                    <div class="button-row">
+                        <a class="button" href="${escapeHtml(reportPageUrl)}">Åpne speed-testen</a>
+                        <a class="button button-secondary" href="${escapeHtml(contactPageUrl)}">Book en gjennomgang</a>
+                    </div>
                 </div>
 
                 <div class="footer">
-                    Automatisk sendt fra speed-testen på tk-design.no.
+                    Automatisk sendt fra speed-testen på tk-design.no. Denne rapporten bruker data fra Google PageSpeed Insights.
                 </div>
             </div>
         </div>
@@ -1384,8 +1480,13 @@ function buildSpeedTestReportEmailMarkup(reportPayload, req) {
         '',
         summary,
         '',
+        openingText,
+        '',
         'Scores:',
-        ...scoreDefinitions.map(({ key, label }) => `- ${label}: ${reportPayload.scores[key]}`),
+        ...scoreDefinitions.map(({ key, label }) => {
+            const meta = getSpeedTestEmailScoreMeta(reportPayload.scores[key]);
+            return `- ${label}: ${reportPayload.scores[key]} (${meta.label})`;
+        }),
         '',
         'Nøkkelmålinger:',
         ...(reportPayload.metrics.length > 0
@@ -1397,7 +1498,8 @@ function buildSpeedTestReportEmailMarkup(reportPayload, req) {
             ? reportPayload.topFixes.map((fix, index) => `- Prioritet ${index + 1}: ${fix.title}. ${fix.description}`)
             : ['- Ingen konkrete tiltak fulgte med rapporten.']),
         '',
-        `Åpne speed-testen: ${reportPageUrl}`
+        `Åpne speed-testen: ${reportPageUrl}`,
+        `Book en gjennomgang: ${contactPageUrl}`
     ].join('\n');
 
     return { subject, html, text };
