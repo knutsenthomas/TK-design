@@ -864,7 +864,7 @@ export default function App() {
               </div>
 
               <p className="st-script">Finn friksjonen før kunden gjør det</p>
-              <h1 className="st-title">Se hvor nettsiden taper fart før brukeren gjør det.</h1>
+              <h1 className="st-title">Se om nettsiden taper fart før brukeren gjør det.</h1>
               <p className="st-lead">
                 Lim inn en URL og få en tydelig rapport som viser hva som bremser opplevelsen,
                 hvilke tall som betyr noe og hva som bør ryddes først.
