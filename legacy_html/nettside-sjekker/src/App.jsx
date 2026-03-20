@@ -79,44 +79,118 @@ const DEFAULT_FIXES = [
 
 const PAGE_HIGHLIGHTS = [
   {
-    title: 'Mobil først',
-    text: 'Vi starter med strategien som vanligvis er tregest og mest kritisk for konvertering.',
-    icon: Smartphone,
-  },
-  {
-    title: 'Menneskespråk',
-    text: 'Tallene fra Lighthouse blir oversatt til tydelige prioriteringer du faktisk kan jobbe med.',
+    title: 'Tydelig nok til å brukes med en gang',
+    text: 'Du slipper å tolke hele Lighthouse-rapporten selv. Vi trekker frem det som faktisk bør tas først.',
     icon: Gauge,
   },
   {
-    title: 'Konkrete neste steg',
-    text: 'Rapporten slutter ikke på en score. Den peker på hva som bør ryddes opp først.',
+    title: 'Bedre underlag før redesign eller kampanjer',
+    text: 'Bruk sjekken når du skal oppgradere nettstedet, lansere noe nytt eller rydde opp i gamle flaskehalser.',
+    icon: Monitor,
+  },
+  {
+    title: 'Lett å sende videre til utvikler eller byrå',
+    text: 'Rapporten kan brukes som beslutningsgrunnlag i møte med design, kode, SEO og innholdsarbeid.',
     icon: Shield,
   },
 ];
 
 const TRUST_POINTS = [
   {
+    title: 'Gratis å prøve',
+    text: 'Kjør testen uten innlogging eller oppsett.',
+    icon: CheckCircle2,
+  },
+  {
     title: 'Mobil og desktop',
-    text: 'Bytt mellom enhetene og se hvor opplevelsen glipper først.',
+    text: 'Se hvordan opplevelsen endrer seg på ulike flater.',
     icon: Smartphone,
   },
   {
-    title: 'Tydelig plan',
-    text: 'Du får tre prioriterte grep i stedet for en bunke rådata.',
-    icon: Zap,
-  },
-  {
     title: 'Ingen lagring',
-    text: 'Vi henter bare offentlig Lighthouse-data direkte fra Google.',
+    text: 'Vi henter bare offentlig Lighthouse-data når du kjører testen.',
     icon: Shield,
   },
 ];
 
+const PROOF_ITEMS = [
+  {
+    title: 'Samme datagrunnlag som Google',
+    text: 'Testen bygger på PageSpeed Insights, men presenterer funnene i et enklere språk.',
+    icon: Search,
+  },
+  {
+    title: 'Bygget for prioritering',
+    text: 'Rapporten rangerer hva som vanligvis gir størst effekt først, i stedet for å drukne deg i rådata.',
+    icon: Zap,
+  },
+  {
+    title: 'Nyttig både før og etter lansering',
+    text: 'Bruk sjekken på forsiden, landingssider eller kampanjer for å se hvor førsteinntrykket ryker.',
+    icon: Monitor,
+  },
+];
+
 const REPORT_POINTS = [
-  'Ytelse viser hvor raskt brukeren faktisk ser og kan bruke siden.',
-  'Tilgjengelighet og beste praksis avslører friksjon som også påvirker tillit.',
-  'Handlingsplanen er sortert etter grep som vanligvis rydder mest først.',
+  'Vi trekker frem det som påvirker førsteinntrykket og brukbarheten mest.',
+  'Du ser hva som handler om fart, hva som handler om stabilitet og hva som påvirker tillit.',
+  'Handlingsplanen er sortert for å gjøre neste steg tydelig, ikke bare teknisk korrekt.',
+];
+
+const PROCESS_STEPS = [
+  {
+    step: '01',
+    title: 'Lim inn nettadressen',
+    text: 'Start med forsiden eller siden som betyr mest for konvertering akkurat nå.',
+    icon: Search,
+  },
+  {
+    step: '02',
+    title: 'Velg mobil eller desktop',
+    text: 'Kjør mobil først når du vil se den mest krevende opplevelsen, eller desktop når større flater er viktigst.',
+    icon: Smartphone,
+  },
+  {
+    step: '03',
+    title: 'Prioriter riktig med en gang',
+    text: 'Få scorekort, nøkkelmålinger og tre konkrete anbefalinger å ta tak i først.',
+    icon: Gauge,
+  },
+];
+
+const CHECKLIST_ITEMS = [
+  'Hvor raskt hovedinnholdet faktisk blir synlig for brukeren',
+  'Om CSS, JavaScript eller tredjepartsressurser blokkerer førsteinntrykket',
+  'Om layouten hopper eller blir treg å bruke på mobil',
+  'Om SEO, tilgjengelighet og beste praksis holder et trygt nivå',
+];
+
+const FAQ_ITEMS = [
+  {
+    question: 'Hva tester hjemmesidesjekken egentlig?',
+    answer:
+      'Vi henter offentlig Lighthouse-data fra Google PageSpeed Insights og viser de viktigste funnene for ytelse, tilgjengelighet, beste praksis og SEO.',
+  },
+  {
+    question: 'Er dette det samme som Google PageSpeed Insights?',
+    answer:
+      'Datagrunnlaget kommer fra Google, men siden pakker funnene om til en tydeligere rapport med mer prioriterte anbefalinger og mindre støy.',
+  },
+  {
+    question: 'Lagrer dere URL-en eller resultatene?',
+    answer:
+      'Nei. Testen bruker kun offentlig tilgjengelige data og er laget for å hente inn resultatet når du ber om det. Den er ikke laget som et lagringssystem.',
+  },
+  {
+    question: 'Hvorfor bør jeg teste både mobil og desktop?',
+    answer:
+      'Mange nettsteder ser greie ut på desktop, men taper fart, stabilitet og tydelighet på mobil. Derfor er det nyttig å se begge visningene hver for seg.',
+  },
+  {
+    question: 'Kan TK-design hjelpe med å fikse funnene?',
+    answer:
+      'Ja. Hvis rapporten viser problemer, kan vi gå gjennom dem sammen og oversette funnene til konkrete tiltak for design, kode, innhold og SEO.',
+  },
 ];
 
 const NAV_ITEMS = [
@@ -1049,6 +1123,61 @@ const HighlightCard = ({ item, index }) => {
   );
 };
 
+const ProofCard = ({ item, index }) => {
+  const Icon = item.icon;
+
+  return (
+    <Motion.article
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.08, duration: 0.4 }}
+      viewport={{ once: true, amount: 0.35 }}
+      className="st-proof-card"
+    >
+      <div className="st-proof-icon">
+        <Icon size={18} />
+      </div>
+      <div className="st-proof-body">
+        <h3>{item.title}</h3>
+        <p>{item.text}</p>
+      </div>
+    </Motion.article>
+  );
+};
+
+const StepCard = ({ item, index }) => {
+  const Icon = item.icon;
+
+  return (
+    <Motion.article
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.08, duration: 0.4 }}
+      viewport={{ once: true, amount: 0.35 }}
+      className="st-step-card"
+    >
+      <div className="st-step-top">
+        <span className="st-step-number">{item.step}</span>
+        <span className="st-step-icon">
+          <Icon size={18} />
+        </span>
+      </div>
+      <h3>{item.title}</h3>
+      <p>{item.text}</p>
+    </Motion.article>
+  );
+};
+
+const FaqItem = ({ item, defaultOpen = false }) => (
+  <details className="st-faq-item" open={defaultOpen}>
+    <summary>
+      <span>{item.question}</span>
+      <span className="st-faq-toggle" aria-hidden="true">+</span>
+    </summary>
+    <p>{item.answer}</p>
+  </details>
+);
+
 const ScoreCard = ({ label, score, dark = false }) => {
   const tone = getScoreTone(score);
   const radius = 34;
@@ -1351,11 +1480,11 @@ export default function App() {
                 Drevet av Google PageSpeed Insights
               </div>
 
-              <p className="st-script">Finn friksjonen før kunden gjør det</p>
-              <h1 className="st-title">Se om nettsiden taper fart før brukeren gjør det.</h1>
+              <p className="st-script">Gratis hjemmesidesjekk</p>
+              <h1 className="st-title">Se hvorfor nettsiden taper fart før kunden gjør det.</h1>
               <p className="st-lead">
                 Lim inn en URL og få en tydelig rapport som viser hva som bremser opplevelsen,
-                hvilke tall som betyr noe og hva som bør ryddes først.
+                hvilke tall som faktisk betyr noe og hva som bør tas først.
               </p>
 
               <div className="st-trust-grid">
@@ -1443,7 +1572,7 @@ export default function App() {
                 <div className="st-form-meta">
                   <p>Ingen data lagres. Vi henter bare offentlig Lighthouse-data fra Google.</p>
                   <a href="#resultat">
-                    Se eksempelrapport
+                    Se hvordan rapporten ser ut
                     <ArrowRight size={15} />
                   </a>
                 </div>
@@ -1530,12 +1659,50 @@ export default function App() {
             </Motion.aside>
           </section>
 
+          <section className="st-shell st-proof-band">
+            <div className="st-proof-copy">
+              <span className="st-chip st-chip--light">Hvorfor denne sjekken</span>
+              <h2>En enklere vei inn i det Google faktisk måler.</h2>
+              <p>
+                Du får samme type Lighthouse-data som i PageSpeed Insights, men presentert som en tydeligere,
+                mer brukbar rapport som er lettere å handle på.
+              </p>
+            </div>
+
+            <div className="st-proof-grid">
+              {PROOF_ITEMS.map((item, index) => (
+                <ProofCard key={item.title} item={item} index={index} />
+              ))}
+            </div>
+          </section>
+
           <section id="fordeler" className="st-shell st-section">
             <div className="st-section-head st-section-head--compact">
-              <span className="st-chip st-chip--light">Hva du får</span>
+              <span className="st-chip st-chip--light">Slik fungerer det</span>
               <div>
-                <h2>Rapporten er laget for beslutninger, ikke bare scores.</h2>
-                <p>Vi oversetter Lighthouse-data til språk, prioriteringer og tiltak som faktisk kan brukes videre.</p>
+                <h2>Fra nettadresse til prioriteringsliste uten å grave i rådata.</h2>
+                <p>Først kjører du testen. Deretter pakker vi dataene om til en rapport som er lettere å bruke i faktisk arbeid.</p>
+              </div>
+            </div>
+
+            <div className="st-process-grid">
+              <div className="st-step-grid">
+                {PROCESS_STEPS.map((item, index) => (
+                  <StepCard key={item.step} item={item} index={index} />
+                ))}
+              </div>
+
+              <div className="st-check-card">
+                <p className="st-panel-kicker">Det vi ser etter</p>
+                <h3>Dette er spørsmålene rapporten hjelper deg å svare på.</h3>
+                <ul className="st-check-list">
+                  {CHECKLIST_ITEMS.map((item) => (
+                    <li key={item}>
+                      <CheckCircle2 size={18} />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
 
@@ -1700,6 +1867,22 @@ export default function App() {
                 </div>
               </Motion.div>
             </AnimatePresence>
+          </section>
+
+          <section className="st-shell st-section st-faq">
+            <div className="st-section-head st-section-head--compact">
+              <span className="st-chip st-chip--light">Vanlige spørsmål</span>
+              <div>
+                <h2>Det viktigste du lurer på før du tester.</h2>
+                <p>Her er de vanligste spørsmålene om datagrunnlaget, hva som faktisk testes og hva du kan bruke rapporten til.</p>
+              </div>
+            </div>
+
+            <div className="st-faq-grid">
+              {FAQ_ITEMS.map((item, index) => (
+                <FaqItem key={item.question} item={item} defaultOpen={index === 0} />
+              ))}
+            </div>
           </section>
         </main>
 

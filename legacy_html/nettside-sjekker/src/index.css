@@ -559,6 +559,161 @@ body.homepage-refresh.speed-test-page .st-stage-callout a {
   color: #102033;
 }
 
+body.homepage-refresh.speed-test-page .st-proof-band {
+  display: grid;
+  gap: 1.25rem;
+  padding-top: 1rem;
+}
+
+body.homepage-refresh.speed-test-page .st-proof-copy {
+  display: grid;
+  gap: 1rem;
+  max-width: 38rem;
+}
+
+body.homepage-refresh.speed-test-page .st-proof-copy h2 {
+  max-width: 13ch;
+  font-size: clamp(2.2rem, 3.6vw, 3.8rem);
+  font-weight: 900;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+}
+
+body.homepage-refresh.speed-test-page .st-proof-copy p {
+  color: #5b6676;
+  line-height: 1.8;
+}
+
+body.homepage-refresh.speed-test-page .st-proof-grid,
+body.homepage-refresh.speed-test-page .st-step-grid,
+body.homepage-refresh.speed-test-page .st-faq-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+body.homepage-refresh.speed-test-page .st-proof-card,
+body.homepage-refresh.speed-test-page .st-step-card,
+body.homepage-refresh.speed-test-page .st-check-card,
+body.homepage-refresh.speed-test-page .st-faq-item {
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 1.8rem;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 22px 60px rgba(16, 32, 51, 0.1);
+  backdrop-filter: blur(12px);
+}
+
+body.homepage-refresh.speed-test-page .st-proof-card {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr);
+  gap: 1rem;
+  min-height: 100%;
+  padding: 1.3rem;
+}
+
+body.homepage-refresh.speed-test-page .st-proof-icon,
+body.homepage-refresh.speed-test-page .st-step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 1rem;
+  background: #102033;
+  color: #fff;
+}
+
+body.homepage-refresh.speed-test-page .st-proof-body {
+  display: grid;
+  gap: 0.45rem;
+}
+
+body.homepage-refresh.speed-test-page .st-proof-body h3,
+body.homepage-refresh.speed-test-page .st-step-card h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+body.homepage-refresh.speed-test-page .st-proof-body p,
+body.homepage-refresh.speed-test-page .st-step-card p {
+  color: #5b6676;
+  line-height: 1.7;
+}
+
+body.homepage-refresh.speed-test-page .st-process-grid {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+body.homepage-refresh.speed-test-page .st-step-card {
+  display: grid;
+  gap: 0.9rem;
+  padding: 1.35rem;
+}
+
+body.homepage-refresh.speed-test-page .st-step-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+body.homepage-refresh.speed-test-page .st-step-number {
+  color: #6b7280;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+body.homepage-refresh.speed-test-page .st-check-card {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+  padding: 1.55rem;
+  border-color: rgba(255, 255, 255, 0.08);
+  background: #102033;
+  color: #fff;
+  box-shadow: 0 30px 80px rgba(16, 32, 51, 0.22);
+}
+
+body.homepage-refresh.speed-test-page .st-check-card .st-panel-kicker {
+  color: rgba(255, 255, 255, 0.52);
+}
+
+body.homepage-refresh.speed-test-page .st-check-card h3 {
+  font-size: clamp(1.8rem, 2.4vw, 2.55rem);
+  font-weight: 900;
+  line-height: 1.03;
+}
+
+body.homepage-refresh.speed-test-page .st-check-list {
+  display: grid;
+  gap: 0.9rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+body.homepage-refresh.speed-test-page .st-check-list li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.7;
+}
+
+body.homepage-refresh.speed-test-page .st-check-list svg {
+  margin-top: 0.2rem;
+  color: #62b6cb;
+}
+
+body.homepage-refresh.speed-test-page .st-process-grid + .st-feature-grid {
+  margin-top: 1.25rem;
+}
+
 body.homepage-refresh.speed-test-page .st-section-head {
   display: flex;
   flex-direction: column;
@@ -648,6 +803,56 @@ body.homepage-refresh.speed-test-page .st-feature-body h3 {
 body.homepage-refresh.speed-test-page .st-feature-body p {
   color: #5b6676;
   line-height: 1.68;
+}
+
+body.homepage-refresh.speed-test-page .st-faq-item {
+  overflow: hidden;
+}
+
+body.homepage-refresh.speed-test-page .st-faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.35rem;
+  list-style: none;
+  cursor: pointer;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+body.homepage-refresh.speed-test-page .st-faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+body.homepage-refresh.speed-test-page .st-faq-item p {
+  padding: 0 1.35rem 1.25rem;
+  color: #5b6676;
+  line-height: 1.72;
+}
+
+body.homepage-refresh.speed-test-page .st-faq-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: #f0ece6;
+  color: #102033;
+  font-size: 1.2rem;
+  font-weight: 700;
+  flex: 0 0 2rem;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+body.homepage-refresh.speed-test-page .st-faq-item[open] .st-faq-toggle {
+  transform: rotate(45deg);
+  background: #102033;
+  color: #fff;
 }
 
 body.homepage-refresh.speed-test-page .st-meta-pills {
@@ -1120,6 +1325,11 @@ body.homepage-refresh.speed-test-page .st-feedback--error {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  body.homepage-refresh.speed-test-page .st-proof-grid,
+  body.homepage-refresh.speed-test-page .st-faq-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   body.homepage-refresh.speed-test-page .st-form-meta {
     flex-direction: row;
     align-items: center;
@@ -1136,6 +1346,15 @@ body.homepage-refresh.speed-test-page .st-feedback--error {
 
 @media (min-width: 980px) {
   body.homepage-refresh.speed-test-page .st-feature-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  body.homepage-refresh.speed-test-page .st-proof-band {
+    grid-template-columns: minmax(18rem, 24rem) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  body.homepage-refresh.speed-test-page .st-proof-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
@@ -1157,6 +1376,11 @@ body.homepage-refresh.speed-test-page .st-feedback--error {
 
   body.homepage-refresh.speed-test-page .st-panel-head--stack {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  body.homepage-refresh.speed-test-page .st-process-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(20rem, 24rem);
+    align-items: start;
   }
 }
 
@@ -1217,12 +1441,18 @@ body.homepage-refresh.speed-test-page .st-feedback--error {
 
   body.homepage-refresh.speed-test-page .st-plan-item,
   body.homepage-refresh.speed-test-page .st-feature-card,
-  body.homepage-refresh.speed-test-page .st-trust-card {
+  body.homepage-refresh.speed-test-page .st-trust-card,
+  body.homepage-refresh.speed-test-page .st-proof-card {
     grid-template-columns: 1fr;
   }
 
   body.homepage-refresh.speed-test-page .st-cta-actions {
     display: grid;
+  }
+
+  body.homepage-refresh.speed-test-page .st-proof-grid,
+  body.homepage-refresh.speed-test-page .st-faq-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   body.homepage-refresh.speed-test-page .st-button {
