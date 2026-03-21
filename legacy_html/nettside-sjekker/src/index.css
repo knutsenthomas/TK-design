@@ -484,9 +484,6 @@ body.homepage-refresh.speed-test-page .st-hero-strategy {
 }
 
 body.homepage-refresh.speed-test-page .st-hero-strategy button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   min-width: 0;
   min-height: 2.55rem;
   padding: 0 1rem;
@@ -496,8 +493,6 @@ body.homepage-refresh.speed-test-page .st-hero-strategy button {
   color: var(--st-text-muted);
   font-size: 0.9rem;
   font-weight: 700;
-  line-height: 1;
-  text-align: center;
 }
 
 body.homepage-refresh.speed-test-page .st-hero-strategy button.is-active {
@@ -1180,7 +1175,6 @@ body.homepage-refresh.speed-test-page .menu-close svg {
   }
 
   body.homepage-refresh.speed-test-page .st-hero-meta {
-    align-items: center;
     gap: 0.75rem;
   }
 
@@ -1188,12 +1182,10 @@ body.homepage-refresh.speed-test-page .menu-close svg {
     max-width: 23ch;
     font-size: 0.94rem;
     line-height: 1.45;
-    text-align: center;
   }
 
   body.homepage-refresh.speed-test-page .st-hero-strategy {
-    width: min(100%, 18rem);
-    margin-inline: auto;
+    width: min(100%, 17rem);
   }
 
   body.homepage-refresh.speed-test-page .st-hero-strategy button {
