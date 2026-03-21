@@ -1443,8 +1443,8 @@ body.homepage-refresh.speed-test-page .st-feedback--error {
   }
 
   body.homepage-refresh.speed-test-page .st-title {
-    max-width: 13.4ch;
-    font-size: clamp(2.35rem, 11vw, 3.7rem);
+    max-width: 14.6ch;
+    font-size: clamp(2.1rem, 9.6vw, 3.2rem);
     line-height: 0.96;
     text-wrap: pretty;
   }
