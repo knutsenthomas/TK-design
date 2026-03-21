@@ -173,6 +173,8 @@ const PROCESS_STEPS = [
   },
 ];
 
+const REPORT_AUDIENCE_TAGS = ['Landingssider', 'Byråer', 'Markedsføring'];
+
 const CHECKLIST_ITEMS = [
   'Hvor raskt hovedinnholdet faktisk blir synlig for brukeren',
   'Om CSS, JavaScript eller tredjepartsressurser blokkerer førsteinntrykket',
@@ -1271,6 +1273,56 @@ const ProofCard = ({ item, index }) => {
   );
 };
 
+const ReportDetailCard = ({
+  title,
+  text,
+  icon,
+  items = [],
+  tags = [],
+  wide = false,
+  index = 0,
+}) => {
+  const Icon = icon;
+
+  return (
+    <Motion.article
+      initial={{ opacity: 0, y: 18 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.06, duration: 0.35 }}
+      viewport={{ once: true, amount: 0.35 }}
+      className={`st-report-detail-card${wide ? ' st-report-detail-card--wide' : ''}`}
+    >
+      <div className="st-report-detail-head">
+        <span className="st-report-detail-icon">
+          <Icon size={18} />
+        </span>
+        <h3>{title}</h3>
+      </div>
+
+      <p>{text}</p>
+
+      {items.length > 0 && (
+        <ul className="st-report-detail-list">
+          {items.map((item) => (
+            <li key={item}>
+              <CheckCircle2 size={16} />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {tags.length > 0 && (
+        <div className="st-report-detail-tags">
+          {tags.map((tag) => (
+            <span key={tag}>{tag}</span>
+          ))}
+        </div>
+      )}
+    </Motion.article>
+  );
+};
+
 const StepCard = ({ item, index }) => {
   const Icon = item.icon;
 
@@ -1522,6 +1574,35 @@ export default function App() {
   };
 
   const activeReport = results ?? PREVIEW_REPORT;
+  const reportDetailCards = results ? [
+    {
+      title: 'Dette får du i rapporten',
+      text:
+        'Rapporten er laget for at du raskt skal kunne lese bildet, forklare det videre og prioritere riktig uten å grave i rådata først.',
+      icon: Gauge,
+      items: [
+        `${SCORE_DEFINITIONS.length} scorekort for ytelse, tilgjengelighet, beste praksis og SEO`,
+        `${results.metrics.slice(0, 5).length} nøkkelmålinger som forklarer fart, blokkering og stabilitet`,
+        `${results.topFixes.length} prioriterte tiltak du kan sende videre med en gang`,
+      ],
+      tags: REPORT_AUDIENCE_TAGS,
+      wide: true,
+    },
+    {
+      title: 'Mobil eller desktop?',
+      text:
+        results.strategy === 'desktop'
+          ? 'Du kjørte desktop. Bruk mobil når du vil avdekke den mest krevende flaten, og desktop når større skjermer eller interne arbeidsflater betyr mest.'
+          : 'Du kjørte mobil. Det er ofte riktig først, siden mobil vanligvis er den mest krevende opplevelsen. Kjør også desktop når større skjermer er viktige i salgs- eller arbeidsflyten.',
+      icon: Smartphone,
+    },
+    {
+      title: 'Datakilde og personvern',
+      text:
+        'Vi henter offentlig Lighthouse- og PageSpeed-data idet testen kjører. URL-en lagres ikke i denne testen, så rapporten kan brukes raskt uten ekstra oppsett.',
+      icon: Shield,
+    },
+  ] : [];
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   const handleSendReportEmail = async () => {
@@ -1860,6 +1941,12 @@ export default function App() {
                     </div>
                   </div>
                 </Motion.div>
+
+                <div className="st-report-details">
+                  {reportDetailCards.map((card, index) => (
+                    <ReportDetailCard key={card.title} index={index} {...card} />
+                  ))}
+                </div>
               </div>
             </section>
           )}

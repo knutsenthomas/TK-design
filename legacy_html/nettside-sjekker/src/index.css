@@ -356,6 +356,93 @@ body.homepage-refresh.speed-test-page .st-report-meta span {
   font-weight: 700;
 }
 
+body.homepage-refresh.speed-test-page .st-report-details {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+body.homepage-refresh.speed-test-page .st-report-detail-card {
+  display: grid;
+  gap: 0.9rem;
+  min-height: 100%;
+  padding: 1.35rem 1.4rem;
+  border: 1px solid var(--st-border);
+  border-radius: 1.45rem;
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: 0 16px 34px rgba(14, 24, 40, 0.06);
+}
+
+body.homepage-refresh.speed-test-page .st-report-detail-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+body.homepage-refresh.speed-test-page .st-report-detail-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 0.9rem;
+  background: var(--refresh-accent-soft);
+  color: var(--st-secondary);
+}
+
+body.homepage-refresh.speed-test-page .st-report-detail-head h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+body.homepage-refresh.speed-test-page .st-report-detail-card p {
+  color: var(--st-text-soft);
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+body.homepage-refresh.speed-test-page .st-report-detail-list {
+  display: grid;
+  gap: 0.65rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+body.homepage-refresh.speed-test-page .st-report-detail-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  color: var(--st-text);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+body.homepage-refresh.speed-test-page .st-report-detail-list svg {
+  flex: 0 0 auto;
+  margin-top: 0.1rem;
+  color: #19b46b;
+}
+
+body.homepage-refresh.speed-test-page .st-report-detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+body.homepage-refresh.speed-test-page .st-report-detail-tags span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0 0.8rem;
+  border-radius: 999px;
+  background: rgba(27, 73, 101, 0.08);
+  color: var(--st-text);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
 body.homepage-refresh.speed-test-page .st-hero-copy {
   min-width: 0;
   max-width: 38rem;
@@ -1075,6 +1162,14 @@ body.homepage-refresh.speed-test-page .menu-close svg {
 }
 
 @media (min-width: 768px) {
+  body.homepage-refresh.speed-test-page .st-report-details {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.homepage-refresh.speed-test-page .st-report-detail-card--wide {
+    grid-column: 1 / -1;
+  }
+
   body.homepage-refresh.speed-test-page .st-feature-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -1127,6 +1222,14 @@ body.homepage-refresh.speed-test-page .menu-close svg {
 }
 
 @media (min-width: 1120px) {
+  body.homepage-refresh.speed-test-page .st-report-details {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  body.homepage-refresh.speed-test-page .st-report-detail-card--wide {
+    grid-column: span 2;
+  }
+
   body.homepage-refresh.speed-test-page .st-metric-grid {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
@@ -1160,7 +1263,8 @@ body.homepage-refresh.speed-test-page .menu-close svg {
 
   body.homepage-refresh.speed-test-page .st-stage-card,
   body.homepage-refresh.speed-test-page .st-feature-card,
-  body.homepage-refresh.speed-test-page .st-faq-item {
+  body.homepage-refresh.speed-test-page .st-faq-item,
+  body.homepage-refresh.speed-test-page .st-report-detail-card {
     border-radius: 1.45rem;
   }
 
