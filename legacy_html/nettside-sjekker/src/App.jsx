@@ -1510,7 +1510,7 @@ export default function App() {
 
       if (typeof document !== 'undefined') {
         window.requestAnimationFrame(() => {
-          document.getElementById('metrics')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          document.getElementById('resultat')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
       }
     } catch (requestError) {
@@ -1807,6 +1807,62 @@ export default function App() {
               </Motion.aside>
             </div>
           </section>
+
+          {results && (
+            <section id="resultat" className="st-report-section">
+              <div className="st-shell st-report-layout">
+                <Motion.div
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35 }}
+                  className="st-report-copy"
+                >
+                  <span className="st-kicker">SCOREOVERSIKT</span>
+                  <h2>Først får du hele bildet fra testen.</h2>
+                  <p>
+                    {results.summary}
+                    {' '}
+                    Her ser du totalscorene for
+                    {' '}
+                    <strong>{results.analyzedUrl}</strong>
+                    {' '}
+                    på
+                    {' '}
+                    {getStrategyLabel(results.strategy).toLowerCase()}
+                    {' '}
+                    før du går videre til målinger og tiltak.
+                  </p>
+                  <div className="st-report-meta">
+                    <span>{results.analyzedUrl}</span>
+                    <span>{getStrategyLabel(results.strategy)}</span>
+                  </div>
+                </Motion.div>
+
+                <Motion.div
+                  initial={{ opacity: 0, x: 18 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.35, delay: 0.05 }}
+                  className="st-stage st-stage--report"
+                >
+                  <div className="st-stage-card">
+                    <div className="st-stage-head">
+                      <div>
+                        <h3>Analyse-oversikt</h3>
+                        <p>KJØRT TEST</p>
+                      </div>
+                      <Gauge size={28} />
+                    </div>
+
+                    <div className="st-preview-grid">
+                      {SCORE_DEFINITIONS.map(({ key, label }) => (
+                        <PreviewScoreCard key={key} label={label} score={results.scores[key]} />
+                      ))}
+                    </div>
+                  </div>
+                </Motion.div>
+              </div>
+            </section>
+          )}
 
           <section className="st-value-section">
             <div className="st-shell">

@@ -284,6 +284,7 @@ body.homepage-refresh.speed-test-page .st-button:hover {
 }
 
 body.homepage-refresh.speed-test-page .st-hero-section,
+body.homepage-refresh.speed-test-page .st-report-section,
 body.homepage-refresh.speed-test-page .st-metrics-section,
 body.homepage-refresh.speed-test-page .st-faq-section {
   padding: clamp(4rem, 8vw, 7rem) 0;
@@ -303,6 +304,56 @@ body.homepage-refresh.speed-test-page .st-hero {
   display: grid;
   gap: clamp(2rem, 5vw, 4rem);
   align-items: center;
+}
+
+body.homepage-refresh.speed-test-page .st-report-section {
+  padding-top: 0;
+}
+
+body.homepage-refresh.speed-test-page .st-report-layout {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: center;
+}
+
+body.homepage-refresh.speed-test-page .st-report-copy {
+  display: grid;
+  gap: 1rem;
+  max-width: 34rem;
+}
+
+body.homepage-refresh.speed-test-page .st-report-copy h2 {
+  font-size: clamp(2rem, 4.2vw, 3.15rem);
+  font-weight: 800;
+  line-height: 1.04;
+}
+
+body.homepage-refresh.speed-test-page .st-report-copy p {
+  color: var(--st-text-soft);
+  line-height: 1.8;
+}
+
+body.homepage-refresh.speed-test-page .st-report-copy strong {
+  color: var(--st-text);
+}
+
+body.homepage-refresh.speed-test-page .st-report-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+body.homepage-refresh.speed-test-page .st-report-meta span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.4rem;
+  padding: 0 0.95rem;
+  border: 1px solid var(--st-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--st-text);
+  font-size: 0.9rem;
+  font-weight: 700;
 }
 
 body.homepage-refresh.speed-test-page .st-hero-copy {
@@ -487,6 +538,10 @@ body.homepage-refresh.speed-test-page .st-stage {
   position: relative;
   max-width: 28rem;
   margin-inline: auto;
+}
+
+body.homepage-refresh.speed-test-page .st-stage--report {
+  max-width: 32rem;
 }
 
 body.homepage-refresh.speed-test-page .st-stage::before {
@@ -1041,6 +1096,10 @@ body.homepage-refresh.speed-test-page .menu-close svg {
 
   body.homepage-refresh.speed-test-page .st-hero {
     grid-template-columns: minmax(0, 1.08fr) minmax(22rem, 28rem);
+  }
+
+  body.homepage-refresh.speed-test-page .st-report-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(24rem, 32rem);
   }
 
   body.homepage-refresh.speed-test-page .st-section-intro--split {
