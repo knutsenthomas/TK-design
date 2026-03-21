@@ -56,6 +56,10 @@ body.speed-test-page {
   overflow-x: hidden;
 }
 
+body.speed-test-page.mobile-menu-active {
+  overflow: hidden;
+}
+
 img {
   display: block;
   max-width: 100%;
@@ -947,6 +951,13 @@ body.homepage-refresh.speed-test-page .st-footer-column a {
 
 body.homepage-refresh.speed-test-page .st-footer-column a:hover {
   color: var(--st-secondary);
+}
+
+body.homepage-refresh.speed-test-page .social-link svg,
+body.homepage-refresh.speed-test-page .mobile-social-links svg,
+body.homepage-refresh.speed-test-page .menu-trigger svg,
+body.homepage-refresh.speed-test-page .menu-close svg {
+  flex: 0 0 auto;
 }
 
 @keyframes st-spin {

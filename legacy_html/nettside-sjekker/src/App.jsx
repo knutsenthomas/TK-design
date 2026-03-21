@@ -193,37 +193,31 @@ const FAQ_ITEMS = [
   },
 ];
 
-const HEADER_NAV_ITEMS = [
-  { href: '#analysis', label: 'Analysis' },
-  { href: '#metrics', label: 'Metrics' },
-  { href: '#methodology', label: 'Methodology' },
-  { href: '#faq', label: 'FAQ' },
+const SITE_NAV_ITEMS = [
+  { href: '/', label: 'Home' },
+  { href: '/?section=about', label: 'About' },
+  { href: '/?section=services', label: 'Services' },
+  { href: '/?section=projects', label: 'Portfolio' },
+  { href: '/?section=testimonial', label: 'Testimonial' },
+  { href: '/blog', label: 'Blog' },
+  { href: '/contact', label: 'Contact' },
 ];
 
-const FOOTER_LINK_COLUMNS = [
+const FOOTER_SOCIAL_LINKS = [
   {
-    title: 'RESSURSER',
-    links: [
-      { href: '#metrics', label: 'Dokumentasjon' },
-      { href: '#analysis', label: 'API' },
-      { href: '#methodology', label: 'System Status' },
-    ],
+    href: 'https://www.facebook.com/profile.php?id=61574614704737&locale=nb_NO',
+    label: 'Facebook',
+    icon: Facebook,
   },
   {
-    title: 'SELSKAP',
-    links: [
-      { href: '/', label: 'Om oss' },
-      { href: '/blog', label: 'Karriere' },
-      { href: '/contact', label: 'Kontakt' },
-    ],
+    href: 'https://www.instagram.com/tkdesign777',
+    label: 'Instagram',
+    icon: Instagram,
   },
   {
-    title: 'JURIDISK',
-    links: [
-      { href: '/privacy', label: 'Privacy Policy' },
-      { href: '/terms', label: 'Terms of Service' },
-      { href: '/privacy#cookies', label: 'Cookies' },
-    ],
+    href: 'https://www.linkedin.com/in/thomas-knutsen-a6aa2793/',
+    label: 'LinkedIn',
+    icon: Linkedin,
   },
 ];
 
@@ -1233,43 +1227,6 @@ const buildReport = (lighthouse, requestedUrl, strategy) => {
   });
 };
 
-const Header = () => (
-  <header className="st-topbar">
-    <nav className="st-topbar-inner">
-      <a href="#analysis" className="st-brand">PERFORMANCE.ARCHITECT</a>
-      <div className="st-topbar-nav">
-        {HEADER_NAV_ITEMS.map((item) => (
-          <a key={item.href} href={item.href}>{item.label}</a>
-        ))}
-      </div>
-      <a href="#hero-form" className="st-topbar-cta">Kjør test</a>
-    </nav>
-  </header>
-);
-
-const Footer = () => (
-  <footer className="st-footer">
-    <div className="st-footer-inner">
-      <div className="st-footer-brand">
-        <div className="st-brand st-brand--footer">PERFORMANCE.ARCHITECT</div>
-        <p>© 2026 PERFORMANCE.ARCHITECT. DATA REVERENCE IN ANALYSIS.</p>
-      </div>
-      {FOOTER_LINK_COLUMNS.map((column) => (
-        <div key={column.title} className="st-footer-column">
-          <h5>{column.title}</h5>
-          <ul>
-            {column.links.map((link) => (
-              <li key={link.href}>
-                <a href={link.href}>{link.label}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </div>
-  </footer>
-);
-
 const HighlightCard = ({ item, index }) => {
   const Icon = item.icon;
 
@@ -1429,10 +1386,46 @@ export default function App() {
   const [sendingReport, setSendingReport] = useState(false);
   const [reportEmailFeedback, setReportEmailFeedback] = useState(null);
   const [reportEmail, setReportEmail] = useState('');
+  const [headerScrolled, setHeaderScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     setReportEmail(window.localStorage.getItem('speed_test_report_email') || '');
   }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setHeaderScrolled(window.scrollY > 18);
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    document.body.classList.toggle('mobile-menu-active', isMobileMenuOpen);
+
+    return () => {
+      document.body.classList.remove('mobile-menu-active');
+    };
+  }, [isMobileMenuOpen]);
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) {
+      return undefined;
+    }
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isMobileMenuOpen]);
 
   useEffect(() => {
     if (!loading) {
@@ -1529,6 +1522,7 @@ export default function App() {
   };
 
   const activeReport = results ?? PREVIEW_REPORT;
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   const handleSendReportEmail = async () => {
     if (!results) {
@@ -1601,7 +1595,88 @@ export default function App() {
       <div className="st-bg-wash" />
 
       <div className="st-app">
-        <Header />
+        <header className={headerScrolled ? 'header scrolled' : 'header'}>
+          <div className="container nav-container">
+            <a href="/" className="logo" aria-label="tk-design">
+              <span className="logo-icon">
+                <img src="/img/logo/d.webp" alt="tk-design logo" />
+              </span>
+              <span className="logo-text">tk-design</span>
+            </a>
+
+            <nav className="nav-desktop" aria-label="Hovednavigasjon">
+              <ul>
+                {SITE_NAV_ITEMS.map((item) => (
+                  <li key={item.href}>
+                    <a href={item.href}>{item.label}</a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <div className="lang-switch-desktop" aria-label="Velg språk">
+              <a href="/en" className="lang-btn" lang="en">EN</a>
+              <a href="/speed-test" className="lang-btn active" lang="no" aria-current="page">NO</a>
+            </div>
+
+            <button
+              className="menu-trigger"
+              aria-label="Åpne meny"
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="speed-test-mobile-menu"
+              type="button"
+              onClick={() => setIsMobileMenuOpen(true)}
+            >
+              <Menu size={24} />
+            </button>
+          </div>
+        </header>
+
+        <div
+          id="speed-test-mobile-menu"
+          className={`mobile-menu-overlay${isMobileMenuOpen ? ' active' : ''}`}
+          aria-hidden={!isMobileMenuOpen}
+          onClick={closeMobileMenu}
+        >
+          <nav className="mobile-nav" aria-label="Mobilnavigasjon" onClick={(event) => event.stopPropagation()}>
+            <button className="menu-close" type="button" aria-label="Lukk meny" onClick={closeMobileMenu}>
+              <X size={28} />
+            </button>
+
+            <ul>
+              {SITE_NAV_ITEMS.map((item) => (
+                <li key={item.href}>
+                  <a href={item.href} onClick={closeMobileMenu}>{item.label}</a>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mobile-menu-footer">
+              <div className="mobile-contact-info">
+                <a href="mailto:thomas@tk-design.no" onClick={closeMobileMenu}>thomas@tk-design.no</a>
+                <a href="tel:+4793094615" onClick={closeMobileMenu}>930 94 615</a>
+              </div>
+              <div className="mobile-social-links">
+                <a
+                  href="https://www.facebook.com/profile.php?id=61574614704737&locale=nb_NO"
+                  target="_blank"
+                  rel="nofollow noopener noreferrer"
+                  aria-label="Facebook"
+                >
+                  <Facebook size={18} />
+                </a>
+                <a
+                  href="https://www.instagram.com/tkdesign777"
+                  target="_blank"
+                  rel="nofollow noopener noreferrer"
+                  aria-label="Instagram"
+                >
+                  <Instagram size={18} />
+                </a>
+              </div>
+            </div>
+          </nav>
+        </div>
 
         <main className="st-main">
           <section id="analysis" className="st-hero-section">
@@ -1865,7 +1940,56 @@ export default function App() {
           </section>
         </main>
 
-        <Footer />
+        <footer className="footer pt_120 pb_120" style={{ borderTop: '1px solid var(--clr-border)' }}>
+          <div className="container">
+            <div className="footer-cta">
+              <h2>La oss starte</h2>
+            </div>
+
+            <div className="footer-content">
+              <div className="footer-info">
+                <p style={{ fontSize: '20px', color: 'var(--clr-base)', marginBottom: '20px' }}>
+                  Vi bygger din digitale identitet med skreddersydd webdesign, SEO og SoMe-strategi.
+                </p>
+                <a
+                  href="mailto:thomas@tk-design.no"
+                  style={{ fontSize: '30px', textDecoration: 'underline', color: 'var(--clr-base)' }}
+                >
+                  thomas@tk-design.no
+                </a>
+              </div>
+
+              <div className="footer-links" style={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+                {FOOTER_SOCIAL_LINKS.map((link) => (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    className="social-link"
+                    target="_blank"
+                    rel="nofollow noopener noreferrer"
+                  >
+                    <span>{link.label}</span>
+                    <ArrowRight size={16} />
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            <div
+              className="flex flex-wrap justify-between items-center"
+              style={{ borderTop: '1px solid var(--clr-border)', paddingTop: '30px' }}
+            >
+              <p>
+                Copyright © 2026 <a href="/" style={{ color: 'var(--clr-base)' }}>TK-design</a> All rights reserved.
+              </p>
+              <div className="flex gap-4">
+                <a href="/accessibility" style={{ color: 'var(--clr-base)' }}>Accessibility Statement</a>
+                <a href="/privacy" style={{ color: 'var(--clr-base)' }}>Privacy Policy</a>
+                <a href="/admin/" className="admin-secret" style={{ color: '#777', fontSize: '0.8em' }}>Admin</a>
+              </div>
+            </div>
+          </div>
+        </footer>
       </div>
     </div>
   );
