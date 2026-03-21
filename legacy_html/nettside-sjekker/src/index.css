@@ -469,14 +469,14 @@ body.homepage-refresh.speed-test-page .st-hero-meta {
 }
 
 body.homepage-refresh.speed-test-page .st-hero-meta p {
-  max-width: 30rem;
+  max-width: 28rem;
   text-wrap: pretty;
 }
 
 body.homepage-refresh.speed-test-page .st-hero-strategy {
   display: inline-grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  width: min(100%, 22rem);
+  width: min(100%, 18rem);
   padding: 0.25rem;
   border: 1px solid var(--st-border);
   border-radius: 999px;
@@ -484,6 +484,9 @@ body.homepage-refresh.speed-test-page .st-hero-strategy {
 }
 
 body.homepage-refresh.speed-test-page .st-hero-strategy button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-width: 0;
   min-height: 2.55rem;
   padding: 0 1rem;
@@ -493,6 +496,8 @@ body.homepage-refresh.speed-test-page .st-hero-strategy button {
   color: var(--st-text-muted);
   font-size: 0.9rem;
   font-weight: 700;
+  line-height: 1;
+  text-align: center;
 }
 
 body.homepage-refresh.speed-test-page .st-hero-strategy button.is-active {
@@ -1169,26 +1174,32 @@ body.homepage-refresh.speed-test-page .menu-close svg {
   }
 
   body.homepage-refresh.speed-test-page .st-title {
-    max-width: 12.2ch;
-    font-size: clamp(2.1rem, 9.7vw, 3.4rem);
-    line-height: 1.04;
+    max-width: none;
+    font-size: clamp(2rem, 9vw, 3rem);
+    line-height: 1;
   }
 
   body.homepage-refresh.speed-test-page .st-hero-meta {
+    align-items: center;
     gap: 0.75rem;
   }
 
   body.homepage-refresh.speed-test-page .st-hero-meta p {
-    font-size: 0.95rem;
+    max-width: 23ch;
+    font-size: 0.94rem;
+    line-height: 1.45;
+    text-align: center;
   }
 
   body.homepage-refresh.speed-test-page .st-hero-strategy {
-    width: min(100%, 22rem);
+    width: min(100%, 18rem);
+    margin-inline: auto;
   }
 
   body.homepage-refresh.speed-test-page .st-hero-strategy button {
-    min-height: 2.7rem;
-    font-size: 0.95rem;
+    min-height: 2.6rem;
+    padding: 0 0.85rem;
+    font-size: 0.9rem;
   }
 
   body.homepage-refresh.speed-test-page .st-stage-card,
