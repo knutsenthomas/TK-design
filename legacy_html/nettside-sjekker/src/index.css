@@ -220,7 +220,7 @@ body.homepage-refresh.speed-test-page .st-lead {
 body.homepage-refresh.speed-test-page .st-trust-grid {
   display: grid;
   gap: 1rem;
-  margin-top: 2rem;
+  margin-top: 1.25rem;
 }
 
 body.homepage-refresh.speed-test-page .st-trust-card {
@@ -272,6 +272,10 @@ body.homepage-refresh.speed-test-page .st-form {
   background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 30px 80px rgba(16, 32, 51, 0.12);
   backdrop-filter: blur(12px);
+}
+
+body.homepage-refresh.speed-test-page .st-form + .st-trust-grid {
+  margin-top: 1rem;
 }
 
 body.homepage-refresh.speed-test-page .st-form-grid {
@@ -559,6 +563,63 @@ body.homepage-refresh.speed-test-page .st-stage-callout a {
   color: #102033;
 }
 
+body.homepage-refresh.speed-test-page .st-authority {
+  display: grid;
+  gap: 1rem;
+  padding-top: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+body.homepage-refresh.speed-test-page .st-authority-label {
+  color: #5b6676;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  max-width: 46rem;
+}
+
+body.homepage-refresh.speed-test-page .st-authority-row {
+  display: grid;
+  gap: 1rem;
+}
+
+body.homepage-refresh.speed-test-page .st-authority-item {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr);
+  gap: 0.95rem;
+  align-items: start;
+  min-height: 100%;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: 0 22px 52px rgba(16, 32, 51, 0.08);
+}
+
+body.homepage-refresh.speed-test-page .st-authority-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 1rem;
+  background: #102033;
+  color: #fff;
+}
+
+body.homepage-refresh.speed-test-page .st-authority-copy {
+  display: grid;
+  gap: 0.2rem;
+}
+
+body.homepage-refresh.speed-test-page .st-authority-copy strong {
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+body.homepage-refresh.speed-test-page .st-authority-copy span {
+  color: #5b6676;
+  line-height: 1.6;
+}
+
 body.homepage-refresh.speed-test-page .st-proof-band {
   display: grid;
   gap: 1.25rem;
@@ -714,6 +775,10 @@ body.homepage-refresh.speed-test-page .st-process-grid + .st-feature-grid {
   margin-top: 1.25rem;
 }
 
+body.homepage-refresh.speed-test-page .st-proof-grid + .st-feature-grid {
+  margin-top: 1.25rem;
+}
+
 body.homepage-refresh.speed-test-page .st-section-head {
   display: flex;
   flex-direction: column;
@@ -723,6 +788,10 @@ body.homepage-refresh.speed-test-page .st-section-head {
 
 body.homepage-refresh.speed-test-page .st-section-head--compact {
   margin-bottom: 1.25rem;
+}
+
+body.homepage-refresh.speed-test-page .st-section-head--split {
+  gap: 1.25rem;
 }
 
 body.homepage-refresh.speed-test-page .st-section-head > .st-chip {
@@ -1062,6 +1131,39 @@ body.homepage-refresh.speed-test-page .st-score-card {
   background: #fff;
 }
 
+body.homepage-refresh.speed-test-page button.st-score-card {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  appearance: none;
+}
+
+body.homepage-refresh.speed-test-page .st-score-card.is-clickable {
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+body.homepage-refresh.speed-test-page .st-score-card.is-clickable:hover {
+  transform: translateY(-2px);
+  border-color: rgba(16, 32, 51, 0.16);
+  box-shadow: 0 18px 36px rgba(16, 32, 51, 0.08);
+}
+
+body.homepage-refresh.speed-test-page .st-score-card.is-clickable:focus-visible {
+  outline: 2px solid rgba(16, 32, 51, 0.45);
+  outline-offset: 3px;
+}
+
+body.homepage-refresh.speed-test-page .st-score-card.is-active {
+  border-color: rgba(16, 32, 51, 0.2);
+  background: #f7f3ee;
+  box-shadow: 0 20px 44px rgba(16, 32, 51, 0.1);
+}
+
 body.homepage-refresh.speed-test-page .st-score-card.is-dark {
   border-color: rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.05);
@@ -1243,6 +1345,54 @@ body.homepage-refresh.speed-test-page .st-cta-actions {
   align-items: center;
 }
 
+body.homepage-refresh.speed-test-page .st-final-cta-card {
+  gap: 1.5rem;
+}
+
+body.homepage-refresh.speed-test-page .st-final-cta-copy {
+  display: grid;
+  gap: 1rem;
+}
+
+body.homepage-refresh.speed-test-page .st-final-cta-copy h2 {
+  max-width: 12ch;
+  font-size: clamp(2.1rem, 3.4vw, 3.5rem);
+  font-weight: 900;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+}
+
+body.homepage-refresh.speed-test-page .st-final-cta-copy p {
+  max-width: 42rem;
+  color: rgba(255, 255, 255, 0.74);
+  line-height: 1.78;
+}
+
+body.homepage-refresh.speed-test-page .st-final-cta-notes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+body.homepage-refresh.speed-test-page .st-final-cta-notes span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.2rem;
+  padding: 0 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+body.homepage-refresh.speed-test-page .st-final-cta-form {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
 body.homepage-refresh.speed-test-page .st-plan-item {
   display: grid;
   grid-template-columns: 2.85rem minmax(0, 1fr);
@@ -1363,6 +1513,10 @@ body.homepage-refresh.speed-test-page .st-feedback--error {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  body.homepage-refresh.speed-test-page .st-authority-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   body.homepage-refresh.speed-test-page .st-proof-grid,
   body.homepage-refresh.speed-test-page .st-faq-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1387,6 +1541,20 @@ body.homepage-refresh.speed-test-page .st-feedback--error {
 }
 
 @media (min-width: 980px) {
+  body.homepage-refresh.speed-test-page .st-authority-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  body.homepage-refresh.speed-test-page .st-step-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  body.homepage-refresh.speed-test-page .st-section-head--split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 30rem);
+    align-items: end;
+  }
+
   body.homepage-refresh.speed-test-page .st-proof-band {
     grid-template-columns: minmax(0, 1fr);
     align-items: start;
@@ -1410,6 +1578,13 @@ body.homepage-refresh.speed-test-page .st-feedback--error {
 
   body.homepage-refresh.speed-test-page .st-stage {
     max-width: 40rem;
+  }
+}
+
+@media (min-width: 1120px) {
+  body.homepage-refresh.speed-test-page .st-final-cta-card {
+    grid-template-columns: minmax(0, 1fr) minmax(22rem, 30rem);
+    align-items: start;
   }
 }
 
@@ -1541,6 +1716,7 @@ body.homepage-refresh.speed-test-page .st-feedback--error {
   }
 
   body.homepage-refresh.speed-test-page .st-plan-item,
+  body.homepage-refresh.speed-test-page .st-authority-item,
   body.homepage-refresh.speed-test-page .st-feature-card,
   body.homepage-refresh.speed-test-page .st-trust-card,
   body.homepage-refresh.speed-test-page .st-proof-card {
