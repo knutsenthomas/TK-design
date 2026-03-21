@@ -376,6 +376,10 @@ body.homepage-refresh.speed-test-page .st-title {
   font-size: clamp(3rem, 7vw, 4.8rem);
   font-weight: 800;
   line-height: 1.02;
+  text-wrap: pretty;
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
 }
 
 body.homepage-refresh.speed-test-page .st-form {
@@ -458,14 +462,21 @@ body.homepage-refresh.speed-test-page .st-spinner {
 body.homepage-refresh.speed-test-page .st-hero-meta {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 0.9rem;
   color: var(--st-text-soft);
   font-size: 0.92rem;
 }
 
+body.homepage-refresh.speed-test-page .st-hero-meta p {
+  max-width: 30rem;
+  text-wrap: pretty;
+}
+
 body.homepage-refresh.speed-test-page .st-hero-strategy {
-  display: inline-flex;
-  width: fit-content;
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: min(100%, 22rem);
   padding: 0.25rem;
   border: 1px solid var(--st-border);
   border-radius: 999px;
@@ -473,7 +484,7 @@ body.homepage-refresh.speed-test-page .st-hero-strategy {
 }
 
 body.homepage-refresh.speed-test-page .st-hero-strategy button {
-  min-width: 6rem;
+  min-width: 0;
   min-height: 2.55rem;
   padding: 0 1rem;
   border: 0;
@@ -1063,18 +1074,22 @@ body.homepage-refresh.speed-test-page .menu-close svg {
     min-width: 10.5rem;
   }
 
-  body.homepage-refresh.speed-test-page .st-hero-meta {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
-
   body.homepage-refresh.speed-test-page .st-metric-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 768px) {
+  body.homepage-refresh.speed-test-page .st-hero-meta {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  body.homepage-refresh.speed-test-page .st-hero-strategy {
+    width: fit-content;
+  }
+
   body.homepage-refresh.speed-test-page .st-feature-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -1154,8 +1169,26 @@ body.homepage-refresh.speed-test-page .menu-close svg {
   }
 
   body.homepage-refresh.speed-test-page .st-title {
-    max-width: 11.6ch;
-    font-size: clamp(2.45rem, 11vw, 3.9rem);
+    max-width: 12.2ch;
+    font-size: clamp(2.1rem, 9.7vw, 3.4rem);
+    line-height: 1.04;
+  }
+
+  body.homepage-refresh.speed-test-page .st-hero-meta {
+    gap: 0.75rem;
+  }
+
+  body.homepage-refresh.speed-test-page .st-hero-meta p {
+    font-size: 0.95rem;
+  }
+
+  body.homepage-refresh.speed-test-page .st-hero-strategy {
+    width: min(100%, 22rem);
+  }
+
+  body.homepage-refresh.speed-test-page .st-hero-strategy button {
+    min-height: 2.7rem;
+    font-size: 0.95rem;
   }
 
   body.homepage-refresh.speed-test-page .st-stage-card,
