@@ -100,19 +100,19 @@ const AUTHORITY_ITEMS = [
 
 const PAGE_HIGHLIGHTS = [
   {
-    title: 'Samme datagrunnlag som Google',
-    text: 'Vi bygger på Lighthouse-data fra PageSpeed Insights, men kutter bort støyen og viser hva som betyr mest først.',
-    icon: Gauge,
+    title: 'Dypere innsikt',
+    text: 'Vi analyserer det som påvirker førsteinntrykket, og peker ut hvor brukeropplevelsen begynner å tape fart.',
+    icon: Search,
   },
   {
-    title: 'Bygget for prioritering',
-    text: 'Rapporten oversetter tekniske funn til en konkret rekkefølge du kan bruke i møte med design, kode og innhold.',
-    icon: Monitor,
-  },
-  {
-    title: 'Lett å sende videre',
-    text: 'Bruk rapporten som beslutningsgrunnlag når du skal brief utvikler, byrå eller et internt team.',
+    title: 'Prioritert liste',
+    text: 'Slutt å gjette. Få en tydelig rekkefølge på hva som bør fikses først for å løfte siden raskest mulig.',
     icon: Shield,
+  },
+  {
+    title: 'Lønnsomhets-fokus',
+    text: 'Se sammenhengen mellom lastetid, friksjon og hvorfor tregere sider gjør det dyrere å kjøpe trafikk.',
+    icon: Gauge,
   },
 ];
 
@@ -182,57 +182,48 @@ const CHECKLIST_ITEMS = [
 
 const FAQ_ITEMS = [
   {
-    question: 'Hva tester hjemmesidesjekken egentlig?',
+    question: 'Hvor nøyaktig er denne testen?',
     answer:
-      'Vi henter offentlig Lighthouse-data fra Google PageSpeed Insights og viser de viktigste funnene for ytelse, tilgjengelighet, beste praksis og SEO.',
+      'Vi bruker Google Lighthouse som datamotor og pakker resultatet om til en tydeligere rapport for ytelse, stabilitet, tilgjengelighet og SEO.',
   },
   {
-    question: 'Lagrer dere URL-en eller resultatene?',
+    question: 'Hvorfor varierer poengsummen?',
     answer:
-      'Nei. Testen bruker kun offentlig tilgjengelige data og er laget for å hente inn resultatet når du ber om det. Den er ikke laget som et lagringssystem.',
-  },
-  {
-    question: 'Er dette det samme som Google PageSpeed Insights?',
-    answer:
-      'Datagrunnlaget kommer fra Google, men siden pakker funnene om til en tydeligere rapport med mer prioriterte anbefalinger og mindre støy.',
-  },
-  {
-    question: 'Hvorfor bør jeg teste både mobil og desktop?',
-    answer:
-      'Mange nettsteder ser greie ut på desktop, men taper fart, stabilitet og tydelighet på mobil. Derfor er det nyttig å se begge visningene hver for seg.',
-  },
-  {
-    question: 'Kan TK-design hjelpe med å fikse funnene?',
-    answer:
-      'Ja. Hvis rapporten viser problemer, kan vi gå gjennom dem sammen og oversette funnene til konkrete tiltak for design, kode, innhold og SEO.',
+      'Nettverk, serverrespons og tredjepartsressurser kan endre seg mellom hver kjøring. Kjør gjerne testen et par ganger for å få et tydeligere bilde.',
   },
 ];
 
-const NAV_ITEMS = [
-  { href: '/', label: { no: 'Hjem', en: 'Home' } },
-  { href: '/?section=about', label: { no: 'Om oss', en: 'About us' } },
-  { href: '/?section=services', label: { no: 'Tjenester', en: 'Services' } },
-  { href: '/?section=projects', label: { no: 'Prosjekter', en: 'Projects' } },
-  { href: '/?section=testimonial', label: { no: 'Hvorfor oss', en: 'Why us' } },
-  { href: '/blog', label: { no: 'Aktuelt', en: 'News' } },
-  { href: '/contact', label: { no: 'Kontakt', en: 'Contact' } },
+const HEADER_NAV_ITEMS = [
+  { href: '#analysis', label: 'Analysis' },
+  { href: '#metrics', label: 'Metrics' },
+  { href: '#methodology', label: 'Methodology' },
+  { href: '#faq', label: 'FAQ' },
 ];
 
-const SOCIAL_LINKS = [
+const FOOTER_LINK_COLUMNS = [
   {
-    href: 'https://www.facebook.com/profile.php?id=61574614704737&locale=nb_NO',
-    label: 'Facebook',
-    icon: Facebook,
+    title: 'RESSURSER',
+    links: [
+      { href: '#metrics', label: 'Dokumentasjon' },
+      { href: '#analysis', label: 'API' },
+      { href: '#methodology', label: 'System Status' },
+    ],
   },
   {
-    href: 'https://www.instagram.com/tkdesign777',
-    label: 'Instagram',
-    icon: Instagram,
+    title: 'SELSKAP',
+    links: [
+      { href: '/', label: 'Om oss' },
+      { href: '/blog', label: 'Karriere' },
+      { href: '/contact', label: 'Kontakt' },
+    ],
   },
   {
-    href: 'https://www.linkedin.com/in/thomas-knutsen-a6aa2793/',
-    label: 'LinkedIn',
-    icon: Linkedin,
+    title: 'JURIDISK',
+    links: [
+      { href: '/privacy', label: 'Privacy Policy' },
+      { href: '/terms', label: 'Terms of Service' },
+      { href: '/privacy#cookies', label: 'Cookies' },
+    ],
   },
 ];
 
@@ -291,16 +282,6 @@ const PREVIEW_REPORT = {
     },
   ],
   topFixes: DEFAULT_FIXES,
-};
-
-const getCookie = (name) => {
-  if (typeof document === 'undefined') {
-    return '';
-  }
-
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  return parts.length === 2 ? parts.pop().split(';').shift() : '';
 };
 
 const getStrategyLabel = (strategy) => (strategy === 'desktop' ? 'Desktop' : 'Mobil');
@@ -458,21 +439,6 @@ const enrichReport = (report) => ({
   ...report,
   categoryViews: buildCategoryViews(report.scores, report.metrics, report.topFixes),
 });
-
-const getDefaultCategoryKey = (report) => {
-  if (!report?.scores) {
-    return 'performance';
-  }
-
-  if (!report.fetchedAt) {
-    return 'performance';
-  }
-
-  return Object.entries(report.scores).reduce(
-    (lowest, entry) => (entry[1] < lowest[1] ? entry : lowest),
-    ['performance', report.scores.performance ?? 0],
-  )[0];
-};
 
 const getHostLabel = (input) => {
   try {
@@ -1267,194 +1233,39 @@ const buildReport = (lighthouse, requestedUrl, strategy) => {
   });
 };
 
-const formatTimestamp = (timestamp) => {
-  if (!timestamp) {
-    return 'Eksempelrapport';
-  }
+const Header = () => (
+  <header className="st-topbar">
+    <nav className="st-topbar-inner">
+      <a href="#analysis" className="st-brand">PERFORMANCE.ARCHITECT</a>
+      <div className="st-topbar-nav">
+        {HEADER_NAV_ITEMS.map((item) => (
+          <a key={item.href} href={item.href}>{item.label}</a>
+        ))}
+      </div>
+      <a href="#hero-form" className="st-topbar-cta">Kjør test</a>
+    </nav>
+  </header>
+);
 
-  return new Intl.DateTimeFormat('nb-NO', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(new Date(timestamp));
-};
-
-const Header = ({
-  isScrolled,
-  isMobileMenuOpen,
-  language,
-  onCloseMobileMenu,
-  onLanguageChange,
-  onToggleMobileMenu,
-}) => {
-  const resolvedLanguage = language === 'en' ? 'en' : 'no';
-
-  return (
-    <>
-    <header className={`header${isScrolled ? ' scrolled' : ''}`}>
-      <div className="container nav-container">
-        <a href="/" className="logo" aria-label="tk-design">
-          <span className="logo-icon">
-            <img src="/img/logo/d.webp" alt="tk-design logo" />
-          </span>
-          <span className="logo-text">tk-design</span>
-        </a>
-
-        <nav className="nav-desktop">
+const Footer = () => (
+  <footer className="st-footer">
+    <div className="st-footer-inner">
+      <div className="st-footer-brand">
+        <div className="st-brand st-brand--footer">PERFORMANCE.ARCHITECT</div>
+        <p>© 2026 PERFORMANCE.ARCHITECT. DATA REVERENCE IN ANALYSIS.</p>
+      </div>
+      {FOOTER_LINK_COLUMNS.map((column) => (
+        <div key={column.title} className="st-footer-column">
+          <h5>{column.title}</h5>
           <ul>
-            {NAV_ITEMS.map((item) => (
-              <li key={item.href}>
-                <a href={item.href}>{item.label[resolvedLanguage]}</a>
+            {column.links.map((link) => (
+              <li key={link.href}>
+                <a href={link.href}>{link.label}</a>
               </li>
             ))}
           </ul>
-        </nav>
-
-        <div className="lang-switch-desktop">
-          <button
-            type="button"
-            className={`lang-btn${language === 'en' ? ' active' : ''}`}
-            onClick={() => onLanguageChange('en')}
-          >
-            EN
-          </button>
-          <button
-            type="button"
-            className={`lang-btn${language === 'no' ? ' active' : ''}`}
-            onClick={() => onLanguageChange('no')}
-          >
-            NO
-          </button>
         </div>
-
-        <button
-          type="button"
-          className="menu-trigger"
-          aria-label={isMobileMenuOpen ? 'Lukk meny' : 'Åpne meny'}
-          aria-expanded={isMobileMenuOpen}
-          onClick={onToggleMobileMenu}
-        >
-          {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
-        </button>
-      </div>
-    </header>
-
-    <div className={`mobile-menu-overlay${isMobileMenuOpen ? ' active' : ''}`}>
-      <nav className="mobile-nav">
-        <ul>
-          {NAV_ITEMS.map((item) => (
-            <li key={item.href}>
-              <a href={item.href} onClick={onCloseMobileMenu}>
-                {item.label[resolvedLanguage]}
-              </a>
-            </li>
-          ))}
-        </ul>
-
-        <div className="lang-switch-mobile">
-          <button
-            type="button"
-            className={`lang-btn${language === 'en' ? ' active' : ''}`}
-            onClick={() => onLanguageChange('en')}
-          >
-            EN
-          </button>
-          <button
-            type="button"
-            className={`lang-btn${language === 'no' ? ' active' : ''}`}
-            onClick={() => onLanguageChange('no')}
-          >
-            NO
-          </button>
-        </div>
-
-        <div className="mobile-menu-footer">
-          <div className="mobile-contact-info">
-            <a href="mailto:thomas@tk-design.no" onClick={onCloseMobileMenu}>
-              thomas@tk-design.no
-            </a>
-            <a href="tel:+4793094615" onClick={onCloseMobileMenu}>
-              930 94 615
-            </a>
-          </div>
-          <div className="mobile-social-links">
-            {SOCIAL_LINKS.slice(0, 2).map((link) => {
-              const Icon = link.icon;
-
-              return (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  target="_blank"
-                  rel="nofollow noopener noreferrer"
-                  aria-label={link.label}
-                >
-                  <Icon size={18} />
-                </a>
-              );
-            })}
-          </div>
-        </div>
-      </nav>
-    </div>
-  </>
-  );
-};
-
-const Footer = () => (
-  <footer id="kontakt" className="footer pt_120 pb_120" style={{ borderTop: '1px solid var(--clr-border)' }}>
-    <div className="container">
-      <div className="footer-cta">
-        <h2>La oss starte</h2>
-      </div>
-
-      <div className="footer-content">
-        <div className="footer-info">
-          <p style={{ fontSize: '20px', color: 'var(--clr-base)', marginBottom: '20px' }}>
-            Vi bygger din digitale identitet med skreddersydd webdesign, SEO og SoMe-strategi.
-          </p>
-          <a
-            href="mailto:thomas@tk-design.no"
-            style={{ fontSize: '30px', textDecoration: 'underline', color: 'var(--clr-base)' }}
-          >
-            thomas@tk-design.no
-          </a>
-        </div>
-
-        <div className="footer-links" style={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
-          {SOCIAL_LINKS.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="social-link"
-              target="_blank"
-              rel="nofollow noopener noreferrer"
-            >
-              <span>{link.label}</span>
-              <ArrowRight size={16} />
-            </a>
-          ))}
-        </div>
-      </div>
-
-      <div
-        className="flex flex-wrap justify-between items-center"
-        style={{ borderTop: '1px solid var(--clr-border)', paddingTop: '30px' }}
-      >
-        <p>
-          Copyright © 2026 <a href="/" style={{ color: 'var(--clr-base)' }}>TK-design</a> All rights reserved.
-        </p>
-        <div className="flex gap-4">
-          <a href="/accessibility" style={{ color: 'var(--clr-base)' }}>
-            Accessibility Statement
-          </a>
-          <a href="/privacy" style={{ color: 'var(--clr-base)' }}>
-            Privacy Policy
-          </a>
-          <a href="/admin/" className="admin-secret" style={{ color: '#777', fontSize: '0.8em' }}>
-            Admin
-          </a>
-        </div>
-      </div>
+      ))}
     </div>
   </footer>
 );
@@ -1526,78 +1337,24 @@ const StepCard = ({ item, index }) => {
   );
 };
 
-const FaqItem = ({ item, defaultOpen = false }) => (
-  <details className="st-faq-item" open={defaultOpen}>
-    <summary>
-      <span>{item.question}</span>
-      <span className="st-faq-toggle" aria-hidden="true">+</span>
-    </summary>
+const FaqItem = ({ item }) => (
+  <article className="st-faq-item">
+    <h4>{item.question}</h4>
     <p>{item.answer}</p>
-  </details>
+  </article>
 );
 
-const AuthorityBadge = ({ item }) => {
-  const Icon = item.icon;
-
-  return (
-    <div className="st-authority-item">
-      <span className="st-authority-mark">
-        <Icon size={18} />
-      </span>
-      <div className="st-authority-copy">
-        <strong>{item.title}</strong>
-        <span>{item.text}</span>
-      </div>
-    </div>
-  );
-};
-
-const ScoreCard = ({ label, score, dark = false, active = false, onClick }) => {
+const PreviewScoreCard = ({ label, score }) => {
   const tone = getScoreTone(score);
-  const radius = 34;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (score / 100) * circumference;
-  const Element = onClick ? 'button' : 'article';
 
   return (
-    <Element
-      {...(onClick ? { type: 'button', onClick } : {})}
-      className={`st-score-card${dark ? ' is-dark' : ''}${active ? ' is-active' : ''}${onClick ? ' is-clickable' : ''}`}
-    >
-      <div className="st-score-copy">
-        <p className="st-score-label">{label}</p>
-        <span className="st-score-pill" style={{ backgroundColor: tone.soft, color: tone.accent }}>
-          {tone.label}
-        </span>
+    <article className="st-preview-score-card">
+      <p className="st-preview-score-label">{label}</p>
+      <div className="st-preview-score-value-wrap">
+        <span className="st-preview-score-value" style={{ color: tone.accent }}>{score}</span>
+        <span className="st-preview-score-total">/100</span>
       </div>
-
-      <div className="st-score-ring">
-        <svg viewBox="0 0 96 96" className="st-score-svg">
-          <circle
-            cx="48"
-            cy="48"
-            r={radius}
-            fill="transparent"
-            stroke={dark ? 'rgba(255,255,255,0.12)' : 'rgba(16,32,51,0.08)'}
-            strokeWidth="8"
-          />
-          <Motion.circle
-            cx="48"
-            cy="48"
-            r={radius}
-            fill="transparent"
-            stroke={tone.accent}
-            strokeWidth="8"
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            initial={{ strokeDashoffset: circumference }}
-            animate={{ strokeDashoffset: offset }}
-            transition={{ duration: 1.1, ease: 'easeOut' }}
-          />
-        </svg>
-        <span className="st-score-value">{score}</span>
-      </div>
-    </Element>
+    </article>
   );
 };
 
@@ -1626,18 +1383,38 @@ const MetricCard = ({ metric }) => {
 };
 
 const FixItem = ({ fix, index }) => {
-  const Icon = fix.icon;
+  const tones = [
+    {
+      chip: 'Høy impact',
+      chipColor: '#ba1a1a',
+      badgeBackground: 'rgba(186, 26, 26, 0.08)',
+      badgeColor: '#ba1a1a',
+    },
+    {
+      chip: 'Medium impact',
+      chipColor: '#944a00',
+      badgeBackground: 'rgba(148, 74, 0, 0.12)',
+      badgeColor: '#944a00',
+    },
+    {
+      chip: 'Lav impact',
+      chipColor: '#0d7a43',
+      badgeBackground: 'rgba(13, 122, 67, 0.12)',
+      badgeColor: '#0d7a43',
+    },
+  ];
+  const tone = tones[index] || tones[tones.length - 1];
 
   return (
     <article className="st-plan-item">
-      <div className="st-plan-icon">
-        <Icon size={20} />
+      <div className="st-plan-badge" style={{ backgroundColor: tone.badgeBackground, color: tone.badgeColor }}>
+        {index + 1}
       </div>
       <div className="st-plan-copy">
-        <p className="st-plan-kicker">Prioritet {index + 1}</p>
         <h4>{fix.title}</h4>
         <p>{fix.description}</p>
       </div>
+      <span className="st-plan-impact" style={{ color: tone.chipColor }}>{tone.chip}</span>
     </article>
   );
 };
@@ -1652,37 +1429,10 @@ export default function App() {
   const [sendingReport, setSendingReport] = useState(false);
   const [reportEmailFeedback, setReportEmailFeedback] = useState(null);
   const [reportEmail, setReportEmail] = useState('');
-  const [language, setLanguage] = useState('no');
-  const [headerScrolled, setHeaderScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [selectedCategoryKey, setSelectedCategoryKey] = useState('performance');
 
   useEffect(() => {
-    const storedLang = getCookie('site_lang') || window.localStorage.getItem('site_lang') || 'no';
-    setLanguage(storedLang === 'en' ? 'en' : 'no');
     setReportEmail(window.localStorage.getItem('speed_test_report_email') || '');
   }, []);
-
-  useEffect(() => {
-    const onScroll = () => {
-      setHeaderScrolled(window.scrollY > 50);
-    };
-
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  useEffect(() => {
-    document.body.classList.toggle('mobile-menu-active', isMobileMenuOpen);
-    document.body.style.overflow = isMobileMenuOpen ? 'hidden' : '';
-
-    return () => {
-      document.body.classList.remove('mobile-menu-active');
-      document.body.style.overflow = '';
-    };
-  }, [isMobileMenuOpen]);
 
   useEffect(() => {
     if (!loading) {
@@ -1704,10 +1454,6 @@ export default function App() {
 
     return () => window.clearInterval(timer);
   }, [loading]);
-
-  useEffect(() => {
-    setSelectedCategoryKey(getDefaultCategoryKey(results ?? PREVIEW_REPORT));
-  }, [results]);
 
   const testSite = async (event) => {
     event?.preventDefault();
@@ -1771,7 +1517,7 @@ export default function App() {
 
       if (typeof document !== 'undefined') {
         window.requestAnimationFrame(() => {
-          document.getElementById('resultat')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          document.getElementById('metrics')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
       }
     } catch (requestError) {
@@ -1782,8 +1528,7 @@ export default function App() {
     }
   };
 
-  const activeReport = enrichReport(results ?? PREVIEW_REPORT);
-  const activeCategoryView = activeReport.categoryViews[selectedCategoryKey] ?? activeReport.categoryViews.performance;
+  const activeReport = results ?? PREVIEW_REPORT;
 
   const handleSendReportEmail = async () => {
     if (!results) {
@@ -1849,13 +1594,6 @@ export default function App() {
     }
   };
 
-  const handleLanguageChange = (nextLanguage) => {
-    const resolvedLanguage = nextLanguage === 'en' ? 'en' : 'no';
-    setLanguage(resolvedLanguage);
-    window.localStorage.setItem('site_lang', resolvedLanguage);
-    document.cookie = `site_lang=${resolvedLanguage}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
-  };
-
   return (
     <div className="st-page">
       <div className="st-bg-orb st-bg-orb--warm" />
@@ -1863,71 +1601,69 @@ export default function App() {
       <div className="st-bg-wash" />
 
       <div className="st-app">
-        <Header
-          isScrolled={headerScrolled}
-          isMobileMenuOpen={isMobileMenuOpen}
-          language={language}
-          onCloseMobileMenu={() => setIsMobileMenuOpen(false)}
-          onLanguageChange={handleLanguageChange}
-          onToggleMobileMenu={() => setIsMobileMenuOpen((current) => !current)}
-        />
+        <Header />
 
         <main className="st-main">
-          <section className="st-shell st-hero">
-            <Motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.45 }}
-              className="st-hero-copy"
-            >
-              <div className="st-chip st-chip--light">
-                <Shield size={15} />
-                Drevet av Google PageSpeed Insights
-              </div>
-
-              <p className="st-script">Gratis hjemmesidesjekk</p>
-              <h1 className="st-title">Se hvorfor nettsiden taper fart før kunden gjør det.</h1>
-              <p className="st-lead">
-                Lim inn en URL og få en tydelig rapport som viser hva som bremser opplevelsen,
-                hvilke tall som faktisk betyr noe og hva som bør tas først.
-              </p>
-
-              <Motion.form
-                initial={{ opacity: 0, y: 30 }}
+          <section id="analysis" className="st-hero-section">
+            <div className="st-shell st-hero">
+              <Motion.div
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.08, duration: 0.45 }}
-                onSubmit={testSite}
-                className="st-form"
+                transition={{ duration: 0.45 }}
+                className="st-hero-copy"
               >
-                <div className="st-form-grid">
-                  <label className="st-field st-field--url" htmlFor="speed-url">
-                    <span className="st-label">Nettadresse</span>
-                    <span className="st-input">
-                      <Search size={18} />
-                      <input
-                        id="speed-url"
-                        type="text"
-                        value={url}
-                        onChange={(event) => setUrl(event.target.value)}
-                        autoCapitalize="none"
-                        autoComplete="url"
-                        autoCorrect="off"
-                        inputMode="url"
-                        placeholder="f.eks. tk-design.no"
-                        spellCheck={false}
-                      />
-                    </span>
-                  </label>
+                <span className="st-kicker">PRESTASJONSANALYSE</span>
+                <h1 className="st-title">Se hvorfor nettsiden taper fart før kunden gjør det.</h1>
 
-                  <div className="st-field st-field--strategy">
-                    <span className="st-label">Analyser for</span>
-                    <div className="st-toggle">
+                <Motion.form
+                  id="hero-form"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.08, duration: 0.45 }}
+                  onSubmit={testSite}
+                  className="st-form"
+                >
+                  <div className="st-form-grid">
+                    <label className="st-field st-field--url" htmlFor="speed-url">
+                      <span className="st-input">
+                        <input
+                          id="speed-url"
+                          type="text"
+                          value={url}
+                          onChange={(event) => setUrl(event.target.value)}
+                          autoCapitalize="none"
+                          autoComplete="url"
+                          autoCorrect="off"
+                          inputMode="url"
+                          placeholder="Skriv inn din URL (f.eks. eksempel.no)"
+                          spellCheck={false}
+                        />
+                      </span>
+                    </label>
+
+                    <button type="submit" disabled={loading} className="st-submit">
+                      {loading ? (
+                        <>
+                          <span className="st-spinner" />
+                          Kjører test
+                        </>
+                      ) : (
+                        <>
+                          <Gauge size={18} />
+                          Kjør Test
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  <div className="st-hero-meta">
+                    <p>Gratis analyse av Core Web Vitals på 30 sekunder.</p>
+                    <div className="st-hero-strategy">
                       <button
                         type="button"
                         className={strategy === 'mobile' ? 'is-active' : ''}
                         onClick={() => setStrategy('mobile')}
                       >
-                        <Smartphone size={17} />
                         Mobil
                       </button>
                       <button
@@ -1935,413 +1671,195 @@ export default function App() {
                         className={strategy === 'desktop' ? 'is-active' : ''}
                         onClick={() => setStrategy('desktop')}
                       >
-                        <Monitor size={17} />
                         Desktop
                       </button>
                     </div>
                   </div>
 
-                  <button type="submit" disabled={loading} className="st-submit">
-                    {loading ? (
-                      <>
-                        <span className="st-spinner" />
-                        Kjører test
-                      </>
-                    ) : (
-                      <>
-                        Test nettstedet
-                        <ArrowRight size={18} />
-                      </>
-                    )}
-                  </button>
-                </div>
-
-                <div className="st-form-meta">
-                  <p>Ingen innlogging, ingen kredittkort, bare offentlig Lighthouse-data fra Google.</p>
-                  <a href="#resultat">
-                    Se eksempelrapporten
-                    <ArrowRight size={15} />
-                  </a>
-                </div>
-
-                {loading && (
-                  <Motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="st-progress"
-                  >
-                    <div className="st-progress-track">
-                      <Motion.div
-                        className="st-progress-bar"
-                        animate={{ width: `${progress}%` }}
-                        transition={{ ease: 'easeOut' }}
-                      />
-                    </div>
-                    <p>Henter Lighthouse-data. Dette tar vanligvis 10 til 15 sekunder.</p>
-                  </Motion.div>
-                )}
-
-                {error && (
-                  <Motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    aria-live="polite"
-                    className="st-error"
-                  >
-                    <AlertCircle size={18} />
-                    <p>{error}</p>
-                  </Motion.div>
-                )}
-              </Motion.form>
-
-              <div className="st-trust-grid">
-                {TRUST_POINTS.map((item) => {
-                  const Icon = item.icon;
-
-                  return (
-                    <div key={item.title} className="st-trust-card">
-                      <div className="st-trust-icon">
-                        <Icon size={18} />
-                      </div>
-                      <div className="st-trust-copy">
-                        <strong>{item.title}</strong>
-                        <span>{item.text}</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </Motion.div>
-
-            <Motion.aside
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.14, duration: 0.45 }}
-              className="st-stage"
-            >
-              <div className="st-stage-card">
-                <div className="st-stage-top">
-                  <span className="st-chip st-chip--dark">Live Lighthouse</span>
-                  <span className="st-stage-device">{getStrategyLabel(activeReport.strategy)}</span>
-                </div>
-
-                <h2>
-                  {results ? (
-                    <>
-                      Rapport klar for
-                      {' '}
-                      <span className="st-inline-domain st-inline-domain--stage">
-                        {activeReport.analyzedUrl}
-                      </span>
-                    </>
-                  ) : (
-                    'Dette får du tilbake etter testen'
-                  )}
-                </h2>
-                <p>
-                  {results
-                    ? activeReport.summary
-                    : 'En forenklet forhåndsvisning av scorekortene og prioriteringen du får tilbake etter testen.'}
-                </p>
-
-                <div className="st-stage-scores">
-                  {SCORE_DEFINITIONS.map(({ key, label }) => (
-                    <ScoreCard key={key} label={label} score={activeReport.scores[key]} dark />
-                  ))}
-                </div>
-              </div>
-
-              <div className="st-stage-callout">
-                <p className="st-callout-kicker">Første grep</p>
-                <h3>{activeReport.topFixes[0].title}</h3>
-                <p>{activeReport.topFixes[0].description}</p>
-                <a href="#resultat">
-                  Se hele rapporten
-                  <ArrowRight size={16} />
-                </a>
-              </div>
-            </Motion.aside>
-          </section>
-
-          <section className="st-shell st-authority">
-            <p className="st-authority-label">Samme fundament som Google bruker når Lighthouse-data hentes ut</p>
-            <div className="st-authority-row">
-              {AUTHORITY_ITEMS.map((item) => (
-                <AuthorityBadge key={item.title} item={item} />
-              ))}
-            </div>
-          </section>
-
-          <section id="fordeler" className="st-shell st-section st-value">
-            <div className="st-section-head st-section-head--compact st-section-head--split">
-              <div>
-                <span className="st-chip st-chip--light">Hvorfor velge denne sjekken</span>
-                <h2>Ikke bare tall, men tiltak.</h2>
-              </div>
-              <p>
-                Vi oversetter tekniske Lighthouse-data til en konkret handlingsplan som viser hva som faktisk
-                bremser siden, hva som påvirker kundene dine og hva du bør prioritere først.
-              </p>
-            </div>
-
-            <div className="st-proof-grid">
-              {PROOF_ITEMS.map((item, index) => (
-                <ProofCard key={item.title} item={item} index={index} />
-              ))}
-            </div>
-
-            <div className="st-feature-grid">
-              {PAGE_HIGHLIGHTS.map((item, index) => (
-                <HighlightCard key={item.title} item={item} index={index} />
-              ))}
-            </div>
-          </section>
-
-          <section id="resultat" className="st-shell st-section st-results">
-            <div className="st-section-head">
-              <div>
-                <span className="st-chip st-chip--light">{results ? 'Din rapport' : 'Eksempelrapport'}</span>
-                <h2>
-                  {results
-                    ? (
-                      <>
-                        Dette er det neste du bør fikse på
-                        {' '}
-                        <span className="st-inline-domain">{activeReport.analyzedUrl}</span>
-                      </>
-                    )
-                    : 'Slik er rapporten bygget når testen er ferdig.'}
-                </h2>
-                <p>
-                  {results
-                    ? activeReport.summary
-                    : 'Klikk på et scorekort i eksempelet under for å se hvordan rapporten bytter mellom målinger, tolkning og handlingsplan.'}
-                </p>
-              </div>
-
-              <div className="st-meta-pills">
-                <span>{getStrategyLabel(activeReport.strategy)}</span>
-                <span>{formatTimestamp(activeReport.fetchedAt)}</span>
-              </div>
-            </div>
-
-            <AnimatePresence mode="wait">
-              <Motion.div
-                key={results ? activeReport.fetchedAt : 'preview'}
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -16 }}
-                transition={{ duration: 0.4 }}
-                className="st-results-stack"
-              >
-                <div className="st-results-grid">
-                  <article className="st-panel st-panel--light">
-                    <div className="st-panel-head">
-                      <div>
-                        <p className="st-panel-kicker">
-                          {results ? (
-                            <>
-                              Analysert domene:
-                              {' '}
-                              <span className="st-inline-domain st-inline-domain--kicker">
-                                {activeReport.analyzedUrl}
-                              </span>
-                            </>
-                          ) : (
-                            'Scoreoversikt'
-                          )}
-                        </p>
-                        <h3>{results ? 'Her ser du hvor friksjonen ligger akkurat nå' : 'Først får du et raskt overblikk over kvaliteten.'}</h3>
-                        <p>
-                          Fire scorekort gir deg et tydelig bilde av ytelse, tilgjengelighet, beste praksis og SEO.
-                          Klikk på et kort for å se hvilke kontrollpunkter og tiltak som følger med.
-                        </p>
-                      </div>
-                      <div className="st-priority-box">
-                        <span>Aktivt fokus</span>
-                        <strong>{activeCategoryView.label}</strong>
-                      </div>
-                    </div>
-
-                    <div className="st-score-grid">
-                      {SCORE_DEFINITIONS.map(({ key, label }) => (
-                        <ScoreCard
-                          key={key}
-                          label={label}
-                          score={activeReport.scores[key]}
-                          active={selectedCategoryKey === key}
-                          onClick={() => setSelectedCategoryKey(key)}
+                  {loading && (
+                    <Motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="st-progress"
+                    >
+                      <div className="st-progress-track">
+                        <Motion.div
+                          className="st-progress-bar"
+                          animate={{ width: `${progress}%` }}
+                          transition={{ ease: 'easeOut' }}
                         />
-                      ))}
-                    </div>
-                  </article>
-
-                  <article className="st-panel st-panel--dark">
-                    <p className="st-panel-kicker st-panel-kicker--dark">Tolkning</p>
-                    <h3>{activeCategoryView.guideTitle}</h3>
-                    <ul className="st-reading-list">
-                      {activeCategoryView.guidePoints.map((point) => (
-                        <li key={point}>{point}</li>
-                      ))}
-                    </ul>
-                    <a href={results ? '/contact' : '#prosess'} className="st-ghost-link">
-                      {results ? 'Vil du ha hjelp til å fikse dette?' : 'Se hvordan prosessen fungerer'}
-                      <ArrowRight size={16} />
-                    </a>
-                  </article>
-                </div>
-
-                <div className="st-results-grid st-results-grid--secondary">
-                  <article className="st-panel st-panel--light">
-                    <div className="st-panel-head st-panel-head--stack">
-                      <div>
-                        <p className="st-panel-kicker">{activeCategoryView.metricKicker}</p>
-                        <h3>{activeCategoryView.metricTitle}</h3>
-                        <p>{activeCategoryView.metricDescription}</p>
                       </div>
-                    </div>
+                      <p>Henter Lighthouse-data. Dette tar vanligvis 10 til 15 sekunder.</p>
+                    </Motion.div>
+                  )}
 
-                    <div className="st-metric-grid">
-                      {activeCategoryView.metrics.map((metric) => (
-                        <MetricCard key={metric.key} metric={metric} />
-                      ))}
-                    </div>
-                  </article>
-
-                  <article className="st-panel st-panel--dark">
-                    <p className="st-panel-kicker st-panel-kicker--dark">Handlingsplan</p>
-                    <h3>{`Dette ville jeg gjort først for ${activeCategoryView.label.toLowerCase()}.`}</h3>
-                    <div className="st-plan-list">
-                      {activeCategoryView.fixes.map((fix, index) => (
-                        <FixItem key={`${activeCategoryView.label}-${fix.title}`} fix={fix} index={index} />
-                      ))}
-                    </div>
-                  </article>
-                </div>
+                  {error && (
+                    <Motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      aria-live="polite"
+                      className="st-error"
+                    >
+                      <AlertCircle size={18} />
+                      <p>{error}</p>
+                    </Motion.div>
+                  )}
+                </Motion.form>
               </Motion.div>
-            </AnimatePresence>
+
+              <Motion.aside
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.14, duration: 0.45 }}
+                className="st-stage"
+              >
+                <div className="st-stage-card">
+                  <div className="st-stage-head">
+                    <div>
+                      <h3>Analyse-oversikt</h3>
+                      <p>NÅTIDSRAPPORT</p>
+                    </div>
+                    <Gauge size={28} />
+                  </div>
+
+                  <div className="st-preview-grid">
+                    {SCORE_DEFINITIONS.map(({ key, label }) => (
+                      <PreviewScoreCard key={key} label={label} score={activeReport.scores[key]} />
+                    ))}
+                  </div>
+                </div>
+              </Motion.aside>
+            </div>
           </section>
 
-          <section id="prosess" className="st-shell st-section">
-            <div className="st-section-head st-section-head--compact st-section-head--split">
-              <div>
-                <span className="st-chip st-chip--light">Fra URL til ferdig plan</span>
-                <h2>Tre enkle steg fra test til prioritering.</h2>
+          <section className="st-value-section">
+            <div className="st-shell">
+              <div className="st-section-intro st-section-intro--split">
+                <div>
+                  <span className="st-kicker">VERDISKAPNING</span>
+                  <h2>Ikke bare tall, men tiltak.</h2>
+                </div>
+                <p>
+                  Vi oversetter komplekse tekniske funn til konkrete forretningsmuligheter,
+                  og viser nøyaktig hva som hindrer et bedre førsteinntrykk.
+                </p>
               </div>
-              <p>Først kjører du testen. Deretter pakker vi dataene om til scorekort, fokusområder og en konkret rekkefølge du kan jobbe videre med.</p>
-            </div>
 
-            <div className="st-process-grid">
-              <div className="st-step-grid">
-                {PROCESS_STEPS.map((item, index) => (
-                  <StepCard key={item.step} item={item} index={index} />
+              <div className="st-feature-grid">
+                {PAGE_HIGHLIGHTS.map((item, index) => (
+                  <HighlightCard key={item.title} item={item} index={index} />
                 ))}
               </div>
+            </div>
+          </section>
 
-              <div className="st-check-card">
-                <p className="st-panel-kicker">Det vi ser etter</p>
-                <h3>Dette er spørsmålene rapporten hjelper deg å svare på.</h3>
-                <ul className="st-check-list">
-                  {CHECKLIST_ITEMS.map((item) => (
-                    <li key={item}>
-                      <CheckCircle2 size={18} />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
+          <section id="metrics" className="st-metrics-section">
+            <div className="st-shell">
+              <div className="st-section-intro st-section-intro--center">
+                <span className="st-kicker">CORE WEB VITALS</span>
+                <h2>Målingene som styrer førsteinntrykket.</h2>
+              </div>
+
+              <div className="st-metric-grid">
+                {activeReport.metrics.slice(0, 5).map((metric) => (
+                  <MetricCard key={metric.key} metric={metric} />
+                ))}
               </div>
             </div>
           </section>
 
-          <section className="st-shell st-section st-faq">
-            <div className="st-section-head st-section-head--compact">
-              <span className="st-chip st-chip--light">Vanlige spørsmål</span>
-              <div>
+          <section id="methodology" className="st-action-section">
+            <div className="st-shell st-action-layout">
+              <div className="st-action-copy">
+                <span className="st-kicker">HANDLINGSPLAN</span>
+                <h2>Dette ville jeg gjort først for ytelse.</h2>
+                <p>En prioritert liste over tiltakene som vanligvis gir størst utslag først.</p>
+              </div>
+
+              <div className="st-plan-list">
+                {activeReport.topFixes.map((fix, index) => (
+                  <FixItem key={fix.title} fix={fix} index={index} />
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <section id="faq" className="st-faq-section">
+            <div className="st-shell st-faq-shell">
+              <div className="st-section-intro st-section-intro--center">
+                <span className="st-kicker">VANLIGE SPØRSMÅL</span>
                 <h2>Det viktigste du lurer på før du tester.</h2>
-                <p>Her er de vanligste spørsmålene om datagrunnlaget, personvern og hva du faktisk kan bruke rapporten til etterpå.</p>
               </div>
-            </div>
 
-            <div className="st-faq-grid">
-              {FAQ_ITEMS.map((item, index) => (
-                <FaqItem key={item.question} item={item} defaultOpen={index === 0} />
-              ))}
+              <div className="st-faq-grid">
+                {FAQ_ITEMS.map((item) => (
+                  <FaqItem key={item.question} item={item} />
+                ))}
+              </div>
             </div>
           </section>
 
-          <section className="st-shell st-section st-final-cta">
-            <div className="st-panel st-panel--dark st-final-cta-card">
-              <div className="st-final-cta-copy">
-                <span className="st-chip st-chip--dark">Neste steg</span>
-                <h2>Få din personlige handlingsplan på e-post.</h2>
-                <p>
-                  Send rapporten til deg selv eller en kollega, eller book en gjennomgang hvis du vil ha hjelp
-                  til å prioritere tiltakene videre.
-                </p>
-                <div className="st-final-cta-notes">
-                  <span>Ingen kredittkort kreves</span>
-                  <span>Lav terskel først</span>
-                  <span>Book gjennomgang når du er klar</span>
+          <section className="st-newsletter-section">
+            <div className="st-shell">
+              <div className="st-newsletter-card">
+                <div className="st-newsletter-copy">
+                  <h2>Få din personlige handlingsplan på e-post.</h2>
+                  <p>
+                    Vi sender deg en konkret rapport med de viktigste tiltakene og neste steg for siden din.
+                  </p>
                 </div>
-              </div>
 
-              <div className="st-final-cta-form">
-                <label className="st-cta-field" htmlFor="report-email">
-                  <span className="st-label">Få din personlige handlingsplan på e-post</span>
-                  <span className="st-cta-input">
-                    <Mail size={18} />
-                    <input
-                      id="report-email"
-                      type="email"
-                      value={reportEmail}
-                      onChange={(event) => {
-                        setReportEmail(event.target.value);
-                        if (reportEmailFeedback) {
-                          setReportEmailFeedback(null);
-                        }
-                      }}
-                      autoCapitalize="none"
-                      autoComplete="email"
-                      autoCorrect="off"
-                      inputMode="email"
-                      placeholder="navn@firma.no"
-                      spellCheck={false}
-                    />
-                  </span>
-                </label>
-
-                <div className="st-cta-actions">
+                <div className="st-newsletter-form">
+                  <label className="st-cta-field" htmlFor="report-email">
+                    <span className="st-cta-input">
+                      <Mail size={18} />
+                      <input
+                        id="report-email"
+                        type="email"
+                        value={reportEmail}
+                        onChange={(event) => {
+                          setReportEmail(event.target.value);
+                          if (reportEmailFeedback) {
+                            setReportEmailFeedback(null);
+                          }
+                        }}
+                        autoCapitalize="none"
+                        autoComplete="email"
+                        autoCorrect="off"
+                        inputMode="email"
+                        placeholder="Din e-postadresse"
+                        spellCheck={false}
+                      />
+                    </span>
+                  </label>
                   <button
                     type="button"
-                    className="st-button st-button--primary"
+                    className="st-button st-button--newsletter"
                     onClick={handleSendReportEmail}
                     disabled={!results || sendingReport}
                   >
                     {sendingReport
-                      ? 'Sender handlingsplan...'
+                      ? 'Sender rapport...'
                       : results
-                        ? 'Få handlingsplanen på e-post'
+                        ? 'Send meg rapporten'
                         : 'Kjør testen først'}
-                    <Mail size={18} />
                   </button>
-                  <a href="/contact" className="st-button st-button--secondary">
-                    Book en gjennomgang
-                    <ExternalLink size={18} />
-                  </a>
+                  <p className="st-newsletter-note">
+                    Ved å sende inn godtar du våre vilkår og personvernerklæring.
+                  </p>
+                  {reportEmailFeedback && (
+                    <Motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      aria-live="polite"
+                      className={`st-feedback st-feedback--${reportEmailFeedback.type}`}
+                    >
+                      {reportEmailFeedback.type === 'success' ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
+                      <p>{reportEmailFeedback.message}</p>
+                    </Motion.div>
+                  )}
                 </div>
-
-                {reportEmailFeedback && (
-                  <Motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    aria-live="polite"
-                    className={`st-feedback st-feedback--${reportEmailFeedback.type}`}
-                  >
-                    {reportEmailFeedback.type === 'success' ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
-                    <p>{reportEmailFeedback.message}</p>
-                  </Motion.div>
-                )}
               </div>
             </div>
           </section>
