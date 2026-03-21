@@ -1443,23 +1443,23 @@ body.homepage-refresh.speed-test-page .st-feedback--error {
   }
 
   body.homepage-refresh.speed-test-page .st-title {
-    max-width: 9.1ch;
+    max-width: 11.1ch;
     font-size: clamp(2.35rem, 11vw, 3.7rem);
     line-height: 0.96;
   }
 
   body.homepage-refresh.speed-test-page .st-script {
-    max-width: 12ch;
+    max-width: 16ch;
     white-space: normal;
   }
 
   body.homepage-refresh.speed-test-page .st-section-head h2 {
-    max-width: 9.5ch;
+    max-width: 11.2ch;
     font-size: clamp(2rem, 9vw, 3rem);
   }
 
   body.homepage-refresh.speed-test-page .st-results .st-section-head h2 {
-    max-width: 9.8ch;
+    max-width: 11.6ch;
   }
 
   body.homepage-refresh.speed-test-page .st-score-card,
@@ -1468,13 +1468,14 @@ body.homepage-refresh.speed-test-page .st-feedback--error {
   }
 
   body.homepage-refresh.speed-test-page .st-score-card {
-    grid-template-columns: minmax(0, 1fr);
-    align-items: start;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
     min-height: 0;
   }
 
   body.homepage-refresh.speed-test-page .st-score-ring {
-    justify-self: start;
+    justify-self: end;
+    align-self: center;
   }
 
   body.homepage-refresh.speed-test-page .st-plan-item,
