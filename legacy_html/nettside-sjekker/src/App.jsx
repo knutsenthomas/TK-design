@@ -1951,26 +1951,28 @@ export default function App() {
             </section>
           )}
 
-          <section className="st-value-section">
-            <div className="st-shell">
-              <div className="st-section-intro st-section-intro--split">
-                <div>
-                  <span className="st-kicker">VERDISKAPNING</span>
-                  <h2>Ikke bare tall, men tiltak.</h2>
+          {!results && (
+            <section className="st-value-section">
+              <div className="st-shell">
+                <div className="st-section-intro st-section-intro--split">
+                  <div>
+                    <span className="st-kicker">VERDISKAPNING</span>
+                    <h2>Ikke bare tall, men tiltak.</h2>
+                  </div>
+                  <p>
+                    Vi oversetter komplekse tekniske funn til konkrete forretningsmuligheter,
+                    og viser nøyaktig hva som hindrer et bedre førsteinntrykk.
+                  </p>
                 </div>
-                <p>
-                  Vi oversetter komplekse tekniske funn til konkrete forretningsmuligheter,
-                  og viser nøyaktig hva som hindrer et bedre førsteinntrykk.
-                </p>
-              </div>
 
-              <div className="st-feature-grid">
-                {PAGE_HIGHLIGHTS.map((item, index) => (
-                  <HighlightCard key={item.title} item={item} index={index} />
-                ))}
+                <div className="st-feature-grid">
+                  {PAGE_HIGHLIGHTS.map((item, index) => (
+                    <HighlightCard key={item.title} item={item} index={index} />
+                  ))}
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+          )}
 
           <section id="metrics" className="st-metrics-section">
             <div className="st-shell">
