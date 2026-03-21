@@ -1360,7 +1360,7 @@ body.homepage-refresh.speed-test-page .st-feedback--error {
 
 @media (min-width: 700px) {
   body.homepage-refresh.speed-test-page .st-trust-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   body.homepage-refresh.speed-test-page .st-proof-grid,
@@ -1377,27 +1377,59 @@ body.homepage-refresh.speed-test-page .st-feedback--error {
 
 @media (min-width: 920px) {
   body.homepage-refresh.speed-test-page .st-form-grid {
-    grid-template-columns: minmax(0, 1.4fr) minmax(220px, 0.8fr) minmax(205px, auto);
+    grid-template-columns: minmax(0, 1.35fr) minmax(220px, 0.8fr);
     align-items: end;
+  }
+
+  body.homepage-refresh.speed-test-page .st-submit {
+    grid-column: 1 / -1;
   }
 }
 
 @media (min-width: 980px) {
-  body.homepage-refresh.speed-test-page .st-feature-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
   body.homepage-refresh.speed-test-page .st-proof-band {
-    grid-template-columns: minmax(18rem, 24rem) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     align-items: start;
+    gap: 1.75rem;
   }
 
   body.homepage-refresh.speed-test-page .st-proof-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+
+  body.homepage-refresh.speed-test-page .st-feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+
+  body.homepage-refresh.speed-test-page .st-process-grid,
+  body.homepage-refresh.speed-test-page .st-step-grid {
+    gap: 1.25rem;
+  }
+
+  body.homepage-refresh.speed-test-page .st-stage {
+    max-width: 40rem;
+  }
+}
+
+@media (min-width: 1180px) {
+  body.homepage-refresh.speed-test-page .st-trust-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
-@media (min-width: 1160px) {
+@media (min-width: 1280px) {
+  body.homepage-refresh.speed-test-page .st-form-grid {
+    grid-template-columns: minmax(0, 1.4fr) minmax(220px, 0.8fr) minmax(205px, auto);
+  }
+
+  body.homepage-refresh.speed-test-page .st-submit {
+    grid-column: auto;
+  }
+}
+
+@media (min-width: 1320px) {
   body.homepage-refresh.speed-test-page .st-hero {
     grid-template-columns: minmax(0, 1.05fr) minmax(24rem, 29rem);
     align-items: center;
@@ -1419,6 +1451,20 @@ body.homepage-refresh.speed-test-page .st-feedback--error {
   body.homepage-refresh.speed-test-page .st-process-grid {
     grid-template-columns: minmax(0, 1fr) minmax(20rem, 24rem);
     align-items: start;
+  }
+}
+
+@media (min-width: 1360px) {
+  body.homepage-refresh.speed-test-page .st-feature-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  body.homepage-refresh.speed-test-page .st-proof-band {
+    grid-template-columns: minmax(18rem, 24rem) minmax(0, 1fr);
+  }
+
+  body.homepage-refresh.speed-test-page .st-proof-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
