@@ -290,6 +290,10 @@ body.homepage-refresh.speed-test-page .st-faq-section {
   padding: clamp(4rem, 8vw, 7rem) 0;
 }
 
+body.homepage-refresh.speed-test-page .st-hero-section {
+  padding-top: clamp(2rem, 4vw, 3rem);
+}
+
 body.homepage-refresh.speed-test-page .st-value-section,
 body.homepage-refresh.speed-test-page .st-action-section {
   padding: clamp(4rem, 8vw, 6.5rem) 0;
@@ -486,9 +490,8 @@ body.homepage-refresh.speed-test-page .st-hero-strategy {
 }
 
 body.homepage-refresh.speed-test-page .st-hero-strategy button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   min-width: 0;
   min-height: 2.7rem;
   padding: 0 1rem;
@@ -500,18 +503,18 @@ body.homepage-refresh.speed-test-page .st-hero-strategy button {
   font-weight: 700;
   line-height: 1;
   text-align: center;
+  box-sizing: border-box;
   transition:
     background-color 0.2s ease,
     color 0.2s ease,
-    box-shadow 0.2s ease;
+    box-shadow 0.2s ease,
+    outline-color 0.2s ease;
 }
 
 body.homepage-refresh.speed-test-page .st-hero-strategy button.is-active {
   background: linear-gradient(135deg, var(--st-secondary), #ffb37a);
   color: #fff;
-  box-shadow:
-    0 0 0 3px #0b67d3,
-    0 8px 14px rgba(255, 106, 27, 0.14);
+  box-shadow: 0 8px 14px rgba(255, 106, 27, 0.14);
 }
 
 body.homepage-refresh.speed-test-page .st-progress {
@@ -1189,7 +1192,7 @@ body.homepage-refresh.speed-test-page .menu-close svg {
   }
 
   body.homepage-refresh.speed-test-page .st-hero-meta {
-    align-items: center;
+    align-items: stretch;
     gap: 0.75rem;
   }
 
@@ -1201,13 +1204,13 @@ body.homepage-refresh.speed-test-page .menu-close svg {
   }
 
   body.homepage-refresh.speed-test-page .st-hero-strategy {
-    width: min(100%, 19rem);
-    max-width: 19rem;
-    margin-inline: auto;
+    width: 100%;
+    max-width: none;
   }
 
   body.homepage-refresh.speed-test-page .st-hero-strategy button {
     min-height: 2.85rem;
+    width: 100%;
     padding: 0 0.8rem;
     font-size: 0.9rem;
   }
