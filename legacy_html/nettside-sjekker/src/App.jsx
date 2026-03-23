@@ -1227,6 +1227,42 @@ const buildReport = (lighthouse, requestedUrl, strategy) => {
   });
 };
 
+const fetchPagespeedReport = async (requestedUrl, strategy) => {
+  const response = await fetch('/api/pagespeed', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      url: requestedUrl,
+      strategy,
+    }),
+  });
+  const payload = await response.json().catch(() => null);
+
+  if (!response.ok || !payload?.success) {
+    const nextError = new Error(payload?.error || 'Kunne ikke hente PageSpeed-data.');
+    nextError.code = payload?.code || 'pagespeed_request_failed';
+    nextError.details = payload?.details || '';
+    throw nextError;
+  }
+
+  const data = payload.data;
+  if (!data.lighthouseResult?.categories || !data.lighthouseResult?.audits) {
+    throw new Error('Mangler Lighthouse-data i svaret.');
+  }
+
+  try {
+    return buildReport(data.lighthouseResult, requestedUrl, strategy);
+  } catch (reportError) {
+    console.error('[speed-test] Failed to build report from Lighthouse data', reportError);
+    const nextError = new Error('Kunne ikke bygge rapporten fra Lighthouse-data.');
+    nextError.code = 'report_build_failed';
+    nextError.details = reportError?.message || '';
+    throw nextError;
+  }
+};
+
 const HighlightCard = ({ item, index }) => {
   const Icon = item.icon;
 
@@ -1381,7 +1417,7 @@ export default function App() {
   const [strategy, setStrategy] = useState('mobile');
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [results, setResults] = useState(null);
+  const [reports, setReports] = useState(null);
   const [error, setError] = useState(null);
   const [sendingReport, setSendingReport] = useState(false);
   const [reportEmailFeedback, setReportEmailFeedback] = useState(null);
@@ -1462,50 +1498,22 @@ export default function App() {
 
     setLoading(true);
     setError(null);
-    setResults(null);
+    setReports(null);
     setReportEmailFeedback(null);
 
     try {
-      const response = await fetch('/api/pagespeed', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          url: normalizedUrl,
-          strategy,
-        }),
-      });
-      const payload = await response.json().catch(() => null);
-
-      if (!response.ok || !payload?.success) {
-        const nextError = new Error(payload?.error || 'Kunne ikke hente PageSpeed-data.');
-        nextError.code = payload?.code || 'pagespeed_request_failed';
-        nextError.details = payload?.details || '';
-        throw nextError;
-      }
-
-      const data = payload.data;
-      if (!data.lighthouseResult?.categories || !data.lighthouseResult?.audits) {
-        throw new Error('Mangler Lighthouse-data i svaret.');
-      }
-
-      let nextReport;
-
-      try {
-        nextReport = buildReport(data.lighthouseResult, normalizedUrl, strategy);
-      } catch (reportError) {
-        console.error('[speed-test] Failed to build report from Lighthouse data', reportError);
-        const nextError = new Error('Kunne ikke bygge rapporten fra Lighthouse-data.');
-        nextError.code = 'report_build_failed';
-        nextError.details = reportError?.message || '';
-        throw nextError;
-      }
+      const [mobileReport, desktopReport] = await Promise.all([
+        fetchPagespeedReport(normalizedUrl, 'mobile'),
+        fetchPagespeedReport(normalizedUrl, 'desktop'),
+      ]);
 
       setProgress(100);
 
       startTransition(() => {
-        setResults(nextReport);
+        setReports({
+          mobile: mobileReport,
+          desktop: desktopReport,
+        });
       });
 
       if (typeof document !== 'undefined') {
@@ -1521,11 +1529,12 @@ export default function App() {
     }
   };
 
-  const activeReport = results ?? PREVIEW_REPORT;
+  const hasResults = Boolean(reports?.mobile && reports?.desktop);
+  const activeReport = reports?.[strategy] ?? PREVIEW_REPORT;
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   const handleSendReportEmail = async () => {
-    if (!results) {
+    if (!hasResults) {
       setReportEmailFeedback({
         type: 'error',
         message: 'Kjør testen først, så kan rapporten sendes på e-post.',
@@ -1765,7 +1774,7 @@ export default function App() {
                           transition={{ ease: 'easeOut' }}
                         />
                       </div>
-                      <p>Henter Lighthouse-data. Dette tar vanligvis 10 til 15 sekunder.</p>
+                      <p>Henter Lighthouse-data for mobil og desktop. Dette tar vanligvis 10 til 20 sekunder.</p>
                     </Motion.div>
                   )}
 
@@ -1808,7 +1817,7 @@ export default function App() {
             </div>
           </section>
 
-          {results && (
+          {hasResults && (
             <section id="resultat" className="st-report-section">
               <div className="st-shell st-report-layout">
                 <Motion.div
@@ -1820,21 +1829,21 @@ export default function App() {
                   <span className="st-kicker">SCOREOVERSIKT</span>
                   <h2>Først får du hele bildet fra testen.</h2>
                   <p>
-                    {results.summary}
+                    {activeReport.summary}
                     {' '}
                     Her ser du totalscorene for
                     {' '}
-                    <strong>{results.analyzedUrl}</strong>
+                    <strong>{activeReport.analyzedUrl}</strong>
                     {' '}
                     på
                     {' '}
-                    {getStrategyLabel(results.strategy).toLowerCase()}
+                    {getStrategyLabel(activeReport.strategy).toLowerCase()}
                     {' '}
                     før du går videre til målinger og tiltak.
                   </p>
                   <div className="st-report-meta">
-                    <span>{results.analyzedUrl}</span>
-                    <span>{getStrategyLabel(results.strategy)}</span>
+                    <span>{activeReport.analyzedUrl}</span>
+                    <span>{getStrategyLabel(activeReport.strategy)}</span>
                   </div>
                 </Motion.div>
 
@@ -1855,7 +1864,7 @@ export default function App() {
 
                     <div className="st-preview-grid">
                       {SCORE_DEFINITIONS.map(({ key, label }) => (
-                        <PreviewScoreCard key={key} label={label} score={results.scores[key]} />
+                        <PreviewScoreCard key={key} label={label} score={activeReport.scores[key]} />
                       ))}
                     </div>
                   </div>
@@ -1864,7 +1873,7 @@ export default function App() {
             </section>
           )}
 
-          {!results && (
+          {!hasResults && (
             <section className="st-value-section">
               <div className="st-shell">
                 <div className="st-section-intro st-section-intro--split">
@@ -1970,11 +1979,11 @@ export default function App() {
                     type="button"
                     className="st-button st-button--newsletter"
                     onClick={handleSendReportEmail}
-                    disabled={!results || sendingReport}
+                    disabled={!hasResults || sendingReport}
                   >
                     {sendingReport
                       ? 'Sender rapport...'
-                      : results
+                      : hasResults
                         ? 'Send meg rapporten'
                         : 'Kjør testen først'}
                   </button>
