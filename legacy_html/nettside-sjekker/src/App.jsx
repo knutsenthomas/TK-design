@@ -1739,14 +1739,14 @@ export default function App() {
                         className={strategy === 'mobile' ? 'is-active' : ''}
                         onClick={() => setStrategy('mobile')}
                       >
-                        <span>Mobil</span>
+                        Mobil
                       </button>
                       <button
                         type="button"
                         className={strategy === 'desktop' ? 'is-active' : ''}
                         onClick={() => setStrategy('desktop')}
                       >
-                        <span>Desktop</span>
+                        Desktop
                       </button>
                     </div>
                   </div>
