@@ -511,6 +511,11 @@ body.homepage-refresh.speed-test-page .st-hero-strategy button {
     outline-color 0.2s ease;
 }
 
+body.homepage-refresh.speed-test-page .st-hero-strategy button span {
+  display: block;
+  transform: translateY(1px);
+}
+
 body.homepage-refresh.speed-test-page .st-hero-strategy button.is-active {
   background: linear-gradient(135deg, var(--st-secondary), #ffb37a);
   color: #fff;
