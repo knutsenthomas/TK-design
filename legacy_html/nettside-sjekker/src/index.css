@@ -490,8 +490,9 @@ body.homepage-refresh.speed-test-page .st-hero-strategy {
 }
 
 body.homepage-refresh.speed-test-page .st-hero-strategy button {
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-width: 0;
   min-height: 2.7rem;
   padding: 0 1rem;
@@ -512,8 +513,11 @@ body.homepage-refresh.speed-test-page .st-hero-strategy button {
 }
 
 body.homepage-refresh.speed-test-page .st-hero-strategy button span {
-  display: block;
-  transform: translateY(1px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1em;
+  transform: translateY(2px);
 }
 
 body.homepage-refresh.speed-test-page .st-hero-strategy button.is-active {
