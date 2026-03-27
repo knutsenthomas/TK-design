@@ -1661,17 +1661,26 @@ body.blog-page-refresh .blog-grid-view i {
 
     /* Nuclear fix for narrow content and side space */
     body.blog-page-refresh .blog-page-main .container,
-    body.blog-page-refresh .blog-page-banner .container {
+    body.blog-page-refresh .blog-page-banner .container,
+    body.blog-page-refresh section.page-banner .container,
+    body.blog-page-refresh .page-banner.blog-page-banner > .container {
         padding-left: 0 !important;
         padding-right: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
         max-width: 100% !important;
         width: 100% !important;
     }
 
     body.blog-page-refresh .blog-page-banner,
+    body.blog-page-refresh .page-banner,
     body.blog-page-refresh .blog-page-main {
         padding-left: 0 !important;
         padding-right: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
     }
 
     body.blog-page-refresh .blog-details-wrapper {
