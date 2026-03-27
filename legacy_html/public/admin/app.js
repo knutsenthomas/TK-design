@@ -59,7 +59,8 @@ const sectionTranslations = {
         'testimonial': 'ATTESTER',
         'blog': 'BLOGG',
         'contact': 'KONTAKT',
-        'footer': 'FOOTER'
+        'footer': 'FOOTER',
+        'speed_test': 'SPEEDTEST'
     },
     'en': {
         'nav': 'NAVIGATION',
@@ -71,7 +72,8 @@ const sectionTranslations = {
         'testimonial': 'TESTIMONIALS',
         'blog': 'BLOG',
         'contact': 'CONTACT',
-        'footer': 'FOOTER'
+        'footer': 'FOOTER',
+        'speed_test': 'SPEED TEST'
     }
 };
 
@@ -5865,7 +5867,7 @@ function renderContentEditor() {
         'pages': {
             label: t['pages'],
             icon: 'fa-file-alt',
-            sections: ['project_details', 'blog_details', 'service_details']
+            sections: ['project_details', 'blog_details', 'service_details', 'speed_test']
         }
     };
 

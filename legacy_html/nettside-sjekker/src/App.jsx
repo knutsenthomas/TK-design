@@ -194,13 +194,13 @@ const FAQ_ITEMS = [
 ];
 
 const SITE_NAV_ITEMS = [
-  { href: '/', label: 'Home' },
-  { href: '/?section=about', label: 'About' },
-  { href: '/?section=services', label: 'Services' },
-  { href: '/?section=projects', label: 'Portfolio' },
-  { href: '/?section=testimonial', label: 'Testimonial' },
-  { href: '/blog', label: 'Blog' },
-  { href: '/contact', label: 'Contact' },
+  { key: 'home', href: '/', label: 'Hjem' },
+  { key: 'about', href: '/?section=about', label: 'Om oss' },
+  { key: 'services', href: '/?section=services', label: 'Tjenester' },
+  { key: 'portfolio', href: '/?section=projects', label: 'Prosjekter' },
+  { key: 'testimonial', href: '/?section=testimonial', label: 'Hvorfor oss' },
+  { key: 'blog', href: '/blog', label: 'Aktuelt' },
+  { key: 'contact', href: '/contact', label: 'Kontakt' },
 ];
 
 const FOOTER_SOCIAL_LINKS = [
@@ -276,6 +276,215 @@ const PREVIEW_REPORT = {
     },
   ],
   topFixes: DEFAULT_FIXES,
+};
+
+const DEFAULT_SPEED_TEST_COPY = {
+  hero: {
+    kicker: 'PRESTASJONSANALYSE',
+    title: 'Se hvorfor nettsiden taper fart før kunden gjør det.',
+    urlPlaceholder: 'Skriv inn din URL (f.eks. eksempel.no)',
+    submitLabel: 'Kjør Test',
+    submitLoadingLabel: 'Kjører test',
+    helperText: 'Gratis analyse av Core Web Vitals på 30 sekunder.',
+    mobileLabel: 'Mobil',
+    desktopLabel: 'Desktop',
+    loadingText: 'Henter Lighthouse-data for mobil og desktop. Dette tar vanligvis 10 til 20 sekunder.',
+  },
+  preview: {
+    title: 'Analyse-oversikt',
+    liveLabel: 'NÅTIDSRAPPORT',
+    resultLabel: 'KJØRT TEST',
+  },
+  report: {
+    kicker: 'SCOREOVERSIKT',
+    title: 'Først får du hele bildet fra testen.',
+    summaryIntro: 'Her ser du totalscorene for',
+    summaryOutro: 'før du går videre til målinger og tiltak.',
+  },
+  value: {
+    kicker: 'VERDISKAPNING',
+    title: 'Ikke bare tall, men tiltak.',
+    description:
+      'Vi oversetter komplekse tekniske funn til konkrete forretningsmuligheter, og viser nøyaktig hva som hindrer et bedre førsteinntrykk.',
+  },
+  metrics: {
+    kicker: 'CORE WEB VITALS',
+    title: 'Målingene som styrer førsteinntrykket.',
+  },
+  action: {
+    kicker: 'HANDLINGSPLAN',
+    title: 'Dette ville jeg gjort først for ytelse.',
+    description: 'En prioritert liste over tiltakene som vanligvis gir størst utslag først.',
+    impactHigh: 'Høy impact',
+    impactMedium: 'Medium impact',
+    impactLow: 'Lav impact',
+  },
+  faq: {
+    kicker: 'VANLIGE SPØRSMÅL',
+    title: 'Det viktigste du lurer på før du tester.',
+  },
+  newsletter: {
+    title: 'Få din personlige handlingsplan på e-post.',
+    description: 'Vi sender deg en konkret rapport med de viktigste tiltakene og neste steg for siden din.',
+    emailPlaceholder: 'Din e-postadresse',
+    submitReadyLabel: 'Send meg rapporten',
+    submitIdleLabel: 'Kjør testen først',
+    submitSendingLabel: 'Sender rapport...',
+    note: 'Ved å sende inn godtar du våre vilkår og personvernerklæring.',
+  },
+  footer: {
+    cta: 'La oss starte',
+    intro: 'Vi bygger din digitale identitet med skreddersydd webdesign, SEO og SoMe-strategi.',
+    copyright: 'Copyright © 2026',
+    rights: 'Alle rettigheter forbeholdt.',
+    privacy: 'Personvernerklæring',
+    accessibility: 'Tilgjengelighetserklæring',
+  },
+};
+
+const normalizeCopyValue = (value, fallback) => {
+  if (typeof value !== 'string') {
+    return fallback;
+  }
+
+  const trimmed = value.trim();
+  return trimmed ? trimmed : fallback;
+};
+
+const getOrderedContentItems = (items) =>
+  Object.entries(items || {})
+    .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey, 'nb'))
+    .map(([, value]) => value)
+    .filter((value) => value && typeof value === 'object');
+
+const resolveHighlightItems = (highlightsContent) => {
+  const items = getOrderedContentItems(highlightsContent);
+
+  if (!items.length) {
+    return PAGE_HIGHLIGHTS;
+  }
+
+  return items
+    .map((item, index) => ({
+      title: normalizeCopyValue(item.title, PAGE_HIGHLIGHTS[index]?.title || `Punkt ${index + 1}`),
+      text: normalizeCopyValue(item.text, PAGE_HIGHLIGHTS[index]?.text || ''),
+      icon: PAGE_HIGHLIGHTS[index]?.icon || Search,
+    }))
+    .filter((item) => item.title && item.text);
+};
+
+const resolveFaqItems = (faqContent) => {
+  const items = getOrderedContentItems(faqContent);
+
+  if (!items.length) {
+    return FAQ_ITEMS;
+  }
+
+  return items
+    .map((item, index) => ({
+      question: normalizeCopyValue(item.question, FAQ_ITEMS[index]?.question || ''),
+      answer: normalizeCopyValue(item.answer, FAQ_ITEMS[index]?.answer || ''),
+    }))
+    .filter((item) => item.question && item.answer);
+};
+
+const resolveSpeedTestContent = (content, language = 'no') => {
+  const languageContent = content?.[language] || content?.no || content?.en || {};
+  const navContent = languageContent.nav || {};
+  const footerContent = languageContent.footer || {};
+  const speedTestContent = languageContent.speed_test || {};
+  const heroContent = speedTestContent.hero || {};
+  const previewContent = speedTestContent.preview || {};
+  const reportContent = speedTestContent.report || {};
+  const valueContent = speedTestContent.value || {};
+  const metricsContent = speedTestContent.metrics || {};
+  const actionContent = speedTestContent.action || {};
+  const faqContent = speedTestContent.faq || {};
+  const newsletterContent = speedTestContent.newsletter || {};
+
+  return {
+    navItems: SITE_NAV_ITEMS.map((item) => ({
+      ...item,
+      label: normalizeCopyValue(navContent[item.key], item.label),
+    })),
+    hero: {
+      kicker: normalizeCopyValue(heroContent.kicker, DEFAULT_SPEED_TEST_COPY.hero.kicker),
+      title: normalizeCopyValue(heroContent.title, DEFAULT_SPEED_TEST_COPY.hero.title),
+      urlPlaceholder: normalizeCopyValue(heroContent.url_placeholder, DEFAULT_SPEED_TEST_COPY.hero.urlPlaceholder),
+      submitLabel: normalizeCopyValue(heroContent.submit_label, DEFAULT_SPEED_TEST_COPY.hero.submitLabel),
+      submitLoadingLabel: normalizeCopyValue(
+        heroContent.submit_loading_label,
+        DEFAULT_SPEED_TEST_COPY.hero.submitLoadingLabel,
+      ),
+      helperText: normalizeCopyValue(heroContent.helper_text, DEFAULT_SPEED_TEST_COPY.hero.helperText),
+      mobileLabel: normalizeCopyValue(heroContent.mobile_label, DEFAULT_SPEED_TEST_COPY.hero.mobileLabel),
+      desktopLabel: normalizeCopyValue(heroContent.desktop_label, DEFAULT_SPEED_TEST_COPY.hero.desktopLabel),
+      loadingText: normalizeCopyValue(heroContent.loading_text, DEFAULT_SPEED_TEST_COPY.hero.loadingText),
+    },
+    preview: {
+      title: normalizeCopyValue(previewContent.title, DEFAULT_SPEED_TEST_COPY.preview.title),
+      liveLabel: normalizeCopyValue(previewContent.live_label, DEFAULT_SPEED_TEST_COPY.preview.liveLabel),
+      resultLabel: normalizeCopyValue(previewContent.result_label, DEFAULT_SPEED_TEST_COPY.preview.resultLabel),
+    },
+    report: {
+      kicker: normalizeCopyValue(reportContent.kicker, DEFAULT_SPEED_TEST_COPY.report.kicker),
+      title: normalizeCopyValue(reportContent.title, DEFAULT_SPEED_TEST_COPY.report.title),
+      summaryIntro: normalizeCopyValue(reportContent.summary_intro, DEFAULT_SPEED_TEST_COPY.report.summaryIntro),
+      summaryOutro: normalizeCopyValue(reportContent.summary_outro, DEFAULT_SPEED_TEST_COPY.report.summaryOutro),
+    },
+    value: {
+      kicker: normalizeCopyValue(valueContent.kicker, DEFAULT_SPEED_TEST_COPY.value.kicker),
+      title: normalizeCopyValue(valueContent.title, DEFAULT_SPEED_TEST_COPY.value.title),
+      description: normalizeCopyValue(valueContent.description, DEFAULT_SPEED_TEST_COPY.value.description),
+      highlights: resolveHighlightItems(valueContent.highlights),
+    },
+    metrics: {
+      kicker: normalizeCopyValue(metricsContent.kicker, DEFAULT_SPEED_TEST_COPY.metrics.kicker),
+      title: normalizeCopyValue(metricsContent.title, DEFAULT_SPEED_TEST_COPY.metrics.title),
+    },
+    action: {
+      kicker: normalizeCopyValue(actionContent.kicker, DEFAULT_SPEED_TEST_COPY.action.kicker),
+      title: normalizeCopyValue(actionContent.title, DEFAULT_SPEED_TEST_COPY.action.title),
+      description: normalizeCopyValue(actionContent.description, DEFAULT_SPEED_TEST_COPY.action.description),
+      impactHigh: normalizeCopyValue(actionContent.impact_high, DEFAULT_SPEED_TEST_COPY.action.impactHigh),
+      impactMedium: normalizeCopyValue(actionContent.impact_medium, DEFAULT_SPEED_TEST_COPY.action.impactMedium),
+      impactLow: normalizeCopyValue(actionContent.impact_low, DEFAULT_SPEED_TEST_COPY.action.impactLow),
+    },
+    faq: {
+      kicker: normalizeCopyValue(faqContent.kicker, DEFAULT_SPEED_TEST_COPY.faq.kicker),
+      title: normalizeCopyValue(faqContent.title, DEFAULT_SPEED_TEST_COPY.faq.title),
+      items: resolveFaqItems(faqContent.items),
+    },
+    newsletter: {
+      title: normalizeCopyValue(newsletterContent.title, DEFAULT_SPEED_TEST_COPY.newsletter.title),
+      description: normalizeCopyValue(newsletterContent.description, DEFAULT_SPEED_TEST_COPY.newsletter.description),
+      emailPlaceholder: normalizeCopyValue(
+        newsletterContent.email_placeholder,
+        DEFAULT_SPEED_TEST_COPY.newsletter.emailPlaceholder,
+      ),
+      submitReadyLabel: normalizeCopyValue(
+        newsletterContent.submit_ready_label,
+        DEFAULT_SPEED_TEST_COPY.newsletter.submitReadyLabel,
+      ),
+      submitIdleLabel: normalizeCopyValue(
+        newsletterContent.submit_idle_label,
+        DEFAULT_SPEED_TEST_COPY.newsletter.submitIdleLabel,
+      ),
+      submitSendingLabel: normalizeCopyValue(
+        newsletterContent.submit_sending_label,
+        DEFAULT_SPEED_TEST_COPY.newsletter.submitSendingLabel,
+      ),
+      note: normalizeCopyValue(newsletterContent.note, DEFAULT_SPEED_TEST_COPY.newsletter.note),
+    },
+    footer: {
+      cta: normalizeCopyValue(footerContent.cta, DEFAULT_SPEED_TEST_COPY.footer.cta),
+      intro: normalizeCopyValue(footerContent.intro, DEFAULT_SPEED_TEST_COPY.footer.intro),
+      copyright: normalizeCopyValue(footerContent.copyright, DEFAULT_SPEED_TEST_COPY.footer.copyright),
+      rights: normalizeCopyValue(footerContent.rights, DEFAULT_SPEED_TEST_COPY.footer.rights),
+      privacy: normalizeCopyValue(footerContent.privacy, DEFAULT_SPEED_TEST_COPY.footer.privacy),
+      accessibility: normalizeCopyValue(footerContent.accessibility, DEFAULT_SPEED_TEST_COPY.footer.accessibility),
+    },
+  };
 };
 
 const getStrategyLabel = (strategy) => (strategy === 'desktop' ? 'Desktop' : 'Mobil');
@@ -1375,22 +1584,22 @@ const MetricCard = ({ metric }) => {
   );
 };
 
-const FixItem = ({ fix, index }) => {
+const FixItem = ({ fix, index, impactLabels }) => {
   const tones = [
     {
-      chip: 'Høy impact',
+      chip: impactLabels.impactHigh,
       chipColor: '#ba1a1a',
       badgeBackground: 'rgba(186, 26, 26, 0.08)',
       badgeColor: '#ba1a1a',
     },
     {
-      chip: 'Medium impact',
+      chip: impactLabels.impactMedium,
       chipColor: '#944a00',
       badgeBackground: 'rgba(148, 74, 0, 0.12)',
       badgeColor: '#944a00',
     },
     {
-      chip: 'Lav impact',
+      chip: impactLabels.impactLow,
       chipColor: '#0d7a43',
       badgeBackground: 'rgba(13, 122, 67, 0.12)',
       badgeColor: '#0d7a43',
@@ -1417,6 +1626,7 @@ export default function App() {
   const [strategy, setStrategy] = useState('mobile');
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [dashboardContent, setDashboardContent] = useState(null);
   const [reports, setReports] = useState(null);
   const [error, setError] = useState(null);
   const [sendingReport, setSendingReport] = useState(false);
@@ -1424,9 +1634,41 @@ export default function App() {
   const [reportEmail, setReportEmail] = useState('');
   const [headerScrolled, setHeaderScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const siteLanguage = typeof document !== 'undefined' && document.documentElement.lang?.toLowerCase().startsWith('en')
+    ? 'en'
+    : 'no';
+  const pageCopy = resolveSpeedTestContent(dashboardContent, siteLanguage);
+  const getStrategyText = (currentStrategy) =>
+    (currentStrategy === 'desktop' ? pageCopy.hero.desktopLabel : pageCopy.hero.mobileLabel);
 
   useEffect(() => {
     setReportEmail(window.localStorage.getItem('speed_test_report_email') || '');
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadDashboardContent = async () => {
+      try {
+        const response = await fetch('/api/content');
+        if (!response.ok) {
+          throw new Error(`Could not load content (${response.status})`);
+        }
+
+        const payload = await response.json();
+        if (!cancelled) {
+          setDashboardContent(payload);
+        }
+      } catch (contentError) {
+        console.warn('[speed-test] Could not load dashboard content', contentError);
+      }
+    };
+
+    loadDashboardContent();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -1615,7 +1857,7 @@ export default function App() {
 
             <nav className="nav-desktop" aria-label="Hovednavigasjon">
               <ul>
-                {SITE_NAV_ITEMS.map((item) => (
+                {pageCopy.navItems.map((item) => (
                   <li key={item.href}>
                     <a href={item.href}>{item.label}</a>
                   </li>
@@ -1653,7 +1895,7 @@ export default function App() {
             </button>
 
             <ul>
-              {SITE_NAV_ITEMS.map((item) => (
+              {pageCopy.navItems.map((item) => (
                 <li key={item.href}>
                   <a href={item.href} onClick={closeMobileMenu}>{item.label}</a>
                 </li>
@@ -1696,8 +1938,8 @@ export default function App() {
                 transition={{ duration: 0.45 }}
                 className="st-hero-copy"
               >
-                <span className="st-kicker">PRESTASJONSANALYSE</span>
-                <h1 className="st-title">Se hvorfor nettsiden taper fart før kunden gjør det.</h1>
+                <span className="st-kicker">{pageCopy.hero.kicker}</span>
+                <h1 className="st-title">{pageCopy.hero.title}</h1>
 
                 <Motion.form
                   id="hero-form"
@@ -1719,7 +1961,7 @@ export default function App() {
                           autoComplete="url"
                           autoCorrect="off"
                           inputMode="url"
-                          placeholder="Skriv inn din URL (f.eks. eksempel.no)"
+                          placeholder={pageCopy.hero.urlPlaceholder}
                           spellCheck={false}
                         />
                       </span>
@@ -1729,33 +1971,33 @@ export default function App() {
                       {loading ? (
                         <>
                           <span className="st-spinner" />
-                          Kjører test
+                          {pageCopy.hero.submitLoadingLabel}
                         </>
                       ) : (
                         <>
                           <Gauge size={18} />
-                          Kjør Test
+                          {pageCopy.hero.submitLabel}
                         </>
                       )}
                     </button>
                   </div>
 
                   <div className="st-hero-meta">
-                    <p>Gratis analyse av Core Web Vitals på 30 sekunder.</p>
+                    <p>{pageCopy.hero.helperText}</p>
                     <div className="st-hero-strategy">
                       <button
                         type="button"
                         className={strategy === 'mobile' ? 'is-active' : ''}
                         onClick={() => setStrategy('mobile')}
                       >
-                        Mobil
+                        {pageCopy.hero.mobileLabel}
                       </button>
                       <button
                         type="button"
                         className={strategy === 'desktop' ? 'is-active' : ''}
                         onClick={() => setStrategy('desktop')}
                       >
-                        Desktop
+                        {pageCopy.hero.desktopLabel}
                       </button>
                     </div>
                   </div>
@@ -1774,7 +2016,7 @@ export default function App() {
                           transition={{ ease: 'easeOut' }}
                         />
                       </div>
-                      <p>Henter Lighthouse-data for mobil og desktop. Dette tar vanligvis 10 til 20 sekunder.</p>
+                      <p>{pageCopy.hero.loadingText}</p>
                     </Motion.div>
                   )}
 
@@ -1801,8 +2043,8 @@ export default function App() {
                 <div className="st-stage-card">
                   <div className="st-stage-head">
                     <div>
-                      <h3>Analyse-oversikt</h3>
-                      <p>NÅTIDSRAPPORT</p>
+                      <h3>{pageCopy.preview.title}</h3>
+                      <p>{pageCopy.preview.liveLabel}</p>
                     </div>
                     <Gauge size={28} />
                   </div>
@@ -1826,24 +2068,24 @@ export default function App() {
                   transition={{ duration: 0.35 }}
                   className="st-report-copy"
                 >
-                  <span className="st-kicker">SCOREOVERSIKT</span>
-                  <h2>Først får du hele bildet fra testen.</h2>
+                  <span className="st-kicker">{pageCopy.report.kicker}</span>
+                  <h2>{pageCopy.report.title}</h2>
                   <p>
                     {activeReport.summary}
                     {' '}
-                    Her ser du totalscorene for
+                    {pageCopy.report.summaryIntro}
                     {' '}
                     <strong>{activeReport.analyzedUrl}</strong>
                     {' '}
                     på
                     {' '}
-                    {getStrategyLabel(activeReport.strategy).toLowerCase()}
+                    {getStrategyText(activeReport.strategy).toLowerCase()}
                     {' '}
-                    før du går videre til målinger og tiltak.
+                    {pageCopy.report.summaryOutro}
                   </p>
                   <div className="st-report-meta">
                     <span>{activeReport.analyzedUrl}</span>
-                    <span>{getStrategyLabel(activeReport.strategy)}</span>
+                    <span>{getStrategyText(activeReport.strategy)}</span>
                   </div>
                 </Motion.div>
 
@@ -1856,8 +2098,8 @@ export default function App() {
                   <div className="st-stage-card">
                     <div className="st-stage-head">
                       <div>
-                        <h3>Analyse-oversikt</h3>
-                        <p>KJØRT TEST</p>
+                        <h3>{pageCopy.preview.title}</h3>
+                        <p>{pageCopy.preview.resultLabel}</p>
                       </div>
                       <Gauge size={28} />
                     </div>
@@ -1878,17 +2120,14 @@ export default function App() {
               <div className="st-shell">
                 <div className="st-section-intro st-section-intro--split">
                   <div>
-                    <span className="st-kicker">VERDISKAPNING</span>
-                    <h2>Ikke bare tall, men tiltak.</h2>
+                    <span className="st-kicker">{pageCopy.value.kicker}</span>
+                    <h2>{pageCopy.value.title}</h2>
                   </div>
-                  <p>
-                    Vi oversetter komplekse tekniske funn til konkrete forretningsmuligheter,
-                    og viser nøyaktig hva som hindrer et bedre førsteinntrykk.
-                  </p>
+                  <p>{pageCopy.value.description}</p>
                 </div>
 
                 <div className="st-feature-grid">
-                  {PAGE_HIGHLIGHTS.map((item, index) => (
+                  {pageCopy.value.highlights.map((item, index) => (
                     <HighlightCard key={item.title} item={item} index={index} />
                   ))}
                 </div>
@@ -1899,8 +2138,8 @@ export default function App() {
           <section id="metrics" className="st-metrics-section">
             <div className="st-shell">
               <div className="st-section-intro st-section-intro--center">
-                <span className="st-kicker">CORE WEB VITALS</span>
-                <h2>Målingene som styrer førsteinntrykket.</h2>
+                <span className="st-kicker">{pageCopy.metrics.kicker}</span>
+                <h2>{pageCopy.metrics.title}</h2>
               </div>
 
               <div className="st-metric-grid">
@@ -1914,14 +2153,14 @@ export default function App() {
           <section id="methodology" className="st-action-section">
             <div className="st-shell st-action-layout">
               <div className="st-action-copy">
-                <span className="st-kicker">HANDLINGSPLAN</span>
-                <h2>Dette ville jeg gjort først for ytelse.</h2>
-                <p>En prioritert liste over tiltakene som vanligvis gir størst utslag først.</p>
+                <span className="st-kicker">{pageCopy.action.kicker}</span>
+                <h2>{pageCopy.action.title}</h2>
+                <p>{pageCopy.action.description}</p>
               </div>
 
               <div className="st-plan-list">
                 {activeReport.topFixes.map((fix, index) => (
-                  <FixItem key={fix.title} fix={fix} index={index} />
+                  <FixItem key={fix.title} fix={fix} index={index} impactLabels={pageCopy.action} />
                 ))}
               </div>
             </div>
@@ -1930,12 +2169,12 @@ export default function App() {
           <section id="faq" className="st-faq-section">
             <div className="st-shell st-faq-shell">
               <div className="st-section-intro st-section-intro--center">
-                <span className="st-kicker">VANLIGE SPØRSMÅL</span>
-                <h2>Det viktigste du lurer på før du tester.</h2>
+                <span className="st-kicker">{pageCopy.faq.kicker}</span>
+                <h2>{pageCopy.faq.title}</h2>
               </div>
 
               <div className="st-faq-grid">
-                {FAQ_ITEMS.map((item) => (
+                {pageCopy.faq.items.map((item) => (
                   <FaqItem key={item.question} item={item} />
                 ))}
               </div>
@@ -1946,10 +2185,8 @@ export default function App() {
             <div className="st-shell">
               <div className="st-newsletter-card">
                 <div className="st-newsletter-copy">
-                  <h2>Få din personlige handlingsplan på e-post.</h2>
-                  <p>
-                    Vi sender deg en konkret rapport med de viktigste tiltakene og neste steg for siden din.
-                  </p>
+                  <h2>{pageCopy.newsletter.title}</h2>
+                  <p>{pageCopy.newsletter.description}</p>
                 </div>
 
                 <div className="st-newsletter-form">
@@ -1970,7 +2207,7 @@ export default function App() {
                         autoComplete="email"
                         autoCorrect="off"
                         inputMode="email"
-                        placeholder="Din e-postadresse"
+                        placeholder={pageCopy.newsletter.emailPlaceholder}
                         spellCheck={false}
                       />
                     </span>
@@ -1982,14 +2219,12 @@ export default function App() {
                     disabled={!hasResults || sendingReport}
                   >
                     {sendingReport
-                      ? 'Sender rapport...'
+                      ? pageCopy.newsletter.submitSendingLabel
                       : hasResults
-                        ? 'Send meg rapporten'
-                        : 'Kjør testen først'}
+                        ? pageCopy.newsletter.submitReadyLabel
+                        : pageCopy.newsletter.submitIdleLabel}
                   </button>
-                  <p className="st-newsletter-note">
-                    Ved å sende inn godtar du våre vilkår og personvernerklæring.
-                  </p>
+                  <p className="st-newsletter-note">{pageCopy.newsletter.note}</p>
                   {reportEmailFeedback && (
                     <Motion.div
                       initial={{ opacity: 0, y: 8 }}
@@ -2010,13 +2245,13 @@ export default function App() {
         <footer className="footer pt_120 pb_120" style={{ borderTop: '1px solid var(--clr-border)' }}>
           <div className="container">
             <div className="footer-cta">
-              <h2>La oss starte</h2>
+              <h2>{pageCopy.footer.cta}</h2>
             </div>
 
             <div className="footer-content">
               <div className="footer-info">
                 <p style={{ fontSize: '20px', color: 'var(--clr-base)', marginBottom: '20px' }}>
-                  Vi bygger din digitale identitet med skreddersydd webdesign, SEO og SoMe-strategi.
+                  {pageCopy.footer.intro}
                 </p>
                 <a
                   href="mailto:thomas@tk-design.no"
@@ -2047,11 +2282,16 @@ export default function App() {
               style={{ borderTop: '1px solid var(--clr-border)', paddingTop: '30px' }}
             >
               <p>
-                Copyright © 2026 <a href="/" style={{ color: 'var(--clr-base)' }}>TK-design</a> All rights reserved.
+                {pageCopy.footer.copyright}
+                {' '}
+                <a href="/" style={{ color: 'var(--clr-base)' }}>TK-design</a>
+                .
+                {' '}
+                {pageCopy.footer.rights}
               </p>
               <div className="flex gap-4">
-                <a href="/accessibility" style={{ color: 'var(--clr-base)' }}>Accessibility Statement</a>
-                <a href="/privacy" style={{ color: 'var(--clr-base)' }}>Privacy Policy</a>
+                <a href="/accessibility" style={{ color: 'var(--clr-base)' }}>{pageCopy.footer.accessibility}</a>
+                <a href="/privacy" style={{ color: 'var(--clr-base)' }}>{pageCopy.footer.privacy}</a>
                 <a href="/admin/" className="admin-secret" style={{ color: '#777', fontSize: '0.8em' }}>Admin</a>
               </div>
             </div>

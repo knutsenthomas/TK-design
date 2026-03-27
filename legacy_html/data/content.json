@@ -137,6 +137,84 @@
             "terms": "Terms & Condition",
             "privacy": "Privacy Policy"
         },
+        "speed_test": {
+            "hero": {
+                "kicker": "PERFORMANCE ANALYSIS",
+                "title": "See why the website loses speed before the customer does.",
+                "url_placeholder": "Enter your URL (e.g. example.com)",
+                "submit_label": "Run Test",
+                "submit_loading_label": "Running test",
+                "helper_text": "Free Core Web Vitals analysis in 30 seconds.",
+                "mobile_label": "Mobile",
+                "desktop_label": "Desktop",
+                "loading_text": "Fetching Lighthouse data for mobile and desktop. This usually takes 10 to 20 seconds."
+            },
+            "preview": {
+                "title": "Analysis overview",
+                "live_label": "LIVE REPORT",
+                "result_label": "COMPLETED TEST"
+            },
+            "report": {
+                "kicker": "SCORE OVERVIEW",
+                "title": "First, get the full picture from the test.",
+                "summary_intro": "Here you see the total scores for",
+                "summary_outro": "before you move on to metrics and actions."
+            },
+            "value": {
+                "kicker": "VALUE",
+                "title": "Not just numbers, but actions.",
+                "description": "We translate complex technical findings into concrete business opportunities and show exactly what blocks a better first impression.",
+                "highlights": {
+                    "item_1": {
+                        "title": "Deeper insight",
+                        "text": "We analyze what affects the first impression and point out where the user experience starts losing speed."
+                    },
+                    "item_2": {
+                        "title": "Prioritized list",
+                        "text": "Stop guessing. Get a clear order of what should be fixed first to improve the site fastest."
+                    },
+                    "item_3": {
+                        "title": "Profit focus",
+                        "text": "See the link between load time, friction and why slower pages make paid traffic more expensive."
+                    }
+                }
+            },
+            "metrics": {
+                "kicker": "CORE WEB VITALS",
+                "title": "The measurements that shape the first impression."
+            },
+            "action": {
+                "kicker": "ACTION PLAN",
+                "title": "This is what I would do first for performance.",
+                "description": "A prioritized list of the actions that usually move the score the fastest.",
+                "impact_high": "High impact",
+                "impact_medium": "Medium impact",
+                "impact_low": "Low impact"
+            },
+            "faq": {
+                "kicker": "FAQ",
+                "title": "What people usually want to know before they test.",
+                "items": {
+                    "item_1": {
+                        "question": "How accurate is this test?",
+                        "answer": "We use Google Lighthouse as the data engine and turn the result into a clearer report for performance, stability, accessibility and SEO."
+                    },
+                    "item_2": {
+                        "question": "Why does the score vary?",
+                        "answer": "Network conditions, server response and third-party resources can change between runs. Run the test a couple of times to get a clearer picture."
+                    }
+                }
+            },
+            "newsletter": {
+                "title": "Get your personal action plan by email.",
+                "description": "We send you a concrete report with the most important actions and the next steps for your site.",
+                "email_placeholder": "Your email address",
+                "submit_ready_label": "Send me the report",
+                "submit_idle_label": "Run the test first",
+                "submit_sending_label": "Sending report...",
+                "note": "By submitting, you accept our terms and privacy policy."
+            }
+        },
         "project_details": {
             "banner_title": "Mobile Application Design",
             "breadcrumb": "Project Details",
@@ -326,6 +404,84 @@
             "rights": "Alle rettigheter forbeholdt.",
             "terms": "Vilkår og Betingelser",
             "privacy": "Personvernerklæring"
+        },
+        "speed_test": {
+            "hero": {
+                "kicker": "PRESTASJONSANALYSE",
+                "title": "Se hvorfor nettsiden taper fart før kunden gjør det.",
+                "url_placeholder": "Skriv inn din URL (f.eks. eksempel.no)",
+                "submit_label": "Kjør Test",
+                "submit_loading_label": "Kjører test",
+                "helper_text": "Gratis analyse av Core Web Vitals på 30 sekunder.",
+                "mobile_label": "Mobil",
+                "desktop_label": "Desktop",
+                "loading_text": "Henter Lighthouse-data for mobil og desktop. Dette tar vanligvis 10 til 20 sekunder."
+            },
+            "preview": {
+                "title": "Analyse-oversikt",
+                "live_label": "NÅTIDSRAPPORT",
+                "result_label": "KJØRT TEST"
+            },
+            "report": {
+                "kicker": "SCOREOVERSIKT",
+                "title": "Først får du hele bildet fra testen.",
+                "summary_intro": "Her ser du totalscorene for",
+                "summary_outro": "før du går videre til målinger og tiltak."
+            },
+            "value": {
+                "kicker": "VERDISKAPNING",
+                "title": "Ikke bare tall, men tiltak.",
+                "description": "Vi oversetter komplekse tekniske funn til konkrete forretningsmuligheter, og viser nøyaktig hva som hindrer et bedre førsteinntrykk.",
+                "highlights": {
+                    "item_1": {
+                        "title": "Dypere innsikt",
+                        "text": "Vi analyserer det som påvirker førsteinntrykket, og peker ut hvor brukeropplevelsen begynner å tape fart."
+                    },
+                    "item_2": {
+                        "title": "Prioritert liste",
+                        "text": "Slutt å gjette. Få en tydelig rekkefølge på hva som bør fikses først for å løfte siden raskest mulig."
+                    },
+                    "item_3": {
+                        "title": "Lønnsomhets-fokus",
+                        "text": "Se sammenhengen mellom lastetid, friksjon og hvorfor tregere sider gjør det dyrere å kjøpe trafikk."
+                    }
+                }
+            },
+            "metrics": {
+                "kicker": "CORE WEB VITALS",
+                "title": "Målingene som styrer førsteinntrykket."
+            },
+            "action": {
+                "kicker": "HANDLINGSPLAN",
+                "title": "Dette ville jeg gjort først for ytelse.",
+                "description": "En prioritert liste over tiltakene som vanligvis gir størst utslag først.",
+                "impact_high": "Høy impact",
+                "impact_medium": "Medium impact",
+                "impact_low": "Lav impact"
+            },
+            "faq": {
+                "kicker": "VANLIGE SPØRSMÅL",
+                "title": "Det viktigste du lurer på før du tester.",
+                "items": {
+                    "item_1": {
+                        "question": "Hvor nøyaktig er denne testen?",
+                        "answer": "Vi bruker Google Lighthouse som datamotor og pakker resultatet om til en tydeligere rapport for ytelse, stabilitet, tilgjengelighet og SEO."
+                    },
+                    "item_2": {
+                        "question": "Hvorfor varierer poengsummen?",
+                        "answer": "Nettverk, serverrespons og tredjepartsressurser kan endre seg mellom hver kjøring. Kjør gjerne testen et par ganger for å få et tydeligere bilde."
+                    }
+                }
+            },
+            "newsletter": {
+                "title": "Få din personlige handlingsplan på e-post.",
+                "description": "Vi sender deg en konkret rapport med de viktigste tiltakene og neste steg for siden din.",
+                "email_placeholder": "Din e-postadresse",
+                "submit_ready_label": "Send meg rapporten",
+                "submit_idle_label": "Kjør testen først",
+                "submit_sending_label": "Sender rapport...",
+                "note": "Ved å sende inn godtar du våre vilkår og personvernerklæring."
+            }
         },
         "project_details": {
             "banner_title": "Mobilapplikasjonsdesign",
