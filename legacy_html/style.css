@@ -1660,9 +1660,10 @@ body.blog-page-refresh .blog-grid-view i {
     }
 
     /* Nuclear fix for narrow content and side space */
-    body.blog-page-refresh .container {
-        padding-left: 15px !important;
-        padding-right: 15px !important;
+    body.blog-page-refresh .blog-page-main .container,
+    body.blog-page-refresh .blog-page-banner .container {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
         max-width: 100% !important;
         width: 100% !important;
     }
@@ -1678,6 +1679,7 @@ body.blog-page-refresh .blog-grid-view i {
         display: block !important;
     }
 
+    body.blog-page-refresh .blog-page-hero,
     body.blog-page-refresh .blog-overview-card,
     body.blog-page-refresh .blog-article-shell,
     body.blog-page-refresh .blog-side-card {
@@ -1687,6 +1689,11 @@ body.blog-page-refresh .blog-grid-view i {
         margin-right: 0 !important;
         box-sizing: border-box !important;
         margin-bottom: 20px !important;
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+        padding-left: 15px !important;
+        padding-right: 15px !important;
     }
 
     /* Aggressive word breaking to prevent overflow */
