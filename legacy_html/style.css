@@ -1655,6 +1655,53 @@ body.blog-page-refresh .blog-grid-view i {
 
     body.blog-page-refresh .blog-overview-grid {
         grid-template-columns: 1fr;
+        width: 100% !important;
+        gap: 16px !important;
+    }
+
+    /* Nuclear fix for narrow content and side space */
+    body.blog-page-refresh .container {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    body.blog-page-refresh .blog-page-banner,
+    body.blog-page-refresh .blog-page-main {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    body.blog-page-refresh .blog-details-wrapper {
+        gap: 20px !important;
+        display: block !important;
+    }
+
+    body.blog-page-refresh .blog-overview-card,
+    body.blog-page-refresh .blog-article-shell,
+    body.blog-page-refresh .blog-side-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        box-sizing: border-box !important;
+        margin-bottom: 20px !important;
+    }
+
+    /* Aggressive word breaking to prevent overflow */
+    body.blog-page-refresh h1,
+    body.blog-page-refresh h2,
+    body.blog-page-refresh h3,
+    body.blog-page-refresh h4,
+    body.blog-page-refresh p,
+    body.blog-page-refresh .blog-page-title,
+    body.blog-page-refresh .blog-rich-content * {
+        overflow-wrap: anywhere !important;
+        word-wrap: break-word !important;
+        word-break: break-word !important;
+        hyphens: auto !important;
+        white-space: normal !important;
     }
 
     body.blog-page-refresh .blog-share-links {
