@@ -978,6 +978,12 @@ body.blog-page-refresh .blog-page-banner {
     padding: clamp(112px, 14vw, 156px) 0 56px;
 }
 
+@media (max-width: 768px) {
+    body.blog-page-refresh .blog-page-banner {
+        padding: clamp(80px, 12vw, 100px) 0 32px;
+    }
+}
+
 body.blog-page-refresh .blog-page-hero {
     display: grid;
     grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
@@ -999,8 +1005,8 @@ body.blog-page-refresh .blog-page-copy {
 body.blog-page-refresh .blog-page-title {
     margin-top: 18px;
     margin-bottom: 18px;
-    font-size: clamp(2.8rem, 7vw, 5.1rem) !important;
-    line-height: 0.96;
+    font-size: clamp(2.2rem, 8vw, 5.1rem) !important;
+    line-height: 1.0;
 }
 
 body.blog-page-refresh .blog-page-summary {
@@ -1402,6 +1408,18 @@ body.blog-page-refresh .blog-comment-form textarea {
     padding: 12px 14px;
 }
 
+body.blog-page-refresh .blog-rich-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    margin: 20px 0;
+}
+
+body.blog-page-refresh .blog-rich-content iframe {
+    max-width: 100%;
+    border-radius: 12px;
+}
+
 body.blog-page-refresh .blog-comment-form textarea {
     min-height: 120px;
     resize: vertical;
@@ -1601,8 +1619,8 @@ body.blog-page-refresh .blog-grid-view i {
     body.blog-page-refresh .blog-article-shell,
     body.blog-page-refresh .blog-side-card,
     body.blog-page-refresh .blog-post-nav-link {
-        padding: 24px;
-        border-radius: 28px;
+        padding: 20px;
+        border-radius: 24px;
     }
 
     body.blog-page-refresh .blog-page-actions,
@@ -1631,6 +1649,15 @@ body.blog-page-refresh .blog-grid-view i {
     body.blog-page-refresh .blog-comment-form button {
         width: 100%;
         justify-content: center;
+    }
+
+    body.blog-page-refresh .blog-post-nav-link {
+        gap: 12px;
+        min-height: auto;
+    }
+    
+    body.blog-page-refresh .blog-post-nav-link strong {
+        font-size: 0.95rem;
     }
 }
 
