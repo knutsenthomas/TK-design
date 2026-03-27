@@ -980,7 +980,7 @@ body.blog-page-refresh .blog-page-banner {
 
 @media (max-width: 768px) {
     body.blog-page-refresh .blog-page-banner {
-        padding: clamp(80px, 12vw, 100px) 0 32px;
+        padding: clamp(60px, 10vw, 80px) 0 24px !important;
     }
 }
 
@@ -1634,8 +1634,8 @@ body.blog-page-refresh .blog-grid-view i {
     body.blog-page-refresh .blog-article-shell,
     body.blog-page-refresh .blog-side-card,
     body.blog-page-refresh .blog-post-nav-link {
-        padding: 20px;
-        border-radius: 24px;
+        padding: 18px;
+        border-radius: 20px;
     }
 
     body.blog-page-refresh .blog-page-actions,
