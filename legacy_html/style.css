@@ -1661,50 +1661,26 @@ body.blog-page-refresh .blog-grid-view i {
         gap: 16px !important;
     }
 
-    /* Nuclear fix for narrow content and side space */
+    /* Refined mobile margins for blog details - matching homepage and blog list */
     body.blog-page-refresh .blog-page-main .container,
     body.blog-page-refresh .blog-page-banner .container,
     body.blog-page-refresh section.page-banner .container,
     body.blog-page-refresh .page-banner.blog-page-banner > .container {
         padding-left: 0 !important;
         padding-right: 0 !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
         max-width: 100% !important;
         width: 100% !important;
-    }
-
-    body.blog-page-refresh .blog-page-banner,
-    body.blog-page-refresh .page-banner,
-    body.blog-page-refresh .blog-page-main {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        width: 100% !important;
-        max-width: 100% !important;
-    }
-
-    body.blog-page-refresh .blog-details-wrapper {
-        gap: 20px !important;
-        display: block !important;
     }
 
     body.blog-page-refresh .blog-page-hero,
     body.blog-page-refresh .blog-overview-card,
     body.blog-page-refresh .blog-article-shell,
     body.blog-page-refresh .blog-side-card {
-        width: 100% !important;
-        max-width: 100% !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        box-sizing: border-box !important;
+        border-radius: 28px !important;
+        margin-left: 18px !important;
+        margin-right: 18px !important;
         margin-bottom: 20px !important;
-        border-radius: 0 !important;
-        border-left: none !important;
-        border-right: none !important;
-        padding-left: 15px !important;
-        padding-right: 15px !important;
+        padding: 24px 18px !important;
     }
 
     /* Aggressive word breaking to prevent overflow */
@@ -8198,5 +8174,24 @@ body.homepage-refresh .video-modal .modal-content {
         padding-left: 0 !important;
         padding-right: 0 !important;
         max-width: none !important;
+    }
+}
+
+/* =========================================
+   BLOG DETAILS CONSISTENCY FIX
+   Matches Blog List rounded corners and margins
+   ========================================= */
+@media (max-width: 768px) {
+    body.homepage-refresh .blog-page-hero,
+    body.homepage-refresh .blog-article-shell,
+    body.homepage-refresh .blog-side-card {
+        border-radius: 28px !important; /* Identisk med oversikten */
+        margin-left: 18px !important;
+        margin-right: 18px !important;
+    }
+
+    /* Spesifikk fix for toppen av blog-details hero */
+    body.homepage-refresh .blog-page-hero {
+        margin-top: 12px !important;
     }
 }
