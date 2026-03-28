@@ -1628,6 +1628,8 @@ body.blog-page-refresh .blog-grid-view i {
     body.blog-page-refresh .blog-page-banner {
         padding-top: 104px;
         padding-bottom: 28px;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
     }
 
     body.blog-page-refresh .blog-page-hero,
@@ -2111,6 +2113,8 @@ body.blog-list-page-refresh .blog-list-empty-card p {
     body.blog-list-page-refresh .blog-list-page-banner {
         padding-top: 104px;
         padding-bottom: 28px;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
     }
 
     body.blog-list-page-refresh .blog-list-hero,
@@ -2120,7 +2124,10 @@ body.blog-list-page-refresh .blog-list-empty-card p {
         border-radius: 28px;
     }
 
-    body.blog-list-page-refresh .blog-list-hero,
+    body.blog-list-page-refresh .blog-list-hero {
+        padding: 24px 18px; /* Slightly tighter internal padding for mobile */
+    }
+
     body.blog-list-page-refresh .blog-list-section-head,
     body.blog-list-page-refresh .blog-list-card-body {
         padding: 24px;
