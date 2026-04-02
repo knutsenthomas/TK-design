@@ -1670,10 +1670,10 @@ body.blog-page-refresh .blog-grid-view i {
     body.blog-page-refresh .blog-page-banner .container,
     body.blog-page-refresh section.page-banner .container,
     body.blog-page-refresh .page-banner.blog-page-banner > .container {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
+        padding-left: 18px !important;
+        padding-right: 18px !important;
         max-width: 100% !important;
-        width: auto !important;
+        width: 100% !important;
     }
 
     body.blog-page-refresh .blog-page-hero,
@@ -1681,11 +1681,11 @@ body.blog-page-refresh .blog-grid-view i {
     body.blog-page-refresh .blog-article-shell,
     body.blog-page-refresh .blog-side-card {
         border-radius: 28px !important;
-        margin-left: 18px !important;
-        margin-right: 18px !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
         margin-bottom: 20px !important;
         padding: 24px 18px !important;
-        width: auto !important;
+        width: 100% !important;
     }
 
     /* Aggressive word breaking to prevent overflow */
