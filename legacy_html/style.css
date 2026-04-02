@@ -1543,12 +1543,11 @@ body.blog-page-refresh .prev-post {
 }
 
 body.blog-page-refresh .next-post {
-    flex-direction: row-reverse;
-    justify-content: flex-start;
+    justify-content: space-between;
 }
 
 body.blog-page-refresh .next-post>div {
-    text-align: right;
+    text-align: left;
 }
 
 body.blog-page-refresh .blog-post-nav-link span {
