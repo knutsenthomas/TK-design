@@ -12,7 +12,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="/style.css?v=76">
+    <link rel="stylesheet" href="/style.css?v=77">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" href="/img/logo/d.png">
 
@@ -104,26 +104,6 @@
                             <li><a href="/blog" data-i18n="nav.blog">Blog</a></li>
                             <li id="blogDetailBreadcrumb" data-i18n="blog_details.breadcrumb">Bloggdetaljer</li>
                         </ul>
-                    </div>
-
-                    <div class="blog-page-preview" aria-hidden="true">
-                        <div class="blog-preview-shell">
-                            <span class="blog-preview-badge" data-i18n="blog_details.preview_label">Utvalgt innlegg</span>
-                            <div class="blog-preview-stats">
-                                <div class="blog-preview-stat">
-                                    <span data-i18n="blog_details.category_label">Kategori</span>
-                                    <strong id="blogCategoryValue">Webdesign</strong>
-                                </div>
-                                <div class="blog-preview-stat">
-                                    <span data-i18n="blog_details.published_label">Publisert</span>
-                                    <strong id="blogDateValue">2025</strong>
-                                </div>
-                                <div class="blog-preview-stat">
-                                    <span data-i18n="blog_details.author_label">Skrevet av</span>
-                                    <strong id="blogAuthorValue">Thomas Knutsen</strong>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -1055,9 +1035,6 @@
             const title = document.getElementById('blogDetailTitle');
             const summaryEl = document.getElementById('blogDetailSummary');
             const breadcrumb = document.getElementById('blogDetailBreadcrumb');
-            const categoryValue = document.getElementById('blogCategoryValue');
-            const dateValue = document.getElementById('blogDateValue');
-            const authorValue = document.getElementById('blogAuthorValue');
             const overviewCategory = document.getElementById('blogOverviewCategory');
             const overviewDate = document.getElementById('blogOverviewDate');
             const overviewAuthor = document.getElementById('blogOverviewAuthor');
@@ -1077,18 +1054,6 @@
 
             if (breadcrumb) {
                 breadcrumb.textContent = localizedPost.title;
-            }
-
-            if (categoryValue) {
-                categoryValue.textContent = localizedPost.category || 'TK-design';
-            }
-
-            if (dateValue) {
-                dateValue.textContent = localizedPost.date || '';
-            }
-
-            if (authorValue) {
-                authorValue.textContent = post.author || 'Thomas Knutsen';
             }
 
             if (overviewCategory) {
