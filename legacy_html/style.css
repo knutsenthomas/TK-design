@@ -1668,71 +1668,45 @@ body.blog-page-refresh .blog-grid-view i {
     }
 
     /* Refined mobile margins for blog details - matching homepage and blog list */
-    body.blog-page-refresh .blog-page-main .container,
-    body.blog-page-refresh .blog-page-banner .container,
-    body.blog-page-refresh section.page-banner .container,
-    body.blog-page-refresh .page-banner.blog-page-banner > .container {
+    /* TAKE 5: FINAL CLEAN CENTERED LAYOUT - RESOLVES ALL SHIFTS */
+    body.blog-page-refresh .blog-page-main > .container,
+    body.blog-page-refresh section.page-banner > .container {
         padding-left: 18px !important;
         padding-right: 18px !important;
-        max-width: 100% !important;
         width: 100% !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
         box-sizing: border-box !important;
     }
 
-    body.blog-page-refresh .blog-detail-grid {
+    body.blog-page-refresh .blog-detail-grid,
+    body.blog-page-refresh .blog-article-shell {
+        margin: 0 auto !important;
         padding-left: 0 !important;
         padding-right: 0 !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
         width: 100% !important;
-    }
-
-    body.blog-page-refresh .blog-page-hero,
-    body.blog-page-refresh .blog-overview-card,
-    body.blog-page-refresh .blog-article-shell,
-    body.blog-page-refresh .blog-side-card {
-        border-radius: 28px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        margin-bottom: 20px !important;
-        padding: 24px 18px !important;
-        width: 100% !important;
+        max-width: 100% !important;
         box-sizing: border-box !important;
     }
 
-    /* Aggressive word breaking to prevent overflow */
-    body.blog-page-refresh h1,
-    body.blog-page-refresh h2,
-    body.blog-page-refresh h3,
-    body.blog-page-refresh h4,
-    body.blog-page-refresh p,
-    body.blog-page-refresh .blog-page-title,
-    body.blog-page-refresh .blog-rich-content * {
+    body.blog-page-refresh .blog-page-title {
         overflow-wrap: anywhere !important;
-        word-wrap: break-word !important;
         word-break: break-word !important;
-        hyphens: auto !important;
-        white-space: normal !important;
+        width: 100% !important;
+    }
+
+    body.blog-page-refresh .blog-article-shell,
+    body.blog-page-refresh .blog-page-hero,
+    body.blog-page-refresh .blog-overview-card,
+    body.blog-page-refresh .blog-side-card {
+        padding: 24px 18px !important;
+        border-radius: 28px !important;
+        margin-bottom: 20px !important;
+        box-sizing: border-box !important;
     }
 
     body.blog-page-refresh .blog-share-links {
         grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    body.blog-page-refresh .blog-comment-form button {
-        width: 100%;
-        justify-content: center;
-    }
-
-    body.blog-page-refresh .blog-post-nav-link {
-        gap: 12px;
-        min-height: auto;
-    }
-    
-    body.blog-page-refresh .blog-post-nav-link strong {
-        font-size: 0.95rem;
     }
 }
 
