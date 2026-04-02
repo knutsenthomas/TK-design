@@ -1489,8 +1489,15 @@ body.blog-page-refresh .blog-comment-form textarea:focus {
 }
 
 body.blog-page-refresh .blog-comment-form button {
+    border: none;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
     margin-top: 6px;
     justify-self: start;
+    font: inherit;
+    line-height: 1;
+    cursor: pointer;
 }
 
 body.blog-page-refresh .blog-comment-form button:disabled {
