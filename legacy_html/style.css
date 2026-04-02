@@ -20,6 +20,10 @@
    ========================================= */
 @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Caveat:wght@400;500;600;700&display=swap');
 
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 :root {
     --theme-bg: #F9FAFB;
     --clr-base: #1B4965;
@@ -1669,7 +1673,7 @@ body.blog-page-refresh .blog-grid-view i {
         padding-left: 0 !important;
         padding-right: 0 !important;
         max-width: 100% !important;
-        width: 100% !important;
+        width: auto !important;
     }
 
     body.blog-page-refresh .blog-page-hero,
@@ -1681,6 +1685,7 @@ body.blog-page-refresh .blog-grid-view i {
         margin-right: 18px !important;
         margin-bottom: 20px !important;
         padding: 24px 18px !important;
+        width: auto !important;
     }
 
     /* Aggressive word breaking to prevent overflow */
