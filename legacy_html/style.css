@@ -990,8 +990,9 @@ body.blog-page-refresh .blog-page-banner {
 
 body.blog-page-refresh .blog-page-hero {
     display: block;
-    max-width: 960px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: none;
+    margin: 0;
     padding: clamp(28px, 4vw, 48px);
     border-radius: 36px;
     background:
