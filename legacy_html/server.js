@@ -5070,10 +5070,10 @@ async function publishSocialPlannerEntryById(entryId, req, options = {}) {
     let latestError = '';
     const delivery = [];
 
+    // Filter ut og håndter inaktive kontoer først
+    const activeTargetAccounts = [];
     for (const account of targetAccounts) {
-        const accountPlatform = normalizePlannerPlatform(account?.platform || '');
-        const mediaUrlForAccount = explicitMediaUrl || (accountPlatform === 'instagram' ? resolvedMediaUrl : '');
-
+        const platform = normalizePlannerPlatform(account?.platform || '');
         if (String(account.status || 'active').toLowerCase() !== 'active') {
             failedCount += 1;
             const details = `Konto "${account.displayName}" er ikke aktiv.`;
@@ -5081,72 +5081,104 @@ async function publishSocialPlannerEntryById(entryId, req, options = {}) {
             publishLog.push({
                 at: new Date().toISOString(),
                 accountId: account.id,
-                platform: accountPlatform,
+                platform,
                 status: 'failed',
                 details
             });
             delivery.push({
                 accountId: account.id,
-                platform: accountPlatform,
+                platform,
                 sent: false,
                 details
             });
-            continue;
+        } else {
+            activeTargetAccounts.push(account);
         }
+    }
 
-        const payload = buildSocialPlannerEntryPayload(entry, account, workspace, req, {
-            mediaUrl: mediaUrlForAccount
+    // Hvis vi har aktive kontoer, send ÉN samlet webhook-forespørsel
+    if (activeTargetAccounts.length > 0) {
+        const primaryAccount = activeTargetAccounts[0];
+        const allPlatforms = [...new Set(activeTargetAccounts.map(a => normalizePlannerPlatform(a.platform || '')))];
+        
+        // Bruk alltid den absolutte media-URL-en for alle plattformer
+        const mediaUrlForWebhook = explicitMediaUrl || resolvedMediaUrl || resolveAbsoluteAssetUrl(entry.mediaUrl, req);
+
+        const payload = buildSocialPlannerEntryPayload(entry, primaryAccount, workspace, req, {
+            mediaUrl: mediaUrlForWebhook
         });
+        
+        // Utvid payload med informasjon om ALLE valgte kontoer og plattformer
+        payload.platforms = allPlatforms;
+        payload.targetAccounts = activeTargetAccounts.map(a => ({
+            id: a.id,
+            platform: normalizePlannerPlatform(a.platform || ''),
+            displayName: a.displayName,
+            externalAccountId: a.externalAccountId || ''
+        }));
+
         const webhookResult = await postPayloadToSocialWebhook(payload, {
             userAgent: 'tk-design-social-planner',
             allowSimulatedWithoutConfig: allowLocalPublishFallback,
             allowSimulatedOnFailure: allowLocalPublishFallback
         });
 
-        if (webhookResult.sent) {
-            successCount += 1;
-            const successDetails = webhookResult.simulated
-                ? (webhookResult.details || 'Publisert lokalt (simulert).')
-                : (webhookResult.details || 'Publisert via webhook');
-            publishLog.push({
-                at: new Date().toISOString(),
-                accountId: account.id,
-                platform: accountPlatform,
-                status: 'published',
-                details: successDetails
-            });
+        // Oppdater status for hver enkelt konto basert på det felles resultatet
+        for (const account of activeTargetAccounts) {
+            const platform = normalizePlannerPlatform(account.platform || '');
+            if (webhookResult.sent) {
+                successCount += 1;
+                const successDetails = webhookResult.simulated
+                    ? (webhookResult.details || 'Publisert lokalt (simulert).')
+                    : (webhookResult.details || 'Publisert via webhook');
+                
+                publishLog.push({
+                    at: new Date().toISOString(),
+                    accountId: account.id,
+                    platform,
+                    status: 'published',
+                    details: successDetails
+                });
 
-            upsertSocialPlannerEntryPublication(entry, {
-                accountId: account.id,
-                platform: accountPlatform,
-                externalPostId: webhookResult.externalPostId,
-                externalMediaId: webhookResult.externalMediaId,
-                externalUrl: webhookResult.externalUrl,
-                publishedAt: webhookResult.publishedAt || new Date().toISOString(),
-                metricsPatch: webhookResult.metricsPatch || {}
-            });
-        } else {
-            failedCount += 1;
-            latestError = webhookResult.details || webhookResult.error || 'Publisering feilet.';
-            publishLog.push({
-                at: new Date().toISOString(),
-                accountId: account.id,
-                platform: accountPlatform,
-                status: 'failed',
-                details: latestError
-            });
+                upsertSocialPlannerEntryPublication(entry, {
+                    accountId: account.id,
+                    platform,
+                    externalPostId: webhookResult.externalPostId,
+                    externalMediaId: webhookResult.externalMediaId,
+                    externalUrl: webhookResult.externalUrl,
+                    publishedAt: webhookResult.publishedAt || new Date().toISOString(),
+                    metricsPatch: webhookResult.metricsPatch || {}
+                });
+
+                delivery.push({
+                    accountId: account.id,
+                    platform,
+                    sent: true,
+                    code: webhookResult.code || 'ok',
+                    details: successDetails,
+                    externalPostId: webhookResult.externalPostId || '',
+                    externalMediaId: webhookResult.externalMediaId || '',
+                    externalUrl: webhookResult.externalUrl || ''
+                });
+            } else {
+                failedCount += 1;
+                latestError = webhookResult.details || webhookResult.error || 'Publisering feilet.';
+                publishLog.push({
+                    at: new Date().toISOString(),
+                    accountId: account.id,
+                    platform,
+                    status: 'failed',
+                    details: latestError
+                });
+                delivery.push({
+                    accountId: account.id,
+                    platform,
+                    sent: false,
+                    code: webhookResult.code || 'error',
+                    details: latestError
+                });
+            }
         }
-
-        delivery.push({
-            accountId: account.id,
-            platform: accountPlatform,
-            sent: !!webhookResult.sent,
-            code: webhookResult.code || '',
-            details: webhookResult.details || '',
-            externalPostId: webhookResult.externalPostId || '',
-            externalMediaId: webhookResult.externalMediaId || '',
-            externalUrl: webhookResult.externalUrl || ''
-        });
     }
 
     if (successCount > 0 && failedCount === 0) {
