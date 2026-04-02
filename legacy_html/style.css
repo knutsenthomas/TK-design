@@ -1668,9 +1668,39 @@ body.blog-page-refresh .blog-grid-view i {
     }
 
     /* Refined mobile margins for blog details - matching homepage and blog list */
-    /* TAKE 5: FINAL CLEAN CENTERED LAYOUT - RESOLVES ALL SHIFTS */
-    body.blog-page-refresh .blog-page-main > .container,
-    body.blog-page-refresh section.page-banner > .container {
+    /* TAKE 6: THE FULL TRUTH RESOLUTION */
+    
+    /* 1. Prevent Header/Nav from pushing width to 1000px */
+    body.blog-page-refresh .nav-desktop,
+    body.blog-page-refresh .lang-switch-desktop {
+        display: none !important;
+    }
+
+    body.blog-page-refresh .header .container {
+        overflow: hidden !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+        padding: 0 18px !important;
+    }
+
+    /* 2. Responsive Tables in Blog Content */
+    body.blog-page-refresh .blog-rich-content table {
+        display: block !important;
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        margin-bottom: 1.5rem !important;
+        border-collapse: collapse !important;
+    }
+
+    /* 3. Fix Extra Top Padding & Banner Spacing */
+    body.blog-page-refresh .blog-page-banner {
+        padding-top: 100px !important; /* Reduced from 150px+ */
+        padding-bottom: 20px !important;
+    }
+
+    /* 4. Streamlined Centering (No Compounding) */
+    body.blog-page-refresh .container {
         padding-left: 18px !important;
         padding-right: 18px !important;
         width: 100% !important;
@@ -1680,21 +1710,16 @@ body.blog-page-refresh .blog-grid-view i {
     }
 
     body.blog-page-refresh .blog-detail-grid,
-    body.blog-page-refresh .blog-article-shell {
+    body.blog-page-refresh .blog-article-shell,
+    body.blog-page-refresh .blog-page-hero {
         margin: 0 auto !important;
         padding-left: 0 !important;
         padding-right: 0 !important;
         width: 100% !important;
-        max-width: 100% !important;
         box-sizing: border-box !important;
     }
 
-    body.blog-page-refresh .blog-page-title {
-        overflow-wrap: anywhere !important;
-        word-break: break-word !important;
-        width: 100% !important;
-    }
-
+    /* 5. Internal Card Padding */
     body.blog-page-refresh .blog-article-shell,
     body.blog-page-refresh .blog-page-hero,
     body.blog-page-refresh .blog-overview-card,
@@ -1702,7 +1727,12 @@ body.blog-page-refresh .blog-grid-view i {
         padding: 24px 18px !important;
         border-radius: 28px !important;
         margin-bottom: 20px !important;
-        box-sizing: border-box !important;
+    }
+
+    body.blog-page-refresh .blog-page-title {
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+        font-size: clamp(1.8rem, 8vw, 2.5rem) !important;
     }
 
     body.blog-page-refresh .blog-share-links {
