@@ -2315,6 +2315,43 @@ function buildSocialPlannerCaption(entry = {}, platform = 'facebook') {
     return [variant || master || title, linkUrl, hashtags].filter(Boolean).join('\n\n').trim();
 }
 
+function buildSocialPlannerCaptionMap(entry = {}, platforms = SOCIAL_PLATFORMS) {
+    const source = Array.isArray(platforms) && platforms.length > 0 ? platforms : SOCIAL_PLATFORMS;
+    const captions = {};
+    const seen = new Set();
+
+    source.forEach((platformValue) => {
+        const platform = normalizePlannerPlatform(platformValue);
+        if (seen.has(platform)) return;
+        seen.add(platform);
+        captions[platform] = buildSocialPlannerCaption(entry, platform);
+    });
+
+    return captions;
+}
+
+function buildSocialPlannerPublishTargetMap(platforms = []) {
+    const selected = new Set();
+
+    (Array.isArray(platforms) ? platforms : []).forEach((platformValue) => {
+        selected.add(normalizePlannerPlatform(platformValue));
+    });
+
+    return SOCIAL_PLATFORMS.reduce((accumulator, platform) => {
+        accumulator[platform] = selected.has(platform);
+        return accumulator;
+    }, {});
+}
+
+function buildSocialPlannerTargetAccountPayload(accounts = []) {
+    return (Array.isArray(accounts) ? accounts : []).map((account) => ({
+        id: String(account?.id || ''),
+        platform: normalizePlannerPlatform(account?.platform || ''),
+        displayName: String(account?.displayName || ''),
+        externalAccountId: String(account?.externalAccountId || '')
+    }));
+}
+
 function normalizeSeoData(seoData) {
     const parsedSeoData = (seoData && typeof seoData === 'object' && !Array.isArray(seoData))
         ? seoData
@@ -4887,6 +4924,29 @@ function buildSocialPlannerEntryPayload(entry, account, workspace, req, options 
     const caption = buildSocialPlannerCaption(entry, platform);
     const mediaUrl = resolveSocialPlannerPublishMediaUrl(entry, safeReq, options);
     const linkUrl = normalizePlannerUrl(entry?.linkUrl || '');
+    const targetAccounts = buildSocialPlannerTargetAccountPayload(options?.targetAccounts || []);
+    const targetAccountIds = targetAccounts
+        .map((row) => String(row.id || '').trim())
+        .filter(Boolean);
+    const selectedPlatforms = targetAccounts.length > 0
+        ? Array.from(new Set(targetAccounts.map((row) => normalizePlannerPlatform(row.platform || ''))))
+        : [platform];
+    const publishTargets = buildSocialPlannerPublishTargetMap(selectedPlatforms);
+    const captionMap = buildSocialPlannerCaptionMap(entry, SOCIAL_PLATFORMS);
+    const selectedCaptionMap = buildSocialPlannerCaptionMap(entry, selectedPlatforms);
+    const variants = (entry?.variants && typeof entry.variants === 'object' && !Array.isArray(entry.variants))
+        ? { ...entry.variants }
+        : {};
+    const mediaAsset = mediaUrl ? {
+        type: 'image',
+        url: mediaUrl,
+        image: mediaUrl,
+        imageUrl: mediaUrl,
+        image_url: mediaUrl,
+        mediaUrl: mediaUrl,
+        media_url: mediaUrl
+    } : null;
+    const mediaAssets = mediaAsset ? [mediaAsset] : [];
 
     return {
         event: 'social.planner.publish',
@@ -4894,10 +4954,19 @@ function buildSocialPlannerEntryPayload(entry, account, workspace, req, options 
         source: 'tk-design-social-planner',
         site: siteBase,
         platform,
+        platforms: selectedPlatforms,
+        publishTargets,
+        targetAccountIds,
+        targetAccounts,
+        image: mediaUrl,
         image_url: mediaUrl,
         imageUrl: mediaUrl,
         media_url: mediaUrl,
         mediaUrl: mediaUrl,
+        postImage: mediaUrl,
+        attachmentUrl: mediaUrl,
+        asset: mediaAsset,
+        assets: mediaAssets,
         workspace: {
             id: String(workspace?.id || 'default'),
             name: String(workspace?.name || 'Workspace')
@@ -4918,8 +4987,14 @@ function buildSocialPlannerEntryPayload(entry, account, workspace, req, options 
             image: mediaUrl,
             imageUrl: mediaUrl,
             image_url: mediaUrl,
+            attachmentUrl: mediaUrl,
+            asset: mediaAsset,
+            assets: mediaAssets,
             url: linkUrl,
             linkUrl,
+            variants,
+            platforms: selectedPlatforms,
+            targetAccountIds,
             scheduledFor: String(entry?.scheduledFor || ''),
             status: String(entry?.status || 'draft')
         },
@@ -4928,7 +5003,23 @@ function buildSocialPlannerEntryPayload(entry, account, workspace, req, options 
             captions: {
                 no: caption,
                 en: caption
-            }
+            },
+            captionsByPlatform: captionMap,
+            selectedCaptionsByPlatform: selectedCaptionMap,
+            publishTargets,
+            image: mediaUrl,
+            imageUrl: mediaUrl,
+            image_url: mediaUrl,
+            mediaUrl: mediaUrl,
+            media_url: mediaUrl,
+            asset: mediaAsset,
+            assets: mediaAssets
+        },
+        selection: {
+            platforms: selectedPlatforms,
+            publishTargets,
+            targetAccountIds,
+            targetAccounts
         },
         sync: {
             metricsUrl: resolveSocialPlannerMetricsSyncUrl(safeReq),
@@ -4962,7 +5053,9 @@ async function publishSocialPlannerEntryById(entryId, req, options = {}) {
         return { ok: false, httpStatus: 400, error: 'Entry id is required.' };
     }
 
-    const state = await getSocialPlannerState();
+    const state = (options?.stateOverride && typeof options.stateOverride === 'object' && !Array.isArray(options.stateOverride))
+        ? normalizeSocialPlannerData(options.stateOverride)
+        : await getSocialPlannerState();
     const entries = Array.isArray(state.entries) ? state.entries : [];
     const entryIndex = entries.findIndex((row) => String(row.id) === entryIdNormalized);
 
@@ -5039,7 +5132,7 @@ async function publishSocialPlannerEntryById(entryId, req, options = {}) {
     });
 
     if (requiresImage && !resolvedMediaUrl) {
-        const details = 'Instagram krever bilde. Legg til bilde i innlegget (Unsplash eller Last opp) før publisering.';
+        const details = 'Instagram krever bilde i Social Planner. Legg til bilde i innlegget (Unsplash eller Last opp) før publisering.';
         entry.status = options.keepScheduledOnFail ? 'scheduled' : 'failed';
         entry.lastError = details;
         entry.updatedAt = new Date().toISOString();
@@ -5099,23 +5192,20 @@ async function publishSocialPlannerEntryById(entryId, req, options = {}) {
     // Hvis vi har aktive kontoer, send ÉN samlet webhook-forespørsel
     if (activeTargetAccounts.length > 0) {
         const primaryAccount = activeTargetAccounts[0];
-        const allPlatforms = [...new Set(activeTargetAccounts.map(a => normalizePlannerPlatform(a.platform || '')))];
-        
+        const selectedTargetAccounts = activeTargetAccounts.map((account) => ({
+            id: account.id,
+            platform: normalizePlannerPlatform(account.platform || ''),
+            displayName: account.displayName,
+            externalAccountId: account.externalAccountId || ''
+        }));
+
         // Bruk alltid den absolutte media-URL-en for alle plattformer
         const mediaUrlForWebhook = explicitMediaUrl || resolvedMediaUrl || resolveAbsoluteAssetUrl(entry.mediaUrl, req);
 
         const payload = buildSocialPlannerEntryPayload(entry, primaryAccount, workspace, req, {
-            mediaUrl: mediaUrlForWebhook
+            mediaUrl: mediaUrlForWebhook,
+            targetAccounts: selectedTargetAccounts
         });
-        
-        // Utvid payload med informasjon om ALLE valgte kontoer og plattformer
-        payload.platforms = allPlatforms;
-        payload.targetAccounts = activeTargetAccounts.map(a => ({
-            id: a.id,
-            platform: normalizePlannerPlatform(a.platform || ''),
-            displayName: a.displayName,
-            externalAccountId: a.externalAccountId || ''
-        }));
 
         const webhookResult = await postPayloadToSocialWebhook(payload, {
             userAgent: 'tk-design-social-planner',
@@ -6388,7 +6478,10 @@ app.post('/api/social-planner/entries', async (req, res) => {
         const publishNow = parseBooleanFlag(req.body?.publishNow, false);
 
         if (publishNow) {
-            const publishResult = await publishSocialPlannerEntryById(entry.id, req, { keepScheduledOnFail: false });
+            const publishResult = await publishSocialPlannerEntryById(entry.id, req, {
+                keepScheduledOnFail: false,
+                stateOverride: state
+            });
             return res.status(Number.isFinite(publishResult.httpStatus) ? publishResult.httpStatus : 500).json({
                 success: !!publishResult.ok,
                 entry: publishResult.entry || entry,
@@ -6466,7 +6559,8 @@ app.patch('/api/social-planner/entries/:entryId', async (req, res) => {
 
         if (publishNow) {
             const publishResult = await publishSocialPlannerEntryById(entryId, req, {
-                keepScheduledOnFail: parseBooleanFlag(req.body?.keepScheduledOnFail, false)
+                keepScheduledOnFail: parseBooleanFlag(req.body?.keepScheduledOnFail, false),
+                stateOverride: state
             });
             return res.status(Number.isFinite(publishResult.httpStatus) ? publishResult.httpStatus : 500).json({
                 success: !!publishResult.ok,

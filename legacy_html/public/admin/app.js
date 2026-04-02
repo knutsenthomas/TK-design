@@ -3038,10 +3038,7 @@ function normalizeSocialPlannerHashtagList(values = []) {
 
 function getSocialPlannerAssistantSelectedPlatforms() {
     const supportedPlatforms = getSocialPlannerUiPlatforms();
-    const accountSelect = document.getElementById('sp-entry-target-accounts');
-    const selectedAccountIds = Array.from(accountSelect?.selectedOptions || [])
-        .map((option) => String(option.value || '').trim())
-        .filter(Boolean);
+    const selectedAccountIds = getSocialPlannerSelectedTargetAccountIds();
 
     if (selectedAccountIds.length === 0) {
         return supportedPlatforms;
@@ -3060,6 +3057,14 @@ function getSocialPlannerAssistantSelectedPlatforms() {
     });
 
     return selectedPlatforms.length > 0 ? selectedPlatforms : supportedPlatforms;
+}
+
+function getSocialPlannerSelectedTargetAccountIds() {
+    const accountSelect = document.getElementById('sp-entry-target-accounts');
+    return Array.from(accountSelect?.options || [])
+        .filter((option) => option.selected)
+        .map((option) => String(option.value || '').trim())
+        .filter(Boolean);
 }
 
 function setSocialPlannerAssistantBusy(isBusy = false, action = '') {
@@ -3290,8 +3295,7 @@ function renderSocialPlannerComposerAccountChips() {
         button.appendChild(label);
         button.addEventListener('click', () => {
             option.selected = !option.selected;
-            renderSocialPlannerComposerAccountChips();
-            renderSocialPlannerEntryPreview();
+            select.dispatchEvent(new Event('change', { bubbles: true }));
         });
         container.appendChild(button);
     });
@@ -3696,7 +3700,7 @@ function renderSocialPlannerTargetAccountOptions() {
     const select = document.getElementById('sp-entry-target-accounts');
     if (!select) return;
 
-    const previousSelection = new Set(Array.from(select.selectedOptions).map((option) => option.value));
+    const previousSelection = new Set(getSocialPlannerSelectedTargetAccountIds());
     const scopedAccounts = getSocialPlannerScopedAccounts();
     select.innerHTML = '';
 
@@ -5125,9 +5129,7 @@ window.createSocialPlannerEntry = async function (event, options = {}) {
     const hashtags = parseHashtagInput(document.getElementById('sp-entry-hashtags')?.value || '');
     const variants = getSocialPlannerEntryFormVariants();
     const title = deriveSocialPlannerEntryTitle(rawTitle, masterText, variants);
-    const targetAccountIds = Array.from(document.getElementById('sp-entry-target-accounts')?.selectedOptions || [])
-        .map((option) => option.value)
-        .filter(Boolean);
+    const targetAccountIds = getSocialPlannerSelectedTargetAccountIds();
 
     if (!title) {
         setSocialPlannerStatus('Skriv inn tekst eller tittel før du lagrer innlegget.', 'danger');
