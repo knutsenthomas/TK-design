@@ -136,13 +136,16 @@ body {
 }
 
 .mobile-menu-backdrop {
-    display: none;
+    display: block;
     position: fixed;
     inset: 0;
     border: 0;
     background: rgba(15, 23, 42, 0.36);
     cursor: pointer;
     z-index: 1180;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
 }
 
 .header-actions {
@@ -4643,28 +4646,37 @@ body.admin-dashboard-refresh .user-dropdown {
         flex-direction: column;
     }
 
+    body.admin-mobile-menu-open .mobile-menu-backdrop {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
     .sidebar {
-        width: 100%;
-        padding: 16px 14px;
-        border-right: none;
-        border-bottom: 1px solid var(--border-color);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 280px;
+        max-width: 85vw;
+        height: 100vh;
+        z-index: 1200;
+        padding: 24px 16px;
+        border-right: 1px solid var(--border-color);
+        background: var(--sidebar-bg);
+        transform: translateX(0);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+        box-shadow: 4px 0 24px rgba(15, 23, 42, 0.15);
+        overflow-y: auto;
     }
 
     body.admin-sidebar-collapsed .sidebar {
-        max-height: 0;
-        padding-top: 0;
-        padding-bottom: 0;
-        border-bottom-color: transparent;
-        transform: translateX(-105%);
-        opacity: 0;
+        transform: translateX(-100%);
         pointer-events: none;
-        overflow: hidden;
+        opacity: 0;
+        box-shadow: none;
     }
 
     .sidebar-reopen-btn {
-        top: 94px;
-        left: 8px;
-        padding: 7px 9px;
+        display: none !important;
     }
 
     .sidebar .logo h2 {
