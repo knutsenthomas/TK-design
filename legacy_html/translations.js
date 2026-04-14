@@ -176,7 +176,12 @@ const translations = {
             c4_desc: "We go live, ensure everything works perfectly, and provide ongoing support.",
             c4_li1: "Deployment",
             c4_li2: "Training",
-            c4_li3: "Follow-up"
+            c4_li3: "Follow-up",
+            c5_title: "Analysis & Growth",
+            c5_desc: "We analyze performance data and optimize for continuous growth.",
+            c5_li1: "Data insight",
+            c5_li2: "Optimization",
+            c5_li3: "Further development"
         },
         testimonial: {
             tag: "Why us",
@@ -590,7 +595,12 @@ const translations = {
             c4_desc: "Vi går live, sørger for at alt fungerer optimalt, og gir deg trygghet videre.",
             c4_li1: "Publisering",
             c4_li2: "Opplæring",
-            c4_li3: "Videre oppfølging"
+            c4_li3: "Videre oppfølging",
+            c5_title: "Analyse & Vekst",
+            c5_desc: "Vi analyserer resultater og optimaliserer for å sikre maksimal utbytte.",
+            c5_li1: "Datainnsikt",
+            c5_li2: "Optimalisering",
+            c5_li3: "Videreutvikling"
         },
         testimonial: {
             tag: "Hvorfor oss",

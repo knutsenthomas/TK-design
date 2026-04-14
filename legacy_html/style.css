@@ -3975,7 +3975,7 @@ img {
 
 .process-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* Tvinger 4 kolonner på desktop */
+    grid-template-columns: repeat(5, 1fr); /* Tvinger 5 kolonner på desktop */
     gap: 20px; /* Litt mindre gap for å få bedre plass */
 }
 
@@ -7447,7 +7447,7 @@ body.homepage-refresh .process-section {
 
 body.homepage-refresh .process-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 20px;
 }
 
