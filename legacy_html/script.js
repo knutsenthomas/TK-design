@@ -69,15 +69,20 @@ document.addEventListener('DOMContentLoaded', () => {
         menuTrigger.addEventListener('click', () => toggleMenu());
     }
 
-    // Close menu when clicking a link
+    // Close menu when clicking a link (Exclude links that have submenus on mobile)
     mobileNavLinks.forEach(link => {
-        link.addEventListener('click', () => toggleMenu(true));
+        link.addEventListener('click', (e) => {
+            // Check if this link is a trigger for a submenu
+            if (link.closest('.mobile-nav-has-sub')) {
+                return; // Do nothing here, handled by the submenu trigger listener
+            }
+            toggleMenu(true);
+        });
     });
 
     // Mobile submenu toggles (Accordion - Whole row trigger)
     document.querySelectorAll('.mobile-nav-has-sub').forEach(trigger => {
         trigger.addEventListener('click', (e) => {
-            // Only prevent default if clicking the link or the area
             e.preventDefault();
             e.stopPropagation();
             

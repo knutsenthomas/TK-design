@@ -8526,23 +8526,28 @@ body.homepage-refresh .nav-desktop ul li.has-dropdown .submenu li a:hover {
    ===================================================================== */
 .mobile-nav-has-sub {
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block; /* Sørger for at den tar hele bredden av li */
     width: 100%;
     cursor: pointer;
+    text-align: center; /* Sørger for perfekt sentrering av innholdet */
     user-select: none;
 }
-/* Pilen er plassert absolutt til høyre for å bevare midtstilling av tekst */
+.mobile-nav-has-sub a {
+    display: inline-block;
+    pointer-events: none; /* Klikket fanges opp av div'en i stedet */
+}
+/* Pilen er plassert helt ute til høyre, uavhengig av teksten i midten */
 .mobile-nav-has-sub .mobile-sub-icon {
     position: absolute;
-    right: 20px;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
     font-size: 11px;
-    opacity: 0.4;
+    opacity: 0.45;
     transition: transform 0.22s ease;
 }
 .mobile-nav-has-sub.is-open .mobile-sub-icon {
-    transform: rotate(180deg);
+    transform: translateY(-50%) rotate(180deg);
     opacity: 0.8;
 }
 .mobile-nav .mobile-submenu {
