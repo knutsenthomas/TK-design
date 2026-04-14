@@ -149,39 +149,23 @@
     }
     </script>
 
+    <!-- ===================== PRELOAD KRITISK LCP ===================== -->
+    <link rel="preload" as="image" href="/img/logo/d.webp">
+
     <!-- ===================== FONTER & RESSURSER ===================== -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Defer Google Fonts -->
-    <link rel="preload"
-        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
-        as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript>
-        <link rel="stylesheet"
-            href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap">
-    </noscript>
+    <!-- Last inn fonter umiddelbart for FCP/LCP boost -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap">
 
     <link rel="stylesheet" href="style.css?v=67">
 
-    <!-- Defer Font Awesome -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style"
-        onload="this.onload=null;this.rel='stylesheet'">
-    <noscript>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    </noscript>
+    <!-- Ikoner og rammeverk -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
 
-    <!-- Defer AOS Animation CSS -->
-    <link rel="preload" href="https://unpkg.com/aos@2.3.1/dist/aos.css" as="style"
-        onload="this.onload=null;this.rel='stylesheet'">
-    <noscript>
-        <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
-    </noscript>
-
-    <!-- Defer Custom Dynamic Styles -->
-    <link rel="preload" href="admin/custom-style.css?v=62" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript>
-        <link rel="stylesheet" href="admin/custom-style.css?v=62">
-    </noscript>
+    <!-- Egendefinert styling -->
+    <link rel="stylesheet" href="admin/custom-style.css?v=62">
     <link rel="icon" type="image/png" href="img/logo/d.png">
     <!-- Google Analytics GA4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-5RZVDEBBYM"></script>
@@ -1105,16 +1089,17 @@
         </div>
     </footer>
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
+    <script src="translations.js" defer></script>
+    <script src="script.js" defer></script>
+    <script src="js/cookies.js" defer></script>
     <script>
-        AOS.init({
-            duration: 800,
-            once: true
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof AOS !== 'undefined') {
+                AOS.init({ duration: 800, once: true });
+            }
         });
     </script>
-    <script src="translations.js"></script>
-    <script src="script.js"></script>
-    <script src="js/cookies.js"></script>
     <script>
         function slugifyBlogPostTitle(value = '') {
             return String(value || '')
