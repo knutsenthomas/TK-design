@@ -74,6 +74,24 @@ document.addEventListener('DOMContentLoaded', () => {
         link.addEventListener('click', () => toggleMenu(true));
     });
 
+    // Mobile submenu toggles (Accordion)
+    document.querySelectorAll('.mobile-sub-toggle').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const submenu = btn.closest('li').querySelector('.mobile-submenu');
+            if (!submenu) return;
+            const isOpen = submenu.classList.contains('is-open');
+            // Close all others first
+            document.querySelectorAll('.mobile-submenu.is-open').forEach(el => el.classList.remove('is-open'));
+            document.querySelectorAll('.mobile-sub-toggle.is-open').forEach(el => el.classList.remove('is-open'));
+            // Toggle current
+            if (!isOpen) {
+                submenu.classList.add('is-open');
+                btn.classList.add('is-open');
+            }
+        });
+    });
+
     // Video Modal
     const playBtn = document.querySelector('.play-video-btn');
     const videoModal = document.querySelector('.video-modal');

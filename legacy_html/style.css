@@ -8515,12 +8515,38 @@ body.homepage-refresh .nav-desktop ul li.has-dropdown .submenu li a:hover {
 }
 
 /* =====================================================================
-   MOBIL-MENY: Innrykk-undermeny
+   MOBIL-MENY: Kollapsbar undermeny (toggle ved klikk)
    ===================================================================== */
+.mobile-nav-has-sub {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+.mobile-sub-toggle {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 6px 10px;
+    font-size: 13px;
+    opacity: 0.65;
+    transition: transform 0.22s ease, opacity 0.2s;
+    flex-shrink: 0;
+}
+.mobile-sub-toggle.is-open {
+    transform: rotate(180deg);
+    opacity: 1;
+}
 .mobile-nav .mobile-submenu {
     list-style: none;
-    margin: 6px 0 10px 0;
+    display: none;
+    margin: 0;
     padding: 0;
+    overflow: hidden;
+}
+.mobile-nav .mobile-submenu.is-open {
+    display: block;
 }
 .mobile-nav .mobile-submenu li a {
     display: flex;
