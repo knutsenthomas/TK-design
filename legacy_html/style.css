@@ -7447,7 +7447,7 @@ body.homepage-refresh .process-section {
 
 body.homepage-refresh .process-grid {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 20px;
 }
 
