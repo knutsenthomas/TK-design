@@ -161,8 +161,11 @@
     <link rel="stylesheet" href="style.css?v=67">
 
     <!-- Ikoner og rammeverk -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    
+    <link rel="preload" href="https://unpkg.com/aos@2.3.1/dist/aos.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css"></noscript>
 
     <!-- Egendefinert styling -->
     <link rel="stylesheet" href="admin/custom-style.css?v=62">
@@ -244,7 +247,7 @@
         <section class="banner">
             <div class="container">
                 <div class="flex flex-wrap items-center">
-                    <div class="banner-content" style="flex: 1.2; min-width: 300px;" data-aos="fade-right">
+                    <div class="banner-content" style="flex: 1.2; min-width: 300px;">
                         <span class="subtitle" data-i18n="hero.subtitle">Profesjonell webdesign</span>
                         <h1>
                             <span class="hero-title-line" data-i18n="hero.title_1_line1">DIN</span>
@@ -292,7 +295,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="banner-image" style="flex: 1; min-width: 300px;" data-aos="fade-left">
+                    <div class="banner-image" style="flex: 1; min-width: 300px;">
                         <div class="hero-design-visual" aria-hidden="true">
                             <div class="hero-design-browser">
                                 <div class="hero-design-toolbar">
