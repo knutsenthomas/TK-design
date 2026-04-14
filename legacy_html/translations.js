@@ -35,7 +35,7 @@ const translations = {
             bottom_2: "Simple and professional",
             bottom_3: "Visibility in Google",
             bottom_4: "From idea to launch",
-            bottom_5: "Measurable growth and analysis"
+            bottom_5: "Growth and analysis"
         },
         about: {
             intro: "TK-design helps your business succeed online. We offer everything from websites and social media to strategic advice and support, so you can reach your goals with a clear digital identity.",
