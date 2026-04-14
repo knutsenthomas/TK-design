@@ -165,11 +165,16 @@ const translations = {
             c2_li1: "Structure",
             c2_li2: "Visual direction",
             c2_li3: "Adjustment",
-            c3_title: "Development & Launch",
-            c3_desc: "We build the solution, go live and give you support so you feel confident moving forward.",
+            c3_title: "Development",
+            c3_desc: "We build the solution with modern technology, focusing on performance and user experience.",
             c3_li1: "Technical solution",
-            c3_li2: "Launch",
-            c3_li3: "Training and support"
+            c3_li2: "Mobile optimization",
+            c3_li3: "Quality assurance",
+            c4_title: "Launch & Support",
+            c4_desc: "We go live, ensure everything works perfectly, and provide ongoing support.",
+            c4_li1: "Deployment",
+            c4_li2: "Training",
+            c4_li3: "Follow-up"
         },
         testimonial: {
             tag: "Why us",
@@ -572,11 +577,16 @@ const translations = {
             c2_li1: "Struktur",
             c2_li2: "Visuell retning",
             c2_li3: "Tilpasning",
-            c3_title: "Utvikling & Lansering",
-            c3_desc: "Vi bygger løsningen, går live og gir deg støtte så du føler deg trygg videre.",
+            c3_title: "Utvikling",
+            c3_desc: "Vi bygger løsningen med moderne teknologi, med fokus på ytelse og brukeropplevelse.",
             c3_li1: "Teknisk løsning",
-            c3_li2: "Lansering",
-            c3_li3: "Opplæring og support"
+            c3_li2: "Mobiloptimalisering",
+            c3_li3: "Kvalitetssikring",
+            c4_title: "Lansering & Support",
+            c4_desc: "Vi går live, sørger for at alt fungerer optimalt, og gir deg trygghet videre.",
+            c4_li1: "Publisering",
+            c4_li2: "Opplæring",
+            c4_li3: "Videre oppfølging"
         },
         testimonial: {
             tag: "Hvorfor oss",
