@@ -4683,6 +4683,8 @@ img {
     width: 100%;
     cursor: pointer;
     text-align: center;
+    -webkit-tap-highlight-color: transparent; /* Fjerner den grå firkanten ved klikk på mobil */
+    outline: none;
 }
 .mobile-nav-has-sub a {
     pointer-events: none; /* Klikket går til div'en */
