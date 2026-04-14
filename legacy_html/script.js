@@ -74,28 +74,31 @@ document.addEventListener('DOMContentLoaded', () => {
         link.addEventListener('click', () => toggleMenu(true));
     });
 
-    // Mobile submenu toggles (Accordion)
-    document.querySelectorAll('.mobile-sub-toggle').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+    // Mobile submenu toggles (Accordion - Whole row trigger)
+    document.querySelectorAll('.mobile-nav-has-sub').forEach(trigger => {
+        trigger.addEventListener('click', (e) => {
+            // Only prevent default if clicking the link or the area
             e.preventDefault();
             e.stopPropagation();
-            const parentLi = btn.closest('li');
+            
+            const parentLi = trigger.closest('li');
             const submenu = parentLi.querySelector('.mobile-submenu');
             if (!submenu) return;
             
             const isOpen = submenu.classList.contains('is-open');
             
-            // Close all other submenus in mobile nav
+            // Close all other submenus first
             document.querySelectorAll('.mobile-submenu.is-open').forEach(el => {
                 if (el !== submenu) el.classList.remove('is-open');
             });
-            document.querySelectorAll('.mobile-sub-toggle.is-open').forEach(el => {
-                if (el !== btn) el.classList.remove('is-open');
+            document.querySelectorAll('.mobile-nav-has-sub.is-open').forEach(el => {
+                if (el !== trigger) el.classList.remove('is-open');
             });
             
             // Toggle current
-            submenu.classList.toggle('is-open', !isOpen);
-            btn.classList.toggle('is-open', !isOpen);
+            const newState = !isOpen;
+            submenu.classList.toggle('is-open', newState);
+            trigger.classList.toggle('is-open', newState);
         });
     });
 
