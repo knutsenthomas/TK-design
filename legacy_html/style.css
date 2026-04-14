@@ -3975,14 +3975,14 @@ img {
 
 .process-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* Oppdatert til 4 trinn */
-    gap: 30px;
+    grid-template-columns: repeat(4, 1fr); /* Tvinger 4 kolonner på desktop */
+    gap: 20px; /* Litt mindre gap for å få bedre plass */
 }
 
 .process-card {
     background: #ffffff;
     border: 1px solid var(--clr-border);
-    padding: 40px;
+    padding: 30px 25px; /* Redusert padding for å passe bedre i 4 kolonner */
     border-radius: 15px;
     position: relative;
     transition: 0.3s;
