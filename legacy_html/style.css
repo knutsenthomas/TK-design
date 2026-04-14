@@ -5649,24 +5649,17 @@ body.homepage-refresh .primary-cta {
     min-height: 54px;
     padding: 0 24px;
     border-radius: 16px;
-    background: linear-gradient(135deg, var(--clr-base), #3b82f6, var(--clr-base));
-    background-size: 200% auto;
+    background: linear-gradient(135deg, var(--refresh-accent), #ff9b5c);
     color: #fff;
     font-weight: 700;
-    box-shadow: 0 12px 24px rgba(27, 73, 101, 0.25);
-    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-    animation: gradientShimmer 6s ease infinite;
-}
-
-@keyframes gradientShimmer {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    box-shadow: 0 16px 30px rgba(255, 106, 27, 0.22);
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 body.homepage-refresh .primary-cta:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 20px 38px rgba(27, 73, 101, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 22px 36px rgba(255, 106, 27, 0.35);
+    background: linear-gradient(135deg, #ff7b2b, #ffaa75);
 }
 
 body.homepage-refresh .glow-cta {
