@@ -30,10 +30,12 @@ const translations = {
             top_2: "SEO strategy",
             top_3: "Social media content",
             top_4: "Support and maintenance",
+            top_5: "Website analysis",
             bottom_1: "Clear digital identity",
             bottom_2: "Simple and professional",
             bottom_3: "Visibility in Google",
-            bottom_4: "From idea to launch"
+            bottom_4: "From idea to launch",
+            bottom_5: "Growth and analysis"
         },
         about: {
             intro: "TK-design helps your business succeed online. We offer everything from websites and social media to strategic advice and support, so you can reach your goals with a clear digital identity.",
@@ -165,11 +167,21 @@ const translations = {
             c2_li1: "Structure",
             c2_li2: "Visual direction",
             c2_li3: "Adjustment",
-            c3_title: "Development & Launch",
-            c3_desc: "We build the solution, go live and give you support so you feel confident moving forward.",
+            c3_title: "Development",
+            c3_desc: "We build the solution with modern technology, focusing on performance and user experience.",
             c3_li1: "Technical solution",
-            c3_li2: "Launch",
-            c3_li3: "Training and support"
+            c3_li2: "Mobile optimization",
+            c3_li3: "Quality assurance",
+            c4_title: "Launch & Support",
+            c4_desc: "We go live, ensure everything works perfectly, and provide ongoing support.",
+            c4_li1: "Deployment",
+            c4_li2: "Training",
+            c4_li3: "Follow-up",
+            c5_title: "Analysis & Growth",
+            c5_desc: "We analyze performance data and optimize for continuous growth.",
+            c5_li1: "Data insight",
+            c5_li2: "Optimization",
+            c5_li3: "Further development"
         },
         testimonial: {
             tag: "Why us",
@@ -212,6 +224,84 @@ const translations = {
             terms: "Terms & Condition",
             privacy: "Privacy Policy",
             accessibility: "Accessibility Statement"
+        },
+        speed_test: {
+            hero: {
+                kicker: "PERFORMANCE ANALYSIS",
+                title: "See why the website loses speed before the customer does.",
+                url_placeholder: "Enter your URL (e.g. example.com)",
+                submit_label: "Run Test",
+                submit_loading_label: "Running test",
+                helper_text: "Free Core Web Vitals analysis in 30 seconds.",
+                mobile_label: "Mobile",
+                desktop_label: "Desktop",
+                loading_text: "Fetching Lighthouse data for mobile and desktop. This usually takes 10 to 20 seconds."
+            },
+            preview: {
+                title: "Analysis overview",
+                live_label: "LIVE REPORT",
+                result_label: "COMPLETED TEST"
+            },
+            report: {
+                kicker: "SCORE OVERVIEW",
+                title: "First, get the full picture from the test.",
+                summary_intro: "Here you see the total scores for",
+                summary_outro: "before you move on to metrics and actions."
+            },
+            value: {
+                kicker: "VALUE",
+                title: "Not just numbers, but actions.",
+                description: "We translate complex technical findings into concrete business opportunities and show exactly what blocks a better first impression.",
+                highlights: {
+                    item_1: {
+                        title: "Deeper insight",
+                        text: "We analyze what affects the first impression and point out where the user experience starts losing speed."
+                    },
+                    item_2: {
+                        title: "Prioritized list",
+                        text: "Stop guessing. Get a clear order of what should be fixed first to improve the site fastest."
+                    },
+                    item_3: {
+                        title: "Profit focus",
+                        text: "See the link between load time, friction and why slower pages make paid traffic more expensive."
+                    }
+                }
+            },
+            metrics: {
+                kicker: "CORE WEB VITALS",
+                title: "The measurements that shape the first impression."
+            },
+            action: {
+                kicker: "ACTION PLAN",
+                title: "This is what I would do first for performance.",
+                description: "A prioritized list of the actions that usually move the score the fastest.",
+                impact_high: "High impact",
+                impact_medium: "Medium impact",
+                impact_low: "Low impact"
+            },
+            faq: {
+                kicker: "FAQ",
+                title: "What people usually want to know before they test.",
+                items: {
+                    item_1: {
+                        question: "How accurate is this test?",
+                        answer: "We use Google Lighthouse as the data engine and turn the result into a clearer report for performance, stability, accessibility and SEO."
+                    },
+                    item_2: {
+                        question: "Why does the score vary?",
+                        answer: "Network conditions, server response and third-party resources can change between runs. Run the test a couple of times to get a clearer picture."
+                    }
+                }
+            },
+            newsletter: {
+                title: "Get your personal action plan by email.",
+                description: "We send you a concrete report with the most important actions and the next steps for your site.",
+                email_placeholder: "Your email address",
+                submit_ready_label: "Send me the report",
+                submit_idle_label: "Run the test first",
+                submit_sending_label: "Sending report...",
+                note: "By submitting, you accept our terms and privacy policy."
+            }
         },
         cookies: {
             title: "Cookies & Privacy",
@@ -307,22 +397,25 @@ const translations = {
             loading: "Loading content..."
         },
         service_details: {
-            banner_title: "Web UI/UX Design",
-            breadcrumb: "Service Details",
+            banner_title: "UI/UX Design",
+            breadcrumb: "Service details",
             sidebar_title: "All Services",
+            back_to_overview: "Back to service overview",
             sidebar_items: {
                 uiux: "UI/UX Design",
                 web_dev: "Web Development",
                 digital_marketing: "Digital Marketing",
                 branding: "Branding"
             },
-            content_title: "We believe in Client satisfaction",
-            content_p1: "Sorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.",
-            feature_1_title: "User Research",
-            feature_1_desc: "Understanding the user needs and pain points.",
-            feature_2_title: "Prototyping",
-            feature_2_desc: "Building interactive mockups to test flows.",
-            content_p2: "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."
+            content_title: "Design and implementation that creates measurable results",
+            content_p1: "We combine strategy, design and execution so your website supports both communication and business goals.",
+            feature_1_title: "Insight and direction",
+            feature_1_desc: "Clear understanding of audience, goals and priorities before design starts.",
+            feature_2_title: "Execution and follow-up",
+            feature_2_desc: "Practical delivery with clear milestones and quality in every step.",
+            feature_3_title: "Long-term value",
+            feature_3_desc: "Solutions built for growth, maintenance and continuous improvement.",
+            content_p2: "The result is a website and digital profile that feels professional, performs better and is easier to build on over time."
         }
     },
     no: {
@@ -356,10 +449,12 @@ const translations = {
             top_2: "SEO-strategi",
             top_3: "Sosiale medier",
             top_4: "Support og vedlikehold",
+            top_5: "Nettstedsanalyse",
             bottom_1: "Tydelig digital identitet",
             bottom_2: "Enkelt og profesjonelt",
             bottom_3: "Synlighet i Google",
-            bottom_4: "Fra ide til lansering"
+            bottom_4: "Fra ide til lansering",
+            bottom_5: "Målbar vekst og analyse"
         },
         about: {
             intro: "TK-design hjelper din bedrift å lykkes på nett. Vi tilbyr alt fra nettsider og sosiale medier til strategisk rådgivning og support, slik at du kan nå dine mål med en tydelig digital identitet.",
@@ -491,11 +586,21 @@ const translations = {
             c2_li1: "Struktur",
             c2_li2: "Visuell retning",
             c2_li3: "Tilpasning",
-            c3_title: "Utvikling & Lansering",
-            c3_desc: "Vi bygger løsningen, går live og gir deg støtte så du føler deg trygg videre.",
+            c3_title: "Utvikling",
+            c3_desc: "Vi bygger løsningen med moderne teknologi, med fokus på ytelse og brukeropplevelse.",
             c3_li1: "Teknisk løsning",
-            c3_li2: "Lansering",
-            c3_li3: "Opplæring og support"
+            c3_li2: "Mobiloptimalisering",
+            c3_li3: "Kvalitetssikring",
+            c4_title: "Lansering & Support",
+            c4_desc: "Vi går live, sørger for at alt fungerer optimalt, og gir deg trygghet videre.",
+            c4_li1: "Publisering",
+            c4_li2: "Opplæring",
+            c4_li3: "Videre oppfølging",
+            c5_title: "Analyse & Vekst",
+            c5_desc: "Vi analyserer resultater og optimaliserer for å sikre maksimal utbytte.",
+            c5_li1: "Datainnsikt",
+            c5_li2: "Optimalisering",
+            c5_li3: "Videreutvikling"
         },
         testimonial: {
             tag: "Hvorfor oss",
@@ -538,6 +643,84 @@ const translations = {
             terms: "Vilkår og Betingelser",
             privacy: "Personvernerklæring",
             accessibility: "Tilgjengelighetserklæring"
+        },
+        speed_test: {
+            hero: {
+                kicker: "PRESTASJONSANALYSE",
+                title: "Se hvorfor nettsiden taper fart før kunden gjør det.",
+                url_placeholder: "Skriv inn din URL (f.eks. eksempel.no)",
+                submit_label: "Kjør Test",
+                submit_loading_label: "Kjører test",
+                helper_text: "Gratis analyse av Core Web Vitals på 30 sekunder.",
+                mobile_label: "Mobil",
+                desktop_label: "Desktop",
+                loading_text: "Henter Lighthouse-data for mobil og desktop. Dette tar vanligvis 10 til 20 sekunder."
+            },
+            preview: {
+                title: "Analyse-oversikt",
+                live_label: "NÅTIDSRAPPORT",
+                result_label: "KJØRT TEST"
+            },
+            report: {
+                kicker: "SCOREOVERSIKT",
+                title: "Først får du hele bildet fra testen.",
+                summary_intro: "Her ser du totalscorene for",
+                summary_outro: "før du går videre til målinger og tiltak."
+            },
+            value: {
+                kicker: "VERDISKAPNING",
+                title: "Ikke bare tall, men tiltak.",
+                description: "Vi oversetter komplekse tekniske funn til konkrete forretningsmuligheter, og viser nøyaktig hva som hindrer et bedre førsteinntrykk.",
+                highlights: {
+                    item_1: {
+                        title: "Dypere innsikt",
+                        text: "Vi analyserer det som påvirker førsteinntrykket, og peker ut hvor brukeropplevelsen begynner å tape fart."
+                    },
+                    item_2: {
+                        title: "Prioritert liste",
+                        text: "Slutt å gjette. Få en tydelig rekkefølge på hva som bør fikses først for å løfte siden raskest mulig."
+                    },
+                    item_3: {
+                        title: "Lønnsomhets-fokus",
+                        text: "Se sammenhengen mellom lastetid, friksjon og hvorfor tregere sider gjør det dyrere å kjøpe trafikk."
+                    }
+                }
+            },
+            metrics: {
+                kicker: "CORE WEB VITALS",
+                title: "Målingene som styrer førsteinntrykket."
+            },
+            action: {
+                kicker: "HANDLINGSPLAN",
+                title: "Dette ville jeg gjort først for ytelse.",
+                description: "En prioritert liste over tiltakene som vanligvis gir størst utslag først.",
+                impact_high: "Høy impact",
+                impact_medium: "Medium impact",
+                impact_low: "Lav impact"
+            },
+            faq: {
+                kicker: "VANLIGE SPØRSMÅL",
+                title: "Det viktigste du lurer på før du tester.",
+                items: {
+                    item_1: {
+                        question: "Hvor nøyaktig er denne testen?",
+                        answer: "Vi bruker Google Lighthouse som datamotor og pakker resultatet om til en tydeligere rapport for ytelse, stabilitet, tilgjengelighet og SEO."
+                    },
+                    item_2: {
+                        question: "Hvorfor varierer poengsummen?",
+                        answer: "Nettverk, serverrespons og tredjepartsressurser kan endre seg mellom hver kjøring. Kjør gjerne testen et par ganger for å få et tydeligere bilde."
+                    }
+                }
+            },
+            newsletter: {
+                title: "Få din personlige handlingsplan på e-post.",
+                description: "Vi sender deg en konkret rapport med de viktigste tiltakene og neste steg for siden din.",
+                email_placeholder: "Din e-postadresse",
+                submit_ready_label: "Send meg rapporten",
+                submit_idle_label: "Kjør testen først",
+                submit_sending_label: "Sender rapport...",
+                note: "Ved å sende inn godtar du våre vilkår og personvernerklæring."
+            }
         },
         cookies: {
             title: "Cookies & Personvern",
@@ -633,22 +816,25 @@ const translations = {
             loading: "Laster inn innhold..."
         },
         service_details: {
-            banner_title: "Web UI/UX Design",
+            banner_title: "UI/UX-design",
             breadcrumb: "Tjenestedetaljer",
             sidebar_title: "Alle Tjenester",
+            back_to_overview: "Tilbake til tjenesteoversikt",
             sidebar_items: {
                 uiux: "UI/UX-design",
                 web_dev: "Webutvikling",
                 digital_marketing: "Digital Markedsføring",
                 branding: "Merkevarebygging"
             },
-            content_title: "Vi tror på kundetilfredshet",
-            content_p1: "Sorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.",
-            feature_1_title: "Brukerundersøkelser",
-            feature_1_desc: "Forstå brukerens behov og smertepunkter.",
-            feature_2_title: "Prototyping",
-            feature_2_desc: "Bygge interaktive modeller for å teste flyt.",
-            content_p2: "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."
+            content_title: "Design og gjennomføring som gir målbar effekt",
+            content_p1: "Vi kombinerer strategi, design og praktisk gjennomføring slik at nettsiden støtter både kommunikasjon og forretningsmål.",
+            feature_1_title: "Innsikt og retning",
+            feature_1_desc: "Tydelig forståelse av målgruppe, mål og prioriteringer før designarbeidet starter.",
+            feature_2_title: "Gjennomføring og oppfølging",
+            feature_2_desc: "Praktisk leveranse med klare milepæler og kvalitet i alle steg.",
+            feature_3_title: "Varig verdi",
+            feature_3_desc: "Løsninger bygget for vekst, vedlikehold og videre forbedring.",
+            content_p2: "Resultatet er en nettside og digital profil som oppleves profesjonell, presterer bedre og er enklere å bygge videre på over tid."
         }
     }
 };
