@@ -8276,6 +8276,9 @@ body.homepage-refresh .video-modal .modal-content {
 .social-proof-section {
     background-color: var(--theme-bg);
 }
+.social-proof-section h2.section-title {
+    color: #ffffff !important;
+}
 .proof-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -8315,13 +8318,13 @@ body.homepage-refresh .video-modal .modal-content {
     animation: growBar 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 .highlight-bar {
-    background: linear-gradient(180deg, #3b82f6, var(--clr-base));
+    background: linear-gradient(180deg, #ff9b5c, var(--refresh-accent));
 }
 .highlight-bar-reverse {
-    background: #ef4444; 
+    background: #9CA3AF; 
 }
 .highlight-bar-green {
-    background: linear-gradient(180deg, #4ade80, #16a34a);
+    background: linear-gradient(180deg, #ff9b5c, var(--refresh-accent));
 }
 .chart-label {
     position: absolute;
