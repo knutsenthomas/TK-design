@@ -3,14 +3,14 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/speed-test/',
+  base: '/nettside-sjekker/',
   server: {
     proxy: {
       '/api': 'http://localhost:3000',
     },
   },
   build: {
-    outDir: '../speed-test',
+    outDir: '../nettside-sjekker-dist',
     emptyOutDir: true,
   },
 });

@@ -54,7 +54,8 @@ const PAGE_ROUTE_MAP = {
     '/service-details': 'service-details.html',
     '/privacy': 'privacy.html',
     '/accessibility': 'accessibility.html',
-    '/speed-test': 'speed-test/index.html'
+    '/speed-test': 'speed-test/index.html',
+    '/nettside-sjekker': 'nettside-sjekker-dist/index.html'
 };
 const LEGACY_REDIRECT_MAP = {
     '/index.html': '/',
@@ -113,6 +114,11 @@ const SEO_PAGE_DEFAULTS = {
         title: 'Nettside-sjekker',
         description: 'Test hvor rask nettsiden din er med Lighthouse-data og få en konkret handlingsplan fra TK-design.',
         keywords: 'pagespeed test, lighthouse, nettside hastighet, ytelse, tk-design'
+    },
+    'nettside-sjekker-dist/index.html': {
+        title: 'Nettside test',
+        description: 'Test hastigheten og kvaliteten på nettsiden din. Få en gratis SEO- og ytelsessjekk drevet av Google PageSpeed Insights.',
+        keywords: 'nettside test, pagespeed, lighthouse, nettside hastighet, seo sjekk, tk-design'
     }
 };
 const PUBLIC_HOSTNAME_REGEX = /^(?=.{1,253}$)(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i;

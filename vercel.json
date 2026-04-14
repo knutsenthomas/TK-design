@@ -25,7 +25,8 @@
                     "legacy_html/img/**",
                     "legacy_html/js/**",
                     "legacy_html/public/**",
-                    "legacy_html/speed-test/**"
+                    "legacy_html/speed-test/**",
+                    "legacy_html/nettside-sjekker-dist/**"
                 ]
             }
         }
