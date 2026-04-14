@@ -8446,9 +8446,9 @@ body.homepage-refresh .video-modal .modal-content {
 .nav-desktop ul li.has-dropdown .submenu {
     display: block;
     position: absolute;
-    top: 100%;
+    top: calc(100% + 12px); /* Laget mer luft til hovedlinken */
     left: 50%;
-    transform: translateX(-50%) translateY(0);
+    transform: translateX(-50%) translateY(10px); /* Starter litt lavere for animasjon */
     min-width: 180px;
     background: #ffffff;
     border-radius: 12px;
@@ -8466,11 +8466,11 @@ body.homepage-refresh .video-modal .modal-content {
 .nav-desktop ul li.has-dropdown .submenu::before {
     content: '';
     position: absolute;
-    top: -6px;
+    top: -5px; /* Justert for å sitte perfekt på den nye avstanden */
     left: 50%;
     transform: translateX(-50%);
-    width: 12px;
-    height: 12px;
+    width: 10px; /* Litt mindre og nettere */
+    height: 10px;
     background: #ffffff;
     rotate: 45deg;
     border-radius: 2px;
@@ -8508,10 +8508,10 @@ body.homepage-refresh .video-modal .modal-content {
 .nav-desktop ul li.has-dropdown::after {
     content: '';
     position: absolute;
-    bottom: 0;
+    bottom: -15px; /* Utvid bryggen for å dekke det nye gapet */
     left: -20px;
     right: -20px;
-    height: 20px;
+    height: 25px;
     background: transparent;
 }
 
