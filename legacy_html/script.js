@@ -77,18 +77,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mobile submenu toggles (Accordion)
     document.querySelectorAll('.mobile-sub-toggle').forEach(btn => {
         btn.addEventListener('click', (e) => {
+            e.preventDefault();
             e.stopPropagation();
-            const submenu = btn.closest('li').querySelector('.mobile-submenu');
+            const parentLi = btn.closest('li');
+            const submenu = parentLi.querySelector('.mobile-submenu');
             if (!submenu) return;
+            
             const isOpen = submenu.classList.contains('is-open');
-            // Close all others first
-            document.querySelectorAll('.mobile-submenu.is-open').forEach(el => el.classList.remove('is-open'));
-            document.querySelectorAll('.mobile-sub-toggle.is-open').forEach(el => el.classList.remove('is-open'));
+            
+            // Close all other submenus in mobile nav
+            document.querySelectorAll('.mobile-submenu.is-open').forEach(el => {
+                if (el !== submenu) el.classList.remove('is-open');
+            });
+            document.querySelectorAll('.mobile-sub-toggle.is-open').forEach(el => {
+                if (el !== btn) el.classList.remove('is-open');
+            });
+            
             // Toggle current
-            if (!isOpen) {
-                submenu.classList.add('is-open');
-                btn.classList.add('is-open');
-            }
+            submenu.classList.toggle('is-open', !isOpen);
+            btn.classList.toggle('is-open', !isOpen);
         });
     });
 

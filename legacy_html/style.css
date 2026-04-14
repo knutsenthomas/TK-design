@@ -8525,31 +8525,34 @@ body.homepage-refresh .nav-desktop ul li.has-dropdown .submenu li a:hover {
    MOBIL-MENY: Kollapsbar undermeny (toggle ved klikk)
    ===================================================================== */
 .mobile-nav-has-sub {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    width: 100%;
 }
+/* Pilen er plassert absolutt til høyre så teksten forblir sentrert */
 .mobile-sub-toggle {
+    position: absolute;
+    right: 15px;
     background: none;
     border: none;
     color: inherit;
     cursor: pointer;
-    padding: 0;
+    padding: 10px; /* Større trykkflate */
     font-size: 11px;
     opacity: 0.45;
     transition: transform 0.22s ease, opacity 0.2s;
-    flex-shrink: 0;
     display: flex;
     align-items: center;
-    margin-top: 2px;
+    justify-content: center;
 }
 .mobile-sub-toggle.is-open {
     transform: rotate(180deg);
-    opacity: 0.7;
+    opacity: 0.8;
 }
 .mobile-nav .mobile-submenu {
-    list-style: none;
+    list-style: none !important;
     display: none !important;
     margin: 0;
     padding: 0;
@@ -8566,14 +8569,14 @@ body.homepage-refresh .nav-desktop ul li.has-dropdown .submenu li a:hover {
 }
 .mobile-nav .mobile-submenu li a {
     display: block;
-    padding: 6px 0 14px;
-    font-size: 1.05rem;
+    padding: 2px 0 20px;
+    font-size: 1rem;
     font-weight: 700;
     color: inherit;
-    opacity: 0.6;
+    opacity: 0.55;
     text-align: center;
     text-decoration: none;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.02em;
 }
 .mobile-nav .mobile-submenu li a:hover,
 .mobile-nav .mobile-submenu li a:active {
