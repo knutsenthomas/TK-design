@@ -8524,45 +8524,48 @@ body.homepage-refresh .nav-desktop ul li.has-dropdown .submenu li a:hover {
 /* =====================================================================
    MOBIL-MENY: Kollapsbar undermeny (Hele raden er klikkbar)
    ===================================================================== */
+/* =====================================================================
+   MOBIL-MENY: Kollapsbar undermeny (Vertikal stabling og midtstilling)
+   ===================================================================== */
 .mobile-nav ul {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important; /* Dette garanterer midtstilling */
+    display: block !important;
+    text-align: center !important;
     width: 100% !important;
     padding: 0 !important;
     list-style: none !important;
 }
 .mobile-nav li {
+    display: block !important;
     width: 100% !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    position: relative;
     margin: 32px 0 !important;
+    position: relative;
+    box-sizing: border-box;
 }
 .mobile-nav-has-sub {
     position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: block;
     width: 100%;
     cursor: pointer;
+    text-align: center;
     user-select: none;
 }
 .mobile-nav-has-sub a {
     display: inline-block;
+    padding: 10px 0;
     pointer-events: none; /* Klikket går til div'en */
 }
 /* Pilen er plassert helt ute til høyre uten å påvirke teksten i midten */
 .mobile-nav-has-sub .mobile-sub-icon {
     position: absolute;
-    right: 20px;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
     font-size: 11px;
     opacity: 0.45;
     transition: transform 0.22s ease;
 }
 .mobile-nav-has-sub.is-open .mobile-sub-icon {
-    transform: rotate(180deg);
+    transform: translateY(-50%) rotate(180deg);
     opacity: 0.8;
 }
 .mobile-nav .mobile-submenu {
@@ -8578,7 +8581,8 @@ body.homepage-refresh .nav-desktop ul li.has-dropdown .submenu li a:hover {
 }
 .mobile-nav .mobile-submenu li {
     margin: 0 !important;
-    display: block !important; /* Submenu-items kan være blokker */
+    display: block !important;
+    width: 100% !important;
 }
 .mobile-nav .mobile-submenu li a {
     display: block;
