@@ -8540,13 +8540,20 @@ body.homepage-refresh .nav-desktop ul li.has-dropdown .submenu li a:hover {
 }
 .mobile-nav .mobile-submenu {
     list-style: none;
-    display: none;
+    display: none !important;
     margin: 0;
     padding: 0;
     overflow: hidden;
 }
 .mobile-nav .mobile-submenu.is-open {
-    display: block;
+    display: block !important;
+}
+/* Prevent submenu li from inheriting main menu li animations */
+.mobile-nav .mobile-submenu li {
+    margin: 0;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
 }
 .mobile-nav .mobile-submenu li a {
     display: flex;
