@@ -8406,3 +8406,119 @@ body.homepage-refresh .video-modal .modal-content {
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
+
+/* =====================================================================
+   DROPDOWN NAV – Desktop & Mobil
+   ===================================================================== */
+
+/* Desktop: parent li posisjonering */
+.nav-desktop ul li.has-dropdown {
+    position: relative;
+}
+
+/* Desktop: submeny */
+.nav-desktop ul li.has-dropdown .submenu {
+    display: block;
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-50%) translateY(6px);
+    min-width: 180px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.14);
+    padding: 8px 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease, transform 0.22s ease;
+    z-index: 9999;
+    list-style: none;
+    margin: 0;
+}
+
+/* Pil-hale på submenyen */
+.nav-desktop ul li.has-dropdown .submenu::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 12px;
+    background: #ffffff;
+    rotate: 45deg;
+    border-radius: 2px;
+    box-shadow: -2px -2px 6px rgba(0,0,0,0.06);
+}
+
+/* Desktop: submeny lenker */
+.nav-desktop ul li.has-dropdown .submenu li {
+    position: relative;
+}
+.nav-desktop ul li.has-dropdown .submenu li a {
+    display: block;
+    padding: 10px 22px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #1e293b !important;
+    white-space: nowrap;
+    border-radius: 0;
+    transition: background 0.15s, color 0.15s;
+    text-decoration: none;
+}
+.nav-desktop ul li.has-dropdown .submenu li a:hover {
+    background: #f1f5f9;
+    color: #1B4965 !important;
+}
+
+/* Desktop: hover åpner dropdown */
+.nav-desktop ul li.has-dropdown:hover .submenu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Chevron-ikon rotasjon ved hover */
+.nav-desktop ul li.has-dropdown:hover .nav-chevron {
+    transform: rotate(180deg);
+}
+.nav-chevron {
+    display: inline-block;
+    font-size: 9px !important;
+    margin-left: 4px;
+    transition: transform 0.22s ease;
+    vertical-align: middle;
+    opacity: 0.75;
+}
+
+/* homepage-refresh variant */
+body.homepage-refresh .nav-desktop ul li.has-dropdown .submenu {
+    background: rgba(255, 255, 255, 0.98);
+}
+body.homepage-refresh .nav-desktop ul li.has-dropdown .submenu li a {
+    color: #1e293b !important;
+}
+body.homepage-refresh .nav-desktop ul li.has-dropdown .submenu li a:hover {
+    color: #1B4965 !important;
+    background: #f0f6ff;
+}
+
+/* =====================================================================
+   MOBIL-MENY: Innrykk-undermeny
+   ===================================================================== */
+.mobile-nav .mobile-submenu {
+    list-style: none;
+    margin: 4px 0 0 0;
+    padding: 0 0 0 20px;
+    border-left: 2px solid rgba(255,255,255,0.2);
+}
+.mobile-nav .mobile-submenu li a {
+    display: block;
+    padding: 8px 0;
+    font-size: 0.9rem;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+.mobile-nav .mobile-submenu li a:hover {
+    opacity: 1;
+}
