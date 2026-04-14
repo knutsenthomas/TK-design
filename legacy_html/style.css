@@ -4611,21 +4611,21 @@ img {
     background-color: rgba(255, 255, 255, 0.97);
     z-index: 9999;
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 100px 20px 40px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 80px 0 40px; /* Redusert padding */
     overflow-y: auto;
     overflow-x: hidden;
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
-    scrollbar-width: none;        /* Firefox */
-    -ms-overflow-style: none;     /* IE/Edge */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 .mobile-menu-overlay::-webkit-scrollbar {
-    display: none;                /* Chrome/Safari */
+    display: none;
 }
-
 .mobile-menu-overlay.active {
     opacity: 1;
     visibility: visible;
@@ -4643,59 +4643,76 @@ img {
     transition: color 0.3s;
 }
 
-.menu-close:hover {
-    color: var(--clr-base);
+.mobile-nav {
+    width: 100% !important;
 }
-
 .mobile-nav ul {
-    list-style: none;
-    text-align: center;
-    padding: 0;
+    list-style: none !important;
+    text-align: center !important;
+    padding: 0 !important;
+    width: 100% !important;
+    display: block !important;
 }
-
 .mobile-nav li {
-    margin: 32px 0;
+    display: block !important;
+    width: 100% !important;
+    margin: 20px 0 !important; /* Mye mer kompakt */
+    position: relative;
     opacity: 0;
     transform: translateY(20px);
     transition: all 0.3s ease;
 }
-
 .mobile-menu-overlay.active .mobile-nav li {
     opacity: 1;
     transform: translateY(0);
 }
-
-.mobile-menu-overlay.active .mobile-nav li:nth-child(1) {
-    transition-delay: 0.1s;
-}
-
-.mobile-menu-overlay.active .mobile-nav li:nth-child(2) {
-    transition-delay: 0.2s;
-}
-
-.mobile-menu-overlay.active .mobile-nav li:nth-child(3) {
-    transition-delay: 0.3s;
-}
-
-.mobile-menu-overlay.active .mobile-nav li:nth-child(4) {
-    transition-delay: 0.4s;
-}
-
-.mobile-menu-overlay.active .mobile-nav li:nth-child(5) {
-    transition-delay: 0.5s;
-}
-
-.mobile-menu-overlay.active .mobile-nav li:nth-child(6) {
-    transition-delay: 0.6s;
-}
-
 .mobile-nav a {
     color: var(--clr-base);
-    font-size: 34px;
-    padding: 18px 0;
+    font-size: 32px; /* Litt mindre for bedre plass */
+    padding: 10px 0;
     font-weight: 700;
     text-decoration: none;
+    display: inline-block;
     transition: color 0.3s;
+}
+
+/* Undermeny-stiler integrert her */
+.mobile-nav-has-sub {
+    position: relative;
+    display: block;
+    width: 100%;
+    cursor: pointer;
+    text-align: center;
+}
+.mobile-nav-has-sub a {
+    pointer-events: none; /* Klikket går til div'en */
+}
+.mobile-nav-has-sub .mobile-sub-icon {
+    position: absolute;
+    right: 35px; /* God avstand fra kanten */
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 11px;
+    opacity: 0.45;
+    transition: transform 0.22s ease;
+}
+.mobile-nav-has-sub.is-open .mobile-sub-icon {
+    transform: translateY(-50%) rotate(180deg);
+}
+.mobile-nav .mobile-submenu {
+    display: none !important;
+    margin: 10px 0 0;
+}
+.mobile-nav .mobile-submenu.is-open {
+    display: block !important;
+}
+.mobile-nav .mobile-submenu li {
+    margin: 0 !important;
+}
+.mobile-nav .mobile-submenu li a {
+    font-size: 1.1rem;
+    opacity: 0.6;
+    padding: 5px 0 15px;
 }
 
 .mobile-nav a:hover {
@@ -5478,7 +5495,7 @@ body.homepage-refresh .mobile-nav a {
 
 body.homepage-refresh .mobile-menu-footer {
     width: 100%;
-    margin-top: auto;
+    margin-top: 30px; /* Redusert fra 'auto' for å unngå stort tomrom */
     padding-top: 18px;
     border-top: 1px solid rgba(17, 38, 60, 0.08);
     display: flex;
@@ -8521,81 +8538,4 @@ body.homepage-refresh .nav-desktop ul li.has-dropdown .submenu li a:hover {
     background: #f0f6ff;
 }
 
-/* =====================================================================
-   MOBIL-MENY: Kollapsbar undermeny (Hele raden er klikkbar)
-   ===================================================================== */
-/* =====================================================================
-   MOBIL-MENY: Kollapsbar undermeny (Vertikal stabling og midtstilling)
-   ===================================================================== */
-.mobile-nav ul {
-    display: block !important;
-    text-align: center !important;
-    width: 100% !important;
-    padding: 0 !important;
-    list-style: none !important;
-}
-.mobile-nav li {
-    display: block !important;
-    width: 100% !important;
-    margin: 32px 0 !important;
-    position: relative;
-    box-sizing: border-box;
-}
-.mobile-nav-has-sub {
-    position: relative;
-    display: block;
-    width: 100%;
-    cursor: pointer;
-    text-align: center;
-    user-select: none;
-}
-.mobile-nav-has-sub a {
-    display: inline-block;
-    padding: 10px 0;
-    pointer-events: none; /* Klikket går til div'en */
-}
-/* Pilen er plassert helt ute til høyre uten å påvirke teksten i midten */
-.mobile-nav-has-sub .mobile-sub-icon {
-    position: absolute;
-    right: 30px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 11px;
-    opacity: 0.45;
-    transition: transform 0.22s ease;
-}
-.mobile-nav-has-sub.is-open .mobile-sub-icon {
-    transform: translateY(-50%) rotate(180deg);
-    opacity: 0.8;
-}
-.mobile-nav .mobile-submenu {
-    list-style: none !important;
-    display: none !important;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-}
-.mobile-nav .mobile-submenu.is-open {
-    display: block !important;
-}
-.mobile-nav .mobile-submenu li {
-    margin: 0 !important;
-    display: block !important;
-    width: 100% !important;
-}
-.mobile-nav .mobile-submenu li a {
-    display: block;
-    padding: 2px 0 20px;
-    font-size: 1rem;
-    font-weight: 700;
-    color: inherit;
-    opacity: 0.55;
-    text-align: center;
-    text-decoration: none;
-    letter-spacing: 0.02em;
-}
-.mobile-nav .mobile-submenu li a:hover,
-.mobile-nav .mobile-submenu li a:active {
-    opacity: 1;
-}
+/* --- End of Mobile Fixes Cleanup --- */
