@@ -8519,17 +8519,28 @@ body.homepage-refresh .nav-desktop ul li.has-dropdown .submenu li a:hover {
    ===================================================================== */
 .mobile-nav .mobile-submenu {
     list-style: none;
-    margin: 4px 0 0 0;
-    padding: 0 0 0 20px;
-    border-left: 2px solid rgba(255,255,255,0.2);
+    margin: 6px 0 10px 0;
+    padding: 0;
 }
 .mobile-nav .mobile-submenu li a {
-    display: block;
-    padding: 8px 0;
-    font-size: 0.9rem;
-    opacity: 0.8;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 0 10px 28px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: inherit;
+    opacity: 1;
     transition: opacity 0.2s;
+    text-decoration: none;
+}
+.mobile-nav .mobile-submenu li a::before {
+    content: '↳';
+    font-size: 0.85rem;
+    opacity: 0.5;
+    margin-left: -18px;
+    margin-right: 4px;
 }
 .mobile-nav .mobile-submenu li a:hover {
-    opacity: 1;
+    opacity: 0.75;
 }
