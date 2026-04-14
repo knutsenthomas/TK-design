@@ -30,10 +30,12 @@ const translations = {
             top_2: "SEO strategy",
             top_3: "Social media content",
             top_4: "Support and maintenance",
+            top_5: "Website analysis",
             bottom_1: "Clear digital identity",
             bottom_2: "Simple and professional",
             bottom_3: "Visibility in Google",
-            bottom_4: "From idea to launch"
+            bottom_4: "From idea to launch",
+            bottom_5: "Measurable growth and analysis"
         },
         about: {
             intro: "TK-design helps your business succeed online. We offer everything from websites and social media to strategic advice and support, so you can reach your goals with a clear digital identity.",
@@ -442,10 +444,12 @@ const translations = {
             top_2: "SEO-strategi",
             top_3: "Sosiale medier",
             top_4: "Support og vedlikehold",
+            top_5: "Nettstedsanalyse",
             bottom_1: "Tydelig digital identitet",
             bottom_2: "Enkelt og profesjonelt",
             bottom_3: "Synlighet i Google",
-            bottom_4: "Fra ide til lansering"
+            bottom_4: "Fra ide til lansering",
+            bottom_5: "Målbar vekst og analyse"
         },
         about: {
             intro: "TK-design hjelper din bedrift å lykkes på nett. Vi tilbyr alt fra nettsider og sosiale medier til strategisk rådgivning og support, slik at du kan nå dine mål med en tydelig digital identitet.",
