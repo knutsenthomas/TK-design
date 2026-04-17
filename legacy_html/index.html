@@ -158,7 +158,7 @@
     <!-- Last inn fonter umiddelbart for FCP/LCP boost -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap">
 
-    <link rel="stylesheet" href="style.css?v=81">
+    <link rel="stylesheet" href="style.css?v=82">
 
     <!-- Ikoner og rammeverk -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -257,12 +257,12 @@
         <!-- =========================================
              HERO SECTION / BANNER
              ========================================= -->
-        <section class="banner">
+        <section class="banner hero-showcase">
             <div class="container">
-                <div class="flex flex-wrap items-center">
-                    <div class="banner-content" style="flex: 1.2; min-width: 300px;">
+                <div class="hero-showcase-grid">
+                    <div class="banner-content hero-showcase-copy">
                         <span class="subtitle" data-i18n="hero.subtitle">Profesjonell webdesign</span>
-                        <h1>
+                        <h1 class="hero-showcase-title">
                             <span class="hero-title-line" data-i18n="hero.title_1_line1">DIN</span>
                             <span class="hero-title-line" data-i18n="hero.title_1_line2">DIGITALE</span>
                             <span class="hero-title-line designers" data-text="PARTNER"
@@ -271,84 +271,47 @@
                         <p class="hero-lead" data-i18n="hero.description">Vi bygger din digitale identitet med
                             skreddersydd webdesign, SEO og SoMe-strategi. Fra ide til lansering - enkelt,
                             profesjonelt og synlig.</p>
-                        <div class="hero-actions modern-actions">
+                        <div class="hero-actions hero-showcase-actions">
+                            <a href="/?section=projects" class="hero-showcase-secondary" data-i18n="hero.cta_secondary">Se vårt arbeid</a>
                             <a href="/contact" class="primary-cta glow-cta">
                                 <span data-i18n="hero.cta_primary">Start nå</span>
                                 <i class="fas fa-arrow-right btn-icon"></i>
                             </a>
                         </div>
-                        <div class="hero-metrics premium-metrics">
-                            <div class="premium-metric card-tilt">
-                                <div class="metric-icon-box blue-icon">
-                                    <i class="fas fa-layer-group"></i>
-                                </div>
-                                <div class="metric-data">
-                                    <strong>5</strong>
-                                    <span data-i18n="hero.metric_1">kjerneområder</span>
-                                </div>
-                            </div>
-                            <div class="premium-metric card-tilt">
-                                <div class="metric-icon-box orange-icon">
-                                    <i class="fas fa-rocket"></i>
-                                </div>
-                                <div class="metric-data">
-                                    <strong>5</strong>
-                                    <span data-i18n="hero.metric_2">trinn fra ide til lansering</span>
-                                </div>
-                            </div>
-                            <div class="premium-metric highlight card-tilt">
-                                <div class="metric-glow"></div>
-                                <div class="metric-icon-box white-icon">
-                                    <i class="fas fa-gem"></i>
-                                </div>
-                                <div class="metric-data">
-                                    <strong>100%</strong>
-                                    <span data-i18n="hero.metric_3">skreddersydd oppfølging</span>
-                                </div>
-                            </div>
-                        </div>
                     </div>
-                    <div class="banner-image" style="flex: 1; min-width: 300px;">
-                        <div class="hero-design-visual" aria-hidden="true">
-                            <div class="hero-design-browser">
-                                <div class="hero-design-toolbar">
+
+                    <div class="banner-image hero-showcase-visual-wrap" aria-hidden="true">
+                        <div class="hero-showcase-laptop">
+                            <div class="hero-showcase-camera"></div>
+                            <div class="hero-showcase-screen">
+                                <div class="hero-showcase-topbar">
                                     <span></span>
                                     <span></span>
                                     <span></span>
-                                    <div class="hero-design-address"></div>
-                                    <span class="hero-design-badge">Web</span>
+                                    <div class="hero-showcase-nav">
+                                        <span>Hjem</span>
+                                        <span>Om oss</span>
+                                        <span>Tjenester</span>
+                                        <span>Portefølje</span>
+                                    </div>
                                 </div>
-                                <div class="hero-design-canvas">
-                                    <div class="hero-design-sidebar">
-                                        <span></span>
-                                        <span></span>
-                                        <span></span>
-                                        <span></span>
-                                    </div>
-                                    <div class="hero-design-main">
-                                        <div class="hero-design-wireframe">
-                                            <div class="hero-design-wireframe-header"></div>
-                                            <div class="hero-design-wireframe-body">
-                                                <span></span>
-                                                <span></span>
-                                                <span></span>
-                                                <span></span>
-                                            </div>
-                                        </div>
-                                        <div class="hero-design-palette">
-                                            <span></span>
-                                            <span></span>
-                                            <span></span>
-                                            <span></span>
-                                        </div>
-                                        <div class="hero-design-mobile">
-                                            <div class="hero-design-mobile-notch"></div>
-                                            <div class="hero-design-mobile-card"></div>
-                                            <div class="hero-design-mobile-lines"></div>
-                                        </div>
-                                    </div>
+
+                                <div class="hero-showcase-stage">
+                                    <figure class="hero-showcase-window hero-showcase-window-main">
+                                        <img src="img/project/hkm-preview.webp" alt="" loading="lazy">
+                                    </figure>
+                                    <figure class="hero-showcase-window hero-showcase-window-left">
+                                        <img src="img/project/pro2.webp" alt="" loading="lazy">
+                                    </figure>
+                                    <figure class="hero-showcase-window hero-showcase-window-right">
+                                        <img src="img/project/pro4.webp" alt="" loading="lazy">
+                                    </figure>
+                                    <figure class="hero-showcase-phone">
+                                        <img src="img/project/pro6.webp" alt="" loading="lazy">
+                                    </figure>
                                 </div>
                             </div>
+                            <div class="hero-showcase-base"></div>
                         </div>
                     </div>
                 </div>
@@ -1115,7 +1078,7 @@
     </footer>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
-    <script src="translations.js?v=11" defer></script>
+    <script src="translations.js?v=12" defer></script>
     <script src="script.js?v=3" defer></script>
     <script src="js/cookies.js?v=3" defer></script>
     <script>
