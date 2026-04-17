@@ -9149,6 +9149,38 @@ body#home.homepage-refresh .hero-showcase-phone img {
     object-fit: cover;
 }
 
+body#home.homepage-refresh .hero-showcase-window-mandal .mandal-panel {
+    min-height: 100%;
+    height: 100%;
+    border-radius: 10px;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 12px 20px rgba(19, 39, 58, 0.2);
+}
+
+body#home.homepage-refresh .hero-showcase-window-mandal .mandal-copy {
+    left: 14px;
+    right: 14px;
+}
+
+body#home.homepage-refresh .hero-showcase-window-mandal .mandal-headline {
+    font-size: clamp(0.95rem, 1.8vw, 1.8rem);
+}
+
+body#home.homepage-refresh .hero-showcase-window-mandal .mandal-subline {
+    max-width: 26ch;
+    margin-top: 8px;
+    font-size: clamp(0.52rem, 0.9vw, 0.8rem);
+}
+
+body#home.homepage-refresh .hero-showcase-window-mandal .mandal-button {
+    min-height: 30px;
+    margin-top: 10px;
+    padding: 0 12px;
+    border-width: 1px;
+    font-size: 0.68rem;
+}
+
 body#home.homepage-refresh .hero-showcase-window-main {
     inset: 12% 8% 16% 28%;
     z-index: 3;
