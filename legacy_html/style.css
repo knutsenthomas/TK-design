@@ -3737,8 +3737,6 @@ img {
 
 .tab-content {
     display: none;
-    max-width: 1000px;
-    margin: 0 auto;
     text-align: left;
 }
 
@@ -6313,9 +6311,7 @@ body.homepage-refresh .tab-btn.active {
 }
 
 body.homepage-refresh .tab-content-area {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 18px;
+    display: block;
     padding: 18px;
     border-radius: 32px;
     background: rgba(255, 255, 255, 0.76);
@@ -6331,7 +6327,11 @@ body.homepage-refresh .tab-content {
 
 body.homepage-refresh .tab-content.active {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+    justify-content: center;
+    align-items: stretch;
+    width: 100%;
 }
 
 body.homepage-refresh .info-card {
