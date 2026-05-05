@@ -1811,7 +1811,7 @@ export default function App() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          report: activeReport,
+          report: reports || activeReport,
           recipientEmail: normalizedEmail,
         }),
       });
@@ -2083,9 +2083,23 @@ export default function App() {
                     {' '}
                     {pageCopy.report.summaryOutro}
                   </p>
-                  <div className="st-report-meta">
-                    <span>{activeReport.analyzedUrl}</span>
-                    <span>{getStrategyText(activeReport.strategy)}</span>
+                  <div className="st-report-strategy">
+                    <button
+                      type="button"
+                      className={strategy === 'mobile' ? 'is-active' : ''}
+                      onClick={() => setStrategy('mobile')}
+                    >
+                      <Smartphone size={16} />
+                      {pageCopy.hero.mobileLabel}
+                    </button>
+                    <button
+                      type="button"
+                      className={strategy === 'desktop' ? 'is-active' : ''}
+                      onClick={() => setStrategy('desktop')}
+                    >
+                      <Monitor size={16} />
+                      {pageCopy.hero.desktopLabel}
+                    </button>
                   </div>
                 </Motion.div>
 
