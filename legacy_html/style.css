@@ -8066,12 +8066,7 @@ body.homepage-refresh .video-modal .modal-content {
         line-height: 1.6;
     }
 
-    body.homepage-refresh .awards-table tr:not(:first-child) td:nth-child(3) {
-        padding-bottom: 20px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        color: var(--refresh-accent);
-    }
+
 
     body.homepage-refresh .service-item {
         padding: 22px 18px;
@@ -8709,9 +8704,7 @@ body#home.homepage-refresh .awards-table td {
     padding: 18px 20px;
 }
 
-body#home.homepage-refresh .awards-table tr:not(:first-child) td:last-child {
-    display: none;
-}
+
 
 body#home.homepage-refresh .portfolio-grid {
     gap: 20px;
