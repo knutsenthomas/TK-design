@@ -8668,7 +8668,9 @@ body#home.homepage-refresh .about-intro p {
 }
 
 body#home.homepage-refresh .tab-buttons {
-    max-width: 100%;
+    max-width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
     padding: 6px;
     gap: 6px;
     border-radius: 18px;
