@@ -5648,4 +5648,26 @@ body.admin-dashboard-refresh #dashboard-main-header,
     }
 }
 
+/* Ensure logout button sizing matches exactly with other nav links */
+body.admin-body #logout-btn,
+body.admin-dashboard-refresh #logout-btn,
+#logout-btn {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    padding: 10px 16px !important;
+}
+
+body.admin-body #logout-btn span:first-child,
+body.admin-dashboard-refresh #logout-btn span:first-child,
+#logout-btn span:first-child {
+    font-size: 20px !important;
+}
+
+body.admin-body #logout-btn span:last-child,
+body.admin-dashboard-refresh #logout-btn span:last-child,
+#logout-btn span:last-child {
+    font-size: 14px !important;
+}
+
+
 
