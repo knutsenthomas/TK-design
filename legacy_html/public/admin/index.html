@@ -3,11 +3,94 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>tk-design Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>tk-design Admin | Studio</title>
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Google Fonts & Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Merriweather:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="stylesheet" href="css/dashboard.css?v=20260601_V7">
+    <link rel="stylesheet" href="css/admin-unified.css?v=20260601_V7">
     <link rel="stylesheet" href="/admin/style.css?v=62">
     <link rel="stylesheet" href="/admin/panel.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* Complete Horizontal Scroll protection */
+        html, 
+        body.admin-body {
+            max-width: 100% !important;
+            overflow-x: hidden !important;
+            overflow-x: clip !important;
+        }
+
+        body.admin-body .main-content {
+            width: auto !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+            overflow-x: hidden !important;
+            overflow-x: clip !important;
+        }
+
+        /* Modern Dashboard Overrides */
+        #dashboard-stats-grid, .stats-grid {
+            display: grid !important;
+            grid-template-columns: repeat(4, 1fr) !important;
+            gap: 24px !important;
+        }
+        
+        @media (max-width: 1024px) {
+            #dashboard-stats-grid, .stats-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        /* HIDE MOBILE MENU BUTTON ON DESKTOP */
+        @media (min-width: 1025px) {
+            #mobile-nav-toggle, 
+            .mobile-nav-toggle,
+            .mobile-bottom-nav {
+                display: none !important;
+            }
+        }
+        
+        /* Compatibility overrides for sidebar buttons */
+        .sidebar nav .nav-btn {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+            padding: 10px 16px !important;
+            color: #64748b !important;
+            text-decoration: none !important;
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            border-radius: 12px !important;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            cursor: pointer !important;
+            border: none !important;
+            background: none !important;
+            width: 100% !important;
+            text-align: left !important;
+            margin-bottom: 8px !important;
+        }
+        .sidebar nav .nav-btn span {
+            font-size: 20px !important;
+        }
+        .sidebar nav .nav-btn:hover {
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+        }
+        .sidebar nav .nav-btn.active {
+            background-color: #ffedd5 !important;
+            color: #f97316 !important;
+        }
+    </style>
+
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -21,101 +104,179 @@
     <link rel="icon" type="image/png" href="../img/logo/d.png">
 </head>
 
-<body class="admin-dashboard-refresh">
-
-    <!-- Modern Admin Header -->
-    <header class="admin-header">
-        <div class="header-left">
-            <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" data-admin-sidebar-toggle="toggle" type="button"
-                title="Skjul meny" aria-label="Skjul meny" aria-expanded="true">
-                <i class="fas fa-xmark"></i>
-            </button>
-            <button class="back-btn" onclick="navigateBack()" style="display: none;">
-                <i class="fas fa-arrow-left"></i> Tilbake
-            </button>
-            <div class="admin-header-title-group">
-                <div class="admin-brand-chip">
-                    <i class="fas fa-layer-group"></i>
-                    <span>tk-design Studio</span>
-                </div>
-                <nav class="breadcrumb" id="breadcrumb">
-                    <span class="breadcrumb-item active">Hjem</span>
-                </nav>
-            </div>
-        </div>
-
-        <div class="header-right">
-            <div class="header-actions" id="header-actions">
-                <!-- Context-aware buttons will be inserted here -->
-            </div>
-
-            <div class="language-switcher-header">
-                <button class="lang-btn-header" data-lang="en">EN</button>
-                <button class="lang-btn-header active" data-lang="no">NO</button>
-            </div>
-
-            <div class="user-menu">
-                <button class="user-btn" id="user-menu-btn">
-                    <img src="https://ui-avatars.com/api/?name=TK&background=f97316&color=ffffff" alt="User"
-                        class="user-avatar-small" id="header-avatar">
-                    <span class="user-name-display" id="header-username">Laster...</span>
-                    <i class="fas fa-chevron-down" style="font-size: 12px; color: #888;"></i>
-                </button>
-                <div class="user-dropdown" id="user-dropdown">
-                    <div class="dropdown-header">
-                        <span class="dropdown-user-name" id="dropdown-name">Laster bruker...</span>
-                        <span class="dropdown-user-email" id="dropdown-email">Ikke innlogget</span>
-                    </div>
-                    <button class="dropdown-item" id="profile-settings-btn" data-i18n="profile_title">
-                        <i class="fas fa-cog"></i> Profile Settings
-                    </button>
-                    <div class="dropdown-divider"></div>
-                    <button class="dropdown-item" id="logout-btn-dropdown" data-i18n="nav_logout"
-                        style="color: #ef4444;">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </button>
-                </div>
-            </div>
-        </div>
-    </header>
+<body class="admin-body main-dashboard">
 
     <div id="dashboard-container" class="admin-container">
         <!-- Sidebar Backdrop for Mobile -->
-        <div class="mobile-menu-backdrop" id="mobile-menu-backdrop" onclick="window.toggleAdminSidebar(true)"></div>
+        <div class="mobile-menu-backdrop" id="mobile-menu-backdrop"></div>
+        
         <!-- Sidebar -->
         <aside class="sidebar">
-            <div class="logo sidebar-logo-row">
-                <h2 class="sidebar-menu-title" data-i18n="sidebar_menu">Meny</h2>
+            <div class="sidebar-header" style="display: flex; align-items: center; justify-content: space-between; padding: 16px 12px; margin-bottom: 24px;">
+                <div class="logo" style="margin-bottom: 0;">
+                    <img src="../img/logo/d.png" alt="tk-design Logo" style="width: 32px; height: 32px; object-fit: contain;">
+                    <h1 class="logo-text">tk-design Studio</h1>
+                </div>
+                <button id="mobile-sidebar-close" data-admin-sidebar-toggle="close"
+                    style="display: none; background: none; border: none; font-size: 24px; color: #64748b; cursor: pointer; align-items: center; justify-content: center;"
+                    class="mobile-sidebar-close-btn">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
             </div>
-            <nav>
-                <button class="nav-btn active" data-tab="home" data-i18n="nav_home"><i class="fas fa-home"></i>
-                    Hjem</button>
-                <button class="nav-btn" data-tab="blog" data-i18n="nav_blog"><i class="fas fa-pen-nib"></i>
-                    Blogg</button>
-                <button class="nav-btn" data-tab="content" data-i18n="nav_content"><i class="fas fa-columns"></i>
-                    Sideinnhold</button>
-                <button class="nav-btn" data-tab="style" data-i18n="nav_style"><i class="fas fa-palette"></i>
-                    Design</button>
-                <button class="nav-btn" data-tab="seo" data-i18n="nav_seo"><i class="fas fa-search"></i> SEO</button>
-                <button class="nav-btn" data-tab="analytics" data-i18n="nav_analytics"><i
-                        class="fas fa-chart-line"></i>
-                    Analyse</button>
-                <button class="nav-btn" data-tab="media" data-i18n="nav_media"><i class="fas fa-image"></i>
-                    Media</button>
-                <button class="nav-btn" data-tab="social-planner" data-i18n="nav_social_planner"><i
-                        class="fas fa-share-nodes"></i>
-                    SoMe-planlegger</button>
-                <div style="flex-grow: 1;"></div>
-                <button class="nav-btn" onclick="window.open('/', '_blank')" data-i18n="nav_view_site"><i
-                        class="fas fa-external-link-alt"></i>
-                    Se Nettside</button>
-                <button id="logout-btn" class="nav-btn" style="color: #ef4444;" data-i18n="nav_logout"><i
-                        class="fas fa-sign-out-alt"></i>
-                    Logg ut</button>
+
+            <nav class="sidebar-nav">
+                <div class="nav-group">
+                    <ul class="nav-list" style="list-style: none;">
+                        <li class="nav-item visible" data-nav-category="all">
+                            <button class="nav-btn nav-link active" data-tab="home" data-i18n="nav_home">
+                                <span class="material-symbols-outlined">home</span>
+                                <span>Hjem</span>
+                            </button>
+                        </li>
+                        <li class="nav-category-header" data-target-category="nettsted">
+                            <span>Nettsted</span>
+                            <span class="material-symbols-outlined expand-icon">expand_more</span>
+                        </li>
+                        <li class="nav-item" data-nav-category="nettsted">
+                            <button class="nav-btn nav-link" data-tab="content" data-i18n="nav_content">
+                                <span class="material-symbols-outlined">description</span>
+                                <span>Sideinnhold</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" data-nav-category="nettsted">
+                            <button class="nav-btn nav-link" data-tab="blog" data-i18n="nav_blog">
+                                <span class="material-symbols-outlined">edit_note</span>
+                                <span>Blogg</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" data-nav-category="nettsted">
+                            <button class="nav-btn nav-link" data-tab="media" data-i18n="nav_media">
+                                <span class="material-symbols-outlined">perm_media</span>
+                                <span>Mediebibliotek</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" data-nav-category="nettsted">
+                            <button class="nav-btn nav-link" data-tab="style" data-i18n="nav_style">
+                                <span class="material-symbols-outlined">palette</span>
+                                <span>Design</span>
+                            </button>
+                        </li>
+                        
+                        <li class="nav-category-header" data-target-category="markedsforing">
+                            <span>Markedsføring</span>
+                            <span class="material-symbols-outlined expand-icon">expand_more</span>
+                        </li>
+                        <li class="nav-item" data-nav-category="markedsforing">
+                            <button class="nav-btn nav-link" data-tab="social-planner" data-i18n="nav_social_planner">
+                                <span class="material-symbols-outlined">share</span>
+                                <span>SoMe-planlegger</span>
+                            </button>
+                        </li>
+                        
+                        <li class="nav-category-header" data-target-category="administrasjon">
+                            <span>Administrasjon</span>
+                            <span class="material-symbols-outlined expand-icon">expand_more</span>
+                        </li>
+                        <li class="nav-item" data-nav-category="administrasjon">
+                            <button class="nav-btn nav-link" data-tab="seo" data-i18n="nav_seo">
+                                <span class="material-symbols-outlined">search_check</span>
+                                <span>SEO</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" data-nav-category="administrasjon">
+                            <button class="nav-btn nav-link" data-tab="analytics" data-i18n="nav_analytics">
+                                <span class="material-symbols-outlined">analytics</span>
+                                <span>Analyse</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-group bottom" style="margin-top: auto;">
+                    <ul class="nav-list" style="list-style: none;">
+                        <li class="nav-item" data-nav-category="all">
+                            <button class="nav-btn nav-link" onclick="window.open('/', '_blank')" data-i18n="nav_view_site">
+                                <span class="material-symbols-outlined">visibility</span>
+                                <span>Se nettside</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" data-nav-category="all">
+                            <button id="logout-btn" class="nav-btn nav-link logout" style="color: #ef4444 !important;">
+                                <span class="material-symbols-outlined">logout</span>
+                                <span>Logg ut</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
             </nav>
         </aside>
+        
         <!-- Main Content -->
         <main class="main-content">
+            <!-- Header topbar inside main-content -->
+            <div id="dashboard-main-header" class="main-header">
+                <div class="section-header design-ui-header in-topbar" style="margin-bottom: 0; width: 100%;">
+                    
+                    <!-- Sidebar Toggle Button (retains ID for app.js visibility) -->
+                    <button id="sidebar-toggle-btn" class="mobile-nav-toggle" data-admin-sidebar-toggle="toggle" type="button" title="Skjul meny" aria-label="Skjul meny" aria-expanded="true">
+                        <i class="fas fa-xmark"></i>
+                    </button>
+                    
+                    <button class="back-btn" onclick="navigateBack()" style="display: none; background: none; border: none; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; align-items: center; gap: 8px;">
+                        <i class="fas fa-arrow-left"></i> Tilbake
+                    </button>
+
+                    <div class="section-header-icon" style="margin-right: 12px;">
+                        <span id="dashboard-main-header-icon" class="material-symbols-outlined">grid_view</span>
+                    </div>
+
+                    <div class="section-header-content" style="display: flex; align-items: center; justify-content: space-between; flex: 1;">
+                        <div class="section-header-titles">
+                            <h2 class="section-title" style="margin: 0; font-size: 20px; font-weight: 800;">
+                                <nav id="breadcrumb" style="display: inline-block;">
+                                    <span class="breadcrumb-item active">Hjem</span>
+                                </nav>
+                            </h2>
+                            <p id="dashboard-main-header-subtitle" class="section-subtitle" style="margin: 4px 0 0 0; font-size: 12px; color: var(--text-muted);">tk-design Studio administrasjonspanel</p>
+                        </div>
+
+                        <div class="section-header-actions" style="display: flex; align-items: center; gap: 20px;">
+                            <!-- Dynamic Actions Container -->
+                            <div id="header-actions" class="header-actions" style="display: flex; gap: 8px;"></div>
+
+                            <!-- Language Switcher -->
+                            <div class="language-switcher-header" style="display: flex; gap: 4px; background: #f1f5f9; padding: 4px; border-radius: 8px;">
+                                <button class="lang-btn-header active" data-lang="no" style="border: none; background: none; padding: 4px 8px; font-size: 11px; font-weight: 700; border-radius: 6px; cursor: pointer;">NO</button>
+                                <button class="lang-btn-header" data-lang="en" style="border: none; background: none; padding: 4px 8px; font-size: 11px; font-weight: 700; border-radius: 6px; cursor: pointer;">EN</button>
+                            </div>
+
+                            <!-- User Profile Menu -->
+                            <div class="user-menu" style="position: relative; z-index: 1050;">
+                                <button class="user-profile-link" id="user-menu-btn" style="background: none; border: none; padding: 0; font-family: inherit; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 12px;">
+                                    <div class="user-info-text" style="display: flex; flex-direction: column; text-align: right;">
+                                        <span id="header-username" class="user-name" style="font-size: 14px; font-weight: 800; color: var(--text-main); line-height: 1.2;">Laster...</span>
+                                        <span class="user-role" style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Administrator</span>
+                                    </div>
+                                    <img src="https://ui-avatars.com/api/?name=TK&background=f97316&color=ffffff" alt="User" class="user-avatar" id="header-avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                                </button>
+                                <div class="user-dropdown" id="user-dropdown" style="display: none; position: absolute; right: 0; top: 100%; margin-top: 8px; background: white; border: 1px solid var(--border-color); border-radius: 12px; box-shadow: var(--shadow-md); padding: 8px; min-width: 200px;">
+                                    <div class="dropdown-header" style="padding: 8px 12px; border-bottom: 1px solid var(--border-color); margin-bottom: 8px; display: flex; flex-direction: column;">
+                                        <span class="dropdown-user-name" id="dropdown-name" style="font-weight: 700; color: var(--text-main); font-size: 14px;">Laster bruker...</span>
+                                        <span class="dropdown-user-email" id="dropdown-email" style="color: var(--text-muted); font-size: 12px;">Ikke innlogget</span>
+                                    </div>
+                                    <button class="dropdown-item" id="profile-settings-btn" data-i18n="profile_title" style="display: flex; align-items: center; gap: 8px; width: 100%; border: none; background: none; padding: 8px 12px; text-align: left; border-radius: 8px; cursor: pointer; font-size: 13px;">
+                                        <i class="fas fa-cog"></i> Profile Settings
+                                    </button>
+                                    <div class="dropdown-divider" style="height: 1px; background: var(--border-color); margin: 6px 0;"></div>
+                                    <button class="dropdown-item" id="logout-btn-dropdown" data-i18n="nav_logout" style="display: flex; align-items: center; gap: 8px; width: 100%; border: none; background: none; padding: 8px 12px; text-align: left; border-radius: 8px; cursor: pointer; font-size: 13px; color: #ef4444;">
+                                        <i class="fas fa-sign-out-alt"></i> Logout
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Home / Overview Tab -->
             <div id="home-tab" class="tab-content active">
@@ -1771,6 +1932,71 @@
         }
     </script>
     <script type="module" src="/js/speed-insights-init.js"></script>
+    
+    <!-- Sidebar Collapsible Categories & Mobile Handling -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const categoryHeaders = document.querySelectorAll('.nav-category-header[data-target-category]');
+            if (categoryHeaders.length === 0) return;
+
+            function setCategory(category, shouldBeOpen) {
+                const header = document.querySelector(`.nav-category-header[data-target-category="${category}"]`);
+                const items = document.querySelectorAll(`.nav-item[data-nav-category="${category}"]`);
+                if (!header) return;
+
+                if (shouldBeOpen) {
+                    header.classList.remove('collapsed');
+                    items.forEach(item => {
+                        item.classList.remove('nav-cat-hidden');
+                        item.classList.add('visible');
+                        item.style.setProperty('display', 'block', 'important');
+                        item.style.setProperty('visibility', 'visible', 'important');
+                        item.style.setProperty('opacity', '1', 'important');
+                    });
+                } else {
+                    header.classList.add('collapsed');
+                    items.forEach(item => {
+                        item.classList.add('nav-cat-hidden');
+                        item.classList.remove('visible');
+                        item.style.setProperty('display', 'none', 'important');
+                    });
+                }
+            }
+
+            categoryHeaders.forEach(header => {
+                const cat = header.getAttribute('data-target-category');
+                
+                // All categories are open as standard on page load
+                setCategory(cat, true);
+
+                header.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const currentlyCollapsed = header.classList.contains('collapsed');
+                    setCategory(cat, currentlyCollapsed);
+                });
+            });
+
+            // Mobile menu backdrop click close handling
+            const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
+            if (mobileMenuBackdrop) {
+                mobileMenuBackdrop.addEventListener('click', () => {
+                    if (window.toggleAdminSidebar) {
+                        window.toggleAdminSidebar(true);
+                    }
+                });
+            }
+            
+            // Close mobile menu when close button inside sidebar is clicked
+            const mobileSidebarClose = document.getElementById('mobile-sidebar-close');
+            if (mobileSidebarClose) {
+                mobileSidebarClose.addEventListener('click', () => {
+                    if (window.toggleAdminSidebar) {
+                        window.toggleAdminSidebar(true);
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

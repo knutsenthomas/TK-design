@@ -13,25 +13,53 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
     <script src="../js/firebase-config.js"></script>
     <script src="../js/firebase-client.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Material Symbols -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
     <style>
+        :root {
+            --primary-color: #1a1a1a;
+            --accent-color: #f97316;
+            --main-bg: #f8f9fc;
+            --text-main: #333333;
+            --text-muted: #6c757d;
+            --border-color: #edf2f7;
+            --card-bg: #ffffff;
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #121212;
-            color: #fff;
             font-family: 'Inter', sans-serif;
-            /* Assuming Inter or standard sans */
+            background-color: var(--main-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
         }
 
         .login-container {
-            background: #1a1a1a;
+            background-color: var(--card-bg);
             padding: 40px;
-            border-radius: 10px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
             width: 100%;
             max-width: 400px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .logo-icon {
+            font-size: 48px;
+            color: var(--accent-color);
+            margin-bottom: 20px;
         }
 
         .login-header {
@@ -41,55 +69,99 @@
 
         .login-header h2 {
             font-size: 24px;
-            margin-bottom: 10px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .login-header p {
+            color: var(--text-muted);
+            font-size: 14px;
         }
 
         .form-group {
+            text-align: left;
             margin-bottom: 20px;
         }
 
         .form-group label {
             display: block;
+            font-size: 13px;
+            font-weight: 600;
             margin-bottom: 8px;
-            color: #ccc;
+            color: var(--text-main);
         }
 
         .form-group input {
             width: 100%;
-            padding: 12px;
-            background: #2a2a2a;
-            border: 1px solid #333;
-            border-radius: 5px;
-            color: #fff;
-            font-size: 16px;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 15px;
+            background-color: #fff;
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.3s ease;
         }
 
         .form-group input:focus {
-            outline: none;
-            border-color: var(--clr-base, #1B4965);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
         }
 
         .btn-login {
             width: 100%;
-            padding: 12px;
-            background: var(--clr-base, #1B4965);
-            color: #fff;
+            background-color: var(--accent-color);
+            color: white;
             border: none;
-            border-radius: 5px;
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: 700;
             font-size: 16px;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s ease;
+            margin-top: 10px;
         }
 
         .btn-login:hover {
-            opacity: 0.9;
+            background-color: #ea580c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+        }
+
+        .btn-google {
+            width: 100%;
+            background-color: white;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-google:hover {
+            background-color: #f8fafc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
         #error-msg {
-            color: #ff4d4d;
-            margin-top: 15px;
-            text-align: center;
+            background-color: #fee2e2;
+            color: #dc2626;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-top: 20px;
             display: none;
+            text-align: center;
         }
     </style>
     <link rel="icon" type="image/png" href="../img/logo/d.png">
@@ -98,31 +170,32 @@
 <body>
 
     <div class="login-container">
+        <span class="material-symbols-outlined logo-icon">dashboard_customize</span>
         <div class="login-header">
-            <h2>Admin Login</h2>
-            <p style="color: #888;">Enter your credentials to access the dashboard</p>
+            <h2>Velkommen tilbake</h2>
+            <p>Logg inn for å styre tk-design</p>
         </div>
         <form id="login-form">
             <div class="form-group">
-                <label for="email">Email</label>
+                <label for="email">E-post</label>
                 <input type="email" id="email" required placeholder="admin@example.com">
             </div>
             <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" required placeholder="********">
+                <label for="password">Passord</label>
+                <input type="password" id="password" required placeholder="••••••••">
             </div>
-            <button type="submit" class="btn-login" id="login-btn">Login</button>
+            <button type="submit" class="btn-login" id="login-btn">Logg inn</button>
 
-            <div style="display: flex; align-items: center; margin: 20px 0;">
-                <div style="flex: 1; height: 1px; background: #333;"></div>
-                <span style="padding: 0 10px; color: #666; font-size: 14px;">OR</span>
-                <div style="flex: 1; height: 1px; background: #333;"></div>
+            <div style="display: flex; align-items: center; margin: 20px 0; font-size: 13px; color: var(--text-muted);">
+                <div style="flex: 1; height: 1px; background: var(--border-color);"></div>
+                <span style="padding: 0 10px;">eller</span>
+                <div style="flex: 1; height: 1px; background: var(--border-color);"></div>
             </div>
 
             <button type="button" class="btn-google" id="google-login-btn">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"
-                    style="width: 18px; margin-right: 10px;">
-                Sign in with Google
+                    style="width: 18px;">
+                Logg inn med Google
             </button>
 
             <p id="error-msg"></p>
