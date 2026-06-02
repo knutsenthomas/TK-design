@@ -1,0 +1,25 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Funksjon for å sjekke om brukeren er pålogget
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Regler for adminProfiles samlingen (brukerprofiler)
+    // Tillater brukere å lese og skrive sin egen profil
+    match /adminProfiles/{userId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Standard fallback-regel (valgfritt)
+    // Siden backend API-et kjører med admin-rettigheter, trenger vi ikke 
+    // åpne opp andre samlinger for klientskriving her.
+    match /{document=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}
