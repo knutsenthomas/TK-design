@@ -1990,6 +1990,157 @@ window.publishPost = async function () {
 };
 
 
+function bindManualToolbar() {
+    const richtools = document.getElementById('desktop-richtools');
+    if (!richtools || !quill) return;
+
+    // Undo / Redo
+    richtools.querySelector('.ql-undo')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        quill.history.undo();
+    });
+    richtools.querySelector('.ql-redo')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        quill.history.redo();
+    });
+
+    // Bold, Italic, Underline, Strike
+    richtools.querySelector('.ql-bold')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        const current = quill.getFormat();
+        quill.format('bold', !current.bold);
+        updateToolbarActiveStates();
+    });
+    richtools.querySelector('.ql-italic')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        const current = quill.getFormat();
+        quill.format('italic', !current.italic);
+        updateToolbarActiveStates();
+    });
+    richtools.querySelector('.ql-underline')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        const current = quill.getFormat();
+        quill.format('underline', !current.underline);
+        updateToolbarActiveStates();
+    });
+    richtools.querySelector('.ql-strike')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        const current = quill.getFormat();
+        quill.format('strike', !current.strike);
+        updateToolbarActiveStates();
+    });
+
+    // Heading level
+    const headingSelect = richtools.querySelector('.ql-header');
+    if (headingSelect) {
+        headingSelect.addEventListener('change', (e) => {
+            const val = e.target.value;
+            if (val) {
+                quill.format('header', parseInt(val));
+            } else {
+                quill.format('header', false);
+            }
+            updateToolbarActiveStates();
+        });
+    }
+
+    // Align buttons
+    richtools.querySelectorAll('.ql-align').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const alignVal = btn.getAttribute('value') || false;
+            quill.format('align', alignVal);
+            updateToolbarActiveStates();
+        });
+    });
+
+    // List buttons
+    richtools.querySelectorAll('.ql-list').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const listVal = btn.getAttribute('value');
+            const current = quill.getFormat();
+            quill.format('list', current.list === listVal ? false : listVal);
+            updateToolbarActiveStates();
+        });
+    });
+
+    // Link
+    richtools.querySelector('.ql-link')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        const range = quill.getSelection();
+        if (range) {
+            const currentFormat = quill.getFormat();
+            if (currentFormat.link) {
+                quill.format('link', false);
+            } else {
+                const url = prompt('Skriv inn URL:');
+                if (url) {
+                    quill.format('link', url);
+                }
+            }
+            updateToolbarActiveStates();
+        }
+    });
+
+    // Clean formatting
+    richtools.querySelector('.ql-clean')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        const range = quill.getSelection();
+        if (range) {
+            quill.removeFormat(range.index, range.length);
+            updateToolbarActiveStates();
+        }
+    });
+
+    // Listen to selection/text changes in Quill to update active states
+    quill.on('selection-change', (range) => {
+        if (range) {
+            updateToolbarActiveStates();
+        }
+    });
+    quill.on('text-change', () => {
+        updateToolbarActiveStates();
+    });
+
+    function updateToolbarActiveStates() {
+        const formats = quill.getFormat();
+
+        // Bold, Italic, Underline, Strike
+        toggleActiveState('.ql-bold', formats.bold);
+        toggleActiveState('.ql-italic', formats.italic);
+        toggleActiveState('.ql-underline', formats.underline);
+        toggleActiveState('.ql-strike', formats.strike);
+
+        // Header Select
+        if (headingSelect) {
+            headingSelect.value = formats.header ? String(formats.header) : '';
+        }
+
+        // Align
+        const alignVal = formats.align || '';
+        richtools.querySelectorAll('.ql-align').forEach(btn => {
+            const btnVal = btn.getAttribute('value') || '';
+            btn.classList.toggle('is-active', btnVal === alignVal);
+        });
+
+        // List
+        const listVal = formats.list || '';
+        richtools.querySelectorAll('.ql-list').forEach(btn => {
+            const btnVal = btn.getAttribute('value') || '';
+            btn.classList.toggle('is-active', btnVal === listVal);
+        });
+
+        // Link
+        toggleActiveState('.ql-link', formats.link);
+    }
+
+    function toggleActiveState(selector, active) {
+        const el = richtools.querySelector(selector);
+        if (el) el.classList.toggle('is-active', !!active);
+    }
+}
+
 // ==========================================
 // INITIALIZATION LOGIC
 // ==========================================
@@ -2004,20 +2155,11 @@ async function init() {
                 theme: 'bubble',
                 placeholder: 'Start å skrive din historie...',
                 modules: {
-                    toolbar: '#desktop-richtools'
+                    toolbar: false
                 }
             });
             registerCustomBlots();// Register blots after quill runs
-
-            // Bind Undo/Redo buttons
-            document.querySelector('#desktop-richtools .ql-undo')?.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (quill) quill.history.undo();
-            });
-            document.querySelector('#desktop-richtools .ql-redo')?.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (quill) quill.history.redo();
-            });
+            bindManualToolbar();
 
             // Update live preview dynamically when typing
             quill.on('text-change', () => {
