@@ -4093,15 +4093,15 @@ body.admin-dashboard-refresh .admin-container {
 }
 
 body.admin-dashboard-refresh #dashboard-container {
-    width: auto;
-    height: calc(100vh - 154px);
-    min-height: calc(100vh - 154px);
-    margin: 118px 18px 18px;
-    border: 1px solid rgba(15, 23, 42, 0.06);
-    border-radius: 32px;
+    width: 100%;
+    height: 100vh;
+    min-height: 100vh;
+    margin: 0;
+    border: none;
+    border-radius: 0;
     overflow: hidden;
-    box-shadow: 0 28px 80px rgba(15, 23, 42, 0.08);
-    background: rgba(255, 255, 255, 0.5);
+    box-shadow: none;
+    background: transparent;
 }
 
 body.admin-dashboard-refresh .header-left,
@@ -4582,9 +4582,9 @@ body.admin-dashboard-refresh .user-dropdown {
     }
 
     body.admin-dashboard-refresh #dashboard-container {
-        height: calc(100vh - 132px);
-        min-height: calc(100vh - 132px);
-        margin: 108px 12px 12px;
+        height: 100vh;
+        min-height: 100vh;
+        margin: 0;
     }
 
     body.admin-dashboard-refresh .main-content {
@@ -4997,11 +4997,11 @@ body.admin-dashboard-refresh .user-dropdown {
     }
 
     body.admin-dashboard-refresh #dashboard-container {
-        height: auto;
-        min-height: calc(100vh - 98px);
-        margin: 90px 8px 8px;
-        border-radius: 20px;
-        overflow: visible;
+        height: 100vh;
+        min-height: 100vh;
+        margin: 0;
+        border-radius: 0;
+        overflow: hidden;
     }
 
     body.admin-dashboard-refresh .sidebar {
@@ -5402,9 +5402,9 @@ body.admin-dashboard-refresh .user-dropdown {
 
     body.admin-dashboard-refresh #dashboard-container {
         width: 100%;
-        height: calc(100vh - 72px);
-        min-height: calc(100vh - 72px);
-        margin: 72px 0 0;
+        height: 100vh;
+        min-height: 100vh;
+        margin: 0;
         border: none;
         border-radius: 0;
         box-shadow: none;
