@@ -200,8 +200,27 @@
             return null;
         }
 
-        const profileData = await getProfileData(auth.currentUser.uid);
-        return mapFirebaseUser(auth.currentUser, profileData);
+        const user = auth.currentUser;
+        let profileData = await getProfileData(user.uid);
+
+        // Auto-sync Google profile picture/name to Firestore if missing/empty
+        if (user.photoURL && (!profileData || !profileData.avatar_url)) {
+            try {
+                const updatedData = {
+                    full_name: profileData.full_name || user.displayName || user.email.split('@')[0] || 'Admin',
+                    avatar_url: user.photoURL,
+                    phone: profileData.phone || '',
+                    address: profileData.address || '',
+                    dob: profileData.dob || '',
+                    bio: profileData.bio || ''
+                };
+                profileData = await updateProfileDocument(user, updatedData);
+            } catch (err) {
+                console.error('Failed to auto-sync Google profile to Firestore:', err);
+            }
+        }
+
+        return mapFirebaseUser(user, profileData);
     }
 
     async function updateProfileDocument(user, data) {
