@@ -7545,7 +7545,13 @@ function openModal() {
     // Sync title inputs
     const titleVal = document.getElementById('post-title')?.value || '';
     const titleTextarea = document.getElementById('col-item-title-v2');
-    if (titleTextarea) titleTextarea.value = titleVal;
+    if (titleTextarea) {
+        titleTextarea.value = titleVal;
+        // Trigger auto-resize and validation sync
+        if (typeof window.syncTitleIndicator === 'function') {
+            window.syncTitleIndicator();
+        }
+    }
 
     const headerIndicator = document.getElementById('editor-header-title-indicator');
     if (headerIndicator) headerIndicator.textContent = titleVal.trim() || 'Uten navn';
@@ -7565,6 +7571,15 @@ function openModal() {
     renderFeaturedImagePreview(document.getElementById('post-image')?.value || '');
     switchSettingsTab('generelt');
     resetAiAssistantState({ clearPrompt: true });
+
+    // Force scrollTop scroll reset to top of document to make sure title field is visible.
+    // Timeout of 100ms catches any autofocus behavior from the rich text editor library.
+    setTimeout(() => {
+        const scrollArea = document.querySelector('.editor-scroll-area');
+        if (scrollArea) {
+            scrollArea.scrollTop = 0;
+        }
+    }, 100);
 }
 
 function resetPostEditorForNewPost() {
@@ -7646,6 +7661,9 @@ window.syncTitleIndicator = function () {
         if (headerIndicator) {
             headerIndicator.textContent = textarea.value.trim() || 'Uten navn';
         }
+        // Dynamically auto-resize title height so that multi-line titles do not overflow/clip
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
     }
     
     // Automatically update live preview if active
