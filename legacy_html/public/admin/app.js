@@ -7579,6 +7579,12 @@ function openModal() {
         if (scrollArea) {
             scrollArea.scrollTop = 0;
         }
+        if (titleTextarea) {
+            titleTextarea.focus();
+        }
+        if (quill) {
+            quill.setSelection(0, 0, 'silent');
+        }
     }, 100);
 }
 
