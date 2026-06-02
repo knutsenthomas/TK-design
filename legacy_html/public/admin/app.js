@@ -5859,11 +5859,16 @@ function renderAnalyticsTab() {
                 const mockPviewsSum = sessionsData.reduce((a, b) => a + b, 0);
                 const pviewsScale = realPviews / (mockPviewsSum || 1);
                 sessionsData = sessionsData.map(v => Math.round(v * pviewsScale));
+            } else {
+                sessionsData = sessionsData.map(() => 0);
             }
+
             if (realUsers > 0) {
                 const mockUsersSum = uniquesData.reduce((a, b) => a + b, 0);
                 const usersScale = realUsers / (mockUsersSum || 1);
                 uniquesData = uniquesData.map(v => Math.round(v * usersScale));
+            } else {
+                uniquesData = uniquesData.map(() => 0);
             }
         }
 
@@ -5961,9 +5966,9 @@ function renderAnalyticsTab() {
     if (donutCanvas && typeof Chart !== 'undefined') {
         const ctxSources = donutCanvas.getContext('2d');
         
-        let direktePct = 85;
-        let sokPct = 12;
-        let sosialPct = 3;
+        let direktePct = isUnconfigured ? 85 : 0;
+        let sokPct = isUnconfigured ? 12 : 0;
+        let sosialPct = isUnconfigured ? 3 : 0;
 
         // Extract real proportions if GA4 is loaded
         if (!isUnconfigured && Array.isArray(analyticsData.trafficSources) && analyticsData.trafficSources.length > 0) {
@@ -5998,11 +6003,15 @@ function renderAnalyticsTab() {
         // Update center label text
         const donutCenterValEl = document.getElementById('donut-center-value');
         const donutCenterTextEl = document.getElementById('donut-center-text');
-        if (donutCenterValEl) donutCenterValEl.textContent = `${direktePct}%`;
-        if (donutCenterTextEl) donutCenterTextEl.textContent = 'Direkte';
+        
+        const hasNoData = direktePct === 0 && sokPct === 0 && sosialPct === 0;
+        if (donutCenterValEl) donutCenterValEl.textContent = hasNoData ? '0%' : `${direktePct}%`;
+        if (donutCenterTextEl) donutCenterTextEl.textContent = hasNoData ? 'Ingen data' : 'Direkte';
+
+        const chartData = hasNoData ? [0, 0, 100] : [direktePct, sokPct, sosialPct];
 
         if (window.mySourcesChart) {
-            window.mySourcesChart.data.datasets[0].data = [direktePct, sokPct, sosialPct];
+            window.mySourcesChart.data.datasets[0].data = chartData;
             window.mySourcesChart.update();
         } else {
             window.mySourcesChart = new Chart(ctxSources, {
@@ -6010,7 +6019,7 @@ function renderAnalyticsTab() {
                 data: {
                     labels: ['Direkte', 'Søk', 'Sosial'],
                     datasets: [{
-                        data: [direktePct, sokPct, sosialPct],
+                        data: chartData,
                         backgroundColor: ['#bd4f2a', '#d17d39', '#cbd5e1'],
                         borderWidth: 0,
                         hoverOffset: 4
@@ -6197,6 +6206,24 @@ function renderAnalyticsTab() {
             const rtValEl = document.getElementById('analytics-active-users-realtime');
             const sparklineEl = document.getElementById('live-sparkline');
             if (!rtValEl || !sparklineEl) return;
+
+            // Only oscillate/simulate if in unconfigured/demomodus
+            const isUnconfigured = siteAnalytics?.status === 'unconfigured';
+            if (!isUnconfigured) {
+                if (siteAnalytics?.data?.activeUsers !== undefined) {
+                    const realUsersNow = parseInt(siteAnalytics.data.activeUsers) || 0;
+                    rtValEl.textContent = formatAnalyticsMetric(realUsersNow);
+                    
+                    // Set sparkline to flatline if 0 active users
+                    if (realUsersNow === 0) {
+                        const bars = sparklineEl.children;
+                        for (let i = 0; i < bars.length; i++) {
+                            bars[i].style.height = '4px';
+                        }
+                    }
+                }
+                return;
+            }
 
             let current = parseInt(rtValEl.textContent);
             if (isNaN(current) || current <= 0) {
