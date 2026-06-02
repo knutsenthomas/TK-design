@@ -5621,3 +5621,31 @@ body.admin-dashboard-refresh #dashboard-main-header,
     border: none !important;
 }
 
+/* Sidebar and Main Content width desktop alignments (removes the 20px vertical gap) */
+@media (min-width: 1025px) {
+    body.admin-body .sidebar,
+    body.admin-dashboard-refresh .sidebar,
+    .sidebar {
+        width: 260px !important;
+        flex: 0 0 260px !important;
+    }
+
+    body.admin-body .main-content,
+    body.admin-dashboard-refresh .main-content,
+    .main-content {
+        margin-left: 260px !important;
+    }
+
+    body.admin-sidebar-collapsed .sidebar,
+    body.admin-dashboard-refresh.admin-sidebar-collapsed .sidebar {
+        width: 0 !important;
+        flex: 0 0 0 !important;
+    }
+
+    body.admin-sidebar-collapsed .main-content,
+    body.admin-dashboard-refresh.admin-sidebar-collapsed .main-content {
+        margin-left: 0 !important;
+    }
+}
+
+
