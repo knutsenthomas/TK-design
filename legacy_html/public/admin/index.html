@@ -156,63 +156,49 @@
             <nav class="sidebar-nav">
                 <div class="nav-group">
                     <ul class="nav-list" style="list-style: none;">
-                        <li class="nav-item visible" data-nav-category="all">
+                        <li class="nav-item">
                             <button class="nav-btn nav-link active" data-tab="home" data-i18n="nav_home">
                                 <span class="material-symbols-outlined">home</span>
                                 <span>Hjem</span>
                             </button>
                         </li>
-                        <li class="nav-category-header" data-target-category="nettsted">
-                            <span>Nettsted</span>
-                            <span class="material-symbols-outlined expand-icon">expand_more</span>
-                        </li>
-                        <li class="nav-item" data-nav-category="nettsted">
+                        <li class="nav-item">
                             <button class="nav-btn nav-link" data-tab="content" data-i18n="nav_content">
                                 <span class="material-symbols-outlined">description</span>
                                 <span>Sideinnhold</span>
                             </button>
                         </li>
-                        <li class="nav-item" data-nav-category="nettsted">
+                        <li class="nav-item">
                             <button class="nav-btn nav-link" data-tab="blog" data-i18n="nav_blog">
                                 <span class="material-symbols-outlined">edit_note</span>
                                 <span>Blogg</span>
                             </button>
                         </li>
-                        <li class="nav-item" data-nav-category="nettsted">
+                        <li class="nav-item">
                             <button class="nav-btn nav-link" data-tab="media" data-i18n="nav_media">
                                 <span class="material-symbols-outlined">perm_media</span>
                                 <span>Mediebibliotek</span>
                             </button>
                         </li>
-                        <li class="nav-item" data-nav-category="nettsted">
+                        <li class="nav-item">
                             <button class="nav-btn nav-link" data-tab="style" data-i18n="nav_style">
                                 <span class="material-symbols-outlined">palette</span>
                                 <span>Design</span>
                             </button>
                         </li>
-                        
-                        <li class="nav-category-header" data-target-category="markedsforing">
-                            <span>Markedsføring</span>
-                            <span class="material-symbols-outlined expand-icon">expand_more</span>
-                        </li>
-                        <li class="nav-item" data-nav-category="markedsforing">
+                        <li class="nav-item">
                             <button class="nav-btn nav-link" data-tab="social-planner" data-i18n="nav_social_planner">
                                 <span class="material-symbols-outlined">share</span>
                                 <span>SoMe-planlegger</span>
                             </button>
                         </li>
-                        
-                        <li class="nav-category-header" data-target-category="administrasjon">
-                            <span>Administrasjon</span>
-                            <span class="material-symbols-outlined expand-icon">expand_more</span>
-                        </li>
-                        <li class="nav-item" data-nav-category="administrasjon">
+                        <li class="nav-item">
                             <button class="nav-btn nav-link" data-tab="seo" data-i18n="nav_seo">
                                 <span class="material-symbols-outlined">search_check</span>
                                 <span>SEO</span>
                             </button>
                         </li>
-                        <li class="nav-item" data-nav-category="administrasjon">
+                        <li class="nav-item">
                             <button class="nav-btn nav-link" data-tab="analytics" data-i18n="nav_analytics">
                                 <span class="material-symbols-outlined">analytics</span>
                                 <span>Analyse</span>
@@ -223,13 +209,13 @@
 
                 <div class="nav-group bottom" style="margin-top: auto;">
                     <ul class="nav-list" style="list-style: none;">
-                        <li class="nav-item" data-nav-category="all">
+                        <li class="nav-item">
                             <button class="nav-btn nav-link" onclick="window.open('/', '_blank')" data-i18n="nav_view_site">
                                 <span class="material-symbols-outlined">visibility</span>
                                 <span>Se nettside</span>
                             </button>
                         </li>
-                        <li class="nav-item" data-nav-category="all">
+                        <li class="nav-item">
                             <button id="logout-btn" class="nav-btn nav-link logout" style="color: #ef4444 !important;">
                                 <span class="material-symbols-outlined">logout</span>
                                 <span>Logg ut</span>
@@ -1983,49 +1969,9 @@
     </script>
     <script type="module" src="/js/speed-insights-init.js"></script>
     
-    <!-- Sidebar Collapsible Categories & Mobile Handling -->
+    <!-- Sidebar Mobile Handling -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const categoryHeaders = document.querySelectorAll('.nav-category-header[data-target-category]');
-            if (categoryHeaders.length === 0) return;
-
-            function setCategory(category, shouldBeOpen) {
-                const header = document.querySelector(`.nav-category-header[data-target-category="${category}"]`);
-                const items = document.querySelectorAll(`.nav-item[data-nav-category="${category}"]`);
-                if (!header) return;
-
-                if (shouldBeOpen) {
-                    header.classList.remove('collapsed');
-                    items.forEach(item => {
-                        item.classList.remove('nav-cat-hidden');
-                        item.classList.add('visible');
-                        item.style.setProperty('display', 'block', 'important');
-                        item.style.setProperty('visibility', 'visible', 'important');
-                        item.style.setProperty('opacity', '1', 'important');
-                    });
-                } else {
-                    header.classList.add('collapsed');
-                    items.forEach(item => {
-                        item.classList.add('nav-cat-hidden');
-                        item.classList.remove('visible');
-                        item.style.setProperty('display', 'none', 'important');
-                    });
-                }
-            }
-
-            categoryHeaders.forEach(header => {
-                const cat = header.getAttribute('data-target-category');
-                
-                // All categories are open as standard on page load
-                setCategory(cat, true);
-
-                header.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const currentlyCollapsed = header.classList.contains('collapsed');
-                    setCategory(cat, currentlyCollapsed);
-                });
-            });
-
             // Mobile menu backdrop click close handling
             const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
             if (mobileMenuBackdrop) {
