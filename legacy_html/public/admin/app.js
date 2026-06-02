@@ -7513,6 +7513,12 @@ window.syncTitleIndicator = function () {
 };
 
 window.switchSidebarPanel = function (btn, panelType) {
+    // Hvis vi bytter panel, lukker vi live preview siden sidepanelet skal vises
+    const previewPanel = document.getElementById('editor-live-preview-panel');
+    if (previewPanel && previewPanel.style.display !== 'none') {
+        window.toggleSplitPreview();
+    }
+
     document.querySelectorAll('.sidebar-tab-btn').forEach(b => {
         b.classList.remove('active');
         b.style.background = 'transparent';
@@ -7546,16 +7552,27 @@ window.isPreviewActive = function () {
 
 window.toggleSplitPreview = function () {
     const previewPanel = document.getElementById('editor-live-preview-panel');
+    const settingsPanel = document.getElementById('settings-panel');
     if (!previewPanel) return;
 
     const btn = document.getElementById('toggle-split-preview');
     if (previewPanel.style.display === 'none') {
         previewPanel.style.display = 'flex';
-        if (btn) btn.classList.add('is-active');
+        if (settingsPanel) settingsPanel.style.display = 'none';
+        if (btn) {
+            btn.classList.add('is-active');
+            btn.style.background = '#fff7ed';
+            btn.style.color = '#d17d39';
+        }
         window.updateLivePreview();
     } else {
         previewPanel.style.display = 'none';
-        if (btn) btn.classList.remove('is-active');
+        if (settingsPanel) settingsPanel.style.display = '';
+        if (btn) {
+            btn.classList.remove('is-active');
+            btn.style.background = '';
+            btn.style.color = '';
+        }
     }
 };
 

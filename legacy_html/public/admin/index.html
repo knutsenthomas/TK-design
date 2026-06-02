@@ -143,6 +143,9 @@
         }
         
         /* Premium Editor and Preview Canvas styles */
+        #desktop-richtools.ql-hidden {
+            display: flex !important;
+        }
         .editor-preview-canvas {
             width: 50% !important;
             min-width: 320px !important;
@@ -1794,7 +1797,7 @@
                     </div>
                 </div>
                 <div class="preview-iframe-wrapper desktop" id="preview-iframe-wrapper">
-                    <iframe id="editor-live-preview-iframe" style="border: none; background: white; transition: all 0.3s ease;"></iframe>
+                    <iframe id="editor-live-preview-iframe" src="about:blank" style="border: none; background: white; transition: all 0.3s ease;"></iframe>
                 </div>
             </div>
 
