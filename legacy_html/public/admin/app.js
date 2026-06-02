@@ -2001,7 +2001,7 @@ async function init() {
     if (typeof Quill !== 'undefined') {
         try {
             quill = new Quill('#editor-container', {
-                theme: 'bubble',
+                theme: 'snow',
                 placeholder: 'Start å skrive din historie...',
                 modules: {
                     toolbar: '#desktop-richtools'
@@ -7558,7 +7558,7 @@ window.toggleSplitPreview = function () {
     const btn = document.getElementById('toggle-split-preview');
     if (previewPanel.style.display === 'none') {
         previewPanel.style.display = 'flex';
-        if (settingsPanel) settingsPanel.style.display = 'none';
+        if (settingsPanel) settingsPanel.style.setProperty('display', 'none', 'important');
         if (btn) {
             btn.classList.add('is-active');
             btn.style.background = '#fff7ed';
@@ -7567,7 +7567,7 @@ window.toggleSplitPreview = function () {
         window.updateLivePreview();
     } else {
         previewPanel.style.display = 'none';
-        if (settingsPanel) settingsPanel.style.display = '';
+        if (settingsPanel) settingsPanel.style.removeProperty('display');
         if (btn) {
             btn.classList.remove('is-active');
             btn.style.background = '';
