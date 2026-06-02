@@ -335,7 +335,58 @@
                     const googleProvider = new window.firebase.auth.GoogleAuthProvider();
                     googleProvider.addScope('profile');
                     googleProvider.addScope('email');
-                    await auth.signInWithPopup(googleProvider);
+                    
+                    const result = await auth.signInWithPopup(googleProvider);
+                    const user = result.user;
+
+                    // Prøv å hente profilbilde direkte fra Google People API ved hjelp av access token
+                    let googlePeoplePhotoUrl = '';
+                    if (result.credential && result.credential.accessToken) {
+                        try {
+                            const response = await fetch('https://people.googleapis.com/v1/people/me?personFields=photos', {
+                                headers: {
+                                    'Authorization': `Bearer ${result.credential.accessToken}`
+                                }
+                            });
+                            if (response.ok) {
+                                const peopleData = await response.json();
+                                const primaryPhoto = peopleData.photos?.find(p => p.metadata?.primary);
+                                const photoUrl = primaryPhoto?.url || peopleData.photos?.[0]?.url;
+                                if (photoUrl) {
+                                    // Tilpass bildestørrelse til 200px bredde
+                                    googlePeoplePhotoUrl = photoUrl.replace(/=s\d+$/, '=s200-c');
+                                    console.log('[DEBUG Auth] Google People API photo URL:', googlePeoplePhotoUrl);
+                                }
+                            }
+                        } catch (peopleErr) {
+                            console.warn('Kunne ikke hente bilde fra Google People API:', peopleErr);
+                        }
+                    }
+
+                    // Lagre bildet i Firestore hvis det ikke allerede finnes en manuelt opplastet avatar
+                    const finalPhotoUrl = googlePeoplePhotoUrl || user.photoURL || '';
+                    if (finalPhotoUrl) {
+                        try {
+                            const profileData = await getProfileData(user.uid);
+                            const isCustomUploadedAvatar = profileData && 
+                                                           profileData.avatar_url && 
+                                                           profileData.avatar_url.includes('firebasestorage.googleapis.com');
+                            
+                            if (!isCustomUploadedAvatar) {
+                                const updatedData = {
+                                    full_name: profileData.full_name || user.displayName || user.email.split('@')[0] || 'Admin',
+                                    avatar_url: finalPhotoUrl,
+                                    phone: profileData.phone || '',
+                                    address: profileData.address || '',
+                                    dob: profileData.dob || '',
+                                    bio: profileData.bio || ''
+                                };
+                                await updateProfileDocument(user, updatedData);
+                            }
+                        } catch (syncErr) {
+                            console.error('Failed to sync People API photo to Firestore:', syncErr);
+                        }
+                    }
 
                     const mappedUser = await getMappedCurrentUser();
 
