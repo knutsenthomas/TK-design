@@ -104,7 +104,7 @@
     <link rel="icon" type="image/png" href="../img/logo/d.png">
 </head>
 
-<body class="admin-body main-dashboard">
+<body class="admin-dashboard-refresh admin-body main-dashboard">
 
     <div id="dashboard-container" class="admin-container">
         <!-- Sidebar Backdrop for Mobile -->
@@ -279,12 +279,14 @@
             </div>
 
             <!-- Home / Overview Tab -->
-            <div id="home-tab" class="tab-content active">
-                <header>
-                    <h1 data-i18n="welcome">Velkommen tilbake, Thomas</h1>
-                    <button class="save-btn" onclick="startNewPost()" data-i18n="new_post">+ Nytt
-                        Innlegg</button>
-                </header>
+            <div id="home-tab" class="tab-content section-container active">
+                <div class="section-header-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+                    <h2 style="font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0;" data-i18n="welcome">Velkommen tilbake, Thomas</h2>
+                    <button class="save-btn" onclick="startNewPost()" data-i18n="new_post" style="padding: 10px 20px; font-size: 14px; font-weight: 700; border-radius: 12px; border: none; background: var(--accent-gradient); color: white; cursor: pointer; box-shadow: 0 4px 12px var(--accent-glow); display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;">
+                        <span class="material-symbols-outlined" style="font-size: 18px; color: white !important;">add</span>
+                        + Nytt Innlegg
+                    </button>
+                </div>
 
                 <div class="card dashboard-hero-card">
                     <div class="dashboard-hero-layout">
@@ -311,26 +313,45 @@
                 </div>
 
                 <div class="stats-grid">
-                    <div class="stat-card">
-                        <h3 data-i18n="stats_posts_live">Publiserte innlegg</h3>
-                        <div class="value"><span id="dashboard-post-count">0</span></div>
-                        <p class="dashboard-stat-note" data-i18n="stats_posts_live_note">Vises på Aktuelt-siden</p>
+                    <div class="stat-card modern">
+                        <div class="stat-icon-wrap blue">
+                            <span class="material-symbols-outlined">edit_note</span>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-label" data-i18n="stats_posts_live">Publiserte innlegg</h3>
+                            <p class="stat-value" id="dashboard-post-count">0</p>
+                            <span class="stat-meta" data-i18n="stats_posts_live_note">Vises på Aktuelt-siden</span>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <h3 data-i18n="stats_sections">Redigerbare seksjoner</h3>
-                        <div class="value"><span id="dashboard-section-count">0</span></div>
-                        <p class="dashboard-stat-note" data-i18n="stats_sections_note">Innhold du kan oppdatere her</p>
+                    <div class="stat-card modern">
+                        <div class="stat-icon-wrap purple">
+                            <span class="material-symbols-outlined">layers</span>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-label" data-i18n="stats_sections">Redigerbare seksjoner</h3>
+                            <p class="stat-value" id="dashboard-section-count">0</p>
+                            <span class="stat-meta" data-i18n="stats_sections_note">Innhold du kan oppdatere her</span>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <h3 data-i18n="stats_services_live">Tjenestekort</h3>
-                        <div class="value"><span id="dashboard-service-count">0</span></div>
-                        <p class="dashboard-stat-note" data-i18n="stats_services_live_note">Kort i innholdsredigeringen
-                        </p>
+                    <div class="stat-card modern">
+                        <div class="stat-icon-wrap green">
+                            <span class="material-symbols-outlined">featured_play_list</span>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-label" data-i18n="stats_services_live">Tjenestekort</h3>
+                            <p class="stat-value" id="dashboard-service-count">0</p>
+                            <span class="stat-meta" data-i18n="stats_services_live_note">Kort i innholdsredigeringen</span>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <h3 data-i18n="stats_languages_live">Språk</h3>
-                        <div class="value"><span id="dashboard-language-count">0</span></div>
-                        <p class="dashboard-stat-note" data-i18n="stats_languages_live_note">Norsk og engelsk</p>
+                    <div class="stat-card modern">
+                        <div class="stat-icon-wrap mint">
+                            <span class="material-symbols-outlined">translate</span>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-label" data-i18n="stats_languages_live">Språk</h3>
+                            <p class="stat-value" id="dashboard-language-count">0</p>
+                            <span class="stat-meta" data-i18n="stats_languages_live_note">Norsk og engelsk</span>
+                        </div>
                     </div>
                 </div>
 
@@ -389,7 +410,7 @@
             </div>
 
             <!-- Content Editor -->
-            <div id="content-tab" class="tab-content">
+            <div id="content-tab" class="tab-content section-container">
                 <header>
                     <h1 data-i18n="nav_content">Sideinnhold</h1>
                     <button class="save-btn" id="save-btn" data-i18n="save_content">Lagre Sideinnhold</button>
@@ -405,7 +426,7 @@
             </div>
 
             <!-- Blog Editor -->
-            <div id="blog-tab" class="tab-content">
+            <div id="blog-tab" class="tab-content section-container">
                 <header>
                     <h1 data-i18n="blog_overview">Bloggoversikt</h1>
                     <button class="save-btn" onclick="startNewPost()" data-i18n="new_post"><i class="fas fa-plus"></i>
@@ -425,7 +446,7 @@
             </div>
 
             <!-- Style Tab -->
-            <div id="style-tab" class="tab-content">
+            <div id="style-tab" class="tab-content section-container">
                 <header>
                     <h1 data-i18n="design_colors">Design & Farger</h1>
                     <button class="save-btn" id="save-style-btn" data-i18n="save_design">Lagre Design</button>
@@ -561,7 +582,7 @@
             </div>
 
             <!-- SEO Tab -->
-            <div id="seo-tab" class="tab-content">
+            <div id="seo-tab" class="tab-content section-container">
                 <header>
                     <h1 data-i18n="seo_title">Søkemotoroptimalisering (SEO)</h1>
                     <button class="save-btn" id="save-seo-btn" data-i18n="save_seo">Lagre SEO</button>
@@ -650,7 +671,7 @@
                 </div>
             </div>
 
-            <div id="analytics-tab" class="tab-content">
+            <div id="analytics-tab" class="tab-content section-container">
                 <header>
                     <h1 data-i18n="analytics_title">Nettstedsanalyse</h1>
                 </header>
@@ -726,7 +747,7 @@
                 </div>
             </div>
 
-            <div id="media-tab" class="tab-content">
+            <div id="media-tab" class="tab-content section-container">
                 <h2 data-i18n="media_lib">Mediebibliotek</h2>
                 <div class="upload-area">
                     <div class="upload-area-controls">
@@ -739,7 +760,7 @@
                 </div>
             </div>
 
-            <div id="social-planner-tab" class="tab-content">
+            <div id="social-planner-tab" class="tab-content section-container">
                 <div id="sp-rail-modal" class="social-planner-rail-modal" hidden>
                     <button type="button" class="social-planner-rail-modal-backdrop" aria-label="Lukk kontrollpanel"
                         onclick="toggleSocialPlannerRail(false)"></button>
