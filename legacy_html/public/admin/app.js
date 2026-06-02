@@ -2001,7 +2001,7 @@ async function init() {
     if (typeof Quill !== 'undefined') {
         try {
             quill = new Quill('#editor-container', {
-                theme: 'snow',
+                theme: 'bubble',
                 placeholder: 'Start å skrive din historie...',
                 modules: {
                     toolbar: '#desktop-richtools'
@@ -7593,117 +7593,127 @@ window.updateLivePreview = function () {
     const iframe = document.getElementById('editor-live-preview-iframe');
     if (!iframe) return;
 
-    const titleTextarea = document.getElementById('col-item-title-v2');
-    const title = titleTextarea?.value || document.getElementById('post-title')?.value || 'Uten navn';
-    const content = getEditorHtmlContent();
-    const featuredImage = document.getElementById('post-image')?.value || '';
-    const date = document.getElementById('post-date')?.value || '';
-    const author = document.getElementById('post-author')?.value || 'Admin';
+    try {
+        const titleTextarea = document.getElementById('col-item-title-v2');
+        const title = titleTextarea?.value || document.getElementById('post-title')?.value || 'Uten navn';
+        const content = getEditorHtmlContent();
+        const featuredImage = document.getElementById('post-image')?.value || '';
+        const date = document.getElementById('post-date')?.value || '';
+        const author = document.getElementById('post-author')?.value || 'Admin';
 
-    const previewHtml = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-            <style>
-                body {
-                    font-family: 'Kanit', sans-serif;
-                    color: #1e293b;
-                    line-height: 1.6;
-                    padding: 40px 24px;
-                    margin: 0;
-                    background: white;
-                }
-                .container {
-                    max-width: 680px;
-                    margin: 0 auto;
-                }
-                .meta {
-                    font-size: 14px;
-                    color: #64748b;
-                    margin-bottom: 24px;
-                    display: flex;
-                    gap: 16px;
-                }
-                h1 {
-                    font-size: 36px;
-                    font-weight: 700;
-                    color: #1B4965;
-                    margin-top: 0;
-                    margin-bottom: 16px;
-                    line-height: 1.2;
-                }
-                .featured-image {
-                    width: 100%;
-                    max-height: 400px;
-                    object-fit: cover;
-                    border-radius: 12px;
-                    margin-bottom: 32px;
-                }
-                .post-content {
-                    font-size: 18px;
-                    color: #334155;
-                }
-                .post-content p {
-                    margin-bottom: 24px;
-                }
-                .post-content img {
-                    max-width: 100%;
-                    height: auto;
-                    border-radius: 8px;
-                    margin: 16px 0;
-                }
-                blockquote {
-                    border-left: 4px solid #f97316;
-                    padding-left: 16px;
-                    margin: 24px 0;
-                    font-style: italic;
-                    color: #475569;
-                }
-                hr {
-                    border: 0;
-                    border-top: 1px solid #e2e8f0;
-                    margin: 32px 0;
-                }
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin: 24px 0;
-                }
-                th, td {
-                    border: 1px solid #e2e8f0;
-                    padding: 12px;
-                    text-align: left;
-                }
-                th {
-                    background: #f8fafc;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <h1>${escapeHtmlForUi(title)}</h1>
-                <div class="meta">
-                    <span>Av ${escapeHtmlForUi(author)}</span>
-                    <span>•</span>
-                    <span>${escapeHtmlForUi(date)}</span>
+        const previewHtml = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+                <style>
+                    body {
+                        font-family: 'Kanit', sans-serif;
+                        color: #1e293b;
+                        line-height: 1.6;
+                        padding: 40px 24px;
+                        margin: 0;
+                        background: white;
+                    }
+                    .container {
+                        max-width: 680px;
+                        margin: 0 auto;
+                    }
+                    .meta {
+                        font-size: 14px;
+                        color: #64748b;
+                        margin-bottom: 24px;
+                        display: flex;
+                        gap: 16px;
+                    }
+                    h1 {
+                        font-size: 36px;
+                        font-weight: 700;
+                        color: #1B4965;
+                        margin-top: 0;
+                        margin-bottom: 16px;
+                        line-height: 1.2;
+                    }
+                    .featured-image {
+                        width: 100%;
+                        max-height: 400px;
+                        object-fit: cover;
+                        border-radius: 12px;
+                        margin-bottom: 32px;
+                    }
+                    .post-content {
+                        font-size: 18px;
+                        color: #334155;
+                    }
+                    .post-content p {
+                        margin-bottom: 24px;
+                    }
+                    .post-content img {
+                        max-width: 100%;
+                        height: auto;
+                        border-radius: 8px;
+                        margin: 16px 0;
+                    }
+                    blockquote {
+                        border-left: 4px solid #f97316;
+                        padding-left: 16px;
+                        margin: 24px 0;
+                        font-style: italic;
+                        color: #475569;
+                    }
+                    hr {
+                        border: 0;
+                        border-top: 1px solid #e2e8f0;
+                        margin: 32px 0;
+                    }
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin: 24px 0;
+                    }
+                    th, td {
+                        border: 1px solid #e2e8f0;
+                        padding: 12px;
+                        text-align: left;
+                    }
+                    th {
+                        background: #f8fafc;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>${escapeHtmlForUi(title)}</h1>
+                    <div class="meta">
+                        <span>Av ${escapeHtmlForUi(author)}</span>
+                        <span>•</span>
+                        <span>${escapeHtmlForUi(date)}</span>
+                    </div>
+                    ${featuredImage && !/img\/blog\/bblog1\.png$/i.test(featuredImage) ? `<img class="featured-image" src="${escapeHtmlForUi(featuredImage)}" alt="Forsidebilde">` : ''}
+                    <div class="post-content">
+                        ${content}
+                    </div>
                 </div>
-                ${featuredImage && !/img\/blog\/bblog1\.png$/i.test(featuredImage) ? `<img class="featured-image" src="${escapeHtmlForUi(featuredImage)}" alt="Forsidebilde">` : ''}
-                <div class="post-content">
-                    ${content}
-                </div>
-            </div>
-        </body>
-        </html>
-    `;
+            </body>
+            </html>
+        `;
 
-    const doc = iframe.contentDocument || iframe.contentWindow.document;
-    if (doc) {
-        doc.open();
-        doc.write(previewHtml);
-        doc.close();
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        if (doc) {
+            doc.open();
+            doc.write(previewHtml);
+            doc.close();
+        }
+    } catch (err) {
+        console.error("Live preview update failed:", err);
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        if (doc) {
+            doc.open();
+            doc.write(`<div style="color: red; padding: 20px; font-family: sans-serif; background: #fff1f2; border: 1px solid #fecaca; border-radius: 8px;"><h3>Preview Error:</h3><pre style="white-space: pre-wrap;">${err.stack || err.message}</pre></div>`);
+            doc.close();
+        }
     }
 };
 
