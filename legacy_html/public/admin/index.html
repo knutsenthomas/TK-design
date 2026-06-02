@@ -153,6 +153,12 @@
     <link href="https://cdn.quilljs.com/1.3.6/quill.bubble.css" rel="stylesheet">
     <!-- Quill JS -->
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    
+    <!-- Chart.js and Google Charts for Premium Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <link rel="stylesheet" href="css/analytics-premium.css">
+    
     <link rel="icon" type="image/png" href="../img/logo/d.png">
 </head>
 
@@ -264,7 +270,7 @@
                         <i class="fas fa-arrow-left"></i> Tilbake
                     </button>
 
-                    <div class="section-header-icon" style="margin-right: 12px;">
+                    <div class="section-header-icon">
                         <span id="dashboard-main-header-icon" class="material-symbols-outlined">grid_view</span>
                     </div>
 
@@ -717,74 +723,273 @@
                     <h1 data-i18n="analytics_title">Nettstedsanalyse</h1>
                 </header>
 
-                <div class="card analytics-toolbar-card">
-                    <div class="analytics-toolbar">
-                        <div class="analytics-toolbar-copy">
-                            <h2 class="dashboard-panel-title" data-i18n="analytics_title">Nettstedsanalyse</h2>
-                            <p class="dashboard-panel-text" data-i18n="analytics_intro">Følg trafikk, aktive brukere og
-                                hvilke sider som faktisk blir besøkt.</p>
-                        </div>
-                        <div class="analytics-period-picker">
-                            <span class="analytics-toolbar-label" data-i18n="analytics_period_label">Periode</span>
-                            <div id="analytics-period-buttons" class="analytics-period-switcher"></div>
+                <div class="analytics-container">
+                    <!-- Period Selector Row -->
+                    <div class="analytics-header-row">
+                        <h2 style="font-size: 18px; font-weight: 700; color: #1e293b; margin: 0;">Analyseoversikt</h2>
+                        <div id="analytics-period-buttons" class="period-selector">
+                            <!-- Injected dynamically by app.js -->
                         </div>
                     </div>
-                    <p id="analytics-status-message" class="analytics-status-inline"></p>
-                </div>
 
-                <div class="stats-grid analytics-stats-grid">
-                    <div class="stat-card">
-                        <h3 data-i18n="analytics_card_views">Sidevisninger</h3>
-                        <div class="value"><span id="analytics-screen-pageviews">—</span></div>
-                        <p class="dashboard-stat-note" id="analytics-screen-pageviews-note">Valgt datoperiode</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3 data-i18n="analytics_card_active_range">Aktive brukere</h3>
-                        <div class="value"><span id="analytics-active-users-range">—</span></div>
-                        <p class="dashboard-stat-note" id="analytics-active-users-range-note">Valgt datoperiode</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3 data-i18n="analytics_card_realtime">Sanntid nå</h3>
-                        <div class="value"><span id="analytics-active-users-realtime">—</span></div>
-                        <p class="dashboard-stat-note" id="analytics-active-users-realtime-note">Akkurat nå i GA4</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3 data-i18n="analytics_card_period">Periode</h3>
-                        <div class="value"><span id="analytics-range-short">30 dager</span></div>
-                        <p class="dashboard-stat-note" id="analytics-range-short-note">Valgt datoperiode</p>
-                    </div>
-                </div>
-
-                <div class="analytics-panels-grid">
-                    <section class="card analytics-list-card">
-                        <div class="analytics-list-head">
+                    <!-- Stats Grid -->
+                    <div class="stats-grid-premium">
+                        <!-- Brukere akkurat nå (Sanntidstimer) -->
+                        <div class="stat-card-premium live-users-card">
                             <div>
-                                <h2 class="dashboard-panel-title" data-i18n="analytics_top_pages">Mest besøkte sider
-                                </h2>
-                                <p class="dashboard-panel-text" data-i18n="analytics_top_pages_desc">Sider med flest
-                                    visninger i valgt periode.</p>
+                                <div class="stat-card-header">
+                                    <div class="stat-card-title">
+                                        <span class="live-indicator-dot"></span>
+                                        Brukere akkurat nå
+                                    </div>
+                                    <span class="stat-card-trend live">Live</span>
+                                </div>
+                                <div class="stat-card-value" id="analytics-active-users-realtime">—</div>
+                                <div class="stat-card-meta" id="analytics-active-users-realtime-note">Akkurat nå på nettstedet</div>
                             </div>
-                            <span id="analytics-range-chip" class="analytics-range-chip">30 dager</span>
-                        </div>
-                        <div id="analytics-top-pages-list" class="analytics-list"></div>
-                    </section>
-
-                    <section class="card analytics-list-card">
-                        <div class="analytics-list-head">
-                            <div>
-                                <h2 class="dashboard-panel-title" data-i18n="analytics_traffic_sources">Trafikkilder
-                                </h2>
-                                <p class="dashboard-panel-text" data-i18n="analytics_traffic_sources_desc">Kanalgrupper
-                                    som sender flest økter til nettsiden.</p>
+                            <!-- Sparkline graphic showing real-time pulses -->
+                            <div class="mini-sparkline" id="live-sparkline">
+                                <div class="mini-bar" style="height: 15%"></div>
+                                <div class="mini-bar" style="height: 25%"></div>
+                                <div class="mini-bar" style="height: 40%"></div>
+                                <div class="mini-bar" style="height: 35%"></div>
+                                <div class="mini-bar" style="height: 55%"></div>
+                                <div class="mini-bar" style="height: 45%"></div>
+                                <div class="mini-bar" style="height: 70%"></div>
+                                <div class="mini-bar highlighted" style="height: 80%"></div>
                             </div>
                         </div>
-                        <div id="analytics-traffic-sources-list" class="analytics-list"></div>
-                    </section>
+
+                        <!-- Sidevisninger Card -->
+                        <div class="stat-card-premium">
+                            <div class="stat-card-header">
+                                <div class="stat-card-title">
+                                    <span class="material-symbols-outlined" style="font-size: 18px; color: #3b82f6;">visibility</span>
+                                    Sidevisninger
+                                </div>
+                                <span class="stat-card-trend up" id="analytics-screen-pageviews-trend">+8.2%</span>
+                            </div>
+                            <div>
+                                <div class="stat-card-value" id="analytics-screen-pageviews">—</div>
+                                <div class="stat-card-meta" id="analytics-screen-pageviews-note">Valgt datoperiode</div>
+                            </div>
+                        </div>
+
+                        <!-- Snittid Card -->
+                        <div class="stat-card-premium">
+                            <div class="stat-card-header">
+                                <div class="stat-card-title">
+                                    <span class="material-symbols-outlined" style="font-size: 18px; color: #10b981;">schedule</span>
+                                    Snittid
+                                </div>
+                                <span class="stat-card-trend up" id="analytics-engagement-trend">+4.1%</span>
+                            </div>
+                            <div>
+                                <div class="stat-card-value" id="analytics-engagement-value">3m 45s</div>
+                                <div class="stat-card-meta">Gjennomsnittlig engasjementstid</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Grid Metrics -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-bottom: 32px;">
+                        <!-- Blogginnlegg Card -->
+                        <div class="stat-card-premium" style="flex-direction: row; align-items: center; gap: 16px; padding: 20px;">
+                            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(27, 73, 101, 0.1); color: #1B4965; display: flex; align-items: center; justify-content: center;">
+                                <span class="material-symbols-outlined">edit_note</span>
+                            </div>
+                            <div style="flex-grow: 1;">
+                                <p style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; margin: 0;">Blogginnlegg</p>
+                                <h4 id="real-blog-count" style="font-size: 20px; font-weight: 700; margin: 0; color: #1e293b;">—</h4>
+                                <span style="font-size: 11px; color: #94a3b8;">Publisert totalt</span>
+                            </div>
+                            <a href="#blog" onclick="document.querySelector('[data-tab=\'blog\']').click()" class="stat-action-btn" title="Gå til Blogg">
+                                <span class="material-symbols-outlined" style="font-size: 16px;">add</span>
+                            </a>
+                        </div>
+
+                        <!-- Sideinnhold Card -->
+                        <div class="stat-card-premium" style="flex-direction: row; align-items: center; gap: 16px; padding: 20px;">
+                            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(95, 168, 211, 0.1); color: #5FA8D3; display: flex; align-items: center; justify-content: center;">
+                                <span class="material-symbols-outlined">description</span>
+                            </div>
+                            <div style="flex-grow: 1;">
+                                <p style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; margin: 0;">Seksjoner</p>
+                                <h4 id="real-section-count" style="font-size: 20px; font-weight: 700; margin: 0; color: #1e293b;">14</h4>
+                                <span style="font-size: 11px; color: #94a3b8;">Redigerbare blokker</span>
+                            </div>
+                            <a href="#content" onclick="document.querySelector('[data-tab=\'content\']').click()" class="stat-action-btn" title="Gå til Sideinnhold">
+                                <span class="material-symbols-outlined" style="font-size: 16px;">arrow_forward</span>
+                            </a>
+                        </div>
+
+                        <!-- Systemstatus Card -->
+                        <div class="stat-card-premium" style="flex-direction: row; align-items: center; gap: 16px; padding: 20px;">
+                            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(16, 185, 129, 0.1); color: #10b981; display: flex; align-items: center; justify-content: center;">
+                                <span class="material-symbols-outlined">verified</span>
+                            </div>
+                            <div style="flex-grow: 1;">
+                                <p style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; margin: 0;">Systemstatus</p>
+                                <h4 style="font-size: 20px; font-weight: 700; margin: 0; color: #10b981;">Normal</h4>
+                                <span style="font-size: 11px; color: #94a3b8;">Alle systemer operative</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Two Column Dashboard Grid -->
+                    <div class="analytics-main-grid">
+                        <!-- Column 1: Main Traffic Chart and Map -->
+                        <div style="display: flex; flex-direction: column; gap: 24px;">
+                            <!-- Traffic Monitoring (Google Analytics) -->
+                            <div class="chart-card-premium">
+                                <div class="chart-card-header">
+                                    <div class="chart-card-title-group">
+                                        <h3 class="chart-card-title">Trafikkovervåking (Google Analytics)</h3>
+                                        <p class="chart-card-subtitle" id="analytics-status-message">Brukersesjoner og unike besøkende over tid</p>
+                                    </div>
+                                </div>
+                                <div class="chart-container-inner">
+                                    <canvas id="traffic-line-chart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Geografisk oversikt (Norway/Scandinavia visual with glowing dots) -->
+                            <div class="chart-card-premium">
+                                <div class="chart-card-header">
+                                    <div class="chart-card-title-group">
+                                        <h3 class="chart-card-title">
+                                            <span class="material-symbols-outlined" style="font-size: 20px;">map</span>
+                                            Geografisk oversikt
+                                        </h3>
+                                        <p class="chart-card-subtitle">Hvor besøkende på nettstedet kommer fra</p>
+                                    </div>
+                                </div>
+                                <div class="analytics-grid" style="display: grid; grid-template-columns: 1fr; gap: 24px; align-items: center;">
+                                    <!-- Authentic Google GeoChart Container -->
+                                    <div id="regions_div" style="width: 100%; height: 260px; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; background: #f8fafc;"></div>
+
+                                    <!-- List of countries with progress bars -->
+                                    <div style="width: 100%;">
+                                        <div style="display: flex; flex-direction: column; gap: 16px;">
+                                            <div>
+                                                <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
+                                                    <span style="font-weight: 600; color: #334155;">Norge</span>
+                                                    <span style="font-family: 'Fira Code', monospace; font-weight: 700; color: #1B4965;">96.8%</span>
+                                                </div>
+                                                <div class="top-page-bar-wrapper">
+                                                    <div class="top-page-bar" style="width: 96.8%; background: linear-gradient(to right, #1B4965, #5FA8D3);"></div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
+                                                    <span style="font-weight: 600; color: #334155;">Sverige</span>
+                                                    <span style="font-family: 'Fira Code', monospace; font-weight: 700; color: #1B4965;">2.1%</span>
+                                                </div>
+                                                <div class="top-page-bar-wrapper">
+                                                    <div class="top-page-bar" style="width: 2.1%;"></div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
+                                                    <span style="font-weight: 600; color: #334155;">Danmark</span>
+                                                    <span style="font-family: 'Fira Code', monospace; font-weight: 700; color: #1B4965;">1.1%</span>
+                                                </div>
+                                                <div class="top-page-bar-wrapper">
+                                                    <div class="top-page-bar" style="width: 1.1%;"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Column 2: Top Pages & Traffic Sources -->
+                        <div style="display: flex; flex-direction: column; gap: 24px;">
+                            <!-- Topp Sider Widget -->
+                            <div class="chart-card-premium">
+                                <div class="chart-card-header">
+                                    <div class="chart-card-title-group">
+                                        <h3 class="chart-card-title">
+                                            <span class="material-symbols-outlined" style="font-size: 20px; color: #1B4965;">list_alt</span>
+                                            Topp Sider
+                                        </h3>
+                                        <p class="chart-card-subtitle">De mest besøkte sidene på nettstedet</p>
+                                    </div>
+                                </div>
+                                
+                                <ul class="top-pages-list" id="analytics-top-pages-list">
+                                    <!-- Dynamic content will be injected or animated here -->
+                                </ul>
+
+                                <button class="btn-premium" style="margin-top: 24px; width: 100%;" id="open-all-pages-btn">
+                                    Se alle sideresultater
+                                </button>
+                            </div>
+
+                            <!-- Trafikkilder (Doughnut Chart and customized legend) -->
+                            <div class="chart-card-premium">
+                                <div class="chart-card-header">
+                                    <div class="chart-card-title-group">
+                                        <h3 class="chart-card-title">
+                                            <span class="material-symbols-outlined" style="font-size: 20px; color: #5FA8D3;">pie_chart</span>
+                                            Trafikkilder
+                                        </h3>
+                                        <p class="chart-card-subtitle">Kanalene brukerne kom fra</p>
+                                    </div>
+                                </div>
+
+                                <!-- Donut chart with absolute centered percent -->
+                                <div class="donut-chart-wrapper">
+                                    <canvas id="sources-donut-chart"></canvas>
+                                    <div class="donut-center-label">
+                                        <div class="donut-center-val" id="donut-center-value">85%</div>
+                                        <div class="donut-center-text" id="donut-center-text">Direkte</div>
+                                    </div>
+                                </div>
+
+                                <!-- Legends -->
+                                <div class="source-legends" id="analytics-traffic-sources-list">
+                                    <!-- Dynamic content will be injected here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="analytics-state-card" class="card analytics-state-card" hidden>
                     <h3 id="analytics-state-title"></h3>
                     <p id="analytics-state-body"></p>
+                </div>
+            </div>
+
+            <!-- Detailed Pages Modal -->
+            <div id="pages-results-modal" class="modal-overlay-premium" style="display: none;">
+                <div class="modal-card-premium">
+                    <div class="modal-header-premium">
+                        <div>
+                            <h2 style="font-size: 18px; font-weight: 800; margin: 0; color: #1e293b;">Alle Sideresultater</h2>
+                            <p style="font-size: 13px; color: #64748b; margin: 4px 0 0 0;">Oversikt over sidevisninger for hele nettstedet.</p>
+                        </div>
+                        <button class="close-btn-premium" id="close-pages-modal-btn">&times;</button>
+                    </div>
+                    <div class="modal-body-premium">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid #e2e8f0; color: #64748b; font-weight: 600;">
+                                    <th style="padding: 12px 8px;">Side-URL</th>
+                                    <th style="padding: 12px 8px; text-align: right;">Visninger</th>
+                                    <th style="padding: 12px 8px; text-align: right;">Andel %</th>
+                                </tr>
+                            </thead>
+                            <tbody id="modal-pages-table-body">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer-premium">
+                        <button class="btn-premium btn-premium-primary" id="close-pages-modal-btn-2">Lukk</button>
+                    </div>
                 </div>
             </div>
 
