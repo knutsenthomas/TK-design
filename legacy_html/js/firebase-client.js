@@ -203,8 +203,13 @@
         const user = auth.currentUser;
         let profileData = await getProfileData(user.uid);
 
-        // Auto-sync Google profile picture/name to Firestore if missing/empty
-        if (user.photoURL && (!profileData || !profileData.avatar_url)) {
+        // Auto-sync Google profile picture/name to Firestore if missing/empty or placeholder (e.g. ui-avatars.com or containing placeholder)
+        const hasPlaceholderAvatar = !profileData || 
+                                     !profileData.avatar_url || 
+                                     profileData.avatar_url.includes('ui-avatars.com') || 
+                                     profileData.avatar_url.includes('placeholder');
+
+        if (user.photoURL && hasPlaceholderAvatar) {
             try {
                 const updatedData = {
                     full_name: profileData.full_name || user.displayName || user.email.split('@')[0] || 'Admin',
