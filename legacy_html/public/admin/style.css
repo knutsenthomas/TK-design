@@ -5579,3 +5579,45 @@ body.admin-dashboard-refresh .user-dropdown {
         padding: 16px 12px 18px;
     }
 }
+
+/* ==========================================================================
+   HEADER AND MAIN CONTENT LAYOUT OVERRIDES (FORCE FULL-WIDTH)
+   ========================================================================== */
+
+/* Remove padding around main-content so the header can sit flush side-to-side and top */
+body.admin-body .main-content,
+body.admin-dashboard-refresh .main-content,
+.main-content {
+    padding: 0 !important;
+    margin-top: 0 !important;
+}
+
+/* Force header to span 100% width, sit flush at the top, and remove margins/rounded corners/shadows */
+body.admin-body .main-header,
+body.admin-dashboard-refresh .main-header,
+body.admin-body #dashboard-main-header,
+body.admin-dashboard-refresh #dashboard-main-header,
+.main-header,
+#dashboard-main-header {
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    position: sticky !important;
+}
+
+/* Ensure inner section-header elements do not have any margins or rounded corners */
+.main-header > .section-header,
+.main-header > .design-ui-header {
+    border-radius: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
