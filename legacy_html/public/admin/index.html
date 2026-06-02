@@ -141,6 +141,63 @@
             background-color: #ffedd5 !important;
             color: #f97316 !important;
         }
+        
+        /* Premium Editor and Preview Canvas styles */
+        .editor-preview-canvas {
+            width: 50% !important;
+            min-width: 320px !important;
+            background: #f1f5f9 !important;
+            border-left: 1px solid #e2e8f0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            height: 100% !important;
+            box-sizing: border-box !important;
+        }
+        .preview-iframe-wrapper {
+            flex: 1 !important;
+            padding: 24px !important;
+            background: #f8fafc !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            overflow: hidden !important;
+            box-sizing: border-box !important;
+        }
+        .preview-iframe-wrapper.mobile #editor-live-preview-iframe {
+            width: 375px !important;
+            height: 667px !important;
+            border-radius: 20px !important;
+            border: 12px solid #0f172a !important;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04) !important;
+        }
+        .preview-iframe-wrapper.desktop #editor-live-preview-iframe {
+            width: 100% !important;
+            height: 100% !important;
+            border-radius: 8px !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+        }
+        #col-item-title-v2 {
+            width: 100% !important;
+            border: none !important;
+            outline: none !important;
+            font-size: 42px !important;
+            font-weight: 800 !important;
+            color: #0f172a !important;
+            margin-bottom: 24px !important;
+            padding: 16px 0 10px !important;
+            font-family: 'Kanit', sans-serif !important;
+            letter-spacing: -0.02em !important;
+            background: transparent !important;
+            resize: none !important;
+            overflow: hidden !important;
+            display: block !important;
+            line-height: 1.45 !important;
+            min-height: 52px !important;
+        }
+        #col-item-title-v2::placeholder {
+            color: #cbd5e1 !important;
+        }
     </style>
 
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -1568,212 +1625,267 @@
         </main>
     </div>
 
-    <!-- Blog Editor "Studio" Modal (Now separated) -->
-    <div id="editor-container-wrapper" class="studio-modal" style="display: none;">
-
+    <div id="editor-container-wrapper" class="editor-layout-v2" style="display: none;">
         <!-- Studio Header -->
-        <header class="studio-header">
-            <div class="header-left">
-                <button class="back-btn" onclick="closeEditor()">
-                    <i class="fas fa-arrow-left"></i> Tilbake
+        <header class="editor-header-v2">
+            <div class="editor-header-left">
+                <button class="btn-ghost" id="close-col-modal" onclick="closeEditor()">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    <span class="editor-header-back-text">Tilbake</span>
                 </button>
-                <nav class="breadcrumb" id="studio-breadcrumb">
-                    <span class="breadcrumb-item">Dashboard</span>
-                    <span class="breadcrumb-item">Blogg</span>
-                    <span class="breadcrumb-item active">Nytt Innlegg</span>
-                </nav>
+                <div class="editor-header-divider" style="width: 1px; height: 24px; background: #e2e8f0; margin: 0 8px;"></div>
+                <span class="editor-header-type" style="font-weight: 600; color: #475569; font-size: 14px;">Blogginnlegg</span>
+                <div id="editor-autosave-status" style="display: flex; align-items: center; gap: 6px; color: #94a3b8; font-size: 13px; margin-left: 8px;">
+                    <span class="material-symbols-outlined" style="font-size: 16px;">cloud_done</span>
+                    <span id="editor-autosave-text">Lagret</span>
+                </div>
             </div>
-
-            <div class="header-right">
-                <div class="header-actions">
-                    <button class="header-action-btn" onclick="closeEditor()">
-                        <i class="fas fa-times"></i> Avbryt
-                    </button>
-                    <button class="header-action-btn" onclick="savePost()">
-                        <i class="fas fa-save"></i> Lagre utkast
-                    </button>
-                    <button class="header-action-btn primary" onclick="publishPost()">
-                        <i class="fas fa-paper-plane"></i> Publiser
-                    </button>
-                </div>
-
-                <div class="language-switcher-header">
-                    <button class="lang-btn-header" data-lang="en">EN</button>
-                    <button class="lang-btn-header active" data-lang="no">NO</button>
-                </div>
+            
+            <div class="editor-header-center">
+                <span style="font-weight: 600; color: #0f172a; font-size: 15px;" id="editor-header-title-indicator">Uten navn</span>
+            </div>
+            
+            <div class="editor-header-right">
+                <button class="btn-ghost" id="print-col-item" onclick="window.print()">
+                    <span class="material-symbols-outlined">print</span>
+                    <span>Skriv ut</span>
+                </button>
+                <button class="btn-ghost" id="translate-col-item" onclick="window.switchSidebarPanel(null, 'translate')">
+                    <span class="material-symbols-outlined">translate</span>
+                    <span>Oversett</span>
+                </button>
+                <button class="btn-outline" id="toggle-split-preview" onclick="window.toggleSplitPreview()">
+                    <span class="material-symbols-outlined">preview</span>
+                    <span>Forhåndsvis</span>
+                </button>
+                <button class="btn-outline" id="save-col-item-draft" onclick="savePost()">
+                    <span class="material-symbols-outlined">save</span>
+                    <span>Lagre utkast</span>
+                </button>
+                <button class="btn-primary" id="save-col-item" onclick="publishPost()">
+                    <span class="material-symbols-outlined">send</span>
+                    <span>Publiser</span>
+                </button>
             </div>
         </header>
 
-        <div class="studio-container">
-
-            <!-- Left Sidebar: Slim Icon Navigation (Wix Style) -->
-            <aside class="studio-sidebar-left">
-                <button class="sidebar-icon-btn" onclick="switchPanel(this, 'add')" title="Legg til">
-                    <div class="icon-circle"><i class="fas fa-plus"></i></div>
-                    <span>Legg til</span>
-                </button>
-
-                <button class="sidebar-icon-btn active" onclick="switchPanel(this, 'settings')" title="Innstillinger">
-                    <div class="icon-circle"><i class="fas fa-cog"></i></div>
-                    <span>Innstillinger</span>
-                </button>
-
-                <button class="sidebar-icon-btn" onclick="switchPanel(this, 'seo')" title="SEO">
-                    <div class="icon-circle"><i class="fas fa-search"></i></div>
-                    <span>SEO</span>
-                </button>
-
-                <button class="sidebar-icon-btn" onclick="switchPanel(this, 'monetize')" title="Generer inntekter">
-                    <div class="icon-circle"><i class="fas fa-dollar-sign"></i></div>
-                    <span>Generer<br>inntekter</span>
-                </button>
-
-                <button class="sidebar-icon-btn" onclick="switchPanel(this, 'translate')" title="Oversett">
-                    <div class="icon-circle"><i class="fas fa-globe"></i></div>
-                    <span>Oversett</span>
-                </button>
-
-                <button class="sidebar-icon-btn" onclick="switchPanel(this, 'apps')" title="Apper">
-                    <div class="icon-circle"><i class="fas fa-th-large"></i></div>
-                    <span>Apper</span>
-                </button>
-            </aside>
-
+        <div class="editor-content-wrapper">
             <!-- Center: Writing Area -->
-            <main class="studio-main">
-                <!-- Horizontal Toolbar -->
-                <div class="editor-toolbar">
-                    <button class="toolbar-btn" title="Legg til element">
-                        <i class="fas fa-plus"></i>
-                    </button>
-
-                    <div class="toolbar-divider"></div>
-
-                    <button class="toolbar-btn" title="Fet">
-                        <i class="fas fa-bold"></i>
-                    </button>
-                    <button class="toolbar-btn" title="Kursiv">
-                        <i class="fas fa-italic"></i>
-                    </button>
-                    <button class="toolbar-btn" title="Understreking">
-                        <i class="fas fa-underline"></i>
-                    </button>
-
-                    <div class="toolbar-divider"></div>
-
-                    <button class="toolbar-btn" title="Punktliste">
-                        <i class="fas fa-list-ul"></i>
-                    </button>
-                    <button class="toolbar-btn" title="Nummerert liste">
-                        <i class="fas fa-list-ol"></i>
-                    </button>
-
-                    <div class="toolbar-divider"></div>
-
-                    <button class="toolbar-btn" title="Venstrejuster">
-                        <i class="fas fa-align-left"></i>
-                    </button>
-                    <button class="toolbar-btn" title="Midtstill">
-                        <i class="fas fa-align-center"></i>
-                    </button>
-                    <button class="toolbar-btn" title="Høyrejuster">
-                        <i class="fas fa-align-right"></i>
-                    </button>
-
-                    <div class="toolbar-divider"></div>
-
-                    <button class="toolbar-btn" title="Lenke">
-                        <i class="fas fa-link"></i>
-                    </button>
-                    <button class="toolbar-btn" title="Kode">
-                        <i class="fas fa-code"></i>
-                    </button>
+            <main class="editor-main-canvas">
+                <!-- Top Toolbar -->
+                <div class="editor-toolbar-container">
+                    <div class="docs-workspace-shell">
+                        <div class="desktop-richtools" id="desktop-richtools">
+                            <div class="docs-toolbar-group">
+                                <button class="desktop-richtools-btn ql-undo" type="button" title="Angre (Ctrl+Z)">
+                                    <span class="material-symbols-outlined">undo</span>
+                                </button>
+                                <button class="desktop-richtools-btn ql-redo" type="button" title="Gjenta (Ctrl+Y)">
+                                    <span class="material-symbols-outlined">redo</span>
+                                </button>
+                            </div>
+                            
+                            <div class="docs-toolbar-divider"></div>
+                            
+                            <div class="docs-toolbar-select-wrap">
+                                <select class="ql-header docs-toolbar-select">
+                                    <option value="" selected>Normal tekst</option>
+                                    <option value="1">Overskrift 1</option>
+                                    <option value="2">Overskrift 2</option>
+                                    <option value="3">Overskrift 3</option>
+                                </select>
+                            </div>
+                            
+                            <div class="docs-toolbar-divider"></div>
+                            
+                            <div class="docs-toolbar-group">
+                                <button class="ql-bold desktop-richtools-btn" type="button" title="Fet (Ctrl+B)">
+                                    <span class="material-symbols-outlined">format_bold</span>
+                                </button>
+                                <button class="ql-italic desktop-richtools-btn" type="button" title="Kursiv (Ctrl+I)">
+                                    <span class="material-symbols-outlined">format_italic</span>
+                                </button>
+                                <button class="ql-underline desktop-richtools-btn" type="button" title="Understrek (Ctrl+U)">
+                                    <span class="material-symbols-outlined">format_underlined</span>
+                                </button>
+                                <button class="ql-strike desktop-richtools-btn" type="button" title="Gjennomstrek">
+                                    <span class="material-symbols-outlined">format_strikethrough</span>
+                                </button>
+                            </div>
+                            
+                            <div class="docs-toolbar-divider"></div>
+                            
+                            <div class="docs-toolbar-group">
+                                <button class="ql-align desktop-richtools-btn" type="button" value="" title="Venstrejustert">
+                                    <span class="material-symbols-outlined">format_align_left</span>
+                                </button>
+                                <button class="ql-align desktop-richtools-btn" type="button" value="center" title="Sentert">
+                                    <span class="material-symbols-outlined">format_align_center</span>
+                                </button>
+                                <button class="ql-align desktop-richtools-btn" type="button" value="right" title="Høyrejustert">
+                                    <span class="material-symbols-outlined">format_align_right</span>
+                                </button>
+                                <button class="ql-align desktop-richtools-btn" type="button" value="justify" title="Blokkjustert">
+                                    <span class="material-symbols-outlined">format_align_justify</span>
+                                </button>
+                            </div>
+                            
+                            <div class="docs-toolbar-divider"></div>
+                            
+                            <div class="docs-toolbar-group">
+                                <button class="ql-list desktop-richtools-btn" type="button" value="ordered" title="Nummerert liste">
+                                    <span class="material-symbols-outlined">format_list_numbered</span>
+                                </button>
+                                <button class="ql-list desktop-richtools-btn" type="button" value="bullet" title="Punktliste">
+                                    <span class="material-symbols-outlined">format_list_bulleted</span>
+                                </button>
+                            </div>
+                            
+                            <div class="docs-toolbar-divider"></div>
+                            
+                            <div class="docs-toolbar-group">
+                                <button class="ql-link desktop-richtools-btn" type="button" title="Sett inn lenke">
+                                    <span class="material-symbols-outlined">link</span>
+                                </button>
+                                <button class="ql-clean desktop-richtools-btn" type="button" title="Fjern formatering">
+                                    <span class="material-symbols-outlined">format_clear</span>
+                                </button>
+                            </div>
+                            
+                            <div class="docs-toolbar-divider"></div>
+                            
+                            <div class="docs-toolbar-group">
+                                <button class="desktop-richtools-btn" type="button" onclick="window.insertImage()" title="Sett inn bilde">
+                                    <span class="material-symbols-outlined">image</span>
+                                </button>
+                                <button class="desktop-richtools-btn" type="button" onclick="window.insertTable()" title="Sett inn tabell">
+                                    <span class="material-symbols-outlined">table</span>
+                                </button>
+                                <button class="desktop-richtools-btn" type="button" onclick="window.insertDivider()" title="Sett inn skillelinje">
+                                    <span class="material-symbols-outlined">horizontal_rule</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="editor-content-wrapper">
-                    <input type="text" id="post-title" placeholder="Innleggstittel" class="studio-title-input">
-                    <div id="editor-container" class="studio-editor"></div>
+                <!-- Scrollable Writing Area -->
+                <div class="editor-scroll-area">
+                    <!-- Invisible input to keep compatibility with save/load logic -->
+                    <input type="hidden" id="post-title">
+                    <article class="editor-paper docs-page-paper" style="margin-top: 16px;">
+                        <textarea id="col-item-title-v2" placeholder="Innleggstittel" rows="1" oninput="window.syncTitleIndicator()"></textarea>
+                        <div id="editor-container" class="docs-rte-surface"></div>
+                    </article>
                 </div>
             </main>
 
-            <!-- Right Sidebar: Settings -->
-            <!-- Right Sidebar: Advanced Settings Panel -->
-            <aside class="studio-settings-panel" id="settings-panel">
+            <!-- Live Preview Panel (toggled) -->
+            <div id="editor-live-preview-panel" class="editor-preview-canvas" style="display: none;">
+                <div class="preview-header" style="padding: 12px 16px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #fff;">
+                    <span style="font-weight: 700; font-size: 13px; color: #1B4965;">Sanntids forhåndsvisning</span>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn-ghost" type="button" onclick="window.setPreviewDevice('desktop')" style="padding: 4px 8px; font-size: 12px; height: auto; min-height: 0; width: auto; border-radius: 6px;">
+                            <span class="material-symbols-outlined" style="font-size: 18px; color: #1B4965;">desktop_windows</span>
+                        </button>
+                        <button class="btn-ghost" type="button" onclick="window.setPreviewDevice('mobile')" style="padding: 4px 8px; font-size: 12px; height: auto; min-height: 0; width: auto; border-radius: 6px;">
+                            <span class="material-symbols-outlined" style="font-size: 18px;">smartphone</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="preview-iframe-wrapper desktop" id="preview-iframe-wrapper">
+                    <iframe id="editor-live-preview-iframe" style="border: none; background: white; transition: all 0.3s ease;"></iframe>
+                </div>
+            </div>
+
+            <!-- Right Sidebar: Settings & Panels -->
+            <aside class="editor-sidebar-v2" id="settings-panel">
                 <div class="settings-header">
                     <h2>Innleggsinnstillinger</h2>
-                    <button class="close-panel-btn" onclick="toggleSettingsPanel()"><i
-                            class="fas fa-times"></i></button>
+                    <button class="close-panel-btn" onclick="toggleSettingsPanel()"><i class="fas fa-times"></i></button>
                 </div>
 
-                <!-- Navigation Tabs -->
+                <!-- Premium Sidebar Tab Switcher -->
+                <div class="sidebar-nav-tabs" style="display: flex; gap: 4px; padding: 4px; background: #f1f5f9; border-radius: 10px; margin-bottom: 20px;">
+                    <button type="button" class="sidebar-tab-btn active" onclick="window.switchSidebarPanel(this, 'settings')" title="Innstillinger" style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 8px 0; border: none; background: #ffffff; color: #1B4965; border-radius: 8px; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">settings</span>
+                    </button>
+                    <button type="button" class="sidebar-tab-btn" onclick="window.switchSidebarPanel(this, 'add')" title="Legg til" style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 8px 0; border: none; background: transparent; color: #475569; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">add_box</span>
+                    </button>
+                    <button type="button" class="sidebar-tab-btn" onclick="window.switchSidebarPanel(this, 'seo')" title="SEO" style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 8px 0; border: none; background: transparent; color: #475569; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">search</span>
+                    </button>
+                    <button type="button" class="sidebar-tab-btn" onclick="window.switchSidebarPanel(this, 'apps')" title="AI Skrivehjelp" style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 8px 0; border: none; background: transparent; color: #475569; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">auto_awesome</span>
+                    </button>
+                    <button type="button" class="sidebar-tab-btn" onclick="window.switchSidebarPanel(this, 'translate')" title="Oversettelse" style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 8px 0; border: none; background: transparent; color: #475569; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">translate</span>
+                    </button>
+                </div>
+
+                <!-- Navigation Tabs (for sub-tabs under 'settings') -->
                 <div class="settings-tabs">
                     <button class="tab-btn active" onclick="switchSettingsTab('generelt')">Generelt</button>
-                    <button class="tab-btn" onclick="switchSettingsTab('kategorier')">Kategorier <span
-                            class="counter">0</span></button>
-                    <button class="tab-btn" onclick="switchSettingsTab('tagger')">Tagger <span
-                            class="counter">0</span></button>
+                    <button class="tab-btn" onclick="switchSettingsTab('kategorier')">Kategorier <span class="counter">0</span></button>
+                    <button class="tab-btn" onclick="switchSettingsTab('tagger')">Tagger <span class="counter">0</span></button>
                 </div>
 
                 <!-- Tab: Generelt -->
                 <div id="tab-generelt" class="settings-content tab-pane active">
-                    <div class="setting-group">
+                    <div class="sidebar-group">
                         <div class="toggle-row">
-                            <label>Vis forsidebilde <i class="far fa-question-circle info-icon"
-                                    title="Vis bildet øverst i innlegget"></i></label>
+                            <label>Vis forsidebilde <i class="far fa-question-circle info-icon" title="Vis bildet øverst i innlegget"></i></label>
                             <label class="switch">
                                 <input type="checkbox" id="post-show-featured-image-toggle" checked>
                                 <span class="slider round"></span>
                             </label>
                         </div>
-                        <div class="image-upload-area" id="post-featured-image-area" role="button" tabindex="0"
-                            aria-label="Velg forsidebilde" style="margin-top: 10px;">
-                            <div class="upload-placeholder" id="post-featured-image-placeholder">
-                                <i class="fas fa-plus"></i>
+                        <div class="sidebar-img-preview" id="post-featured-image-area" role="button" tabindex="0" aria-label="Velg forsidebilde">
+                            <div id="post-featured-image-placeholder" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                                <span class="material-symbols-outlined" style="font-size: 24px; color: #94a3b8;">add</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="setting-group">
+                    <div class="sidebar-group">
                         <label>Publiseringsdato <i class="far fa-question-circle info-icon"></i></label>
                         <div class="input-with-icon">
                             <i class="far fa-calendar"></i>
-                            <input type="date" id="post-date">
+                            <input type="date" id="post-date" class="sidebar-control">
                         </div>
                     </div>
 
-                    <div class="setting-group">
-                        <label>Manus <i class="far fa-question-circle info-icon"></i></label>
+                    <div class="sidebar-group">
+                        <label>Manus / Forfatter <i class="far fa-question-circle info-icon"></i></label>
                         <div class="author-select">
                             <img src="" class="author-avatar" id="post-author-avatar" alt="Author">
-                            <select id="post-author">
+                            <select id="post-author" class="sidebar-control">
                                 <!-- Dynamic options -->
                             </select>
                         </div>
                     </div>
 
-                    <div class="setting-group">
+                    <div class="sidebar-group">
                         <div class="label-row">
                             <label>Utdrag <i class="far fa-question-circle info-icon"></i></label>
                             <span class="char-count">0/500</span>
                         </div>
-                        <textarea id="post-excerpt"
-                            placeholder="f.eks. Denne raske og enkle pastaretten er perfekt for travle familiemåltider midt i uken..."
-                            rows="4"></textarea>
+                        <textarea id="post-excerpt" class="sidebar-control" placeholder="f.eks. Denne raske og enkle pastaretten er perfekt for travle familiemåltider..." rows="4"></textarea>
                     </div>
 
-                    <div class="setting-group">
+                    <div class="sidebar-group">
                         <div class="label-row">
                             <label>Relaterte innlegg <i class="far fa-question-circle info-icon"></i></label>
                             <span class="char-count" id="related-post-count">0/3</span>
                         </div>
-                        <button type="button" id="select-related-posts-btn" class="add-related-btn"
-                            onclick="toggleRelatedPostsPicker()"><i class="fas fa-plus"></i> Velg innlegg</button>
+                        <button type="button" id="select-related-posts-btn" class="add-related-btn" onclick="toggleRelatedPostsPicker()"><i class="fas fa-plus"></i> Velg innlegg</button>
                         <div id="related-posts-picker" class="related-posts-picker" style="display: none;"></div>
                     </div>
 
                     <hr class="divider">
 
-                    <div class="setting-group">
+                    <div class="sidebar-group">
                         <div class="toggle-row">
                             <label>Angi som fremhevet innlegg <i class="far fa-question-circle info-icon"></i></label>
                             <label class="switch">
@@ -1783,10 +1895,9 @@
                         </div>
                     </div>
 
-                    <div class="setting-group">
+                    <div class="sidebar-group">
                         <div class="toggle-row">
-                            <label>Tillat å kommentere dette innlegget <i
-                                    class="far fa-question-circle info-icon"></i></label>
+                            <label>Tillat å kommentere dette innlegget <i class="far fa-question-circle info-icon"></i></label>
                             <label class="switch">
                                 <input type="checkbox" id="post-comments-toggle" checked>
                                 <span class="slider round"></span>
@@ -1848,43 +1959,32 @@
 
                 <!-- SEO PANEL -->
                 <div id="panel-seo" class="settings-content main-panel-view" style="display: none;">
-                    <div class="setting-group">
+                    <div class="sidebar-group">
                         <label>SEO Tittel</label>
-                        <input type="text" id="post-seo-title"
-                            style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"
-                            placeholder="Tittel for søkemotorer">
+                        <input type="text" id="post-seo-title" class="sidebar-control" placeholder="Tittel for søkemotorer">
                     </div>
-                    <div class="setting-group">
+                    <div class="sidebar-group">
                         <label>Beskrivelse</label>
-                        <textarea id="post-seo-desc" rows="4" placeholder="Beskrivelse..."
-                            style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"></textarea>
+                        <textarea id="post-seo-desc" rows="4" placeholder="Beskrivelse..." class="sidebar-control"></textarea>
                     </div>
-                    <div class="setting-group">
+                    <div class="sidebar-group">
                         <label>Nøkkelord</label>
-                        <input type="text" id="post-seo-keywords"
-                            style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"
-                            placeholder="webdesign, seo, innhold">
+                        <input type="text" id="post-seo-keywords" class="sidebar-control" placeholder="webdesign, seo, innhold">
                     </div>
-                    <div class="setting-group">
+                    <div class="sidebar-group">
                         <button id="ai-generate-seo-btn" class="ai-generate-btn" onclick="generateSeoForCurrentDraft()">
                             <i class="fas fa-magic"></i> Generer SEO med Gemini
                         </button>
-                        <p class="ai-help-text">SEO kan genereres automatisk med Gemini før lagring/publisering. Du kan
-                            redigere feltene etterpå.</p>
+                        <p class="ai-help-text">SEO kan genereres automatisk med Gemini før lagring/publisering. Du kan redigere feltene etterpå.</p>
                     </div>
-                    <div class="setting-group">
+                    <div class="sidebar-group">
                         <label>Detaljside sammendrag (valgfritt)</label>
-                        <textarea id="post-detail-summary" rows="3"
-                            placeholder="Overstyr automatisk sammendrag for toppen av innlegget."
-                            style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"></textarea>
+                        <textarea id="post-detail-summary" rows="3" placeholder="Overstyr automatisk sammendrag for toppen av innlegget." class="sidebar-control"></textarea>
                     </div>
-                    <div class="setting-group">
+                    <div class="sidebar-group">
                         <label>Kort oversikt punkter (valgfritt)</label>
-                        <textarea id="post-detail-outline" rows="5"
-                            placeholder="Ett punkt per linje. Tomt felt bruker automatisk Gemini-forslag."
-                            style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"></textarea>
-                        <p class="ai-help-text">Hvis disse feltene er tomme, vises auto-generert innhold fra
-                            Gemini/innlegget.</p>
+                        <textarea id="post-detail-outline" rows="5" placeholder="Ett punkt per linje. Tomt felt bruker automatisk Gemini-forslag." class="sidebar-control"></textarea>
+                        <p class="ai-help-text">Hvis disse feltene er tomme, vises auto-generert innhold fra Gemini/innlegget.</p>
                     </div>
                 </div>
 
@@ -1899,25 +1999,24 @@
 
                 <div id="panel-apps" class="settings-content main-panel-view" style="display: none;">
                     <div class="ai-generator-panel">
-                        <div class="setting-group">
+                        <div class="sidebar-group">
                             <label for="ai-prompt-input">Prompt / Oppgave</label>
-                            <textarea id="ai-prompt-input" rows="4"
-                                placeholder="Beskriv hva innlegget skal handle om, målgruppe, vinkel og mål."></textarea>
+                            <textarea id="ai-prompt-input" rows="4" placeholder="Beskriv hva innlegget skal handle om, målgruppe, vinkel og mål." class="sidebar-control"></textarea>
                         </div>
 
-                        <div class="ai-generator-grid">
-                            <div class="setting-group">
+                        <div class="ai-generator-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div class="sidebar-group">
                                 <label for="ai-tone-select">Tone</label>
-                                <select id="ai-tone-select">
+                                <select id="ai-tone-select" class="sidebar-control">
                                     <option value="professional">Profesjonell</option>
                                     <option value="friendly">Vennlig</option>
                                     <option value="expert">Ekspert</option>
                                     <option value="persuasive">Overbevisende</option>
                                 </select>
                             </div>
-                            <div class="setting-group">
+                            <div class="sidebar-group">
                                 <label for="ai-length-select">Lengde</label>
-                                <select id="ai-length-select">
+                                <select id="ai-length-select" class="sidebar-control">
                                     <option value="short">Kort</option>
                                     <option value="medium" selected>Middels</option>
                                     <option value="long">Lang</option>
@@ -1925,115 +2024,90 @@
                             </div>
                         </div>
 
-                        <div class="setting-group">
+                        <div class="sidebar-group">
                             <label for="ai-context-files">Vedlegg (bilder/PDF/TXT/MD)</label>
-                            <input type="file" id="ai-context-files" accept="image/*,.pdf,.txt,.md" multiple>
+                            <input type="file" id="ai-context-files" accept="image/*,.pdf,.txt,.md" class="sidebar-control" multiple>
                             <p class="ai-help-text">Opptil 6 filer. Maks 12MB per fil.</p>
                             <div id="ai-context-file-list" class="ai-context-file-list"></div>
                         </div>
 
-                        <label class="ai-checkbox-row">
-                            <input type="checkbox" id="ai-include-draft" checked>
-                            <span>Bruk eksisterende tekst i editoren som ekstra kontekst</span>
+                        <label class="ai-checkbox-row" style="display: flex; gap: 8px; align-items: flex-start; margin-bottom: 15px; cursor: pointer;">
+                            <input type="checkbox" id="ai-include-draft" checked style="margin-top: 4px;">
+                            <span style="font-size: 13px; color: #475569;">Bruk eksisterende tekst i editoren som ekstra kontekst</span>
                         </label>
 
                         <button id="ai-generate-btn" class="ai-generate-btn" onclick="generateBlogDraftWithAi()">
                             <i class="fas fa-robot"></i> Generer utkast med Gemini
                         </button>
-                        <p class="ai-help-text">Generert innhold settes direkte inn i editoren. Gå alltid over teksten
-                            før publisering.</p>
+                        <p class="ai-help-text">Generert innhold settes direkte inn i editoren. Gå alltid over teksten før publisering.</p>
                     </div>
                 </div>
 
                 <div id="panel-translate" class="settings-content main-panel-view" style="display: none;">
                     <div class="settings-tabs" style="padding: 0; margin-bottom: 14px; gap: 18px;">
-                        <button type="button" class="tab-btn translate-tab-btn active" data-translate-tab="no"
-                            onclick="switchTranslateTab('no')">Norsk</button>
-                        <button type="button" class="tab-btn translate-tab-btn" data-translate-tab="en"
-                            onclick="switchTranslateTab('en')">English</button>
+                        <button type="button" class="tab-btn translate-tab-btn active" data-translate-tab="no" onclick="switchTranslateTab('no')">Norsk</button>
+                        <button type="button" class="tab-btn translate-tab-btn" data-translate-tab="en" onclick="switchTranslateTab('en')">English</button>
                     </div>
 
                     <div id="translate-tab-no" class="translate-tab-pane">
-                        <div class="setting-group">
+                        <div class="sidebar-group">
                             <label>Automatisk oversettelse</label>
                             <p class="ai-help-text" style="margin-top: 0;">
-                                Bruk knappen for å generere engelsk tittel, utdrag, innhold og SEO automatisk med
-                                Gemini.
+                                Bruk knappen for å generere engelsk tittel, utdrag, innhold og SEO automatisk med Gemini.
                             </p>
-                            <button id="ai-translate-btn" class="setup-btn"
-                                onclick="translateCurrentDraftWithAi()">Start oversettelse</button>
+                            <button id="ai-translate-btn" class="setup-btn" onclick="translateCurrentDraftWithAi()">Start oversettelse</button>
                         </div>
                     </div>
 
                     <div id="translate-tab-en" class="translate-tab-pane" style="display: none;">
-                        <div class="setting-group">
+                        <div class="sidebar-group">
                             <label>Engelsk tittel</label>
-                            <input type="text" id="post-title-en"
-                                style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"
-                                placeholder="English post title">
+                            <input type="text" id="post-title-en" class="sidebar-control" placeholder="English post title">
                         </div>
 
-                        <div class="setting-group">
+                        <div class="sidebar-group">
                             <label>Engelsk kategori</label>
-                            <input type="text" id="post-category-en"
-                                style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"
-                                placeholder="Category in English">
+                            <input type="text" id="post-category-en" class="sidebar-control" placeholder="Category in English">
                         </div>
 
-                        <div class="setting-group">
+                        <div class="sidebar-group">
                             <label>Engelsk utdrag</label>
-                            <textarea id="post-excerpt-en" rows="3"
-                                style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"
-                                placeholder="English excerpt"></textarea>
+                            <textarea id="post-excerpt-en" rows="3" class="sidebar-control" placeholder="English excerpt"></textarea>
                         </div>
 
-                        <div class="setting-group">
+                        <div class="sidebar-group">
                             <label>Engelsk innhold (HTML eller ren tekst)</label>
-                            <textarea id="post-content-en" rows="10"
-                                style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"
-                                placeholder="<p>English content...</p>"></textarea>
-                            <p class="ai-help-text">Ren tekst blir lagret som avsnitt. HTML støttes hvis du vil styre
-                                formatering selv.</p>
+                            <textarea id="post-content-en" rows="10" class="sidebar-control" placeholder="<p>English content...</p>"></textarea>
+                            <p class="ai-help-text">Ren tekst blir lagret som avsnitt. HTML støttes hvis du vil styre formatering selv.</p>
                         </div>
 
-                        <div class="setting-group">
+                        <div class="sidebar-group">
                             <label>Engelsk SEO-tittel</label>
-                            <input type="text" id="post-seo-title-en"
-                                style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"
-                                placeholder="SEO title in English">
+                            <input type="text" id="post-seo-title-en" class="sidebar-control" placeholder="SEO title in English">
                         </div>
 
-                        <div class="setting-group">
+                        <div class="sidebar-group">
                             <label>Engelsk SEO-beskrivelse</label>
-                            <textarea id="post-seo-desc-en" rows="3"
-                                style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"
-                                placeholder="SEO description in English"></textarea>
+                            <textarea id="post-seo-desc-en" rows="3" class="sidebar-control" placeholder="SEO description in English"></textarea>
                         </div>
 
-                        <div class="setting-group">
+                        <div class="sidebar-group">
                             <label>Engelske SEO-nøkkelord</label>
-                            <input type="text" id="post-seo-keywords-en"
-                                style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"
-                                placeholder="web design, seo, content">
+                            <input type="text" id="post-seo-keywords-en" class="sidebar-control" placeholder="web design, seo, content">
                         </div>
 
-                        <div class="setting-group">
+                        <div class="sidebar-group">
                             <label>Detaljside sammendrag (EN)</label>
-                            <textarea id="post-detail-summary-en" rows="3"
-                                style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"
-                                placeholder="Optional custom summary for English detail page"></textarea>
+                            <textarea id="post-detail-summary-en" rows="3" class="sidebar-control" placeholder="Optional custom summary for English detail page"></textarea>
                         </div>
 
-                        <div class="setting-group">
+                        <div class="sidebar-group">
                             <label>Kort oversikt punkter (EN)</label>
-                            <textarea id="post-detail-outline-en" rows="5"
-                                style="width:100%; padding: 10px; border:1px solid #e2e8f0; border-radius:6px;"
-                                placeholder="One bullet per line"></textarea>
+                            <textarea id="post-detail-outline-en" rows="5" class="sidebar-control" placeholder="One bullet per line"></textarea>
                         </div>
                     </div>
                 </div>
             </aside>
-
         </div>
     </div>
 

@@ -2003,9 +2003,28 @@ async function init() {
             quill = new Quill('#editor-container', {
                 theme: 'bubble',
                 placeholder: 'Start å skrive din historie...',
-                modules: {}
+                modules: {
+                    toolbar: '#desktop-richtools'
+                }
             });
             registerCustomBlots();// Register blots after quill runs
+
+            // Bind Undo/Redo buttons
+            document.querySelector('#desktop-richtools .ql-undo')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (quill) quill.history.undo();
+            });
+            document.querySelector('#desktop-richtools .ql-redo')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (quill) quill.history.redo();
+            });
+
+            // Update live preview dynamically when typing
+            quill.on('text-change', () => {
+                if (typeof window.isPreviewActive === 'function' && window.isPreviewActive()) {
+                    window.updateLivePreview();
+                }
+            });
         } catch (e) {
             console.error("Quill initialization failed:", e);
         }
@@ -7380,6 +7399,25 @@ const editorContainerWrapper = document.getElementById('editor-container-wrapper
 function openModal() {
     dashboardContainer.style.display = 'none';
     editorContainerWrapper.style.display = 'flex';
+
+    // Sync title inputs
+    const titleVal = document.getElementById('post-title')?.value || '';
+    const titleTextarea = document.getElementById('col-item-title-v2');
+    if (titleTextarea) titleTextarea.value = titleVal;
+
+    const headerIndicator = document.getElementById('editor-header-title-indicator');
+    if (headerIndicator) headerIndicator.textContent = titleVal.trim() || 'Uten navn';
+
+    // Reset split preview state
+    const previewPanel = document.getElementById('editor-live-preview-panel');
+    if (previewPanel) {
+        previewPanel.style.display = 'none';
+    }
+    const previewBtn = document.getElementById('toggle-split-preview');
+    if (previewBtn) {
+        previewBtn.classList.remove('is-active');
+    }
+
     renderPostTaxonomyEditors();
     syncRelatedPostsUi();
     renderFeaturedImagePreview(document.getElementById('post-image')?.value || '');
@@ -7398,6 +7436,11 @@ function resetPostEditorForNewPost() {
     const relatedPicker = document.getElementById('related-posts-picker');
 
     document.getElementById('post-title').value = '';
+    const titleTextarea = document.getElementById('col-item-title-v2');
+    if (titleTextarea) titleTextarea.value = '';
+    const headerIndicator = document.getElementById('editor-header-title-indicator');
+    if (headerIndicator) headerIndicator.textContent = 'Uten navn';
+
     document.getElementById('post-author').value = defaultAuthor;
     if (dateInput) dateInput.value = getTodayIsoDate();
     document.getElementById('post-image').value = 'img/blog/bblog1.png';
@@ -7446,6 +7489,206 @@ function closeModal() {
 }
 
 window.closeEditor = closeModal; // Alias
+
+// ==========================================
+// PREMIUM DOCUMENT EDITOR & PREVIEW LOGIC
+// ==========================================
+
+window.syncTitleIndicator = function () {
+    const textarea = document.getElementById('col-item-title-v2');
+    const hiddenInput = document.getElementById('post-title');
+    const headerIndicator = document.getElementById('editor-header-title-indicator');
+    
+    if (textarea && hiddenInput) {
+        hiddenInput.value = textarea.value;
+        if (headerIndicator) {
+            headerIndicator.textContent = textarea.value.trim() || 'Uten navn';
+        }
+    }
+    
+    // Automatically update live preview if active
+    if (window.isPreviewActive()) {
+        window.updateLivePreview();
+    }
+};
+
+window.switchSidebarPanel = function (btn, panelType) {
+    document.querySelectorAll('.sidebar-tab-btn').forEach(b => {
+        b.classList.remove('active');
+        b.style.background = 'transparent';
+        b.style.color = '#475569';
+    });
+    
+    if (btn) {
+        btn.classList.add('active');
+        btn.style.background = '#ffffff';
+        btn.style.color = '#1B4965';
+        btn.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)';
+    } else {
+        // If btn is null (like from header action), find the tab button by data-type or title
+        const targetBtn = Array.from(document.querySelectorAll('.sidebar-tab-btn')).find(b => b.getAttribute('title')?.toLowerCase().includes(panelType.toLowerCase()));
+        if (targetBtn) {
+            targetBtn.classList.add('active');
+            targetBtn.style.background = '#ffffff';
+            targetBtn.style.color = '#1B4965';
+            targetBtn.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)';
+        }
+    }
+    
+    // Call the original panel switching logic
+    window.switchPanel(null, panelType);
+};
+
+window.isPreviewActive = function () {
+    const previewPanel = document.getElementById('editor-live-preview-panel');
+    return previewPanel && previewPanel.style.display !== 'none';
+};
+
+window.toggleSplitPreview = function () {
+    const previewPanel = document.getElementById('editor-live-preview-panel');
+    if (!previewPanel) return;
+
+    const btn = document.getElementById('toggle-split-preview');
+    if (previewPanel.style.display === 'none') {
+        previewPanel.style.display = 'flex';
+        if (btn) btn.classList.add('is-active');
+        window.updateLivePreview();
+    } else {
+        previewPanel.style.display = 'none';
+        if (btn) btn.classList.remove('is-active');
+    }
+};
+
+window.setPreviewDevice = function (device) {
+    const wrapper = document.getElementById('preview-iframe-wrapper');
+    if (!wrapper) return;
+    
+    if (device === 'mobile') {
+        wrapper.classList.remove('desktop');
+        wrapper.classList.add('mobile');
+    } else {
+        wrapper.classList.remove('mobile');
+        wrapper.classList.add('desktop');
+    }
+};
+
+window.updateLivePreview = function () {
+    const iframe = document.getElementById('editor-live-preview-iframe');
+    if (!iframe) return;
+
+    const titleTextarea = document.getElementById('col-item-title-v2');
+    const title = titleTextarea?.value || document.getElementById('post-title')?.value || 'Uten navn';
+    const content = getEditorHtmlContent();
+    const featuredImage = document.getElementById('post-image')?.value || '';
+    const date = document.getElementById('post-date')?.value || '';
+    const author = document.getElementById('post-author')?.value || 'Admin';
+
+    const previewHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+            <style>
+                body {
+                    font-family: 'Kanit', sans-serif;
+                    color: #1e293b;
+                    line-height: 1.6;
+                    padding: 40px 24px;
+                    margin: 0;
+                    background: white;
+                }
+                .container {
+                    max-width: 680px;
+                    margin: 0 auto;
+                }
+                .meta {
+                    font-size: 14px;
+                    color: #64748b;
+                    margin-bottom: 24px;
+                    display: flex;
+                    gap: 16px;
+                }
+                h1 {
+                    font-size: 36px;
+                    font-weight: 700;
+                    color: #1B4965;
+                    margin-top: 0;
+                    margin-bottom: 16px;
+                    line-height: 1.2;
+                }
+                .featured-image {
+                    width: 100%;
+                    max-height: 400px;
+                    object-fit: cover;
+                    border-radius: 12px;
+                    margin-bottom: 32px;
+                }
+                .post-content {
+                    font-size: 18px;
+                    color: #334155;
+                }
+                .post-content p {
+                    margin-bottom: 24px;
+                }
+                .post-content img {
+                    max-width: 100%;
+                    height: auto;
+                    border-radius: 8px;
+                    margin: 16px 0;
+                }
+                blockquote {
+                    border-left: 4px solid #f97316;
+                    padding-left: 16px;
+                    margin: 24px 0;
+                    font-style: italic;
+                    color: #475569;
+                }
+                hr {
+                    border: 0;
+                    border-top: 1px solid #e2e8f0;
+                    margin: 32px 0;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 24px 0;
+                }
+                th, td {
+                    border: 1px solid #e2e8f0;
+                    padding: 12px;
+                    text-align: left;
+                }
+                th {
+                    background: #f8fafc;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>${escapeHtmlForUi(title)}</h1>
+                <div class="meta">
+                    <span>Av ${escapeHtmlForUi(author)}</span>
+                    <span>•</span>
+                    <span>${escapeHtmlForUi(date)}</span>
+                </div>
+                ${featuredImage && !/img\/blog\/bblog1\.png$/i.test(featuredImage) ? `<img class="featured-image" src="${escapeHtmlForUi(featuredImage)}" alt="Forsidebilde">` : ''}
+                <div class="post-content">
+                    ${content}
+                </div>
+            </div>
+        </body>
+        </html>
+    `;
+
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    if (doc) {
+        doc.open();
+        doc.write(previewHtml);
+        doc.close();
+    }
+};
 
 function formatFileSize(bytes = 0) {
     if (!Number.isFinite(bytes) || bytes <= 0) return '0 B';
