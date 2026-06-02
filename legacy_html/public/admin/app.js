@@ -7910,20 +7910,17 @@ function renderUserProfile(user) {
 }
 
 function setupProfileEventListeners() {
-    // User Menu Dropdown Toggle
     const userBtn = document.getElementById('user-menu-btn');
-    const userDropdown = document.getElementById('user-dropdown');
+    const modal = document.getElementById('profile-modal');
+    const closeBtn = document.getElementById('close-profile-modal');
 
-    if (userBtn && userDropdown) {
+    // Make clicking the user profile badge/button in the header open the profile modal directly
+    if (userBtn && modal) {
         userBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            userDropdown.classList.toggle('active');
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!userBtn.contains(e.target) && !userDropdown.contains(e.target)) {
-                userDropdown.classList.remove('active');
+            modal.style.display = 'flex';
+            if (modal.parentElement !== document.body) {
+                document.body.appendChild(modal);
             }
         });
     }
@@ -7942,21 +7939,15 @@ function setupProfileEventListeners() {
     if (logoutBtnMain) logoutBtnMain.addEventListener('click', handleLogout);
     if (logoutBtnDropdown) logoutBtnDropdown.addEventListener('click', handleLogout);
 
-    // Profile Settings Modal
+    // Profile Settings Modal - settingsBtn is fallback or alternative
     const settingsBtn = document.getElementById('profile-settings-btn');
-    const modal = document.getElementById('profile-modal');
-    const closeBtn = document.getElementById('close-profile-modal');
 
-    if (settingsBtn) {
+    if (settingsBtn && modal) {
         settingsBtn.addEventListener('click', () => {
-            if (modal) {
-                modal.style.display = 'flex';
-                // Move modal to body to ensure it's on top if not already
-                if (modal.parentElement !== document.body) {
-                    document.body.appendChild(modal);
-                }
+            modal.style.display = 'flex';
+            if (modal.parentElement !== document.body) {
+                document.body.appendChild(modal);
             }
-            if (userDropdown) userDropdown.classList.remove('active');
         });
     }
 
