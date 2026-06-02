@@ -41,6 +41,7 @@ const SITE_ANALYTICS_PERIODS = ['1d', '7d', '14d', '30d', '365d'];
 const ADMIN_SIDEBAR_COLLAPSE_KEY = 'tk_admin_sidebar_collapsed';
 const ADMIN_MOBILE_BREAKPOINT = 900;
 let quill; // Define quill globally but initialize later
+let Delta; // Define Delta globally so custom clipboard matchers and insert functions can access it
 const TABLE_EMBED_CLASS = 'ql-table-embed';
 const TABLE_CELL_SELECTOR = `.${TABLE_EMBED_CLASS} th, .${TABLE_EMBED_CLASS} td`;
 let activeTableEditorCell = null;
@@ -1124,7 +1125,17 @@ function setEditorHtmlContent(value = '') {
 
     if (!normalizedHtml) return;
 
-    quill.clipboard.dangerouslyPasteHTML(0, normalizedHtml, Quill.sources.SILENT);
+    try {
+        quill.clipboard.dangerouslyPasteHTML(0, normalizedHtml, Quill.sources.SILENT);
+    } catch (error) {
+        console.error('Error pasting HTML into Quill editor, attempting fallback:', error);
+        try {
+            quill.root.innerHTML = normalizedHtml;
+            quill.update(Quill.sources.SILENT);
+        } catch (fallbackError) {
+            console.error('Fallback HTML insertion also failed:', fallbackError);
+        }
+    }
 }
 
 function getEditorHtmlContent() {
@@ -2151,6 +2162,7 @@ async function init() {
     // Initialize Quill Safely
     if (typeof Quill !== 'undefined') {
         try {
+            registerCustomBlots(); // Register blots BEFORE quill runs!
             quill = new Quill('#editor-container', {
                 theme: 'bubble',
                 placeholder: 'Start å skrive din historie...',
@@ -2158,7 +2170,7 @@ async function init() {
                     toolbar: false
                 }
             });
-            registerCustomBlots();// Register blots after quill runs
+            registerClipboardMatchers(); // Register matchers on the instantiated quill object
             bindManualToolbar();
 
             // Update live preview dynamically when typing
@@ -2217,7 +2229,7 @@ function registerCustomBlots() {
 
     // Custom Divider Blot
     const BlockEmbed = Quill.import('blots/block/embed');
-    const Delta = Quill.import('delta');
+    Delta = Quill.import('delta') || window.Delta; // Set global Delta
     class DividerBlot extends BlockEmbed { }
     DividerBlot.blotName = 'divider';
     DividerBlot.tagName = 'hr';
@@ -2309,14 +2321,41 @@ function registerCustomBlots() {
     TableEmbedBlot.tagName = 'div';
     TableEmbedBlot.className = TABLE_EMBED_CLASS;
     Quill.register(TableEmbedBlot);
+}
 
-    if (quill?.clipboard?.addMatcher) {
-        quill.clipboard.addMatcher('TABLE', (node, delta) => {
-            const tableHtml = normalizeBlogTableHtml(node.outerHTML || '');
-            if (!tableHtml) return delta;
-            return new Delta().insert({ tableEmbed: tableHtml });
+function registerClipboardMatchers() {
+    if (typeof Quill === 'undefined' || !quill || !quill.clipboard || !quill.clipboard.addMatcher) return;
+
+    // Table Matcher
+    quill.clipboard.addMatcher('TABLE', (node, delta) => {
+        const tableHtml = normalizeBlogTableHtml(node.outerHTML || '');
+        if (!tableHtml) return delta;
+        return new Delta().insert({ tableEmbed: tableHtml });
+    });
+
+    // Safe Alert Matcher to prevent block-in-block Quill parser crash
+    quill.clipboard.addMatcher('.alert', (node, delta) => {
+        const type = node.getAttribute('data-type') || 'info';
+        const newDelta = new Delta();
+        delta.ops.forEach(op => {
+            if (typeof op.insert === 'string') {
+                let text = op.insert;
+                let parts = text.split('\n');
+                for (let i = 0; i < parts.length; i++) {
+                    if (parts[i]) {
+                        newDelta.insert(parts[i], op.attributes);
+                    }
+                    if (i < parts.length - 1) {
+                        // Apply alert formatting on newlines to represent block format boundaries
+                        newDelta.insert('\n', { ...op.attributes, alert: type });
+                    }
+                }
+            } else {
+                newDelta.push(op);
+            }
         });
-    }
+        return newDelta;
+    });
 }
 
 
