@@ -39,6 +39,24 @@
             padding: 0 !important;
         }
 
+        /* Align section-container padding with main header for vertical alignment */
+        @media (min-width: 1025px) {
+            body.admin-body .section-container,
+            body.admin-dashboard-refresh .section-container {
+                padding-left: 40px !important;
+                padding-right: 40px !important;
+                max-width: 100% !important;
+            }
+        }
+        @media (max-width: 1024px) {
+            body.admin-body .section-container,
+            body.admin-dashboard-refresh .section-container {
+                padding-left: 16px !important;
+                padding-right: 16px !important;
+                max-width: 100% !important;
+            }
+        }
+
         body.admin-dashboard-refresh #dashboard-container {
             margin: 0 !important;
             width: 100% !important;
@@ -299,7 +317,7 @@
                     <h2 style="font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0;" data-i18n="welcome">Velkommen tilbake, Thomas</h2>
                     <button class="save-btn" onclick="startNewPost()" data-i18n="new_post" style="padding: 10px 20px; font-size: 14px; font-weight: 700; border-radius: 12px; border: none; background: var(--accent-gradient); color: white; cursor: pointer; box-shadow: 0 4px 12px var(--accent-glow); display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;">
                         <span class="material-symbols-outlined" style="font-size: 18px; color: white !important;">add</span>
-                        + Nytt Innlegg
+                        Nytt Innlegg
                     </button>
                 </div>
 
