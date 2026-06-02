@@ -8044,25 +8044,12 @@ async function saveUserProfile() {
         // Upload new avatar if selected
         if (avatarInput.files && avatarInput.files[0]) {
             const file = avatarInput.files[0];
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
-            const filePath = `avatars/${fileName}`;
-
-            const { data, error: uploadError } = await window.adminAuthClient.storage
-                .from('images') // Assuming 'images' bucket exists, or create 'avatars' bucket
-                .upload(filePath, file);
-
-            if (uploadError) throw uploadError;
-
-            if (data && data.publicUrl) {
-                avatarUrl = data.publicUrl;
-            } else {
-                const { data: publicData, error: publicUrlError } = await window.adminAuthClient.storage
-                    .from('images')
-                    .getPublicUrl(filePath);
-
-                if (publicUrlError) throw publicUrlError;
-                avatarUrl = publicData.publicUrl;
+            try {
+                // Bruk den robuste helper-funksjonen som har automatisk API fallback ved storage/unauthorized feil
+                avatarUrl = await uploadFileToFirebaseStorage(file, 'avatars');
+            } catch (uploadErr) {
+                console.warn('Firebase storage upload failed, trying direct API upload fallback:', uploadErr);
+                avatarUrl = await uploadFileViaAdminApi(file, 'avatars');
             }
         }
 

@@ -1,0 +1,39 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isImageUpload() {
+      return request.resource != null
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType != null
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    // Regler for mediebibliotek og bloggbilder (uploads/)
+    match /uploads/{allPaths=**} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
+    // Regler for profilbilder og avatarer (avatars/ og images/)
+    match /avatars/{allPaths=**} {
+      allow read: if true;
+      allow write: if isSignedIn() && isImageUpload();
+    }
+
+    match /images/{allPaths=**} {
+      allow read: if true;
+      allow write: if isSignedIn() && isImageUpload();
+    }
+
+    // Standard fallback-regel
+    match /{allPaths=**} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+  }
+}
