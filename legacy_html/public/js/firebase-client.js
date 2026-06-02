@@ -44,12 +44,14 @@
             return profileData.full_name;
         }
 
-        if (user && user.displayName) {
-            return user.displayName;
-        }
-
-        if (user && user.email) {
-            return user.email.split('@')[0];
+        if (user) {
+            if (user.displayName) return user.displayName;
+            if (user.providerData && user.providerData.length > 0) {
+                for (const profile of user.providerData) {
+                    if (profile.displayName) return profile.displayName;
+                }
+            }
+            if (user.email) return user.email.split('@')[0];
         }
 
         return 'Admin';
@@ -63,12 +65,32 @@
         const safeProfile = profileData || {};
         const displayName = getSafeDisplayName(user, safeProfile);
 
+        let googlePhotoUrl = '';
+        if (user.providerData && user.providerData.length > 0) {
+            for (const profile of user.providerData) {
+                if (profile.photoURL) {
+                    googlePhotoUrl = profile.photoURL;
+                    break;
+                }
+            }
+        }
+        const userPhotoURL = user.photoURL || googlePhotoUrl || '';
+
+        // Foretrekk Google-bildet dersom databasens avatar er en standard ui-avatar eller tom
+        const isCustomUploadedAvatar = safeProfile.avatar_url && safeProfile.avatar_url.includes('firebasestorage.googleapis.com');
+        const isUiAvatar = safeProfile.avatar_url && safeProfile.avatar_url.includes('ui-avatars.com');
+        
+        let avatarUrl = safeProfile.avatar_url;
+        if ((isUiAvatar || !avatarUrl) && userPhotoURL) {
+            avatarUrl = userPhotoURL;
+        }
+
         return {
             id: user.uid,
             email: user.email || '',
             user_metadata: {
                 full_name: displayName,
-                avatar_url: safeProfile.avatar_url || user.photoURL || '',
+                avatar_url: avatarUrl || '',
                 phone: safeProfile.phone || '',
                 address: safeProfile.address || '',
                 dob: safeProfile.dob || '',
@@ -200,28 +222,55 @@
             return null;
         }
 
-        const user = auth.currentUser;
+        let user = auth.currentUser;
+        
+        // Reload brukeren for å hente ferskeste data fra Google Auth (f.eks. profilbilde)
+        try {
+            await user.reload();
+            user = auth.currentUser;
+        } catch (reloadErr) {
+            console.warn('Kunne ikke relese brukerdata fra Firebase Auth:', reloadErr);
+        }
+
         let profileData = await getProfileData(user.uid);
 
-        // Auto-sync Google profile picture/name to Firestore if user logged in with Google
-        // and hasn't uploaded a custom avatar to Firebase Storage
+        // Sjekk om lagret profilbilde er et bilde brukeren selv har lastet opp (Firebase Storage)
         const isCustomUploadedAvatar = profileData && 
                                        profileData.avatar_url && 
                                        profileData.avatar_url.includes('firebasestorage.googleapis.com');
 
-        if (user.photoURL && !isCustomUploadedAvatar) {
-            try {
-                const updatedData = {
-                    full_name: profileData.full_name || user.displayName || user.email.split('@')[0] || 'Admin',
-                    avatar_url: user.photoURL,
-                    phone: profileData.phone || '',
-                    address: profileData.address || '',
-                    dob: profileData.dob || '',
-                    bio: profileData.bio || ''
-                };
-                profileData = await updateProfileDocument(user, updatedData);
-            } catch (err) {
-                console.error('Failed to auto-sync Google profile to Firestore:', err);
+        // Sjekk om det er en standard ui-avatar
+        const isUiAvatar = profileData &&
+                           profileData.avatar_url &&
+                           profileData.avatar_url.includes('ui-avatars.com');
+
+        let googlePhotoUrl = '';
+        let googleDisplayName = '';
+        if (user.providerData && user.providerData.length > 0) {
+            for (const profile of user.providerData) {
+                if (profile.photoURL) googlePhotoUrl = profile.photoURL;
+                if (profile.displayName) googleDisplayName = profile.displayName;
+            }
+        }
+        const userPhotoURL = user.photoURL || googlePhotoUrl;
+        const userDisplayName = user.displayName || googleDisplayName;
+
+        // Hvis Google-bilde finnes, og vi ikke har et spesifikt opplastet bilde (eller har ui-avatars/tom streng), synkroniser vi det til Firestore
+        if (userPhotoURL && (!isCustomUploadedAvatar || isUiAvatar)) {
+            if (profileData.avatar_url !== userPhotoURL) {
+                try {
+                    const updatedData = {
+                        full_name: profileData.full_name || userDisplayName || user.email.split('@')[0] || 'Admin',
+                        avatar_url: userPhotoURL,
+                        phone: profileData.phone || '',
+                        address: profileData.address || '',
+                        dob: profileData.dob || '',
+                        bio: profileData.bio || ''
+                    };
+                    profileData = await updateProfileDocument(user, updatedData);
+                } catch (err) {
+                    console.error('Failed to auto-sync Google profile to Firestore:', err);
+                }
             }
         }
 
@@ -276,6 +325,8 @@
 
                     await persistenceReady;
                     const googleProvider = new window.firebase.auth.GoogleAuthProvider();
+                    googleProvider.addScope('profile');
+                    googleProvider.addScope('email');
                     await auth.signInWithPopup(googleProvider);
 
                     const mappedUser = await getMappedCurrentUser();

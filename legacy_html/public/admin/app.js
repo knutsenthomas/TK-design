@@ -92,7 +92,7 @@ const adminTranslations = {
         'nav_logout': 'Logg ut',
         'sidebar_menu': 'Meny',
         'welcome': 'Velkommen tilbake',
-        'new_post': '+ Nytt Innlegg',
+        'new_post': 'Nytt Innlegg',
         'dashboard_kicker': 'Nettstedsoversikt',
         'dashboard_title': 'Ett sted for å holde tk-design oppdatert',
         'dashboard_desc': 'Administrer forsiden, blogg, media, SEO og nøkkelsider fra dette dashboardet.',
@@ -216,7 +216,7 @@ const adminTranslations = {
         'nav_logout': 'Logout',
         'sidebar_menu': 'Menu',
         'welcome': 'Welcome back',
-        'new_post': '+ Nytt innlegg',
+        'new_post': 'New Post',
         'dashboard_kicker': 'Site Overview',
         'dashboard_title': 'One place to keep tk-design updated',
         'dashboard_desc': 'Manage the homepage, blog, media, SEO and key pages from this dashboard.',
@@ -7765,14 +7765,24 @@ function buildFallbackSessionUser(firebaseUser) {
     if (!firebaseUser) return null;
 
     const email = firebaseUser.email || '';
-    const displayName = firebaseUser.displayName || email.split('@')[0] || 'Admin';
+    
+    let googlePhotoUrl = '';
+    let googleDisplayName = '';
+    if (firebaseUser.providerData && firebaseUser.providerData.length > 0) {
+        for (const profile of firebaseUser.providerData) {
+            if (profile.photoURL) googlePhotoUrl = profile.photoURL;
+            if (profile.displayName) googleDisplayName = profile.displayName;
+        }
+    }
+    const displayName = firebaseUser.displayName || googleDisplayName || email.split('@')[0] || 'Admin';
+    const userPhotoURL = firebaseUser.photoURL || googlePhotoUrl || '';
 
     return {
         id: firebaseUser.uid,
         email,
         user_metadata: {
             full_name: displayName,
-            avatar_url: firebaseUser.photoURL || '',
+            avatar_url: userPhotoURL,
             phone: '',
             address: '',
             dob: '',
@@ -7862,8 +7872,32 @@ function renderUserProfile(user) {
 
     // Update Header
     const headerAvatar = document.getElementById('header-avatar');
+    const headerInitials = document.getElementById('header-avatar-initials');
     const headerName = document.getElementById('header-username');
-    if (headerAvatar) headerAvatar.src = avatarUrl;
+    
+    const isCustomAvatar = meta.avatar_url && 
+                           !meta.avatar_url.includes('ui-avatars.com') && 
+                           (meta.avatar_url.includes('googleusercontent.com') || !meta.avatar_url.includes('default-user'));
+
+    if (headerInitials) {
+        const getInitials = (name) => {
+            if (!name) return 'TK';
+            const parts = name.trim().split(/\s+/);
+            if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        };
+        headerInitials.textContent = getInitials(displayName);
+    }
+
+    if (headerAvatar) {
+        if (isCustomAvatar) {
+            headerAvatar.src = avatarUrl;
+            headerAvatar.style.setProperty('display', 'block', 'important');
+        } else {
+            headerAvatar.src = '';
+            headerAvatar.style.setProperty('display', 'none', 'important');
+        }
+    }
     if (headerName) headerName.textContent = displayName;
 
     // Update Welcome Message
@@ -7890,7 +7924,10 @@ function renderUserProfile(user) {
 
     if (modalName) modalName.value = displayName;
     if (modalEmail) modalEmail.value = email;
-    if (modalAvatar) modalAvatar.src = avatarUrl;
+    if (modalAvatar) {
+        modalAvatar.src = avatarUrl;
+        modalAvatar.title = avatarUrl;
+    }
     if (modalPhone) modalPhone.value = meta.phone || '';
     if (modalAddress) modalAddress.value = meta.address || '';
     if (modalDob) modalDob.value = meta.dob || '';
@@ -7906,7 +7943,10 @@ function renderUserProfile(user) {
         `;
         postAuthorSelect.value = displayName;
     }
-    if (postAuthorAvatar) postAuthorAvatar.src = avatarUrl;
+    if (postAuthorAvatar) {
+        postAuthorAvatar.src = avatarUrl;
+        postAuthorAvatar.title = avatarUrl;
+    }
 }
 
 function setupProfileEventListeners() {
