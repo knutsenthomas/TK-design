@@ -539,12 +539,20 @@ function updateDashboardLanguage() {
                 return;
             }
 
-            // Preserve icon if it exists
-            const icon = el.querySelector('i');
+            // Preserve icon if it exists (either FontAwesome <i> or Material Symbol/Icon <span>)
+            const icon = el.querySelector('i, span.material-symbols-outlined, span.material-icons');
             if (icon) {
                 el.innerHTML = '';
                 el.appendChild(icon);
-                el.appendChild(document.createTextNode(' ' + t[key]));
+                
+                // If it is a navigation button or it originally had a text-span, preserve that span structure
+                if (el.classList.contains('nav-btn') || el.classList.contains('nav-link') || el.closest('.sidebar')) {
+                    const textSpan = document.createElement('span');
+                    textSpan.textContent = t[key];
+                    el.appendChild(textSpan);
+                } else {
+                    el.appendChild(document.createTextNode(' ' + t[key]));
+                }
             } else {
                 el.innerText = t[key];
             }
