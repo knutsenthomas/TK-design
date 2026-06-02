@@ -88,13 +88,13 @@ body.admin-dashboard-refresh .analytics-container {
 }
 
 .period-btn:hover {
-    color: #1B4965;
+    color: #d17d39;
 }
 
 .period-btn.active {
-    background: linear-gradient(135deg, #1B4965, #3a6b8c);
+    background: linear-gradient(135deg, #d17d39, #bd4f2a);
     color: white;
-    box-shadow: 0 4px 10px rgba(27, 73, 101, 0.2);
+    box-shadow: 0 4px 10px rgba(209, 125, 57, 0.2);
 }
 
 /* Premium Metric Cards Grid */
@@ -132,8 +132,8 @@ body.admin-dashboard-refresh .analytics-container {
 
 /* Live User Card Styling */
 .live-users-card {
-    border-left: 4px solid #1B4965;
-    background: linear-gradient(to right, white, #f8fafc);
+    border-left: 4px solid #bd4f2a;
+    background: linear-gradient(to right, white, #fffcf9);
 }
 
 .live-indicator-dot {
@@ -210,9 +210,9 @@ body.admin-dashboard-refresh .analytics-container {
 }
 
 .stat-card-trend.live {
-    background: #f0fdf4;
-    color: #16a34a;
-    border: 1px solid #dcfce7;
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #ffedd5;
     font-weight: 700;
 }
 
@@ -234,14 +234,14 @@ body.admin-dashboard-refresh .analytics-container {
 
 .mini-bar {
     flex: 1;
-    background: #f1f5f9;
+    background: #ffedd5;
     border-radius: 2px 2px 0 0;
     min-height: 4px;
     transition: height 0.3s ease, background-color 0.3s ease;
 }
 
 .mini-bar.highlighted {
-    background: linear-gradient(to top, #1B4965, #5FA8D3);
+    background: linear-gradient(to top, #bd4f2a, #d17d39);
 }
 
 /* Quick Action Icon link */
@@ -272,7 +272,7 @@ body.admin-dashboard-refresh .analytics-container {
 }
 
 .stat-action-btn:hover {
-    background: #1B4965;
+    background: #d17d39;
     color: white;
     transform: scale(1.05);
 }
@@ -382,8 +382,8 @@ body.admin-dashboard-refresh .analytics-container {
     font-family: 'Fira Code', monospace;
     font-size: 12px;
     font-weight: 700;
-    color: #1B4965;
-    background: #f0f4f8;
+    color: #d17d39;
+    background: #fff7ed;
     padding: 2px 8px;
     border-radius: 4px;
 }
@@ -399,12 +399,12 @@ body.admin-dashboard-refresh .analytics-container {
 .top-page-bar {
     height: 100%;
     border-radius: 3px;
-    background: linear-gradient(to right, #1B4965, #5FA8D3);
+    background: linear-gradient(to right, #bd4f2a, #d17d39);
     transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .top-page-bar.accent {
-    background: linear-gradient(to right, #1B4965, #5FA8D3);
+    background: linear-gradient(to right, #bd4f2a, #d17d39);
 }
 
 /* Geografisk / Norway Map Visual */
@@ -476,8 +476,8 @@ body.admin-dashboard-refresh .analytics-container {
     border-radius: 50%;
 }
 
-.legend-color-dot.direkte { background: #1B4965; }
-.legend-color-dot.sok { background: #5FA8D3; }
+.legend-color-dot.direkte { background: #bd4f2a; }
+.legend-color-dot.sok { background: #d17d39; }
 .legend-color-dot.sosial { background: #cbd5e1; }
 
 .legend-name {
@@ -604,21 +604,21 @@ body.admin-dashboard-refresh .analytics-container {
 }
 
 .btn-premium-primary {
-    background: linear-gradient(135deg, #1B4965, #3a6b8c);
+    background: linear-gradient(135deg, #d17d39, #bd4f2a);
     color: white;
     border: none;
-    box-shadow: 0 4px 10px rgba(27, 73, 101, 0.2);
+    box-shadow: 0 4px 10px rgba(209, 125, 57, 0.2);
     transition: all 0.3s ease;
 }
 
 .btn-premium-primary:hover {
-    box-shadow: 0 6px 16px rgba(27, 73, 101, 0.3);
+    box-shadow: 0 6px 16px rgba(209, 125, 57, 0.3);
     filter: brightness(1.05);
     transform: translateY(-1px);
 }
 
 .btn-premium-primary:active {
     transform: translateY(0);
-    box-shadow: 0 4px 10px rgba(27, 73, 101, 0.2);
+    box-shadow: 0 4px 10px rgba(209, 125, 57, 0.2);
     filter: brightness(0.95);
 }

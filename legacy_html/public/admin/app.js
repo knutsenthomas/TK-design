@@ -5869,12 +5869,12 @@ function renderAnalyticsTab() {
 
         // Gradients
         const gradientPrimary = ctxTraffic.createLinearGradient(0, 0, 0, 300);
-        gradientPrimary.addColorStop(0, 'rgba(27, 73, 101, 0.3)');
-        gradientPrimary.addColorStop(1, 'rgba(27, 73, 101, 0.0)');
+        gradientPrimary.addColorStop(0, 'rgba(209, 125, 57, 0.3)');
+        gradientPrimary.addColorStop(1, 'rgba(209, 125, 57, 0.0)');
 
         const gradientSecondary = ctxTraffic.createLinearGradient(0, 0, 0, 300);
-        gradientSecondary.addColorStop(0, 'rgba(95, 168, 211, 0.2)');
-        gradientSecondary.addColorStop(1, 'rgba(95, 168, 211, 0.0)');
+        gradientSecondary.addColorStop(0, 'rgba(189, 79, 42, 0.2)');
+        gradientSecondary.addColorStop(1, 'rgba(189, 79, 42, 0.0)');
 
         if (window.myTrafficChart) {
             window.myTrafficChart.data.labels = activeRaw.labels;
@@ -5890,30 +5890,30 @@ function renderAnalyticsTab() {
                         {
                             label: 'Sidevisninger',
                             data: sessionsData,
-                            borderColor: '#1B4965',
+                            borderColor: '#d17d39',
                             backgroundColor: gradientPrimary,
                             borderWidth: 3,
                             fill: true,
                             tension: 0.4,
-                            pointBackgroundColor: '#1B4965',
+                            pointBackgroundColor: '#d17d39',
                             pointBorderColor: '#fff',
                             pointHoverRadius: 6,
-                            pointHoverBackgroundColor: '#1B4965',
+                            pointHoverBackgroundColor: '#d17d39',
                             pointHoverBorderColor: '#fff'
                         },
                         {
                             label: 'Aktive brukere',
                             data: uniquesData,
-                            borderColor: '#5FA8D3',
+                            borderColor: '#bd4f2a',
                             backgroundColor: gradientSecondary,
                             borderWidth: 2,
                             borderDash: [5, 5],
                             fill: true,
                             tension: 0.4,
-                            pointBackgroundColor: '#5FA8D3',
+                            pointBackgroundColor: '#bd4f2a',
                             pointBorderColor: '#fff',
                             pointHoverRadius: 6,
-                            pointHoverBackgroundColor: '#5FA8D3',
+                            pointHoverBackgroundColor: '#bd4f2a',
                             pointHoverBorderColor: '#fff'
                         }
                     ]
@@ -6011,7 +6011,7 @@ function renderAnalyticsTab() {
                     labels: ['Direkte', 'Søk', 'Sosial'],
                     datasets: [{
                         data: [direktePct, sokPct, sosialPct],
-                        backgroundColor: ['#1B4965', '#5FA8D3', '#cbd5e1'],
+                        backgroundColor: ['#bd4f2a', '#d17d39', '#cbd5e1'],
                         borderWidth: 0,
                         hoverOffset: 4
                     }]
@@ -6128,7 +6128,7 @@ function renderAnalyticsTab() {
                 <tr style="border-bottom: 1px solid #f1f5f9;">
                     <td style="padding: 12px 8px; font-weight: 600; color: #334155;">${escapeHtmlForUi(p.title)}</td>
                     <td style="padding: 12px 8px; text-align: right; font-family: 'Fira Code', monospace;">${count.toLocaleString('no-NO')}</td>
-                    <td style="padding: 12px 8px; text-align: right; font-family: 'Fira Code', monospace; color: #1B4965; font-weight: 700;">${pct}%</td>
+                    <td style="padding: 12px 8px; text-align: right; font-family: 'Fira Code', monospace; color: #d17d39; font-weight: 700;">${pct}%</td>
                 </tr>
             `;
         }).join('');
@@ -6179,7 +6179,7 @@ function renderAnalyticsTab() {
         ]);
 
         const options = {
-            colorAxis: { colors: ['#f1f5f9', '#1B4965'] },
+            colorAxis: { colors: ['#f1f5f9', '#d17d39'] },
             backgroundColor: '#ffffff',
             datalessRegionColor: '#f8fafc',
             defaultColor: '#ffffff',
