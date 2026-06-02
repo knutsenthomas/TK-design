@@ -7865,10 +7865,15 @@ async function checkAuth() {
 function renderUserProfile(user) {
     if (!user) return;
 
+    console.log('[DEBUG UI] renderUserProfile called with user:', user);
+
     const meta = user.user_metadata || {};
     const avatarUrl = meta.avatar_url || `https://ui-avatars.com/api/?name=${meta.full_name || 'Admin'}&background=random`;
     const displayName = meta.full_name || user.email.split('@')[0];
     const email = user.email;
+
+    console.log('[DEBUG UI] meta:', meta);
+    console.log('[DEBUG UI] avatarUrl:', avatarUrl);
 
     // Update Header
     const headerAvatar = document.getElementById('header-avatar');
@@ -7878,6 +7883,8 @@ function renderUserProfile(user) {
     const isCustomAvatar = meta.avatar_url && 
                            !meta.avatar_url.includes('ui-avatars.com') && 
                            (meta.avatar_url.includes('googleusercontent.com') || !meta.avatar_url.includes('default-user'));
+
+    console.log('[DEBUG UI] isCustomAvatar:', isCustomAvatar);
 
     if (headerInitials) {
         const getInitials = (name) => {

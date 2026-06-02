@@ -232,7 +232,15 @@
             console.warn('Kunne ikke relese brukerdata fra Firebase Auth:', reloadErr);
         }
 
+        console.log('[DEBUG Auth] Firebase user loaded:', {
+            uid: user.uid,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            providerData: user.providerData?.map(p => ({ providerId: p.providerId, displayName: p.displayName, photoURL: p.photoURL }))
+        });
+
         let profileData = await getProfileData(user.uid);
+        console.log('[DEBUG Auth] Firestore profileData:', profileData);
 
         // Sjekk om lagret profilbilde er et bilde brukeren selv har lastet opp (Firebase Storage)
         const isCustomUploadedAvatar = profileData && 
