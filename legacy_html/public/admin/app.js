@@ -2324,6 +2324,15 @@ function switchTab(section, updateHash = true) {
     if (updateHash) {
         window.location.hash = section;
     }
+
+    // Clean up early loading styling
+    document.documentElement.classList.forEach(cls => {
+        if (cls.startsWith('loading-tab-')) {
+            document.documentElement.classList.remove(cls);
+        }
+    });
+    const earlyStyle = document.getElementById('early-tab-style');
+    if (earlyStyle) earlyStyle.remove();
 }
 
 function handleUrlHashRouting() {

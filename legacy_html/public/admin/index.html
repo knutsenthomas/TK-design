@@ -6,6 +6,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>tk-design Admin | Studio</title>
 
+    <script>
+        (function() {
+            const hash = window.location.hash || '';
+            let section = '';
+            if (hash.startsWith('#edit-') || hash === '#new') {
+                section = 'blog';
+            } else if (hash.startsWith('#')) {
+                section = hash.substring(1);
+            }
+            const sections = ['home', 'content', 'blog', 'media', 'style', 'social-planner', 'seo', 'analytics'];
+            if (section && sections.includes(section) && section !== 'home') {
+                document.documentElement.classList.add('loading-tab-' + section);
+                const style = document.createElement('style');
+                style.id = 'early-tab-style';
+                style.innerHTML = `
+                    .loading-tab-${section} #home-tab { display: none !important; }
+                    .loading-tab-${section} #home-tab.active { display: none !important; }
+                    .loading-tab-${section} #analytics-tab,
+                    .loading-tab-${section} #blog-tab,
+                    .loading-tab-${section} #content-tab,
+                    .loading-tab-${section} #media-tab,
+                    .loading-tab-${section} #style-tab,
+                    .loading-tab-${section} #social-planner-tab,
+                    .loading-tab-${section} #seo-tab { display: none; }
+                    .loading-tab-${section} #${section}-tab { display: flex !important; }
+                    
+                    /* Early active button state styling matching Mandal theme #1B4965 */
+                    .loading-tab-${section} .nav-btn[data-tab="home"] { background: transparent !important; color: inherit !important; }
+                    .loading-tab-${section} .nav-btn[data-tab="${section}"] { background: rgba(255,255,255,0.08) !important; color: #fff !important; }
+                `;
+                document.head.appendChild(style);
+            }
+        })();
+    </script>
+
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2337,7 +2372,7 @@
         </div>
     </div>
 
-    <script src="/admin/app.js?v=1.0.56"></script>
+    <script src="/admin/app.js?v=1.0.57"></script>
     <script type="importmap">
         {
             "imports": {
