@@ -2368,7 +2368,7 @@ function registerClipboardMatchers() {
                 console.error('Quill Delta constructor not found in TABLE matcher!');
                 return delta;
             }
-            return new LocalDelta().insert({ tableEmbed: tableHtml });
+            return new LocalDelta().insert({ tableEmbed: tableHtml }).insert('\n');
         } catch (err) {
             console.error('Error in TABLE clipboard matcher:', err);
             return delta;
