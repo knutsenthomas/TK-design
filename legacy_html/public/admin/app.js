@@ -1944,7 +1944,13 @@ async function upsertCurrentPost(successMessage, options = {}) {
     await persistPostPayload(postPayload);
 
     currentEditingId = postPayload.id;
-    closeModal();
+    
+    // Instead of closing the editor modal, keep the modal open and update the hash:
+    const idString = String(postPayload.id);
+    if (window.location.hash === '#new' || !window.location.hash.includes(idString)) {
+        window.location.hash = `edit-${idString}`;
+    }
+
     await showAdminNotice(successMessage, {
         title: 'Innlegg oppdatert',
         variant: 'success'
@@ -2342,9 +2348,9 @@ async function init() {
 function handleUrlHashRouting() {
     const hash = window.location.hash || '';
     if (hash.startsWith('#edit-')) {
-        const targetId = Number(hash.replace('#edit-', ''));
-        if (targetId && Array.isArray(blogData)) {
-            const index = blogData.findIndex(post => post.id === targetId);
+        const idString = hash.replace('#edit-', '');
+        if (idString && Array.isArray(blogData)) {
+            const index = blogData.findIndex(post => String(post.id) === idString);
             if (index !== -1) {
                 setTimeout(() => {
                     openEditModal(index);
@@ -7768,19 +7774,21 @@ function openModal() {
     resetAiAssistantState({ clearPrompt: true });
 
     // Force scrollTop scroll reset to top of document to make sure title field is visible.
-    // Timeout of 100ms catches any autofocus behavior from the rich text editor library.
+    // Timeout of 150ms catches any autofocus behavior from the rich text editor library.
     setTimeout(() => {
         const scrollArea = document.querySelector('.editor-scroll-area');
-        if (scrollArea) {
-            scrollArea.scrollTop = 0;
+        if (quill) {
+            try {
+                quill.blur();
+            } catch (e) {}
         }
         if (titleTextarea) {
             titleTextarea.focus();
         }
-        if (quill) {
-            quill.setSelection(0, 0, 'silent');
+        if (scrollArea) {
+            scrollArea.scrollTop = 0;
         }
-    }, 100);
+    }, 150);
 }
 
 function resetPostEditorForNewPost() {
