@@ -2294,6 +2294,9 @@ function bindManualToolbar() {
 
 // Initial Load
 async function init() {
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
 
     // Initialize Quill Safely
     if (typeof Quill !== 'undefined') {
@@ -7803,10 +7806,31 @@ function openModal() {
     renderPostTaxonomyEditors();
     syncRelatedPostsUi();
     renderFeaturedImagePreview(document.getElementById('post-image')?.value || '');
-    switchSettingsTab('generelt');
+    
+    // Open settings sidebar panel by default on desktop/load
+    if (typeof window.switchSidebarPanel === 'function') {
+        window.switchSidebarPanel(null, 'settings');
+    } else {
+        switchSettingsTab('generelt');
+    }
+    
     resetAiAssistantState({ clearPrompt: true });
 
     // Force scrollTop scroll reset to top of document to make sure title field is visible.
+    // Reset scroll at multiple intervals to combat browser scroll anchoring / restoration.
+    const resetScroll = () => {
+        const scrollArea = document.querySelector('.editor-scroll-area');
+        if (scrollArea) {
+            scrollArea.scrollTop = 0;
+        }
+    };
+    
+    resetScroll();
+    setTimeout(resetScroll, 50);
+    setTimeout(resetScroll, 150);
+    setTimeout(resetScroll, 300);
+    setTimeout(resetScroll, 600);
+
     // Timeout of 150ms catches any autofocus behavior from the rich text editor library.
     setTimeout(() => {
         const scrollArea = document.querySelector('.editor-scroll-area');
@@ -7816,11 +7840,9 @@ function openModal() {
             } catch (e) {}
         }
         if (titleTextarea) {
-            titleTextarea.focus();
+            titleTextarea.focus({ preventScroll: true });
         }
-        if (scrollArea) {
-            scrollArea.scrollTop = 0;
-        }
+        resetScroll();
     }, 150);
 }
 
@@ -7927,6 +7949,7 @@ window.switchSidebarPanel = function (btn, panelType) {
         b.classList.remove('active');
         b.style.background = 'transparent';
         b.style.color = '#475569';
+        b.style.boxShadow = '';
     });
     
     if (btn) {
@@ -7935,8 +7958,14 @@ window.switchSidebarPanel = function (btn, panelType) {
         btn.style.color = '#1B4965';
         btn.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)';
     } else {
-        // If btn is null (like from header action), find the tab button by data-type or title
-        const targetBtn = Array.from(document.querySelectorAll('.sidebar-tab-btn')).find(b => b.getAttribute('title')?.toLowerCase().includes(panelType.toLowerCase()));
+        // Find the tab button by checking its onclick attribute or title
+        const targetBtn = Array.from(document.querySelectorAll('.sidebar-tab-btn')).find(b => {
+            const onclickStr = b.getAttribute('onclick') || '';
+            const titleStr = b.getAttribute('title') || '';
+            return onclickStr.includes(`'${panelType}'`) || 
+                   onclickStr.includes(`"${panelType}"`) || 
+                   titleStr.toLowerCase().includes(panelType.toLowerCase());
+        });
         if (targetBtn) {
             targetBtn.classList.add('active');
             targetBtn.style.background = '#ffffff';
