@@ -1199,7 +1199,7 @@ function setEditorHtmlContent(value = '') {
     infoMsg.style.borderBottom = '1px dashed #3b82f6';
     infoMsg.style.paddingBottom = '4px';
     infoMsg.style.color = '#1e3a8a';
-    infoMsg.innerHTML = `<strong>Editor Load Info (v1.0.49):</strong><br>Raw HTML len: ${value.length}<br>Pre-wrapped HTML len: ${normalizedHtml.length}<br>Snippet: ${String(value).slice(0, 150).replace(/</g, '&lt;').replace(/>/g, '&gt;')}`;
+    infoMsg.innerHTML = `<strong>Editor Load Info (v1.0.50):</strong><br>Raw HTML len: ${value.length}<br>Pre-wrapped HTML len: ${normalizedHtml.length}<br>Snippet: ${String(value).slice(0, 150).replace(/</g, '&lt;').replace(/>/g, '&gt;')}`;
     debugOverlay.appendChild(infoMsg);
 
     quill.setText('');
@@ -1209,10 +1209,11 @@ function setEditorHtmlContent(value = '') {
     try {
         quill.clipboard.dangerouslyPasteHTML(0, normalizedHtml, Quill.sources.SILENT);
         console.log('[DEBUG-PASTE] dangerouslyPasteHTML succeeded. Editor text len:', quill.getText().length);
+        const childrenTags = Array.from(quill.root.children).slice(0, 5).map(el => `${el.tagName.toLowerCase()}${el.className ? '.' + el.className : ''}`).join(', ');
         const successMsg = document.createElement('div');
         successMsg.style.color = '#16a34a';
         successMsg.style.fontWeight = 'bold';
-        successMsg.innerHTML = `Paste Succeeded! Editor text length: ${quill.getText().length}`;
+        successMsg.innerHTML = `Paste Succeeded!<br>Editor text length: ${quill.getText().length}<br>First 100 chars: "${quill.getText().slice(0, 100).replace(/</g, '&lt;').replace(/>/g, '&gt;')}"<br>DOM Children: [${childrenTags}]`;
         debugOverlay.appendChild(successMsg);
     } catch (error) {
         console.error('Error pasting HTML into Quill editor, attempting fallback:', error);
