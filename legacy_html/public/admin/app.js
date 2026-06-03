@@ -2276,9 +2276,66 @@ async function init() {
     }
 }
 
+function switchTab(section, updateHash = true) {
+    const navBtns = document.querySelectorAll('.nav-btn');
+    const btn = Array.from(navBtns).find(b => b.dataset.tab === section);
+    if (!btn) return;
+
+    const isAlreadyActive = btn.classList.contains('active');
+    const possibleHash = `#${section}`;
+    
+    if (isAlreadyActive && (!updateHash || window.location.hash === possibleHash)) {
+        return;
+    }
+
+    navBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(content => content.classList.remove('active'));
+    
+    const targetTab = document.getElementById(`${section}-tab`);
+    if (targetTab) targetTab.classList.add('active');
+    
+    updateBreadcrumb(section);
+    updateHeaderActions(section);
+    syncAdminScrollMode(section);
+    
+    if (section === 'analytics') {
+        renderAnalyticsTab();
+        if ((!siteAnalytics && !siteAnalyticsLoading) || siteAnalyticsErrorMessage) {
+            fetchSiteAnalytics(siteAnalyticsPeriod).catch((error) => {
+                console.error('Error loading analytics tab:', error);
+            });
+        }
+        setSocialPlannerRailOpen(false);
+    } else if (section === 'social-planner') {
+        refreshSocialPlannerState({ silent: socialPlannerLoaded }).catch((error) => {
+            console.error('Error loading social planner tab:', error);
+        });
+    } else {
+        setSocialPlannerRailOpen(false);
+    }
+
+    if (isAdminMobileViewport()) {
+        setAdminSidebarCollapsed(true, false);
+    }
+
+    if (updateHash) {
+        window.location.hash = section;
+    }
+}
+
 function handleUrlHashRouting() {
     const hash = window.location.hash || '';
     console.log('[DEBUG Routing] handleUrlHashRouting called, hash:', hash, 'blogData len:', blogData?.length);
+    
+    // Auto-close editor if hash is not related to editing/new post
+    const isEditorOpen = editorContainerWrapper && editorContainerWrapper.style.display !== 'none';
+    if (isEditorOpen && !hash.startsWith('#edit-') && hash !== '#new') {
+        closeModalUiOnly();
+    }
+    
     if (hash.startsWith('#edit-')) {
         const idString = hash.replace('#edit-', '');
         if (idString && Array.isArray(blogData)) {
@@ -2290,6 +2347,7 @@ function handleUrlHashRouting() {
                     console.log('[DEBUG Routing] Already editing post:', idString, 'skipping reload');
                     return;
                 }
+                switchTab('blog', false);
                 setTimeout(() => {
                     console.log('[DEBUG Routing] Opening edit modal for index:', index);
                     openEditModal(index);
@@ -2299,9 +2357,19 @@ function handleUrlHashRouting() {
             }
         }
     } else if (hash === '#new') {
+        switchTab('blog', false);
         setTimeout(() => {
             startNewPost();
         }, 150);
+    } else {
+        const sections = ['home', 'content', 'blog', 'media', 'style', 'social-planner', 'seo', 'analytics'];
+        const possibleSection = hash.startsWith('#') ? hash.substring(1) : hash;
+        if (sections.includes(possibleSection)) {
+            switchTab(possibleSection, false);
+        } else {
+            // Default to home tab
+            switchTab('home', false);
+        }
     }
 }
 
@@ -7207,38 +7275,10 @@ function setupEventListeners() {
     });
 
     const navBtns = document.querySelectorAll('.nav-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
     navBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             if (btn.dataset.tab) {
-                const section = btn.dataset.tab;
-                navBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                tabContents.forEach(content => content.classList.remove('active'));
-                const targetTab = document.getElementById(`${section}-tab`);
-                if (targetTab) targetTab.classList.add('active');
-                updateBreadcrumb(section);
-                updateHeaderActions(section);
-                syncAdminScrollMode(section);
-                if (section === 'analytics') {
-                    renderAnalyticsTab();
-                    if ((!siteAnalytics && !siteAnalyticsLoading) || siteAnalyticsErrorMessage) {
-                        fetchSiteAnalytics(siteAnalyticsPeriod).catch((error) => {
-                            console.error('Error loading analytics tab:', error);
-                        });
-                    }
-                    setSocialPlannerRailOpen(false);
-                } else if (section === 'social-planner') {
-                    refreshSocialPlannerState({ silent: socialPlannerLoaded }).catch((error) => {
-                        console.error('Error loading social planner tab:', error);
-                    });
-                } else {
-                    setSocialPlannerRailOpen(false);
-                }
-
-                if (isAdminMobileViewport()) {
-                    setAdminSidebarCollapsed(true, false);
-                }
+                switchTab(btn.dataset.tab, true);
             }
         });
     });
@@ -7801,11 +7841,10 @@ window.startNewPost = function () {
     window.location.hash = 'new';
 };
 
-function closeModal() {
+function closeModalUiOnly() {
     editorContainerWrapper.style.display = 'none';
     dashboardContainer.style.display = 'flex';
     currentEditingId = null;
-    window.location.hash = '';
     currentPostCategories = ['Generelt'];
     currentPostTags = [];
     currentRelatedPostIds = [];
@@ -7813,7 +7852,14 @@ function closeModal() {
     syncRelatedPostsUi();
     const relatedPicker = document.getElementById('related-posts-picker');
     if (relatedPicker) relatedPicker.style.display = 'none';
-    resetAiAssistantState({ clearPrompt: true });
+    if (typeof resetAiAssistantState === 'function') {
+        resetAiAssistantState({ clearPrompt: true });
+    }
+}
+
+function closeModal() {
+    closeModalUiOnly();
+    window.location.hash = 'blog';
 }
 
 window.closeEditor = closeModal; // Alias
