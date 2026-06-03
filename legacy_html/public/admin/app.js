@@ -1213,7 +1213,21 @@ function setEditorHtmlContent(value = '') {
         quill.clipboard.dangerouslyPasteHTML(0, normalizedHtml, Quill.sources.SILENT);
         const allChildren = Array.from(quill.root.children);
         const childrenTags = allChildren.map((el, i) => `${i}:${el.tagName.toLowerCase()}${el.className ? '.' + el.className.split(' ').filter(c => c && !c.startsWith('ql-')).join('.') : ''}`).join(', ');
-        console.log('[DEBUG-DOM-CHILDREN] Count:', allChildren.length, 'Tags:', childrenTags);
+        
+        const runDiagnostics = (label) => {
+            console.log(`--- [DEBUG-DOM-CHILDREN] ${label} ---`);
+            const children = Array.from(quill.root.children);
+            console.log('Count:', children.length, 'Tags:', childrenTags);
+            children.forEach((el, i) => {
+                const rect = el.getBoundingClientRect();
+                const style = window.getComputedStyle(el);
+                console.log(`[CHILD-${i}] tag=${el.tagName} text="${el.innerText.slice(0, 45).replace(/\n/g, ' ')}" rect[w=${rect.width.toFixed(1)}, h=${rect.height.toFixed(1)}, t=${rect.top.toFixed(1)}] style[display=${style.display}, visibility=${style.visibility}, opacity=${style.opacity}, color=${style.color}]`);
+            });
+        };
+        
+        runDiagnostics('IMMEDIATE');
+        setTimeout(() => runDiagnostics('DEFERRED 500ms'), 500);
+
         const successMsg = document.createElement('div');
         successMsg.style.color = '#16a34a';
         successMsg.style.fontWeight = 'bold';
