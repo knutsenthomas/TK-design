@@ -295,81 +295,7 @@
 
 <body class="admin-dashboard-refresh admin-body main-dashboard">
 
-    <!-- Beautiful Premium Loading Screen -->
-    <div id="admin-loading-screen" style="
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background-color: #0c0f17; /* Sleek dark background */
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        z-index: 999999;
-        transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    ">
-        <div style="
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 24px;
-        ">
-            <!-- Logo with Orange/Red Gradient to match Mandal Regnskapskontor / TK-design branding -->
-            <div style="
-                font-size: 32px;
-                font-weight: 800;
-                color: #ffffff;
-                font-family: 'Inter', sans-serif;
-                letter-spacing: -1px;
-                display: flex;
-                align-items: center;
-                gap: 12px;
-            ">
-                <span style="
-                    background: linear-gradient(135deg, #d17d39, #bd4f2a);
-                    color: white;
-                    width: 46px;
-                    height: 46px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    border-radius: 12px;
-                    font-size: 22px;
-                    font-weight: 900;
-                    box-shadow: 0 6px 16px rgba(189, 79, 42, 0.35);
-                ">tk</span>
-                <span>Studio</span>
-            </div>
-            
-            <!-- Modern Premium Loading Line Spinner -->
-            <div style="
-                position: relative;
-                width: 36px;
-                height: 36px;
-            ">
-                <div style="
-                    box-sizing: border-box;
-                    display: block;
-                    position: absolute;
-                    width: 36px;
-                    height: 36px;
-                    border: 3px solid rgba(255,255,255,0.06);
-                    border-radius: 50%;
-                    border-top: 3px solid #d17d39;
-                    animation: admin-spin 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-                "></div>
-            </div>
-        </div>
-    </div>
-    
-    <style>
-        @keyframes admin-spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+
 
     <div id="dashboard-container" class="admin-container">
         <!-- Sidebar Backdrop for Mobile -->
@@ -1775,6 +1701,48 @@
         </main>
     </div>
 
+    <!-- Synchronous early tab class router to prevent visual layout flash -->
+    <script>
+        (function() {
+            const hash = window.location.hash || '';
+            let section = '';
+            if (hash.startsWith('#edit-') || hash === '#new') {
+                section = 'blog';
+            } else if (hash.startsWith('#')) {
+                section = hash.substring(1);
+            }
+            const sections = ['home', 'content', 'blog', 'media', 'style', 'social-planner', 'seo', 'analytics'];
+            if (section && sections.includes(section) && section !== 'home') {
+                const homeBtn = document.querySelector('.nav-btn[data-tab="home"]');
+                if (homeBtn) homeBtn.classList.remove('active');
+                const homeTab = document.getElementById('home-tab');
+                if (homeTab) homeTab.classList.remove('active');
+
+                const targetBtn = document.querySelector(`.nav-btn[data-tab="${section}"]`);
+                if (targetBtn) targetBtn.classList.add('active');
+                const targetTab = document.getElementById(`${section}-tab`);
+                if (targetTab) targetTab.classList.add('active');
+                
+                // Update breadcrumb text early to prevent title text pop
+                const breadcrumb = document.getElementById('breadcrumb');
+                if (breadcrumb) {
+                    const breadcrumbConfig = {
+                        'home': 'Hjem',
+                        'blog': 'Blogg',
+                        'content': 'Sideinnhold',
+                        'style': 'Design',
+                        'seo': 'SEO',
+                        'analytics': 'Analyse',
+                        'media': 'Media',
+                        'social-planner': 'SoMe-planlegger'
+                    };
+                    const titleText = breadcrumbConfig[section] || 'Hjem';
+                    breadcrumb.innerHTML = `<span class="breadcrumb-item active">${titleText}</span>`;
+                }
+            }
+        })();
+    </script>
+
     <div id="editor-container-wrapper" class="editor-layout-v2" style="display: none;">
         <!-- Studio Header -->
         <header class="editor-header-v2">
@@ -2415,7 +2383,7 @@
         </div>
     </div>
 
-    <script src="/admin/app.js?v=1.0.58"></script>
+    <script src="/admin/app.js?v=1.0.59"></script>
     <script type="importmap">
         {
             "imports": {

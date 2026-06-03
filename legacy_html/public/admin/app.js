@@ -2273,18 +2273,6 @@ async function init() {
         handleUrlHashRouting();
     } catch (e) {
         console.error('Error handling URL hash routing:', e);
-    } finally {
-        // Hide the loader once everything is done!
-        const loadingScreen = document.getElementById('admin-loading-screen');
-        if (loadingScreen) {
-            loadingScreen.style.opacity = '0';
-            loadingScreen.style.visibility = 'hidden';
-            setTimeout(() => {
-                if (loadingScreen.parentNode) {
-                    loadingScreen.parentNode.removeChild(loadingScreen);
-                }
-            }, 350);
-        }
     }
 }
 
