@@ -1125,16 +1125,51 @@ function setEditorHtmlContent(value = '') {
     console.log('[DEBUG-PASTE] Raw value length:', value.length);
     console.log('[DEBUG-PASTE] Normalized HTML length:', normalizedHtml.length);
     
-    const debugOverlay = document.getElementById('debug-error-overlay');
-    if (debugOverlay) {
-        const infoMsg = document.createElement('div');
-        infoMsg.style.marginBottom = '8px';
-        infoMsg.style.borderBottom = '1px dashed #3b82f6';
-        infoMsg.style.paddingBottom = '4px';
-        infoMsg.style.color = '#1e3a8a';
-        infoMsg.innerHTML = `<strong>Editor Load Info:</strong><br>Raw HTML len: ${value.length}<br>Normalized HTML len: ${normalizedHtml.length}<br>Starts with: ${String(value).slice(0, 60).replace(/</g, '&lt;').replace(/>/g, '&gt;')}`;
-        debugOverlay.appendChild(infoMsg);
+    let debugOverlay = document.getElementById('debug-error-overlay');
+    if (!debugOverlay) {
+        debugOverlay = document.createElement('div');
+        debugOverlay.id = 'debug-error-overlay';
+        debugOverlay.style.position = 'fixed';
+        debugOverlay.style.bottom = '20px';
+        debugOverlay.style.right = '20px';
+        debugOverlay.style.backgroundColor = '#f8fafc';
+        debugOverlay.style.border = '2px solid #64748b';
+        debugOverlay.style.borderRadius = '8px';
+        debugOverlay.style.padding = '15px';
+        debugOverlay.style.zIndex = '99999';
+        debugOverlay.style.maxWidth = '450px';
+        debugOverlay.style.maxHeight = '300px';
+        debugOverlay.style.overflowY = 'auto';
+        debugOverlay.style.fontFamily = 'monospace';
+        debugOverlay.style.fontSize = '11px';
+        debugOverlay.style.color = '#1e293b';
+        debugOverlay.style.boxShadow = '0 10px 15px -3px rgba(0,0,0,0.1)';
+        debugOverlay.style.pointerEvents = 'auto';
+        
+        // Add close button
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = 'X';
+        closeBtn.style.position = 'absolute';
+        closeBtn.style.top = '5px';
+        closeBtn.style.right = '5px';
+        closeBtn.style.border = 'none';
+        closeBtn.style.background = 'none';
+        closeBtn.style.color = '#94a3b8';
+        closeBtn.style.fontWeight = 'bold';
+        closeBtn.style.cursor = 'pointer';
+        closeBtn.onclick = () => debugOverlay.remove();
+        debugOverlay.appendChild(closeBtn);
+
+        document.body.appendChild(debugOverlay);
     }
+    
+    const infoMsg = document.createElement('div');
+    infoMsg.style.marginBottom = '8px';
+    infoMsg.style.borderBottom = '1px dashed #3b82f6';
+    infoMsg.style.paddingBottom = '4px';
+    infoMsg.style.color = '#1e3a8a';
+    infoMsg.innerHTML = `<strong>Editor Load Info (v1.0.48):</strong><br>Raw HTML len: ${value.length}<br>Normalized HTML len: ${normalizedHtml.length}<br>Snippet: ${String(value).slice(0, 150).replace(/</g, '&lt;').replace(/>/g, '&gt;')}`;
+    debugOverlay.appendChild(infoMsg);
 
     quill.setText('');
 
@@ -1143,29 +1178,34 @@ function setEditorHtmlContent(value = '') {
     try {
         quill.clipboard.dangerouslyPasteHTML(0, normalizedHtml, Quill.sources.SILENT);
         console.log('[DEBUG-PASTE] dangerouslyPasteHTML succeeded. Editor text len:', quill.getText().length);
+        const successMsg = document.createElement('div');
+        successMsg.style.color = '#16a34a';
+        successMsg.style.fontWeight = 'bold';
+        successMsg.innerHTML = `Paste Succeeded! Editor text length: ${quill.getText().length}`;
+        debugOverlay.appendChild(successMsg);
     } catch (error) {
         console.error('Error pasting HTML into Quill editor, attempting fallback:', error);
-        if (debugOverlay) {
-            const errorMsg = document.createElement('div');
-            errorMsg.style.marginBottom = '8px';
-            errorMsg.style.borderBottom = '1px dashed #ef4444';
-            errorMsg.style.paddingBottom = '4px';
-            errorMsg.style.color = '#991b1b';
-            errorMsg.innerHTML = `<strong>dangerouslyPasteHTML Error:</strong> ${error.message}`;
-            debugOverlay.appendChild(errorMsg);
-        }
+        const errorMsg = document.createElement('div');
+        errorMsg.style.marginBottom = '8px';
+        errorMsg.style.borderBottom = '1px dashed #ef4444';
+        errorMsg.style.paddingBottom = '4px';
+        errorMsg.style.color = '#991b1b';
+        errorMsg.innerHTML = `<strong>dangerouslyPasteHTML Error:</strong> ${error.message}`;
+        debugOverlay.appendChild(errorMsg);
         try {
             quill.root.innerHTML = normalizedHtml;
             quill.update(Quill.sources.SILENT);
             console.log('[DEBUG-PASTE] Fallback innerHTML + update succeeded. Editor text len:', quill.getText().length);
+            const fallbackSuccess = document.createElement('div');
+            fallbackSuccess.style.color = '#d97706';
+            fallbackSuccess.innerHTML = `Fallback innerHTML succeeded. Editor text length: ${quill.getText().length}`;
+            debugOverlay.appendChild(fallbackSuccess);
         } catch (fallbackError) {
             console.error('Fallback HTML insertion also failed:', fallbackError);
-            if (debugOverlay) {
-                const errorMsg = document.createElement('div');
-                errorMsg.style.color = '#991b1b';
-                errorMsg.innerHTML = `<strong>Fallback Error:</strong> ${fallbackError.message}`;
-                debugOverlay.appendChild(errorMsg);
-            }
+            const errorMsg = document.createElement('div');
+            errorMsg.style.color = '#991b1b';
+            errorMsg.innerHTML = `<strong>Fallback Error:</strong> ${fallbackError.message}`;
+            debugOverlay.appendChild(errorMsg);
         }
     }
 }
