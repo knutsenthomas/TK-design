@@ -1156,114 +1156,19 @@ function setEditorHtmlContent(value = '') {
 
     const normalizedHtml = wrapRawTablesInTableEmbedDivs(value);
     
-    console.log('[DEBUG-PASTE] Raw value length:', value.length);
-    console.log('[DEBUG-PASTE] Pre-wrapped HTML length:', normalizedHtml.length);
-    
-    let debugOverlay = document.getElementById('debug-error-overlay');
-    if (!debugOverlay) {
-        debugOverlay = document.createElement('div');
-        debugOverlay.id = 'debug-error-overlay';
-        debugOverlay.style.position = 'fixed';
-        debugOverlay.style.bottom = '20px';
-        debugOverlay.style.right = '20px';
-        debugOverlay.style.backgroundColor = '#f8fafc';
-        debugOverlay.style.border = '2px solid #64748b';
-        debugOverlay.style.borderRadius = '8px';
-        debugOverlay.style.padding = '15px';
-        debugOverlay.style.zIndex = '99999';
-        debugOverlay.style.maxWidth = '450px';
-        debugOverlay.style.maxHeight = '300px';
-        debugOverlay.style.overflowY = 'auto';
-        debugOverlay.style.fontFamily = 'monospace';
-        debugOverlay.style.fontSize = '11px';
-        debugOverlay.style.color = '#1e293b';
-        debugOverlay.style.boxShadow = '0 10px 15px -3px rgba(0,0,0,0.1)';
-        debugOverlay.style.pointerEvents = 'auto';
-        
-        // Add close button
-        const closeBtn = document.createElement('button');
-        closeBtn.textContent = 'X';
-        closeBtn.style.position = 'absolute';
-        closeBtn.style.top = '5px';
-        closeBtn.style.right = '5px';
-        closeBtn.style.border = 'none';
-        closeBtn.style.background = 'none';
-        closeBtn.style.color = '#94a3b8';
-        closeBtn.style.fontWeight = 'bold';
-        closeBtn.style.cursor = 'pointer';
-        closeBtn.onclick = () => debugOverlay.remove();
-        debugOverlay.appendChild(closeBtn);
-
-        document.body.appendChild(debugOverlay);
-    }
-    
-    const infoMsg = document.createElement('div');
-    infoMsg.style.marginBottom = '8px';
-    infoMsg.style.borderBottom = '1px dashed #3b82f6';
-    infoMsg.style.paddingBottom = '4px';
-    infoMsg.style.color = '#1e3a8a';
-    infoMsg.innerHTML = `<strong>Editor Load Info (v1.0.50):</strong><br>Raw HTML len: ${value.length}<br>Pre-wrapped HTML len: ${normalizedHtml.length}<br>Snippet: ${String(value).slice(0, 150).replace(/</g, '&lt;').replace(/>/g, '&gt;')}`;
-    debugOverlay.appendChild(infoMsg);
-
     quill.setText('');
 
     if (!normalizedHtml) return;
 
     try {
         quill.clipboard.dangerouslyPasteHTML(0, normalizedHtml, Quill.sources.SILENT);
-        const allChildren = Array.from(quill.root.children);
-        const childrenTags = allChildren.map((el, i) => `${i}:${el.tagName.toLowerCase()}${el.className ? '.' + el.className.split(' ').filter(c => c && !c.startsWith('ql-')).join('.') : ''}`).join(', ');
-        
-        const runDiagnostics = (label) => {
-            console.log(`--- [DEBUG-DOM-CHILDREN] ${label} ---`);
-            const children = Array.from(quill.root.children);
-            const logs = [];
-            children.forEach((el, i) => {
-                const rect = el.getBoundingClientRect();
-                const style = window.getComputedStyle(el);
-                const info = `[CHILD-${i}] tag=${el.tagName} text="${el.innerText.slice(0, 45).replace(/\n/g, ' ')}" rect[w=${rect.width.toFixed(1)}, h=${rect.height.toFixed(1)}, t=${rect.top.toFixed(1)}] style[display=${style.display}, visibility=${style.visibility}, opacity=${style.opacity}, color=${style.color}]`;
-                console.log(info);
-                logs.push(info);
-            });
-            
-            fetch('/api/debug-log', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ label, timestamp: new Date().toISOString(), logs, tags: childrenTags, textLength: quill.getText().length })
-            }).catch(e => console.error("Failed to post debug-log:", e));
-        };
-        
-        runDiagnostics('IMMEDIATE');
-        setTimeout(() => runDiagnostics('DEFERRED 500ms'), 500);
-
-        const successMsg = document.createElement('div');
-        successMsg.style.color = '#16a34a';
-        successMsg.style.fontWeight = 'bold';
-        successMsg.innerHTML = `Paste Succeeded!<br>Editor text length: ${quill.getText().length}<br>DOM Children Count: ${allChildren.length}<br>Tags: ${childrenTags.slice(0, 180)}...`;
-        debugOverlay.appendChild(successMsg);
     } catch (error) {
         console.error('Error pasting HTML into Quill editor, attempting fallback:', error);
-        const errorMsg = document.createElement('div');
-        errorMsg.style.marginBottom = '8px';
-        errorMsg.style.borderBottom = '1px dashed #ef4444';
-        errorMsg.style.paddingBottom = '4px';
-        errorMsg.style.color = '#991b1b';
-        errorMsg.innerHTML = `<strong>dangerouslyPasteHTML Error:</strong> ${error.message}`;
-        debugOverlay.appendChild(errorMsg);
         try {
             quill.root.innerHTML = normalizedHtml;
             quill.update(Quill.sources.SILENT);
-            console.log('[DEBUG-PASTE] Fallback innerHTML + update succeeded. Editor text len:', quill.getText().length);
-            const fallbackSuccess = document.createElement('div');
-            fallbackSuccess.style.color = '#d97706';
-            fallbackSuccess.innerHTML = `Fallback innerHTML succeeded. Editor text length: ${quill.getText().length}`;
-            debugOverlay.appendChild(fallbackSuccess);
         } catch (fallbackError) {
             console.error('Fallback HTML insertion also failed:', fallbackError);
-            const errorMsg = document.createElement('div');
-            errorMsg.style.color = '#991b1b';
-            errorMsg.innerHTML = `<strong>Fallback Error:</strong> ${fallbackError.message}`;
-            debugOverlay.appendChild(errorMsg);
         }
     }
 }
