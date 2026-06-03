@@ -1217,12 +1217,20 @@ function setEditorHtmlContent(value = '') {
         const runDiagnostics = (label) => {
             console.log(`--- [DEBUG-DOM-CHILDREN] ${label} ---`);
             const children = Array.from(quill.root.children);
-            console.log('Count:', children.length, 'Tags:', childrenTags);
+            const logs = [];
             children.forEach((el, i) => {
                 const rect = el.getBoundingClientRect();
                 const style = window.getComputedStyle(el);
-                console.log(`[CHILD-${i}] tag=${el.tagName} text="${el.innerText.slice(0, 45).replace(/\n/g, ' ')}" rect[w=${rect.width.toFixed(1)}, h=${rect.height.toFixed(1)}, t=${rect.top.toFixed(1)}] style[display=${style.display}, visibility=${style.visibility}, opacity=${style.opacity}, color=${style.color}]`);
+                const info = `[CHILD-${i}] tag=${el.tagName} text="${el.innerText.slice(0, 45).replace(/\n/g, ' ')}" rect[w=${rect.width.toFixed(1)}, h=${rect.height.toFixed(1)}, t=${rect.top.toFixed(1)}] style[display=${style.display}, visibility=${style.visibility}, opacity=${style.opacity}, color=${style.color}]`;
+                console.log(info);
+                logs.push(info);
             });
+            
+            fetch('/api/debug-log', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ label, timestamp: new Date().toISOString(), logs, tags: childrenTags, textLength: quill.getText().length })
+            }).catch(e => console.error("Failed to post debug-log:", e));
         };
         
         runDiagnostics('IMMEDIATE');

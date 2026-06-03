@@ -2837,6 +2837,16 @@ app.post('/api/posts', async (req, res) => {
     }
 });
 
+app.post('/api/debug-log', async (req, res) => {
+    try {
+        const result = await persistSiteData('debug_diagnostics', req.body, () => {});
+        res.status(200).json({ success: true, ...result });
+    } catch (error) {
+        console.error('Error saving debug-log:', error);
+        res.status(500).json({ success: false, error: 'Error saving debug-log', details: error.message });
+    }
+});
+
 app.get('/api/comments', async (req, res) => {
     const requestedPostId = Number(req.query.postId);
 
