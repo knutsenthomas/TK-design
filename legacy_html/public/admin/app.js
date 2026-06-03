@@ -705,6 +705,9 @@ window.navigateBack = function () {
 window.openEditModal = function (index) {
     const post = blogData[index];
     currentEditingId = post.id;
+    if (post && post.id) {
+        window.location.hash = `edit-${post.id}`;
+    }
 
     document.getElementById('post-title').value = post.title;
     document.getElementById('post-author').value = post.author || 'Admin';
@@ -2270,6 +2273,7 @@ async function init() {
             quill = new Quill('#editor-container', {
                 theme: 'bubble',
                 placeholder: 'Start å skrive din historie...',
+                scrollingContainer: '.editor-scroll-area',
                 modules: {
                     toolbar: false
                 }
@@ -2326,7 +2330,35 @@ async function init() {
     } catch (error) {
         console.error('Error rendering analytics tab:', error);
     }
+
+    // Auto-open edit modal if hash is set
+    try {
+        handleUrlHashRouting();
+    } catch (e) {
+        console.error('Error handling URL hash routing:', e);
+    }
 }
+
+function handleUrlHashRouting() {
+    const hash = window.location.hash || '';
+    if (hash.startsWith('#edit-')) {
+        const targetId = Number(hash.replace('#edit-', ''));
+        if (targetId && Array.isArray(blogData)) {
+            const index = blogData.findIndex(post => post.id === targetId);
+            if (index !== -1) {
+                setTimeout(() => {
+                    openEditModal(index);
+                }, 150);
+            }
+        }
+    } else if (hash === '#new') {
+        setTimeout(() => {
+            startNewPost();
+        }, 150);
+    }
+}
+
+window.addEventListener('hashchange', handleUrlHashRouting);
 
 function registerCustomBlots() {
     if (typeof Quill === 'undefined') return;
@@ -7798,12 +7830,14 @@ function resetPostEditorForNewPost() {
 window.startNewPost = function () {
     resetPostEditorForNewPost();
     openModal();
+    window.location.hash = 'new';
 };
 
 function closeModal() {
     editorContainerWrapper.style.display = 'none';
     dashboardContainer.style.display = 'flex';
     currentEditingId = null;
+    window.location.hash = '';
     currentPostCategories = ['Generelt'];
     currentPostTags = [];
     currentRelatedPostIds = [];

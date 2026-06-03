@@ -5713,5 +5713,12 @@ body.admin-dashboard-refresh #logout-btn span:last-child,
     font-size: 14px !important;
 }
 
+/* Fix Quill scroll container issue by disabling internal scrolling in ql-editor */
+#editor-container .ql-editor,
+#editor-container.ql-container {
+    height: auto !important;
+    overflow-y: visible !important;
+}
+
 
 
