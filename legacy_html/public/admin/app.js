@@ -935,6 +935,37 @@ function unwrapTableEmbedsFromHtml(value = '') {
     return temp.innerHTML.trim();
 }
 
+function wrapRawTablesInTableEmbedDivs(value = '') {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+
+    const temp = document.createElement('div');
+    temp.innerHTML = raw;
+
+    // First, unwrap any existing ql-table-embed divs to start with clean raw tables
+    temp.querySelectorAll(`.${TABLE_EMBED_CLASS}`).forEach((node) => {
+        const liveHtml = normalizeBlogTableHtml(node.innerHTML);
+        const storedHtml = normalizeBlogTableHtml(decodeTableHtmlValue(node.getAttribute('data-table-html') || ''));
+        node.outerHTML = liveHtml || storedHtml || '';
+    });
+
+    // Now, wrap all raw <table> elements in empty ql-table-embed divs
+    temp.querySelectorAll('table').forEach((table) => {
+        const tableHtml = normalizeBlogTableHtml(table.outerHTML);
+        if (!tableHtml) return;
+
+        const embedDiv = document.createElement('div');
+        embedDiv.className = TABLE_EMBED_CLASS;
+        embedDiv.setAttribute('data-table-html', encodeURIComponent(tableHtml));
+        // Keep it empty so Quill's clipboard parser doesn't traverse nested table elements
+        embedDiv.innerHTML = '';
+
+        table.replaceWith(embedDiv);
+    });
+
+    return temp.innerHTML.trim();
+}
+
 function refreshTableEmbedValue(node) {
     if (!(node instanceof HTMLElement)) return;
     const normalizedHtml = normalizeBlogTableHtml(node.innerHTML) || buildBlogTableHtml(3, 3);
@@ -1120,10 +1151,10 @@ function setEditorHtmlContent(value = '') {
 
     closeTableCellEditor({ save: true });
 
-    const normalizedHtml = unwrapTableEmbedsFromHtml(value);
+    const normalizedHtml = wrapRawTablesInTableEmbedDivs(value);
     
     console.log('[DEBUG-PASTE] Raw value length:', value.length);
-    console.log('[DEBUG-PASTE] Normalized HTML length:', normalizedHtml.length);
+    console.log('[DEBUG-PASTE] Pre-wrapped HTML length:', normalizedHtml.length);
     
     let debugOverlay = document.getElementById('debug-error-overlay');
     if (!debugOverlay) {
@@ -1168,7 +1199,7 @@ function setEditorHtmlContent(value = '') {
     infoMsg.style.borderBottom = '1px dashed #3b82f6';
     infoMsg.style.paddingBottom = '4px';
     infoMsg.style.color = '#1e3a8a';
-    infoMsg.innerHTML = `<strong>Editor Load Info (v1.0.48):</strong><br>Raw HTML len: ${value.length}<br>Normalized HTML len: ${normalizedHtml.length}<br>Snippet: ${String(value).slice(0, 150).replace(/</g, '&lt;').replace(/>/g, '&gt;')}`;
+    infoMsg.innerHTML = `<strong>Editor Load Info (v1.0.49):</strong><br>Raw HTML len: ${value.length}<br>Pre-wrapped HTML len: ${normalizedHtml.length}<br>Snippet: ${String(value).slice(0, 150).replace(/</g, '&lt;').replace(/>/g, '&gt;')}`;
     debugOverlay.appendChild(infoMsg);
 
     quill.setText('');
