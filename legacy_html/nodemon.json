@@ -1,0 +1,7 @@
+{
+  "ignore": [
+    "data/*",
+    "public/admin/css/*",
+    "public/admin/js/*"
+  ]
+}

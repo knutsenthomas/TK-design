@@ -2370,14 +2370,24 @@ async function init() {
 
 function handleUrlHashRouting() {
     const hash = window.location.hash || '';
+    console.log('[DEBUG Routing] handleUrlHashRouting called, hash:', hash, 'blogData len:', blogData?.length);
     if (hash.startsWith('#edit-')) {
         const idString = hash.replace('#edit-', '');
         if (idString && Array.isArray(blogData)) {
             const index = blogData.findIndex(post => String(post.id) === idString);
+            console.log('[DEBUG Routing] Found index:', index, 'for ID:', idString);
             if (index !== -1) {
+                // If we are already editing this post, do not reload it to prevent cursor loss and layout flash!
+                if (currentEditingId !== null && String(currentEditingId) === idString) {
+                    console.log('[DEBUG Routing] Already editing post:', idString, 'skipping reload');
+                    return;
+                }
                 setTimeout(() => {
+                    console.log('[DEBUG Routing] Opening edit modal for index:', index);
                     openEditModal(index);
                 }, 150);
+            } else {
+                console.warn('[DEBUG Routing] Post ID not found in blogData:', idString);
             }
         }
     } else if (hash === '#new') {
