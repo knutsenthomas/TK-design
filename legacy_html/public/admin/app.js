@@ -2273,6 +2273,18 @@ async function init() {
         handleUrlHashRouting();
     } catch (e) {
         console.error('Error handling URL hash routing:', e);
+    } finally {
+        // Hide the loader once everything is done!
+        const loadingScreen = document.getElementById('admin-loading-screen');
+        if (loadingScreen) {
+            loadingScreen.style.opacity = '0';
+            loadingScreen.style.visibility = 'hidden';
+            setTimeout(() => {
+                if (loadingScreen.parentNode) {
+                    loadingScreen.parentNode.removeChild(loadingScreen);
+                }
+            }, 350);
+        }
     }
 }
 
@@ -2324,15 +2336,6 @@ function switchTab(section, updateHash = true) {
     if (updateHash) {
         window.location.hash = section;
     }
-
-    // Clean up early loading styling
-    document.documentElement.classList.forEach(cls => {
-        if (cls.startsWith('loading-tab-')) {
-            document.documentElement.classList.remove(cls);
-        }
-    });
-    const earlyStyle = document.getElementById('early-tab-style');
-    if (earlyStyle) earlyStyle.remove();
 }
 
 function handleUrlHashRouting() {
