@@ -220,6 +220,75 @@
     <link rel="stylesheet" href="css/analytics-premium.css">
     
     <link rel="icon" type="image/png" href="../img/logo/d.png">
+    <script>
+        // Diagnostic error overlay
+        function showDebugError(type, message, source = '') {
+            let debugDiv = document.getElementById('debug-error-overlay');
+            if (!debugDiv) {
+                debugDiv = document.createElement('div');
+                debugDiv.id = 'debug-error-overlay';
+                debugDiv.style.position = 'fixed';
+                debugDiv.style.bottom = '20px';
+                debugDiv.style.right = '20px';
+                debugDiv.style.backgroundColor = '#fee2e2';
+                debugDiv.style.border = '2px solid #ef4444';
+                debugDiv.style.borderRadius = '8px';
+                debugDiv.style.padding = '15px';
+                debugDiv.style.zIndex = '99999';
+                debugDiv.style.maxWidth = '450px';
+                debugDiv.style.maxHeight = '300px';
+                debugDiv.style.overflowY = 'auto';
+                debugDiv.style.fontFamily = 'monospace';
+                debugDiv.style.fontSize = '11px';
+                debugDiv.style.color = '#991b1b';
+                debugDiv.style.boxShadow = '0 10px 15px -3px rgba(0,0,0,0.1)';
+                debugDiv.style.pointerEvents = 'auto';
+                
+                // Add a close button
+                const closeBtn = document.createElement('button');
+                closeBtn.textContent = 'X';
+                closeBtn.style.position = 'absolute';
+                closeBtn.style.top = '5px';
+                closeBtn.style.right = '5px';
+                closeBtn.style.border = 'none';
+                closeBtn.style.background = 'none';
+                closeBtn.style.color = '#ef4444';
+                closeBtn.style.fontWeight = 'bold';
+                closeBtn.style.cursor = 'pointer';
+                closeBtn.onclick = () => debugDiv.remove();
+                debugDiv.appendChild(closeBtn);
+
+                document.body.appendChild(debugDiv);
+            }
+            const errorMsg = document.createElement('div');
+            errorMsg.style.marginBottom = '8px';
+            errorMsg.style.borderBottom = '1px dashed #fca5a5';
+            errorMsg.style.paddingBottom = '4px';
+            errorMsg.innerHTML = `<strong>[${type}]</strong> ${message}${source ? `<br><small>${source}</small>` : ''}`;
+            debugDiv.appendChild(errorMsg);
+        }
+
+        window.addEventListener('error', (event) => {
+            showDebugError('Uncaught Error', event.message, `${event.filename}:${event.lineno}:${event.colno}`);
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            const reason = event.reason;
+            const message = reason instanceof Error ? reason.message : String(reason);
+            const stack = reason instanceof Error ? (reason.stack || '').split('\n').slice(0, 2).join('<br>') : '';
+            showDebugError('Unhandled Promise Rejection', message, stack);
+        });
+
+        // Intercept console.error
+        const originalConsoleError = console.error;
+        console.error = function (...args) {
+            originalConsoleError.apply(console, args);
+            const message = args.map(a => {
+                if (a instanceof Error) return a.message + '<br>' + (a.stack || '').split('\n').slice(0, 2).join('<br>');
+                return typeof a === 'object' ? JSON.stringify(a) : String(a);
+            }).join(' ');
+            showDebugError('Console Error', message);
+    </script>
 </head>
 
 <body class="admin-dashboard-refresh admin-body main-dashboard">
@@ -2268,7 +2337,7 @@
         </div>
     </div>
 
-    <script src="/admin/app.js?v=1.0.44"></script>
+    <script src="/admin/app.js?v=1.0.46"></script>
     <script type="importmap">
         {
             "imports": {

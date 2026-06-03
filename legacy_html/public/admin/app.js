@@ -1121,19 +1121,51 @@ function setEditorHtmlContent(value = '') {
     closeTableCellEditor({ save: true });
 
     const normalizedHtml = unwrapTableEmbedsFromHtml(value);
+    
+    console.log('[DEBUG-PASTE] Raw value length:', value.length);
+    console.log('[DEBUG-PASTE] Normalized HTML length:', normalizedHtml.length);
+    
+    const debugOverlay = document.getElementById('debug-error-overlay');
+    if (debugOverlay) {
+        const infoMsg = document.createElement('div');
+        infoMsg.style.marginBottom = '8px';
+        infoMsg.style.borderBottom = '1px dashed #3b82f6';
+        infoMsg.style.paddingBottom = '4px';
+        infoMsg.style.color = '#1e3a8a';
+        infoMsg.innerHTML = `<strong>Editor Load Info:</strong><br>Raw HTML len: ${value.length}<br>Normalized HTML len: ${normalizedHtml.length}<br>Starts with: ${String(value).slice(0, 60).replace(/</g, '&lt;').replace(/>/g, '&gt;')}`;
+        debugOverlay.appendChild(infoMsg);
+    }
+
     quill.setText('');
 
     if (!normalizedHtml) return;
 
     try {
         quill.clipboard.dangerouslyPasteHTML(0, normalizedHtml, Quill.sources.SILENT);
+        console.log('[DEBUG-PASTE] dangerouslyPasteHTML succeeded. Editor text len:', quill.getText().length);
     } catch (error) {
         console.error('Error pasting HTML into Quill editor, attempting fallback:', error);
+        if (debugOverlay) {
+            const errorMsg = document.createElement('div');
+            errorMsg.style.marginBottom = '8px';
+            errorMsg.style.borderBottom = '1px dashed #ef4444';
+            errorMsg.style.paddingBottom = '4px';
+            errorMsg.style.color = '#991b1b';
+            errorMsg.innerHTML = `<strong>dangerouslyPasteHTML Error:</strong> ${error.message}`;
+            debugOverlay.appendChild(errorMsg);
+        }
         try {
             quill.root.innerHTML = normalizedHtml;
             quill.update(Quill.sources.SILENT);
+            console.log('[DEBUG-PASTE] Fallback innerHTML + update succeeded. Editor text len:', quill.getText().length);
         } catch (fallbackError) {
             console.error('Fallback HTML insertion also failed:', fallbackError);
+            if (debugOverlay) {
+                const errorMsg = document.createElement('div');
+                errorMsg.style.color = '#991b1b';
+                errorMsg.innerHTML = `<strong>Fallback Error:</strong> ${fallbackError.message}`;
+                debugOverlay.appendChild(errorMsg);
+            }
         }
     }
 }
@@ -2328,40 +2360,60 @@ function registerClipboardMatchers() {
 
     // Table Matcher
     quill.clipboard.addMatcher('TABLE', (node, delta) => {
-        const tableHtml = normalizeBlogTableHtml(node.outerHTML || '');
-        if (!tableHtml) return delta;
-        return new Delta().insert({ tableEmbed: tableHtml });
+        try {
+            const tableHtml = normalizeBlogTableHtml(node.outerHTML || '');
+            if (!tableHtml) return delta;
+            const LocalDelta = Quill.import('delta') || window.Delta || (window.Quill ? window.Quill.import('delta') : null);
+            if (!LocalDelta) {
+                console.error('Quill Delta constructor not found in TABLE matcher!');
+                return delta;
+            }
+            return new LocalDelta().insert({ tableEmbed: tableHtml });
+        } catch (err) {
+            console.error('Error in TABLE clipboard matcher:', err);
+            return delta;
+        }
     });
 
     // Safe Alert Matcher to prevent block-in-block Quill parser crash
     quill.clipboard.addMatcher('.alert', (node, delta) => {
-        const type = node.getAttribute('data-type') || 'info';
-        const newDelta = new Delta();
-        delta.ops.forEach(op => {
-            if (typeof op.insert === 'string') {
-                let text = op.insert;
-                let parts = text.split('\n');
-                for (let i = 0; i < parts.length; i++) {
-                    if (parts[i]) {
-                        newDelta.insert(parts[i], op.attributes);
-                    }
-                    if (i < parts.length - 1) {
-                        // Apply alert formatting on newlines to represent block format boundaries
-                        newDelta.insert('\n', { ...op.attributes, alert: type });
-                    }
-                }
-            } else {
-                newDelta.push(op);
+        try {
+            const type = node.getAttribute('data-type') || 'info';
+            const LocalDelta = Quill.import('delta') || window.Delta || (window.Quill ? window.Quill.import('delta') : null);
+            if (!LocalDelta) {
+                console.error('Quill Delta constructor not found in alert matcher!');
+                return delta;
             }
-        });
-        return newDelta;
+            const newDelta = new LocalDelta();
+            delta.ops.forEach(op => {
+                if (typeof op.insert === 'string') {
+                    let text = op.insert;
+                    let parts = text.split('\n');
+                    for (let i = 0; i < parts.length; i++) {
+                        if (parts[i]) {
+                            newDelta.insert(parts[i], op.attributes);
+                        }
+                        if (i < parts.length - 1) {
+                            // Apply alert formatting on newlines to represent block format boundaries
+                            newDelta.insert('\n', { ...op.attributes, alert: type });
+                        }
+                    }
+                } else {
+                    newDelta.push(op);
+                }
+            });
+            return newDelta;
+        } catch (err) {
+            console.error('Error in alert clipboard matcher:', err);
+            return delta;
+        }
     });
 }
 
 
 async function fetchSeo() {
     try {
-        const response = await fetch(`${API_URL}/seo`);
+        const response = await fetch(`${API_URL}/seo?t=${Date.now()}`, { cache: 'no-store' });
         seoData = await response.json();
         renderSeoEditor();
     } catch (error) {
@@ -5794,7 +5846,7 @@ async function fetchStyles() {
 
 async function fetchContent() {
     try {
-        const response = await fetch(`${API_URL}/content`);
+        const response = await fetch(`${API_URL}/content?t=${Date.now()}`, { cache: 'no-store' });
         contentData = await response.json();
     } catch (error) {
         console.error('Error fetching content:', error);
@@ -7539,7 +7591,7 @@ function renderMediaLibraryItem(imageUrl, label = 'Nytt bilde') {
 
 async function fetchBlogPosts() {
     try {
-        const response = await fetch(`${API_URL}/posts`);
+        const response = await fetch(`${API_URL}/posts?t=${Date.now()}`, { cache: 'no-store' });
         blogData = await response.json();
     } catch (error) {
         console.error('Error fetching posts:', error);
