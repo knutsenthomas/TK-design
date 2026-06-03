@@ -3102,6 +3102,15 @@ input[type="range"] {
     min-width: 0 !important;
 }
 
+#editor-header-title-indicator {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 35vw !important;
+    display: inline-block !important;
+    text-align: center !important;
+}
+
 .editor-header-right {
     display: flex !important;
     align-items: center !important;
