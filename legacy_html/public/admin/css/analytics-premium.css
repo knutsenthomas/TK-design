@@ -338,6 +338,7 @@ body.admin-dashboard-refresh .analytics-container {
     position: relative;
     flex-grow: 1;
     min-height: 300px;
+    max-height: 380px;
     width: 100%;
 }
 
