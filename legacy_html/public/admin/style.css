@@ -5763,6 +5763,17 @@ body.admin-dashboard-refresh #logout-btn span:last-child,
     }
 }
 
-
-
-
+/* Align header mobile layout padding with the page content (16px gutters) */
+@media (max-width: 1024px) {
+    body.admin-body .main-header,
+    body.admin-dashboard-refresh .main-header {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+    
+    body.admin-body .main-header .section-header,
+    body.admin-dashboard-refresh .main-header .section-header {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+}
