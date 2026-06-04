@@ -777,7 +777,7 @@ body.admin-body {
     .stats-grid {
         grid-template-columns: 1fr !important;
         gap: 16px !important;
-        padding: 16px !important;
+        padding: 0 !important;
     }
 
     .stat-card.modern {
@@ -5611,13 +5611,14 @@ input[type="range"].premium-slider::-webkit-slider-thumb:hover {
         grid-template-columns: 1fr 1fr !important;
         gap: 16px !important;
         position: relative;
-        margin-top: 45px !important;
+        margin-top: 72px !important;
+        padding: 0 !important;
     }
 
     .stats-grid::before {
         content: "Nøkkeltall";
         position: absolute;
-        top: -36px;
+        top: -46px !important;
         left: 0;
         font-size: 18px;
         font-weight: 800;
@@ -5627,7 +5628,7 @@ input[type="range"].premium-slider::-webkit-slider-thumb:hover {
     .stats-grid::after {
         content: "Siste 30 dager";
         position: absolute;
-        top: -30px;
+        top: -40px !important;
         right: 0;
         font-size: 13px;
         font-weight: 600;
