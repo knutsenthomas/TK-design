@@ -18,6 +18,7 @@
    1. BASE & TYPOGRAPHY
 
    ========================================= */
+@import url('/assets/fonts/fonts.css');
 @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Caveat:wght@400;500;600;700&display=swap');
 
 *, *::before, *::after {
@@ -5677,7 +5678,7 @@ body.homepage-refresh .primary-cta {
     color: #fff;
     font-weight: 700;
     box-shadow: 0 16px 30px rgba(255, 106, 27, 0.22);
-    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1), background 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 body.homepage-refresh .primary-cta:hover {
@@ -6296,7 +6297,7 @@ body.homepage-refresh .tab-btn {
     height: auto !important;
     box-sizing: border-box !important;
     text-align: center;
-    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 body.homepage-refresh .tab-btn:hover:not(.active) {
@@ -6417,6 +6418,11 @@ body.homepage-refresh .project-card {
     background: rgba(255, 255, 255, 0.8);
     border: 1px solid rgba(17, 38, 60, 0.06);
     box-shadow: var(--refresh-shadow-soft);
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body.homepage-refresh .project-img-wrapper img {
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 body.homepage-refresh .project-card:hover {
@@ -6444,7 +6450,7 @@ body.homepage-refresh .kudos-photo-visual {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: clamp(280px, 36vw, 390px);
+    aspect-ratio: 4 / 3;
     padding: clamp(18px, 3vw, 28px);
     overflow: hidden;
     border-radius: 24px;
@@ -6475,7 +6481,7 @@ body.homepage-refresh .kudos-photo-frame {
     align-items: center;
     justify-content: center;
     width: min(100%, 520px);
-    min-height: clamp(232px, 31vw, 332px);
+    aspect-ratio: 4 / 3;
 }
 
 body.homepage-refresh .kudos-photo-frame::before {
@@ -6622,7 +6628,7 @@ body.homepage-refresh .kudos-project-visual {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: clamp(280px, 36vw, 390px);
+    aspect-ratio: 4 / 3;
     padding: clamp(18px, 3vw, 28px);
     overflow: hidden;
     border-radius: 24px;
@@ -6654,7 +6660,7 @@ body.homepage-refresh .kudos-laptop {
 body.homepage-refresh .kudos-laptop-screen {
     position: relative;
     width: 100%;
-    min-height: clamp(230px, 30vw, 320px);
+    aspect-ratio: 16 / 10;
     overflow: hidden;
     border-radius: 18px;
     border: 10px solid #cfd7de;
@@ -8336,6 +8342,8 @@ body.homepage-refresh .video-modal .modal-content {
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
     position: relative;
+}
+.social-proof-section.animated .chart-bar {
     animation: growBar 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 .highlight-bar {
@@ -8364,6 +8372,8 @@ body.homepage-refresh .video-modal .modal-content {
     color: var(--clr-base);
     font-size: 1.2rem;
     opacity: 0;
+}
+.social-proof-section.animated .chart-value {
     animation: fadeIn 0.5s ease 1s forwards;
 }
 @keyframes growBar {
@@ -9042,6 +9052,7 @@ body#home.homepage-refresh .hero-showcase-secondary {
     font-weight: 700;
     text-decoration: none;
     box-shadow: 0 10px 22px rgba(17, 38, 60, 0.08);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 body#home.homepage-refresh .hero-showcase-secondary:hover {

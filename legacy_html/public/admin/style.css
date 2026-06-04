@@ -4232,6 +4232,15 @@ body.admin-dashboard-refresh .language-switcher-header {
     border-radius: 999px;
     border: 1px solid rgba(249, 115, 22, 0.12);
     background: #fff7ed;
+    flex-shrink: 0;
+}
+
+body.admin-dashboard-refresh .header-actions {
+    flex-shrink: 0;
+}
+
+body.admin-dashboard-refresh .user-menu {
+    flex-shrink: 0;
 }
 
 body.admin-dashboard-refresh .lang-btn-header {

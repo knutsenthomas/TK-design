@@ -160,6 +160,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Back To Top
     initBackToTopButton();
+
+    // Social Proof Scroll Animation
+    initSocialProofAnimation();
 });
 
 function initHomepageSectionRouting() {
@@ -416,4 +419,27 @@ function applySiteBranding(brandingConfig) {
             node.src = logoImage;
         });
     }
+}
+
+function initSocialProofAnimation() {
+    const section = document.querySelector('.social-proof-section');
+    if (!section) return;
+
+    if (!('IntersectionObserver' in window)) {
+        section.classList.add('animated');
+        return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                section.classList.add('animated');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.15
+    });
+
+    observer.observe(section);
 }
