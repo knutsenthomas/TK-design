@@ -2340,6 +2340,15 @@ function switchTab(section, updateHash = true) {
         setAdminSidebarCollapsed(true, false);
     }
 
+    // Scroll page back to top when opening a new tab/page
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) {
+        mainContent.scrollTop = 0;
+    }
+
     if (updateHash) {
         window.location.hash = section;
     }
