@@ -2231,10 +2231,29 @@ async function init() {
         console.error("Quill library not loaded!");
     }
 
-    setupEventListeners();
-    setupAdminSidebarToggle();
-    setupLogout();
-    syncAdminScrollMode();
+    try {
+        setupEventListeners();
+    } catch (e) {
+        console.error("Error in setupEventListeners:", e);
+    }
+
+    try {
+        setupAdminSidebarToggle();
+    } catch (e) {
+        console.error("Error in setupAdminSidebarToggle:", e);
+    }
+
+    try {
+        setupLogout();
+    } catch (e) {
+        console.error("Error in setupLogout:", e);
+    }
+
+    try {
+        syncAdminScrollMode();
+    } catch (e) {
+        console.error("Error in syncAdminScrollMode:", e);
+    }
 
     await Promise.allSettled([
         fetchStyles(),

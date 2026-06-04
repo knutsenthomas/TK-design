@@ -395,7 +395,7 @@
                 <div class="section-header design-ui-header in-topbar" style="margin-bottom: 0; width: 100%;">
                     
                     <!-- Sidebar Toggle Button (retains ID for app.js visibility) -->
-                    <button id="sidebar-toggle-btn" class="mobile-nav-toggle" data-admin-sidebar-toggle="toggle" type="button" title="Skjul meny" aria-label="Skjul meny" aria-expanded="true">
+                    <button id="sidebar-toggle-btn" class="mobile-nav-toggle" type="button" title="Skjul meny" aria-label="Skjul meny" aria-expanded="true">
                         <i class="fas fa-xmark"></i>
                     </button>
                     
@@ -2395,12 +2395,47 @@
     <!-- Sidebar Mobile Handling -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
+            
+            // Toggle sidebar when hamburger button is clicked
+            if (sidebarToggleBtn) {
+                sidebarToggleBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (window.toggleAdminSidebar) {
+                        window.toggleAdminSidebar();
+                    } else {
+                        // Fallback if app.js is not yet loaded or failed
+                        const currentlyCollapsed = document.body.classList.contains('admin-sidebar-collapsed');
+                        const nextCollapsed = !currentlyCollapsed;
+                        document.body.classList.toggle('admin-sidebar-collapsed', nextCollapsed);
+                        document.body.classList.toggle('admin-mobile-menu-open', !nextCollapsed);
+                        
+                        // Update button attributes and icon
+                        sidebarToggleBtn.setAttribute('aria-expanded', String(!nextCollapsed));
+                        const icon = sidebarToggleBtn.querySelector('i');
+                        if (icon) {
+                            icon.className = nextCollapsed ? 'fas fa-bars' : 'fas fa-xmark';
+                        }
+                    }
+                });
+            }
+
             // Mobile menu backdrop click close handling
             const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
             if (mobileMenuBackdrop) {
-                mobileMenuBackdrop.addEventListener('click', () => {
+                mobileMenuBackdrop.addEventListener('click', (e) => {
+                    e.preventDefault();
                     if (window.toggleAdminSidebar) {
                         window.toggleAdminSidebar(true);
+                    } else {
+                        document.body.classList.add('admin-sidebar-collapsed');
+                        document.body.classList.remove('admin-mobile-menu-open');
+                        
+                        if (sidebarToggleBtn) {
+                            sidebarToggleBtn.setAttribute('aria-expanded', 'false');
+                            const icon = sidebarToggleBtn.querySelector('i');
+                            if (icon) icon.className = 'fas fa-bars';
+                        }
                     }
                 });
             }
@@ -2408,9 +2443,19 @@
             // Close mobile menu when close button inside sidebar is clicked
             const mobileSidebarClose = document.getElementById('mobile-sidebar-close');
             if (mobileSidebarClose) {
-                mobileSidebarClose.addEventListener('click', () => {
+                mobileSidebarClose.addEventListener('click', (e) => {
+                    e.preventDefault();
                     if (window.toggleAdminSidebar) {
                         window.toggleAdminSidebar(true);
+                    } else {
+                        document.body.classList.add('admin-sidebar-collapsed');
+                        document.body.classList.remove('admin-mobile-menu-open');
+                        
+                        if (sidebarToggleBtn) {
+                            sidebarToggleBtn.setAttribute('aria-expanded', 'false');
+                            const icon = sidebarToggleBtn.querySelector('i');
+                            if (icon) icon.className = 'fas fa-bars';
+                        }
                     }
                 });
             }
