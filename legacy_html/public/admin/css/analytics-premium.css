@@ -289,7 +289,7 @@ body.admin-dashboard-refresh .analytics-container {
     margin-bottom: 32px;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1150px) {
     .analytics-main-grid {
         grid-template-columns: 1.6fr 1fr;
     }
@@ -622,4 +622,23 @@ body.admin-dashboard-refresh .analytics-container {
     transform: translateY(0);
     box-shadow: 0 4px 10px rgba(209, 125, 57, 0.2);
     filter: brightness(0.95);
+}
+
+/* Skuddsikker breddesikring for Google GeoChart og grid på analysesiden (alle skjermstørrelser) */
+.analytics-main-grid,
+.analytics-main-grid > div,
+.chart-card-premium,
+.chart-container-inner,
+#regions_div {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+#regions_div svg,
+#regions_div iframe,
+#regions_div div {
+    max-width: 100% !important;
+    width: 100% !important;
 }
