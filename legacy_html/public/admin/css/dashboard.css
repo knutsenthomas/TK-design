@@ -2599,7 +2599,8 @@ input[type="range"] {
         border-right: none;
     }
 
-    .sidebar.active {
+    .sidebar.active,
+    body:not(.admin-sidebar-collapsed) .sidebar {
         transform: translateX(0);
         box-shadow: 15px 0 35px rgba(0, 0, 0, 0.15);
     }
@@ -2741,7 +2742,8 @@ input[type="range"] {
         box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
     }
 
-    .sidebar.active {
+    .sidebar.active,
+    body:not(.admin-sidebar-collapsed) .sidebar {
         transform: translateX(0);
     }
 

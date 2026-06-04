@@ -7172,6 +7172,13 @@ window.toggleSocialPlannerRail = function (forceOpen = null) {
 let adminSidebarResizeBound = false;
 
 function isAdminMobileViewport() {
+    const button = document.getElementById('sidebar-toggle-btn');
+    if (button) {
+        const style = window.getComputedStyle(button);
+        if (style.display !== 'none') {
+            return true;
+        }
+    }
     return window.matchMedia(`(max-width: ${ADMIN_MOBILE_BREAKPOINT}px)`).matches;
 }
 
@@ -8758,120 +8765,161 @@ window.uploadImage = async function () {
 
 // Document Ready
 document.addEventListener('DOMContentLoaded', async () => {
-    setupAdminDialog();
+    // 1. Initialize UI shell immediately so menus and basic navigation work
+    try {
+        await init();
+    } catch (e) {
+        console.error("Critical error during init():", e);
+    }
 
-    // Auth & Profile Setup
-    const user = await checkAuth();
-    if (!user) return;
-    renderUserProfile(user);
-    setupProfileEventListeners();
+    try {
+        setupAdminDialog();
+    } catch (e) {
+        console.error("Error setting up admin dialog:", e);
+    }
 
-    // Setup Header Language Buttons
-    const headerLangBtns = document.querySelectorAll('.lang-btn-header');
-    headerLangBtns.forEach(btn => {
-        btn.addEventListener('click', function () {
-            const lang = this.dataset.lang;
-            currentLang = lang;
-            headerLangBtns.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            const mainLangBtns = document.querySelectorAll('.lang-btn');
-            mainLangBtns.forEach(b => {
-                b.classList.toggle('active', b.dataset.lang === lang);
+    // 2. Auth check (isolated)
+    let user = null;
+    try {
+        user = await checkAuth();
+    } catch (e) {
+        console.error("Authentication check failed:", e);
+    }
+
+    if (!user) return; // Stop if not authenticated, redirect happens inside checkAuth
+
+    // 3. Setup other event listeners and UI additions
+    try {
+        renderUserProfile(user);
+        setupProfileEventListeners();
+    } catch (e) {
+        console.error("Error setting up profile UI:", e);
+    }
+
+    try {
+        // Setup Header Language Buttons
+        const headerLangBtns = document.querySelectorAll('.lang-btn-header');
+        headerLangBtns.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const lang = this.dataset.lang;
+                currentLang = lang;
+                headerLangBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const mainLangBtns = document.querySelectorAll('.lang-btn');
+                mainLangBtns.forEach(b => {
+                    b.classList.toggle('active', b.dataset.lang === lang);
+                });
+                updateDashboardLanguage(); // Update dashboard text
+                renderContentEditor();
+                renderDashboardOverview();
+                renderAnalyticsTab();
             });
-            updateDashboardLanguage(); // Update dashboard text
-            renderContentEditor();
-            renderDashboardOverview();
-            renderAnalyticsTab();
         });
-    });
 
-    headerLangBtns.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.lang === currentLang);
-    });
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.lang === currentLang);
-    });
-
-    // Initial Dashboard Language Update
-    updateDashboardLanguage();
-
-    // Setup Unsplash Enter Key
-    const unsplashInput = document.getElementById('unsplash-query');
-    if (unsplashInput) {
-        unsplashInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                searchUnsplash();
-            }
+        headerLangBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.lang === currentLang);
         });
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.lang === currentLang);
+        });
+
+        // Initial Dashboard Language Update
+        updateDashboardLanguage();
+    } catch (e) {
+        console.error("Error setting up language switcher:", e);
     }
 
-    const aiContextInput = document.getElementById('ai-context-files');
-    if (aiContextInput) {
-        aiContextInput.addEventListener('change', async (event) => {
-            await addAiContextFiles(event.target.files);
-            aiContextInput.value = '';
-        });
+    try {
+        // Setup Unsplash Enter Key
+        const unsplashInput = document.getElementById('unsplash-query');
+        if (unsplashInput) {
+            unsplashInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    searchUnsplash();
+                }
+            });
+        }
+    } catch (e) {
+        console.error("Error setting up Unsplash listeners:", e);
     }
 
-    const aiPromptInput = document.getElementById('ai-prompt-input');
-    if (aiPromptInput) {
-        aiPromptInput.addEventListener('keydown', async (event) => {
-            if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
-                event.preventDefault();
-                await window.generateBlogDraftWithAi();
-            }
-        });
+    try {
+        const aiContextInput = document.getElementById('ai-context-files');
+        if (aiContextInput) {
+            aiContextInput.addEventListener('change', async (event) => {
+                await addAiContextFiles(event.target.files);
+                aiContextInput.value = '';
+            });
+        }
+
+        const aiPromptInput = document.getElementById('ai-prompt-input');
+        if (aiPromptInput) {
+            aiPromptInput.addEventListener('keydown', async (event) => {
+                if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+                    event.preventDefault();
+                    await window.generateBlogDraftWithAi();
+                }
+            });
+        }
+
+        renderAiContextFileList();
+    } catch (e) {
+        console.error("Error setting up AI assistants listeners:", e);
     }
 
-    renderAiContextFileList();
-
-    const featuredImageArea = document.getElementById('post-featured-image-area');
-    if (featuredImageArea) {
-        featuredImageArea.addEventListener('click', () => window.openImagePicker(IMAGE_PICKER_TARGET_FEATURED));
-        featuredImageArea.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                window.openImagePicker(IMAGE_PICKER_TARGET_FEATURED);
-            }
-        });
-    }
-    renderFeaturedImagePreview(document.getElementById('post-image')?.value || '');
-
-    const blogImageInput = document.getElementById('blog-image-input');
-    const uploadPreview = document.getElementById('upload-preview');
-    const previewImage = document.getElementById('preview-image');
-
-    if (blogImageInput && uploadPreview && previewImage) {
-        blogImageInput.addEventListener('change', (event) => {
-            const file = event.target.files?.[0] || null;
-            selectedUploadFile = file;
-
-            if (!file) {
-                uploadPreview.style.display = 'none';
-                previewImage.removeAttribute('src');
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = (loadEvent) => {
-                previewImage.src = loadEvent.target?.result || '';
-                uploadPreview.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        });
+    try {
+        const featuredImageArea = document.getElementById('post-featured-image-area');
+        if (featuredImageArea) {
+            featuredImageArea.addEventListener('click', () => window.openImagePicker(IMAGE_PICKER_TARGET_FEATURED));
+            featuredImageArea.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    window.openImagePicker(IMAGE_PICKER_TARGET_FEATURED);
+                }
+            });
+        }
+        renderFeaturedImagePreview(document.getElementById('post-image')?.value || '');
+    } catch (e) {
+        console.error("Error setting up featured image area:", e);
     }
 
-    // Modal Events
-    const addPostBtn = document.getElementById('add-post-btn');
-    if (addPostBtn) {
-        addPostBtn.addEventListener('click', () => window.startNewPost());
+    try {
+        const blogImageInput = document.getElementById('blog-image-input');
+        const uploadPreview = document.getElementById('upload-preview');
+        const previewImage = document.getElementById('preview-image');
+
+        if (blogImageInput && uploadPreview && previewImage) {
+            blogImageInput.addEventListener('change', (event) => {
+                const file = event.target.files?.[0] || null;
+                selectedUploadFile = file;
+
+                if (!file) {
+                    uploadPreview.style.display = 'none';
+                    previewImage.removeAttribute('src');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (loadEvent) => {
+                    previewImage.src = loadEvent.target?.result || '';
+                    uploadPreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    } catch (e) {
+        console.error("Error setting up blog image upload listener:", e);
     }
 
-    const savePostBtn = document.getElementById('save-post-btn'); // For old logic if exists?
-    // We have new save/publish buttons in header, mapped via onclick in HTML
-
-    // Initialize App
-    init();
+    try {
+        // Modal Events
+        const addPostBtn = document.getElementById('add-post-btn');
+        if (addPostBtn) {
+            addPostBtn.addEventListener('click', () => window.startNewPost());
+        }
+    } catch (e) {
+        console.error("Error setting up add post listener:", e);
+    }
 });
 // ==========================================
 // AUTHENTICATION & PROFILE MANAGMENT
