@@ -6931,7 +6931,8 @@ body.admin-body .section-container {
         padding-bottom: 16px;
     }
 
-    body.admin-body .sidebar.active {
+    body.admin-body .sidebar.active,
+    body.admin-body:not(.admin-sidebar-collapsed) .sidebar {
         transform: translateX(0);
     }
 

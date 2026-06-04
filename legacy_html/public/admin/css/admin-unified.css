@@ -3670,7 +3670,9 @@ body.builder-active .newsletter-canvas {
   }
 
   body.admin-body .sidebar.active,
-  body.minside-body .sidebar.active {
+  body.minside-body .sidebar.active,
+  body.admin-body:not(.admin-sidebar-collapsed) .sidebar,
+  body.minside-body:not(.admin-sidebar-collapsed) .sidebar {
     transform: translateX(0);
     z-index: 5000;
   }
