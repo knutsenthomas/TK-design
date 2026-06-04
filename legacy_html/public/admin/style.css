@@ -5777,3 +5777,11 @@ body.admin-dashboard-refresh #logout-btn span:last-child,
         padding-right: 0 !important;
     }
 }
+
+/* Enable fluid header layout on large screens to match the content containers */
+body.admin-body .main-header > .section-header,
+body.admin-body .main-header > .design-ui-header,
+body.admin-dashboard-refresh .main-header > .section-header,
+body.admin-dashboard-refresh .main-header > .design-ui-header {
+    max-width: 100% !important;
+}
