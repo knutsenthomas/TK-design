@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initBackToTopButton();
 
     // Social Proof Scroll Animation
-    initSocialProofAnimation();
+    // initSocialProofAnimation();
 });
 
 function initHomepageSectionRouting() {
