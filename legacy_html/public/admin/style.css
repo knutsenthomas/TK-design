@@ -5730,13 +5730,13 @@ body.admin-dashboard-refresh #logout-btn span:last-child,
     body.admin-mobile-menu-open .sidebar {
         display: flex !important;
         position: fixed !important;
-        top: calc(72px + env(safe-area-inset-top, 0px)) !important;
+        top: 0 !important; /* Start from the very top like HKM */
         left: 0 !important;
         bottom: 0 !important;
         width: min(320px, 86vw) !important;
         max-width: 100% !important;
-        height: calc(100vh - 72px - env(safe-area-inset-top, 0px)) !important;
-        height: calc(100dvh - 72px - env(safe-area-inset-top, 0px)) !important;
+        height: 100vh !important; /* Full height like HKM */
+        height: 100dvh !important;
         transform: translateX(0) !important;
         opacity: 1 !important;
         visibility: visible !important;
@@ -5745,6 +5745,7 @@ body.admin-dashboard-refresh #logout-btn span:last-child,
         box-shadow: 22px 0 46px rgba(15, 23, 42, 0.2) !important;
         pointer-events: auto !important;
         transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        border-radius: 0 !important; /* Straight border like HKM */
     }
 
     body.admin-sidebar-collapsed .sidebar {
@@ -5752,6 +5753,13 @@ body.admin-dashboard-refresh #logout-btn span:last-child,
         opacity: 0 !important;
         pointer-events: none !important;
         transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease !important;
+    }
+
+    /* Force the mobile menu backdrop to cover the entire screen like HKM */
+    body.admin-dashboard-refresh:not(.admin-sidebar-collapsed) .mobile-menu-backdrop {
+        display: block !important;
+        inset: 0 !important;
+        z-index: 1250 !important;
     }
 }
 
