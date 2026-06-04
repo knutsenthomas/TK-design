@@ -12,13 +12,13 @@ body.admin-dashboard-refresh .analytics-container {
     width: 100% !important;
     max-width: none !important;
     margin: 0 !important;
-    padding: 24px 40px 28px !important;
+    padding: 24px 0 28px !important;
     box-sizing: border-box !important;
 }
 
 @media (max-width: 768px) {
     body.admin-dashboard-refresh .analytics-container {
-        padding: 16px 16px 28px !important;
+        padding: 16px 0 28px !important;
         overflow-x: hidden !important;
     }
     .chart-card-premium {
