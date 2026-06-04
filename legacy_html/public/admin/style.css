@@ -5725,5 +5725,36 @@ body.admin-dashboard-refresh #logout-btn span:last-child,
     overflow-y: visible !important;
 }
 
+/* Force mobile sidebar drawer styling when mobile menu is open */
+@media (max-width: 1100px) {
+    body.admin-mobile-menu-open .sidebar {
+        display: flex !important;
+        position: fixed !important;
+        top: calc(72px + env(safe-area-inset-top, 0px)) !important;
+        left: 0 !important;
+        bottom: 0 !important;
+        width: min(320px, 86vw) !important;
+        max-width: 100% !important;
+        height: calc(100vh - 72px - env(safe-area-inset-top, 0px)) !important;
+        height: calc(100dvh - 72px - env(safe-area-inset-top, 0px)) !important;
+        transform: translateX(0) !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        z-index: 99999 !important; /* Render above the backdrop (1250) */
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.99) 0%, rgba(255, 248, 241, 0.98) 100%) !important;
+        box-shadow: 22px 0 46px rgba(15, 23, 42, 0.2) !important;
+        pointer-events: auto !important;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    body.admin-sidebar-collapsed .sidebar {
+        transform: translateX(-105%) !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease !important;
+    }
+}
+
+
 
 
