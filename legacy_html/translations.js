@@ -65,6 +65,11 @@ const translations = {
             education_tab: {
                 degree: "Helping businesses succeed online",
                 university: "Tailored solutions for small and medium-sized businesses that want to grow digitally."
+            },
+            skills_tab: {
+                creativity_desc: "We create unique, visually striking solutions tailored to your profile.",
+                innovation_desc: "We utilize modern tools and methods to give you a head start.",
+                quality_desc: "We deliver well-thought-out code and design that performs optimally over time."
             }
         },
         awards: {
@@ -524,6 +529,11 @@ const translations = {
             education_tab: {
                 degree: "Hjelpe bedrifter å lykkes på nett",
                 university: "Skreddersydde løsninger for små og mellomstore bedrifter som ønsker å vokse digitalt."
+            },
+            skills_tab: {
+                creativity_desc: "Vi skaper unike, visuelt slående løsninger tilpasset din profil.",
+                innovation_desc: "Vi tar i bruk moderne verktøy og metoder for å gi deg et forsprang.",
+                quality_desc: "Vi leverer gjennomtenkt kode og design som yter optimalt over tid."
             }
         },
         awards: {

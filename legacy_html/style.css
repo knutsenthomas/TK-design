@@ -6328,15 +6328,15 @@ body.homepage-refresh .about-intro p {
 body.homepage-refresh .tab-buttons {
     display: flex;
     justify-content: center;
-    gap: 8px;
-    padding: 8px;
+    align-items: center;
+    gap: 0 !important;
+    padding: 0 !important;
     max-width: fit-content;
     margin: 0 auto 48px;
-    border-radius: 100px;
-    background: rgba(27, 73, 101, 0.05); /* Sleek integrated pill background */
-    border: none; /* Fjernet kantlinje rundt boksen */
-    box-shadow: none; /* Fjernet indre skygge */
-    backdrop-filter: blur(12px);
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
     flex-wrap: wrap;
 }
 
@@ -6347,41 +6347,48 @@ body.homepage-refresh .tab-btn {
     align-items: center !important;
     justify-content: center !important;
     border: 0 !important;
-    border-radius: 100px !important;
-    padding: 12px 32px !important;
+    border-radius: 0 !important;
+    padding: 8px 24px !important;
     margin: 0 !important;
-    background: transparent;
-    color: #6a7a90;
+    background: transparent !important;
+    color: #6a7a90 !important;
     font-family: var(--refresh-font-heading);
-    font-weight: 600;
-    font-size: 0.95rem;
+    font-weight: 500;
+    font-size: clamp(1rem, 2vw, 1.15rem);
     line-height: normal !important;
     letter-spacing: 0.02em;
     text-transform: none;
     height: auto !important;
     box-sizing: border-box !important;
     text-align: center;
-    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    border-bottom: 2px solid transparent !important;
+    box-shadow: none !important;
+    transition: all 0.3s ease;
+}
+
+body.homepage-refresh .tab-btn + .tab-btn {
+    border-left: 1px solid #d1d1c8 !important;
 }
 
 body.homepage-refresh .tab-btn:hover:not(.active) {
-    color: #1B4965;
-    background: rgba(255, 255, 255, 0.5);
+    color: #1B4965 !important;
+    background: transparent !important;
 }
 
 body.homepage-refresh .tab-btn.active {
-    background: #fff;
-    color: #1B4965;
-    box-shadow: 0 4px 16px rgba(27, 73, 101, 0.08);
+    background: transparent !important;
+    color: #1B4965 !important;
+    font-weight: 700 !important;
+    border-bottom: 2px solid #1B4965 !important;
+    box-shadow: none !important;
 }
 
 body.homepage-refresh .tab-content-area {
     display: block;
-    padding: 18px;
-    border-radius: 32px;
-    background: rgba(255, 255, 255, 0.76);
-    border: 1px solid rgba(17, 38, 60, 0.06);
-    box-shadow: var(--refresh-shadow);
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 body.homepage-refresh .tab-content {
@@ -6393,18 +6400,39 @@ body.homepage-refresh .tab-content {
 body.homepage-refresh .tab-content.active {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 18px;
+    gap: 24px;
     justify-content: center;
     align-items: stretch;
     width: 100%;
 }
 
 body.homepage-refresh .info-card {
-    padding: 24px;
-    border-radius: 24px;
-    background: #fff;
-    border: 1px solid rgba(17, 38, 60, 0.06);
-    box-shadow: var(--refresh-shadow-soft);
+    padding: 36px 28px !important;
+    border-radius: 16px !important;
+    background: #eae8de !important; /* Soft warm beige/grey */
+    border: none !important;
+    box-shadow: none !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+body.homepage-refresh .info-card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 10px 30px rgba(17, 38, 60, 0.06) !important;
+}
+
+body.homepage-refresh .info-card-icon {
+    width: 48px;
+    height: 48px;
+    color: #1B4965;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 body.homepage-refresh .info-card h3,
