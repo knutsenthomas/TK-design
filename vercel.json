@@ -1,5 +1,10 @@
 {
     "version": 2,
+    "functions": {
+        "legacy_html/server.js": {
+            "maxDuration": 60
+        }
+    },
     "builds": [
         {
             "src": "legacy_html/server.js",
