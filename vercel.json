@@ -1,15 +1,11 @@
 {
     "version": 2,
-    "functions": {
-        "legacy_html/server.js": {
-            "maxDuration": 60
-        }
-    },
     "builds": [
         {
             "src": "legacy_html/server.js",
             "use": "@vercel/node",
             "config": {
+                "maxDuration": 60,
                 "includeFiles": [
                     "legacy_html/index.html",
                     "legacy_html/blog.html",
