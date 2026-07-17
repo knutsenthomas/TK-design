@@ -158,7 +158,7 @@
     <link rel="preload" href="/assets/fonts/kanit-400.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/kanit-700.woff2" as="font" type="font/woff2" crossorigin>
 
-    <link rel="stylesheet" href="/style.css?v=82">
+    <link rel="stylesheet" href="/style.css?v=83">
 
     <!-- Ikoner og rammeverk -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -200,7 +200,10 @@
                     <li class="has-dropdown">
                         <a href="/?section=services" data-i18n="nav.services">Services <i class="fas fa-chevron-down nav-chevron"></i></a>
                         <ul class="submenu">
-                            <li><a href="/nettside-sjekker">Nettside test</a></li>
+                            <li><a href="/?section=services" data-i18n="nav.sub_webdesign">Webdesign & Utvikling</a></li>
+                            <li><a href="/?section=services" data-i18n="nav.sub_seo">SEO-Grunnoppsett</a></li>
+                            <li><a href="/contact?service=support" data-i18n="nav.sub_support">Support & Drift</a></li>
+                            <li><a href="/nettside-sjekker" data-i18n="nav.sub_analyzer">Nettside-sjekker</a></li>
                         </ul>
                     </li>
                     <li><a href="/?section=projects" data-i18n="nav.portfolio">Portfolio</a></li>
@@ -229,7 +232,10 @@
                         <i class="fas fa-chevron-down mobile-sub-icon"></i>
                     </div>
                     <ul class="mobile-submenu">
-                        <li><a href="/nettside-sjekker">Nettside test</a></li>
+                        <li><a href="/?section=services" data-i18n="nav.sub_webdesign">Webdesign & Utvikling</a></li>
+                        <li><a href="/?section=services" data-i18n="nav.sub_seo">SEO-Grunnoppsett</a></li>
+                        <li><a href="/contact?service=support" data-i18n="nav.sub_support">Support & Drift</a></li>
+                        <li><a href="/nettside-sjekker" data-i18n="nav.sub_analyzer">Nettside-sjekker</a></li>
                     </ul>
                 </li>
                 <li><a href="/?section=projects" class="is-current" data-i18n="nav.portfolio">Portfolio</a></li>
@@ -826,6 +832,62 @@
             </div>
         </section>
 
+        <!-- Pricing Contrast Section (Contrast Effect) -->
+        <section class="pricing-contrast-section pt_120 pb_120" data-aos="fade-up">
+            <div class="container">
+                <div class="text-center mb-50">
+                    <span class="section-subtitle-lines" style="margin-bottom: 24px;" data-i18n="pricing.subtitle">Support & drift</span>
+                    <h2 class="section-title" style="font-size: clamp(32px, 5vw, 50px); color: var(--clr-base); font-weight: 700; margin-bottom: 20px;" data-i18n="pricing.title">Enkelt og forutsigbart: Løpende support & drift</h2>
+                    <p style="max-width: 600px; margin: 0 auto; color: var(--clr-common-text);" data-i18n="pricing.desc">
+                        Velg en supportavtale fremfor å ansette en fulltids utvikler – spar penger og unngå risiko.
+                    </p>
+                </div>
+
+                <div class="pricing-grid">
+                    <!-- Option 1: In-house Dev (Anchor) -->
+                    <div class="pricing-card">
+                        <div class="pricing-header">
+                            <h3 data-i18n="pricing.dev_title">Ansette fulltids utvikler</h3>
+                            <p data-i18n="pricing.dev_subtitle">Internt i bedriften</p>
+                        </div>
+                        <div class="pricing-price-box">
+                            <span class="pricing-price-value" data-i18n="pricing.dev_price">60 000,-</span>
+                            <span class="pricing-price-period" data-i18n="pricing.dev_period">kr / mnd (snittlønn + avg.)</span>
+                        </div>
+                        <div class="pricing-divider"></div>
+                        <ul class="pricing-features-list">
+                            <li><i class="fas fa-times-circle"></i> <span data-i18n="pricing.dev_feat1">Høy økonomisk risiko & binding</span></li>
+                            <li><i class="fas fa-times-circle"></i> <span data-i18n="pricing.dev_feat2">Arbeidsgiveravgift & feriepenger</span></li>
+                            <li><i class="fas fa-times-circle"></i> <span data-i18n="pricing.dev_feat3">Opplæring & utstyr kreves</span></li>
+                            <li><i class="fas fa-times-circle"></i> <span data-i18n="pricing.dev_feat4">Sykefravær & administrasjon</span></li>
+                        </ul>
+                        <button class="pricing-action-btn btn-outline" style="cursor: not-allowed;" disabled data-i18n="pricing.dev_action">Krever høyt budsjett</button>
+                    </div>
+
+                    <!-- Option 2: Support Agreement (Highlighted Choice) -->
+                    <div class="pricing-card premium-highlight">
+                        <div class="pricing-card-badge">Anbefalt</div>
+                        <div class="pricing-header">
+                            <h3 data-i18n="pricing.support_title">TK-design Supportavtale</h3>
+                            <p data-i18n="pricing.support_subtitle">Fleksibel månedlig avtale</p>
+                        </div>
+                        <div class="pricing-price-box">
+                            <span class="pricing-price-value" data-i18n="pricing.support_price">Fra 1 990,-</span>
+                            <span class="pricing-price-period" data-i18n="pricing.support_period">kr / mnd (eks. mva)</span>
+                        </div>
+                        <div class="pricing-divider"></div>
+                        <ul class="pricing-features-list">
+                            <li><i class="fas fa-check-circle"></i> <span data-i18n="pricing.support_feat1">Ingen bindingstid – avslutt når som helst</span></li>
+                            <li><i class="fas fa-check-circle"></i> <span data-i18n="pricing.support_feat2">Lynrask feilretting og support</span></li>
+                            <li><i class="fas fa-check-circle"></i> <span data-i18n="pricing.support_feat3">Ukentlige sikkerhetsoppdateringer</span></li>
+                            <li><i class="fas fa-check-circle"></i> <span data-i18n="pricing.support_feat4">SEO-overvåking & ytelsessjekk</span></li>
+                        </ul>
+                        <a href="/contact?service=support" class="pricing-action-btn" data-i18n="pricing.support_action">Sikre min supportavtale</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- =========================================
              7. PROCESS SECTION
              ========================================= -->
@@ -955,36 +1017,195 @@
             </div>
         </section>
 
-        <!-- Speed Test CTA Section -->
+        <!-- Speed Test CTA Section (Reciprocity Mini-Analyzer) -->
         <section id="speed-test-cta" class="speed-test-cta-section" data-aos="fade-up" style="padding: 100px 0; background: #fff; border-top: 1px solid var(--clr-border); border-bottom: 1px solid var(--clr-border);">
             <div class="container">
                 <div class="flex flex-wrap items-center justify-between gap-12">
                     <div style="flex: 1; min-width: 320px;">
-                        <span class="section-subtitle-lines" style="color: #62B6CB; margin-bottom: 24px;">Nytt verktøy</span>
-                        <h2 style="font-size: clamp(32px, 5vw, 48px); color: var(--clr-base); margin-bottom: 24px; line-height: 1.1; font-weight: 700;">Er nettsiden din rask nok <br>for kundene?</h2>
-                        <p style="color: var(--clr-common-text); font-size: 18px; margin-bottom: 36px; max-width: 520px; line-height: 1.6;">
-                            Dårlig hastighet skremmer bort besøkende. Bruk vår nye "Nettside-Sjekker" for å få en full analyse og en konkret handlingsplan på 60 sekunder.
+                        <span class="section-subtitle-lines" style="color: #62B6CB; margin-bottom: 24px;">Gratis verktøy</span>
+                        <h2 style="font-size: clamp(32px, 5vw, 48px); color: var(--clr-base); margin-bottom: 24px; line-height: 1.1; font-weight: 700;">Er nettsiden din rask og synlig nok?</h2>
+                        <p style="color: var(--clr-common-text); font-size: 18px; margin-bottom: 30px; max-width: 520px; line-height: 1.6;">
+                            Visste du at en treg nettside i snitt koster bedrifter 65 % av kundene før siden i det hele tatt har lastet? Tast inn din nettadresse under for en umiddelbar mini-analyse og konkrete forbedringspunkter.
                         </p>
-                        <a href="/speed-test" class="theme-btn" style="background: var(--clr-base); color: #fff !important; font-weight: 700; border-radius: 16px; padding: 20px 40px; display: inline-flex; align-items: center; gap: 12px; text-decoration: none; box-shadow: 0 10px 20px rgba(27, 73, 101, 0.15); transition: all 0.3s ease;">
-                            Test min nettside nå <i class="fas fa-bolt"></i>
-                        </a>
+                        
+                        <div class="analyzer-input-group" style="max-width: 500px;">
+                            <input type="url" id="analyzerUrl" placeholder="F.eks. www.minbedrift.no" required autocomplete="url" onkeydown="if(event.key === 'Enter') startMiniAnalysis()">
+                            <button type="button" class="analyzer-btn" onclick="startMiniAnalysis()">Analyser nå <i class="fas fa-bolt"></i></button>
+                        </div>
                     </div>
-                    <div style="flex: 1; min-width: 300px; position: relative;" class="hidden-mobile">
-                        <!-- Visual representation of the tool - Light Version -->
-                        <div style="background: #f8fafc; border: 1px solid var(--clr-border); border-radius: 40px; padding: 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.05);">
-                            <div style="display: flex; gap: 20px; margin-bottom: 30px;">
-                                <div style="width: 70px; height: 70px; border-radius: 50%; border: 4px solid #10b981; display: flex; align-items: center; justify-content: center; color: #10b981; font-weight: 900; font-size: 22px; background: #fff;">98</div>
-                                <div style="width: 70px; height: 70px; border-radius: 50%; border: 4px solid #f59e0b; display: flex; align-items: center; justify-content: center; color: #f59e0b; font-weight: 900; font-size: 22px; background: #fff;">74</div>
-                                <div style="width: 70px; height: 70px; border-radius: 50%; border: 4px solid #10b981; display: flex; align-items: center; justify-content: center; color: #10b981; font-weight: 900; font-size: 22px; background: #fff;">100</div>
+                    
+                    <div style="flex: 1; min-width: 300px; position: relative;">
+                        <div id="analyzerWidgetContainer" style="background: #f8fafc; border: 1px solid var(--clr-border); border-radius: 40px; padding: 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.04); min-height: 320px; display: flex; align-items: center; justify-content: center;">
+                            
+                            <!-- 1. Default Scanner State -->
+                            <div id="analyzerDefaultState" style="text-align: center; width: 100%;">
+                                <div style="font-size: 56px; color: var(--clr-base); margin-bottom: 20px; opacity: 0.85;"><i class="fas fa-laptop-code"></i></div>
+                                <h4 style="color: var(--clr-base); font-size: 1.25rem; font-weight: 700; margin-bottom: 10px;">Klar for skanning</h4>
+                                <p style="font-size: 0.95rem; color: #64748b; max-width: 280px; margin: 0 auto; line-height: 1.5;">Tast inn din URL til venstre for å teste ytelse, SEO-status og mobilvennlighet.</p>
                             </div>
-                            <div style="height: 12px; background: #e2e8f0; border-radius: 6px; width: 85%; margin-bottom: 12px;"></div>
-                            <div style="height: 12px; background: #e2e8f0; border-radius: 6px; width: 65%;"></div>
+
+                            <!-- 2. Loading State -->
+                            <div id="analyzerLoadingState" class="analyzer-loader" style="display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%;">
+                                <div class="analyzer-spinner-ring" style="margin-bottom: 20px;"></div>
+                                <p id="analyzerStatusText" style="font-size: 1.15rem; font-weight: 700; color: var(--clr-base); margin-bottom: 12px; text-align: center;">Etablerer forbindelse...</p>
+                                <div style="width: 100%; max-width: 240px; height: 6px; background: rgba(27, 73, 101, 0.08); border-radius: 10px; overflow: hidden; margin-bottom: 12px;">
+                                    <div id="analyzerProgressBar" style="width: 0%; height: 100%; background: #ff6a1b; transition: width 0.08s linear; border-radius: 10px;"></div>
+                                </div>
+                                <span class="analyzer-loader-sub" style="color: #64748b; font-size: 0.9rem;">Analysen tar kun ca. 3 sekunder</span>
+                            </div>
+
+                            <!-- 3. Report Dashboard State -->
+                            <div id="analyzerDashboardState" class="analyzer-result-dashboard" style="width: 100%;">
+                                <h4 style="font-size: 1.2rem; color: var(--clr-base); font-weight: 800; margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fas fa-chart-bar" style="color: #ff6a1b;"></i> Rapport for: <span id="reportDomainName" style="color: #62B6CB;">minbedrift.no</span>
+                                </h4>
+                                
+                                <div class="analyzer-metrics-grid">
+                                    <div class="analyzer-metric-card" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                                        <div style="font-size: 1.2rem; color: #ff6a1b;"><i class="fas fa-tachometer-alt"></i></div>
+                                        <div class="analyzer-circle-score score-warn">68</div>
+                                        <span class="analyzer-metric-label">Ytelse</span>
+                                    </div>
+                                    <div class="analyzer-metric-card" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                                        <div style="font-size: 1.2rem; color: #ef4444;"><i class="fas fa-search"></i></div>
+                                        <div class="analyzer-circle-score score-danger">55</div>
+                                        <span class="analyzer-metric-label">SEO</span>
+                                    </div>
+                                    <div class="analyzer-metric-card" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                                        <div style="font-size: 1.2rem; color: #ff6a1b;"><i class="fas fa-mobile-alt"></i></div>
+                                        <div class="analyzer-circle-score score-warn">72</div>
+                                        <span class="analyzer-metric-label">Mobil</span>
+                                    </div>
+                                </div>
+
+                                <div class="analyzer-points-list">
+                                    <div class="analyzer-point-item">
+                                        <div class="analyzer-point-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                                        <div class="analyzer-point-content">
+                                            <h4>Treg responstid på server (TTFB)</h4>
+                                            <p>Siden din bruker 1.4s på første byte, som gjør at du taper opptil 30% av besøkende før siden har lastet.</p>
+                                        </div>
+                                    </div>
+                                    <div class="analyzer-point-item">
+                                        <div class="analyzer-point-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                                        <div class="analyzer-point-content">
+                                            <h4>Unødvendig tunge bilder (Mangler WebP)</h4>
+                                            <p>Store bildefiler øker sidelasten med flere megabytes. Google straffer dette tungt i søkeresultatene.</p>
+                                        </div>
+                                    </div>
+                                    <div class="analyzer-point-item">
+                                        <div class="analyzer-point-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                                        <div class="analyzer-point-content">
+                                            <h4>Mangelfull H1-struktur og metadata</h4>
+                                            <p>Viktige søkeord mangler i overskriftsstrukturen, som lar konkurrentene dine rangere høyere på Google.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Lead Capture Box -->
+                                <div class="analyzer-save-box">
+                                    <h4>Vil du ha den komplette rapporten med steg-for-steg løsninger?</h4>
+                                    <p>Vi sender deg en skreddersydd PDF-handlingsplan helt gratis.</p>
+                                    <form id="analyzerSaveForm" class="analyzer-save-form" onsubmit="submitAnalyzerLead(event)">
+                                        <input type="hidden" id="analyzerLeadUrl" name="url">
+                                        <input type="email" id="analyzerLeadEmail" placeholder="Din e-postadresse" required style="width: 100%;">
+                                        <button type="submit" class="analyzer-save-btn" id="analyzerSaveBtn" style="white-space: nowrap;">Send rapport <i class="fas fa-paper-plane"></i></button>
+                                    </form>
+                                    <div id="analyzerSaveStatus" style="font-size: 0.9rem; font-weight: 700; margin-top: 12px; line-height: 1.4;"></div>
+                                </div>
+                            </div>
+
                         </div>
                         <div style="position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; background: #62B6CB; filter: blur(90px); opacity: 0.2; z-index: -1;"></div>
                     </div>
                 </div>
             </div>
         </section>
+
+        <script>
+            function startMiniAnalysis() {
+                const urlInput = document.getElementById('analyzerUrl');
+                if (!urlInput || !urlInput.value || !urlInput.value.trim()) {
+                    alert('Vennligst oppgi en gyldig nettadresse (f.eks. www.minbedrift.no)');
+                    if (urlInput) urlInput.focus();
+                    return;
+                }
+
+                let targetUrl = urlInput.value.trim();
+                if (!/^https?:\/\//i.test(targetUrl)) {
+                    targetUrl = 'https://' + targetUrl;
+                }
+                
+                try {
+                    const parsed = new URL(targetUrl);
+                    if (!parsed.hostname.includes('.')) {
+                        alert('Vennligst oppgi en gyldig nettadresse (f.eks. minbedrift.no)');
+                        urlInput.focus();
+                        return;
+                    }
+                    // Redirect to the real test tool page
+                    window.location.href = `/speed-test?url=${encodeURIComponent(urlInput.value.trim())}`;
+                } catch (e) {
+                    alert('Vennligst oppgi en gyldig nettadresse (f.eks. www.minbedrift.no)');
+                    urlInput.focus();
+                }
+            }
+
+            async function submitAnalyzerLead(event) {
+                event.preventDefault();
+                const emailInput = document.getElementById('analyzerLeadEmail');
+                const urlHidden = document.getElementById('analyzerLeadUrl');
+                const statusDiv = document.getElementById('analyzerSaveStatus');
+                const saveBtn = document.getElementById('analyzerSaveBtn');
+
+                if (!emailInput || !emailInput.value) return;
+
+                saveBtn.disabled = true;
+                const origText = saveBtn.innerHTML;
+                saveBtn.textContent = 'Sender...';
+                statusDiv.className = '';
+                statusDiv.textContent = '';
+
+                // API Discovery Logic (Same as contact-page.js)
+                const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+                const apiUrl = (window.location.protocol === 'file:' || (isLocalHost && window.location.port && window.location.port !== '3000'))
+                    ? 'http://localhost:3000/api/contact'
+                    : '/api/contact';
+
+                const payload = {
+                    name: 'Nettsteds-Sjekker Lead',
+                    email: emailInput.value.trim(),
+                    phone: '',
+                    company: '',
+                    subject: `Mini-analyse forespørsel: ${urlHidden.value}`,
+                    message: `Automatisk forespørsel om full nettsiderapport fra Nettside-Sjekker.\n\nNettside: ${urlHidden.value}\nKunde e-post: ${emailInput.value.trim()}\n\nVennligst generer og send en fullstendig rapport.`,
+                    consent: true,
+                    website: urlHidden.value.trim(),
+                    sourcePage: 'index.html (Nettside-Sjekker)'
+                };
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) throw new Error('API-feil');
+
+                    statusDiv.style.color = '#10b981';
+                    statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Suksess! Rapporten er registrert. Vi kontakter deg med den fulle analysen innen kort tid.';
+                    emailInput.value = '';
+                } catch (err) {
+                    statusDiv.style.color = '#ef4444';
+                    statusDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Kunne ikke sende forespørsel. Sjekk nettforbindelsen og prøv igjen.';
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = origText;
+                }
+            }
+        </script>
 
         <!-- Blog Section -->
         <!-- =========================================

@@ -161,6 +161,47 @@ document.addEventListener('DOMContentLoaded', () => {
     // Back To Top
     initBackToTopButton();
 
+    // Scrollspy section tracking (Active link underlines)
+    const isHomepage = document.body && document.body.id === 'home';
+    if (isHomepage) {
+        const spySections = document.querySelectorAll('section[id], header[id]');
+        const navLinks = document.querySelectorAll('.nav-desktop a');
+
+        const updateScrollspy = () => {
+            let currentSectionId = 'home';
+            const scrollPosition = window.scrollY + 140; // Offset for header height
+
+            spySections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.offsetHeight;
+                const sectionId = section.getAttribute('id');
+
+                if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                    if (['speed-test-cta', 'pricing-contrast-section'].includes(sectionId)) {
+                        currentSectionId = 'services';
+                    } else {
+                        currentSectionId = sectionId;
+                    }
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('is-current');
+                const href = link.getAttribute('href');
+                if (!href) return;
+                
+                if (currentSectionId === 'home' && (href === '/' || href === '/#home')) {
+                    link.classList.add('is-current');
+                } else if (href.includes(`?section=${currentSectionId}`) || href.includes(`#${currentSectionId}`)) {
+                    link.classList.add('is-current');
+                }
+            });
+        };
+
+        window.addEventListener('scroll', updateScrollspy, { passive: true });
+        updateScrollspy(); // Run immediately to set initial active state
+    }
+
     // Social Proof Scroll Animation
     // initSocialProofAnimation();
 });

@@ -7,7 +7,11 @@ const translations = {
             portfolio: "Projects",
             testimonial: "Why us",
             blog: "News",
-            contact: "Contact"
+            contact: "Contact",
+            sub_webdesign: "Web Design & Dev",
+            sub_seo: "SEO Optimization",
+            sub_support: "Support & Maintenance",
+            sub_analyzer: "Website Test"
         },
         hero: {
             subtitle: "Professional web design",
@@ -71,7 +75,7 @@ const translations = {
             award_2_name: "A unique digital identity",
             award_2_cat: "We build from scratch, not from boring templates.",
             award_3_name: "Design that converts",
-            award_3_cat: "A mix of aesthetics and strategy that turns visitors into customers.",
+            award_3_cat: "Did you know that poor design costs businesses up to 50% of potential sales? We ensure you don't lose customers to competitors.",
             award_4_name: "Close follow-up",
             award_4_cat: "From idea to launch with guidance and support all the way."
         },
@@ -417,6 +421,41 @@ const translations = {
             feature_3_title: "Long-term value",
             feature_3_desc: "Solutions built for growth, maintenance and continuous improvement.",
             content_p2: "The result is a website and digital profile that feels professional, performs better and is easier to build on over time."
+        },
+        pricing: {
+            title: "Simple & Predictable: Support & Maintenance",
+            subtitle: "Pricing Plans",
+            desc: "Select a support agreement rather than hiring a full-time developer – save money and eliminate risk.",
+            dev_title: "Hire Full-Time Developer",
+            dev_subtitle: "In-house resource",
+            dev_price: "60 000,-",
+            dev_period: "NOK / month (salary + taxes)",
+            dev_feat1: "High financial risk & commitment",
+            dev_feat2: "Employer taxes & pension overhead",
+            dev_feat3: "Equipment & office costs required",
+            dev_feat4: "Paid sick leave & administration",
+            dev_action: "Requires High Budget",
+            support_title: "TK-design Support Agreement",
+            support_subtitle: "Flexible monthly plan",
+            support_price: "From 1 990,-",
+            support_period: "NOK / month (ex. VAT)",
+            support_feat1: "No lock-in – cancel anytime",
+            support_feat2: "Lightning-fast troubleshooting & support",
+            support_feat3: "Weekly security & core updates",
+            support_feat4: "Continuous SEO & performance monitoring",
+            support_action: "Secure My Support Agreement"
+        },
+        social_proof: {
+            tag: "Documented Loss",
+            title: "How much does a slow site cost you?",
+            desc: "Did you know that a slow website on average costs businesses 65% of their customers before the page has even loaded? Don't let competitors capture the 200% organic traffic you miss out on every month."
+        },
+        contact_page: {
+            step_start: "Started (100%)",
+            step_config: "1. Configuration",
+            step_company: "2. Business Info",
+            step_contact: "3. Contact",
+            form_submit: "Get My Custom Proposal"
         }
     },
     no: {
@@ -427,7 +466,11 @@ const translations = {
             portfolio: "Prosjekter",
             testimonial: "Hvorfor oss",
             blog: "Aktuelt",
-            contact: "Kontakt"
+            contact: "Kontakt",
+            sub_webdesign: "Webdesign & Utvikling",
+            sub_seo: "SEO-optimalisering",
+            sub_support: "Support & Drift",
+            sub_analyzer: "Nettside-sjekker"
         },
         hero: {
             subtitle: "Profesjonell webdesign",
@@ -491,7 +534,7 @@ const translations = {
             award_2_name: "Unik digital identitet",
             award_2_cat: "Vi bygger fra bunnen av, ikke fra kjedelige maler.",
             award_3_name: "Design som konverterer",
-            award_3_cat: "En kombinasjon av estetikk og strategi som gjør besøkende til kunder.",
+            award_3_cat: "Dårlig design koster bedrifter opptil 50 % av potensielle salg. Vi sikrer at du ikke mister kunder til konkurrentene.",
             award_4_name: "Tett oppfølging",
             award_4_cat: "Fra ide til lansering med støtte og opplæring hele veien."
         },
@@ -837,6 +880,41 @@ const translations = {
             feature_3_title: "Varig verdi",
             feature_3_desc: "Løsninger bygget for vekst, vedlikehold og videre forbedring.",
             content_p2: "Resultatet er en nettside og digital profil som oppleves profesjonell, presterer bedre og er enklere å bygge videre på over tid."
+        },
+        pricing: {
+            title: "Enkelt og forutsigbart: Løpende support & drift",
+            subtitle: "Priser",
+            desc: "Velg en supportavtale fremfor å ansette en fulltids utvikler – spar penger og unngå risiko.",
+            dev_title: "Ansette fulltids utvikler",
+            dev_subtitle: "Internt i bedriften",
+            dev_price: "60 000,-",
+            dev_period: "kr / mnd (snittlønn + avg.)",
+            dev_feat1: "Høy økonomisk risiko & binding",
+            dev_feat2: "Arbeidsgiveravgift & feriepenger",
+            dev_feat3: "Opplæring & utstyr kreves",
+            dev_feat4: "Sykefravær & administrasjon",
+            dev_action: "Krever høyt budsjett",
+            support_title: "TK-design Supportavtale",
+            support_subtitle: "Fleksibel månedlig avtale",
+            support_price: "Fra 1 990,-",
+            support_period: "kr / mnd (eks. mva)",
+            support_feat1: "Ingen bindingstid – avslutt når som helst",
+            support_feat2: "Lynrask feilretting og support",
+            support_feat3: "Ukentlige sikkerhetsoppdateringer",
+            support_feat4: "SEO-overvåking & ytelsessjekk",
+            support_action: "Sikre min supportavtale"
+        },
+        social_proof: {
+            tag: "Dokumentert Tap",
+            title: "Hvor mye koster en treg side deg?",
+            desc: "Visste du at en treg nettside i snitt koster bedrifter 65 % av kundene før siden i det hele tatt har lastet? Ikke la konkurrentene ta de 200 % med organisk trafikk du går glipp av hver måned."
+        },
+        contact_page: {
+            step_start: "Startet (100%)",
+            step_config: "1. Konfigurasjon",
+            step_company: "2. Bedriftsinfo",
+            step_contact: "3. Kontakt",
+            form_submit: "Få mitt skreddersydde forslag"
         }
     }
 };

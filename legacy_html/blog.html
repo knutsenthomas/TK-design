@@ -21,7 +21,7 @@
         content="Praktiske tips om webdesign, SEO og digital synlighet for norske bedrifter.">
     <meta property="og:image" content="https://tk-design.no/img/logo/og-image.png">
     <meta property="og:locale" content="nb_NO">
-    <link rel="stylesheet" href="/style.css?v=82">
+    <link rel="stylesheet" href="/style.css?v=83">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" href="img/logo/d.png">
 
@@ -52,7 +52,10 @@
                     <li class="has-dropdown">
                         <a href="/?section=services" data-i18n="nav.services">Services <i class="fas fa-chevron-down nav-chevron"></i></a>
                         <ul class="submenu">
-                            <li><a href="/nettside-sjekker">Nettside test</a></li>
+                            <li><a href="/?section=services" data-i18n="nav.sub_webdesign">Webdesign & Utvikling</a></li>
+                            <li><a href="/?section=services" data-i18n="nav.sub_seo">SEO-Grunnoppsett</a></li>
+                            <li><a href="/contact?service=support" data-i18n="nav.sub_support">Support & Drift</a></li>
+                            <li><a href="/nettside-sjekker" data-i18n="nav.sub_analyzer">Nettside-sjekker</a></li>
                         </ul>
                     </li>
                     <li><a href="/?section=projects" data-i18n="nav.portfolio">Portfolio</a></li>
@@ -81,7 +84,10 @@
                         <i class="fas fa-chevron-down mobile-sub-icon"></i>
                     </div>
                     <ul class="mobile-submenu">
-                        <li><a href="/nettside-sjekker">Nettside test</a></li>
+                        <li><a href="/?section=services" data-i18n="nav.sub_webdesign">Webdesign & Utvikling</a></li>
+                        <li><a href="/?section=services" data-i18n="nav.sub_seo">SEO-Grunnoppsett</a></li>
+                        <li><a href="/contact?service=support" data-i18n="nav.sub_support">Support & Drift</a></li>
+                        <li><a href="/nettside-sjekker" data-i18n="nav.sub_analyzer">Nettside-sjekker</a></li>
                     </ul>
                 </li>
                 <li><a href="/?section=projects" data-i18n="nav.portfolio">Portfolio</a></li>
@@ -118,10 +124,8 @@
                             synlighet.
                         </p>
                         <div class="blog-list-actions">
-                            <a href="/" class="primary-cta" data-i18n="blog_page.back_home">Tilbake til
-                                forsiden</a>
-                            <a href="/contact" class="blog-list-secondary" data-i18n="blog_page.contact_cta">Trenger du
-                                hjelp?</a>
+                            <a href="/contact" class="blog-list-primary-btn" data-i18n="blog_page.contact_cta">Trenger du hjelp?</a>
+                            <a href="/" class="blog-list-back-link" data-i18n="blog_page.back_home"><i class="fas fa-arrow-left" style="margin-right: 8px;"></i> Tilbake til forsiden</a>
                         </div>
                         <ul class="breadcrumb">
                             <li><a href="/" data-i18n="nav.home">Home</a></li>
@@ -129,20 +133,19 @@
                         </ul>
                     </div>
 
-                    <div class="blog-list-spotlight">
-                        <span class="blog-list-spotlight-badge" data-i18n="blog_page.featured_label">Siste
-                            innlegg</span>
+                    <a href="/blog" class="blog-list-spotlight" id="blogFeaturedCardLink">
+                        <span class="blog-list-spotlight-badge" data-i18n="blog_page.featured_label">Siste innlegg</span>
                         <h2 id="blogFeaturedTitle">Laster innlegg...</h2>
                         <p id="blogFeaturedSummary" data-i18n="blog_page.loading">Laster innlegg...</p>
                         <div class="blog-list-spotlight-meta">
                             <span id="blogFeaturedCategory">Webdesign</span>
                             <span id="blogFeaturedDate">2025</span>
                         </div>
-                        <a href="/blog" class="blog-list-spotlight-link" id="blogFeaturedLink">
+                        <div class="blog-list-spotlight-link">
                             <span id="blogFeaturedLinkText" data-i18n="blog_page.open_post">Åpne innlegg</span>
                             <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
+                        </div>
+                    </a>
                 </div>
             </div>
         </section>
@@ -336,7 +339,7 @@
             const summary = document.getElementById('blogFeaturedSummary');
             const category = document.getElementById('blogFeaturedCategory');
             const date = document.getElementById('blogFeaturedDate');
-            const link = document.getElementById('blogFeaturedLink');
+            const link = document.getElementById('blogFeaturedCardLink');
             const linkText = document.getElementById('blogFeaturedLinkText');
 
             if (!localizedPost) {

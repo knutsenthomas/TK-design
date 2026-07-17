@@ -1646,6 +1646,18 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const queryUrl = params.get('url');
+      if (queryUrl) {
+        const cleanedUrl = queryUrl.trim();
+        setUrl(cleanedUrl);
+        testSite(null, cleanedUrl);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     let cancelled = false;
 
     const loadDashboardContent = async () => {
@@ -1726,13 +1738,14 @@ export default function App() {
     return () => window.clearInterval(timer);
   }, [loading]);
 
-  const testSite = async (event) => {
+  const testSite = async (event, urlOverride) => {
     event?.preventDefault();
 
     let normalizedUrl;
+    const targetUrl = urlOverride || url;
 
     try {
-      normalizedUrl = normalizeUrl(url);
+      normalizedUrl = normalizeUrl(targetUrl);
     } catch {
       setError('Lim inn en gyldig URL, for eksempel tk-design.no.');
       return;

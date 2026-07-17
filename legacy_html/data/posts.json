@@ -59,7 +59,7 @@
         "date": "30. mars 2025",
         "image": "img/blog/bblog2.png",
         "excerpt": "",
-        "content": "<h1><span style=\"background-color: rgba(0, 0, 0, 0);\">Hvordan farger påvirker brukeropplevelsen</span></h1><p><span style=\"background-color: rgba(0, 0, 0, 0);\">Farger er ikke bare estetiske valg; de påvirker brukerens følelser, atferd og generell opplevelse av nettet. Når det gjelder webdesign, kan riktige fargevalg selv være forskjellen på om brukeren blir værende på siden eller forlater den umiddelbart.</span></p><p><br></p><h3><span style=\"background-color: rgba(0, 0, 0, 0);\">Psykologi bak farger</span></h3><p><span style=\"background-color: rgba(0, 0, 0, 0);\">Hver farge evokerer forskjellige følelser og assosiasjoner. For eksempel:</span></p><ul><li><strong style=\"background-color: initial;\">Blå</strong><span style=\"background-color: rgba(0, 0, 0, 0);\">: Tillit og ro. Dette er grunnen til at mange finansinstitusjoner velger blå nyanser.</span></li><li><strong style=\"background-color: initial;\">Rød</strong><span style=\"background-color: rgba(0, 0, 0, 0);\">: Energi og hastverk. Det brukes ofte for å tiltrekke oppmerksomhet, som i salg og kampanjer.</span></li><li><strong style=\"background-color: initial;\">Grønn</strong><span style=\"background-color: rgba(0, 0, 0, 0);\">: Naturlig og bærekraftig. Dette brukes ofte av bedrifter som ønsker å formidle miljøbevissthet.</span></li><li><strong style=\"background-color: initial;\">Gul</strong><span style=\"background-color: rgba(0, 0, 0, 0);\">: Optimisme og ungdommelighet, men kan være overveldende om det brukes for mye.</span></li></ul><p><br></p><h3><span style=\"background-color: rgba(0, 0, 0, 0);\">Statistikker som understøtter viktigheten av fargevalg</span></h3><p><span style=\"background-color: rgba(0, 0, 0, 0);\">Forskning viser at:</span></p><ul><li><span style=\"background-color: rgba(0, 0, 0, 0);\">90% av all vurdering av produkter, inkludert nettsider, baseres på farger.</span></li><li><span style=\"background-color: rgba(0, 0, 0, 0);\">Farge kan øke lesbarheten med opptil 40%, noe som igjen øker sjansen for konvertering.</span></li></ul><p><br></p><h3><span style=\"background-color: rgba(0, 0, 0, 0);\">Praktiske tips for effektivt fargebruk</span></h3><p><span style=\"background-color: rgba(0, 0, 0, 0);\">Når du velger farger for din nettside, er det viktig å tenke strategisk. Her er noen tips:</span></p><ol><li><strong style=\"background-color: initial;\">Bruk fargeharmoni:</strong><span style=\"background-color: rgba(0, 0, 0, 0);\">&nbsp;Fargeteori kan hjelpe deg å velge komplementære farger som fungerer godt sammen.</span></li><li><strong style=\"background-color: initial;\">Vurder målgruppen din:</strong><span style=\"background-color: rgba(0, 0, 0, 0);\">&nbsp;Hvilke farger resonerer med dem?</span></li><li><strong style=\"background-color: initial;\">Test fargekombinasjoner:</strong><span style=\"background-color: rgba(0, 0, 0, 0);\">&nbsp;Gjennomfør A/B-testing for å se hvilke farger som gir best brukerengasjement.</span></li><li><strong style=\"background-color: initial;\">Konsistens er nøkkelen:</strong><span style=\"background-color: rgba(0, 0, 0, 0);\">&nbsp;Bruk de samme fargene på tvers av alle plattformer for å bygge merkeidentitet.</span></li></ol><p><br></p><p><span style=\"background-color: rgba(0, 0, 0, 0);\">Ved å bruke farger strategi kan du ikke bare forbedre estetikk, men også øke brukeropplevelsen betydelig. Ved å ta hensyn til psykologi, statistikker og praktiske tips, kan webdesignere skape nettsteder som ikke bare ser bra ut, men også fungerer effektivt.</span></p><p><span style=\"background-color: rgba(0, 0, 0, 0);\">Husk at det å forstå fargenes innvirkning er et kraftig verktøy i arsenalet til enhver designer. Neste gang du jobber med et prosjekt, ta deg tid til å tenke gjennom fargevalgene dine nøye!</span></p><p><br></p>",
+        "content": "<h1>Hvordan farger påvirker brukeropplevelsen</h1><p>Farger er ikke bare estetiske valg; de påvirker brukerens følelser, atferd og generell opplevelse av nettet.</p>",
         "seoTitle": "Fargevalg i webdesign",
         "seoDesc": "Hvordan riktige farger kan forbedre brukeropplevelsen og styrke merkevaren din.",
         "seoKeywords": "fargevalg, webdesign, fargebruk, brukeropplevelse",
@@ -72,10 +72,25 @@
         "category": "Webdesign",
         "date": "30. mars 2025",
         "image": "img/blog/bblog1.png",
-        "content": "<p>2025 byr på en blanding av minimalisme, dristige visuelle uttrykk, interaktivitet og mer personlig tilpasset innhold.</p><p>Innlegget ser på trendene som kan gjøre nettstedet ditt mer minneverdig og mer effektivt.</p>",
+        "content": "<p>2025 byr på en blanding av minimalisme, dristige visuelle uttrykk, interaktivitet og mer personlig tilpasset innhold.</p>",
         "seoTitle": "Designtrender for 2025",
         "seoDesc": "En oversikt over de viktigste designtrendene for nettsteder i 2025.",
         "seoKeywords": "designtrender, 2025, webdesign, interaktivitet",
         "link": "blog-details.html?id=6"
+    },
+    {
+        "id": 7,
+        "title": "EU AI Act: Risikerer din bedrift millionbøter?",
+        "author": "Thomas Knutsen",
+        "category": "Generelt",
+        "date": "18. mars 2026",
+        "image": "img/blog/bblog3.png",
+        "excerpt": "Risikerer din bedrift millionbøter? Den nye EU AI Act gjør ulovlig eller uforsvarlig bruk av kunstig intelligens ekstremt kostbart. Sjekk om du er innenfor kravene før det er for sent.",
+        "content": "<p>Den nye EU AI Act trer i kraft og setter strenge rammer for bruk av kunstig intelligens. Ulovlig eller uforsvarlig bruk av AI kan føre til enorme millionbøter for europeiske bedrifter.</p>",
+        "seoTitle": "EU AI Act - Unngå millionbøter",
+        "seoDesc": "Risikerer din bedrift millionbøter under EU AI Act? Les våre råd om hvordan du overholder kravene.",
+        "seoKeywords": "EU AI Act, AI Act, millionbøter, regulering",
+        "link": "blog-details.html?id=7",
+        "isFeatured": true
     }
 ]

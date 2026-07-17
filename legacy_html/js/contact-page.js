@@ -92,19 +92,9 @@ function initContactPageForm() {
         const lang = getContactPageLang();
         const messages = CONTACT_API_MESSAGES[lang];
         const formData = new FormData(form);
-        const payload = {
-            name: String(formData.get('name') || '').trim(),
-            email: String(formData.get('email') || '').trim(),
-            phone: String(formData.get('phone') || '').trim(),
-            company: String(formData.get('company') || '').trim(),
-            subject: String(formData.get('subject') || '').trim(),
-            message: String(formData.get('message') || '').trim(),
-            consent: formData.get('consent') === 'on',
-            website: String(formData.get('website') || '').trim(),
-            sourcePage: 'contact.html'
-        };
 
-        if (!payload.name) {
+        const rawMessage = String(formData.get('message') || '').trim();
+        if (!formData.get('name') || !formData.get('name').toString().trim()) {
             setContactStatus(status, 'error', messages.validation);
             if (nameField) {
                 nameField.value = '';
@@ -113,7 +103,7 @@ function initContactPageForm() {
             return;
         }
 
-        if (!payload.email) {
+        if (!formData.get('email') || !formData.get('email').toString().trim()) {
             setContactStatus(status, 'error', messages.validation);
             if (emailField) {
                 emailField.value = '';
@@ -122,22 +112,37 @@ function initContactPageForm() {
             return;
         }
 
-        if (!payload.message || payload.message.length < 10) {
+        if (!rawMessage || rawMessage.length < 10) {
             setContactStatus(status, 'error', messages.validation);
             if (messageField) {
-                if (!payload.message) {
-                    messageField.value = '';
-                }
                 focusContactField(messageField);
             }
             return;
         }
 
-        if (!payload.consent) {
+        if (consentField && !consentField.checked) {
             setContactStatus(status, 'error', messages.validation);
             focusContactField(consentField);
             return;
         }
+
+        const service = formData.get('service') || 'Webdesign + SEO (Anbefalt)';
+        const designStyle = formData.get('design_style') || 'Moderne & Rent';
+        const selectedFeatures = Array.from(formData.getAll('features')).join(', ') || 'Ingen spesifisert';
+        
+        const compiledMessage = `--- Prosjekt-Konfigurasjon ---\nTjeneste: ${service}\nStil: ${designStyle}\nFunksjoner: ${selectedFeatures}\n-----------------------------\n\nMelding:\n${rawMessage}`;
+
+        const payload = {
+            name: String(formData.get('name') || '').trim(),
+            email: String(formData.get('email') || '').trim(),
+            phone: String(formData.get('phone') || '').trim(),
+            company: String(formData.get('company') || '').trim(),
+            subject: `Forespørsel: ${service}`,
+            message: compiledMessage,
+            consent: formData.get('consent') === 'on',
+            website: String(formData.get('website') || '').trim(),
+            sourcePage: 'contact.html'
+        };
 
         submitButton.disabled = true;
         setContactStatus(status, 'loading', messages.sending);
@@ -159,6 +164,24 @@ function initContactPageForm() {
 
             form.reset();
 
+            // Set progress to 100% on success
+            const progressFill = document.getElementById('croProgressBar');
+            if (progressFill) progressFill.style.width = '100%';
+            for (let i = 1; i <= 3; i++) {
+                const ind = document.getElementById(`stepIndicator${i}`);
+                if (ind) ind.className = 'completed';
+            }
+
+            // Reset cards selection styling
+            document.querySelectorAll('.cro-choice-card').forEach(card => {
+                const input = card.querySelector('input');
+                if (input && input.checked) {
+                    card.classList.add('selected');
+                } else {
+                    card.classList.remove('selected');
+                }
+            });
+
             if (result.emailSent === false) {
                 setContactStatus(status, 'success', withWarning(messages.successNoEmail, result.emailWarning));
             } else if (result.saved === false) {
@@ -178,4 +201,100 @@ function initContactPageForm() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', initContactPageForm);
+// Step Configurator Logic
+window.croCurrentStep = 1;
+
+window.croGoToStep = function(stepIndex) {
+    if (stepIndex < 1 || stepIndex > 3) return;
+    
+    // Hide all step panels
+    document.querySelectorAll('.cro-step-panel').forEach(panel => {
+        panel.style.display = 'none';
+        panel.classList.remove('active');
+    });
+    
+    // Show current step panel
+    const activePanel = document.getElementById(`croStep${stepIndex}`);
+    if (activePanel) {
+        activePanel.style.display = 'flex';
+        setTimeout(() => activePanel.classList.add('active'), 20);
+    }
+    
+    // Update progress bar
+    const progressFill = document.getElementById('croProgressBar');
+    if (progressFill) {
+        const widths = { 1: '25%', 2: '60%', 3: '85%' };
+        progressFill.style.width = widths[stepIndex];
+    }
+    
+    // Update step indicators
+    for (let i = 1; i <= 3; i++) {
+        const ind = document.getElementById(`stepIndicator${i}`);
+        if (ind) {
+            if (i < stepIndex) {
+                ind.className = 'completed';
+            } else if (i === stepIndex) {
+                ind.className = 'active';
+            } else {
+                ind.className = '';
+            }
+        }
+    }
+    
+    window.croCurrentStep = stepIndex;
+    
+    // Scroll form into view
+    const form = document.getElementById('contactForm');
+    if (form) {
+        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+};
+
+window.updateChoiceCardSelection = function(radioName) {
+    const radios = document.getElementsByName(radioName);
+    radios.forEach(radio => {
+        const card = radio.closest('.cro-choice-card');
+        if (card) {
+            if (radio.checked) {
+                card.classList.add('selected');
+            } else {
+                card.classList.remove('selected');
+            }
+        }
+    });
+};
+
+window.updateCheckboxCardSelection = function(checkbox) {
+    const card = checkbox.closest('.cro-choice-card');
+    if (card) {
+        if (checkbox.checked) {
+            card.classList.add('selected');
+        } else {
+            card.classList.remove('selected');
+        }
+    }
+};
+
+function selectServiceFromQuery() {
+    const params = new URLSearchParams(window.location.search);
+    const service = params.get('service');
+    if (!service) return;
+    
+    const select = document.getElementById('contact-service');
+    if (!select) return;
+    
+    if (service === 'support') {
+        select.value = 'Løpende drift og support';
+    } else if (service === 'webdesign') {
+        select.value = 'Webdesign + SEO (Anbefalt)';
+    } else if (service === 'seo') {
+        select.value = 'SEO Søkemotoroptimalisering';
+    } else if (service === 'some') {
+        select.value = 'SoMe Innholdsstrategi';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    initContactPageForm();
+    selectServiceFromQuery();
+});
