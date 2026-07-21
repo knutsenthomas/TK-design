@@ -142,6 +142,86 @@ app.use((req, res, next) => {
     next();
 });
 
+// --- Security & Rate Limiting Middlewares ---
+const rateLimitStores = new Map();
+
+function createRateLimiter(options = {}) {
+    const windowMs = options.windowMs || 15 * 60 * 1000;
+    const max = options.max || 10;
+    const message = options.message || 'For mange forespørsler. Vennligst prøv igjen senere.';
+
+    return (req, res, next) => {
+        const rawIp = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '';
+        const ip = String(rawIp).split(',')[0].trim() || 'unknown';
+        const key = `${req.path}_${ip}`;
+        const now = Date.now();
+
+        let record = rateLimitStores.get(key);
+        if (!record || now > record.resetTime) {
+            record = { count: 1, resetTime: now + windowMs };
+        } else {
+            record.count += 1;
+        }
+
+        rateLimitStores.set(key, record);
+
+        if (rateLimitStores.size > 2000) {
+            for (const [k, v] of rateLimitStores.entries()) {
+                if (now > v.resetTime) rateLimitStores.delete(k);
+            }
+        }
+
+        if (record.count > max) {
+            return res.status(429).json({
+                success: false,
+                code: 'rate_limit_exceeded',
+                error: message
+            });
+        }
+
+        next();
+    };
+}
+
+const contactFormLimiter = createRateLimiter({ windowMs: 15 * 60 * 1000, max: 5, message: 'Du har sendt for mange meldinger på kort tid. Prøv igjen om 15 minutter.' });
+const emailReportLimiter = createRateLimiter({ windowMs: 15 * 60 * 1000, max: 5, message: 'Du har sendt for mange rapporter på kort tid. Prøv igjen om 15 minutter.' });
+const pagespeedLimiter = createRateLimiter({ windowMs: 60 * 1000, max: 10, message: 'For mange analyser på kort tid. Prøv igjen om et minutt.' });
+const commentsLimiter = createRateLimiter({ windowMs: 10 * 60 * 1000, max: 10, message: 'Du har publisert for mange kommentarer på kort tid.' });
+
+async function verifyAdminToken(req, res, next) {
+    const authHeader = req.headers.authorization || '';
+    const adminSecretHeader = req.headers['x-admin-secret'] || req.headers['x-tk-admin-secret'] || '';
+    const expectedSecret = process.env.ADMIN_SECRET || process.env.TK_ADMIN_SECRET || '';
+
+    if (expectedSecret && adminSecretHeader === expectedSecret) {
+        return next();
+    }
+
+    if (authHeader.startsWith('Bearer ')) {
+        const idToken = authHeader.split('Bearer ')[1].trim();
+        if (hasFirebaseServerCredentials()) {
+            try {
+                const decodedToken = await getAdminInstance().auth().verifyIdToken(idToken);
+                req.user = decodedToken;
+                return next();
+            } catch (error) {
+                return res.status(401).json({ success: false, error: 'Ugyldig eller utløpt autentiseringstoken.' });
+            }
+        } else if (expectedSecret && idToken === expectedSecret) {
+            return next();
+        }
+    }
+
+    if (!isVercelRuntime() && (req.hostname === 'localhost' || req.hostname === '127.0.0.1')) {
+        return next();
+    }
+
+    return res.status(401).json({
+        success: false,
+        error: 'Adgang nektet. Autentisering er påkrevd for denne operasjonen.'
+    });
+}
+
 async function getFetch() {
     if (typeof globalThis.fetch === 'function') {
         return globalThis.fetch.bind(globalThis);
@@ -358,7 +438,7 @@ app.get('/api/debug-env', (req, res) => {
     });
 });
 
-app.post('/api/pagespeed', async (req, res) => {
+app.post('/api/pagespeed', pagespeedLimiter, async (req, res) => {
     const strategy = req.body?.strategy === 'desktop' ? 'desktop' : 'mobile';
     let normalizedUrl = '';
 
@@ -2431,7 +2511,7 @@ app.get('/api/content', async (req, res) => {
 });
 
 // API: Save Content
-app.post('/api/content', async (req, res) => {
+app.post('/api/content', verifyAdminToken, async (req, res) => {
     try {
         const result = await persistSiteData('content', req.body, writeDashboardContent);
         res.status(200).json({ success: true, ...result });
@@ -2442,7 +2522,7 @@ app.post('/api/content', async (req, res) => {
 });
 
 // API: Save Style (CSS Variables & Fonts)
-app.post('/api/style', async (req, res) => {
+app.post('/api/style', verifyAdminToken, async (req, res) => {
     const {
         cssVariables,
         fontUrl,
@@ -2825,7 +2905,7 @@ app.get('/api/posts', async (req, res) => {
 });
 
 // API: Save Blog Posts
-app.post('/api/posts', async (req, res) => {
+app.post('/api/posts', verifyAdminToken, async (req, res) => {
     const newPosts = decorateBlogPostsWithResolvedLinks(req.body);
 
     try {
@@ -2837,7 +2917,7 @@ app.post('/api/posts', async (req, res) => {
     }
 });
 
-app.post('/api/debug-log', async (req, res) => {
+app.post('/api/debug-log', verifyAdminToken, async (req, res) => {
     try {
         const result = await persistSiteData('debug_diagnostics', req.body, () => {});
         res.status(200).json({ success: true, ...result });
@@ -2876,7 +2956,7 @@ app.get('/api/comments/settings', async (req, res) => {
     }
 });
 
-app.post('/api/comments', async (req, res) => {
+app.post('/api/comments', commentsLimiter, async (req, res) => {
     const postId = Number(req.body?.postId);
     const name = String(req.body?.name || '').replace(/\s+/g, ' ').trim();
     const message = String(req.body?.message || '').trim();
@@ -2965,7 +3045,7 @@ app.get('/api/seo', async (req, res) => {
 });
 
 // API: Save SEO Data
-app.post('/api/seo', async (req, res) => {
+app.post('/api/seo', verifyAdminToken, async (req, res) => {
     const seoData = normalizeSeoData(req.body);
 
     try {
@@ -3694,7 +3774,7 @@ async function runGeminiGenerateContent(parts = []) {
 }
 
 // API: Generate Blog Content with Gemini AI
-app.post('/api/generate-content', aiAttachmentMiddleware, async (req, res) => {
+app.post('/api/generate-content', verifyAdminToken, aiAttachmentMiddleware, async (req, res) => {
     try {
         const topic = String(req.body.topic || req.body.prompt || '').trim();
         const tone = String(req.body.tone || 'professional').trim();
@@ -3827,7 +3907,7 @@ app.post('/api/generate-content', aiAttachmentMiddleware, async (req, res) => {
 });
 
 // API: Generate blog SEO (NO) and translation (EN)
-app.post('/api/blog/ai-enrich', async (req, res) => {
+app.post('/api/blog/ai-enrich', verifyAdminToken, async (req, res) => {
     try {
         const title = String(req.body?.title || '').trim();
         const content = String(req.body?.content || '').trim();
@@ -4213,7 +4293,7 @@ app.get('/api/unsplash/search', async (req, res) => {
     }
 });
 
-app.post('/api/admin/storage/upload', adminStorageUploadMiddleware, async (req, res) => {
+app.post('/api/admin/storage/upload', verifyAdminToken, adminStorageUploadMiddleware, async (req, res) => {
     try {
         if (!hasFirebaseServerCredentials()) {
             return res.status(503).json({
@@ -5822,7 +5902,7 @@ function normalizeSocialPlannerAssistantSuggestion(payload = {}, fallbackText = 
     };
 }
 
-app.post('/api/social-planner/assistant', async (req, res) => {
+app.post('/api/social-planner/assistant', verifyAdminToken, async (req, res) => {
     try {
         const action = normalizeSocialPlannerAssistantAction(req.body?.action);
         const tone = normalizeSocialPlannerAssistantTone(req.body?.tone);
@@ -6013,7 +6093,7 @@ app.patch('/api/social-planner/settings', async (req, res) => {
     }
 });
 
-app.post('/api/social-planner/workspaces', async (req, res) => {
+app.post('/api/social-planner/workspaces', verifyAdminToken, async (req, res) => {
     try {
         const state = await getSocialPlannerState();
         state.settings = { ...(state.settings || {}) };
@@ -6178,7 +6258,7 @@ app.delete('/api/social-planner/workspaces/:workspaceId', async (req, res) => {
     }
 });
 
-app.post('/api/social-planner/accounts', async (req, res) => {
+app.post('/api/social-planner/accounts', verifyAdminToken, async (req, res) => {
     try {
         const state = await getSocialPlannerState();
         state.socialAccounts = Array.isArray(state.socialAccounts) ? state.socialAccounts : [];
@@ -6340,7 +6420,7 @@ app.delete('/api/social-planner/accounts/:accountId', async (req, res) => {
     }
 });
 
-app.post('/api/social-planner/templates', async (req, res) => {
+app.post('/api/social-planner/templates', verifyAdminToken, async (req, res) => {
     try {
         const state = await getSocialPlannerState();
         state.templates = Array.isArray(state.templates) ? state.templates : [];
@@ -6460,7 +6540,7 @@ app.delete('/api/social-planner/templates/:templateId', async (req, res) => {
     }
 });
 
-app.post('/api/social-planner/entries', async (req, res) => {
+app.post('/api/social-planner/entries', verifyAdminToken, async (req, res) => {
     try {
         const state = await getSocialPlannerState();
         state.entries = Array.isArray(state.entries) ? state.entries : [];
@@ -6638,7 +6718,7 @@ app.delete('/api/social-planner/entries/:entryId', async (req, res) => {
     }
 });
 
-app.post('/api/social-planner/entries/:entryId/publish', async (req, res) => {
+app.post('/api/social-planner/entries/:entryId/publish', verifyAdminToken, async (req, res) => {
     try {
         const publishResult = await publishSocialPlannerEntryById(req.params.entryId, req, {
             keepScheduledOnFail: parseBooleanFlag(req.body?.keepScheduledOnFail, false)
@@ -6662,7 +6742,7 @@ app.post('/api/social-planner/entries/:entryId/publish', async (req, res) => {
     }
 });
 
-app.post('/api/social-planner/scheduler/run', async (req, res) => {
+app.post('/api/social-planner/scheduler/run', verifyAdminToken, async (req, res) => {
     try {
         const schedulerResult = await runSocialPlannerSchedulerTick(req, {
             maxEntries: req.body?.maxEntries ?? req.query.maxEntries
@@ -6712,7 +6792,7 @@ app.get('/api/social-planner/analytics', async (req, res) => {
     }
 });
 
-app.post('/api/social-planner/metrics/sync', async (req, res) => {
+app.post('/api/social-planner/metrics/sync', verifyAdminToken, async (req, res) => {
     try {
         const auth = isAuthorizedSocialPlannerMetricsSyncRequest(req);
         if (!auth.ok) {
@@ -6914,7 +6994,7 @@ app.post('/api/social/autopost', async (req, res) => {
 });
 
 // API: Speed Test Report Email
-app.post('/api/speed-test/report-email', async (req, res) => {
+app.post('/api/speed-test/report-email', emailReportLimiter, async (req, res) => {
     try {
         const reportPayload = normalizeSpeedTestReportPayload(req.body?.report);
         const recipientEmailResult = normalizeSpeedTestRecipientEmail(req.body?.recipientEmail);
@@ -6962,7 +7042,7 @@ app.post('/api/speed-test/report-email', async (req, res) => {
 });
 
 // API: Contact Form
-app.post('/api/contact', async (req, res) => {
+app.post('/api/contact', contactFormLimiter, async (req, res) => {
     console.log('--- CONTACT FORM SUBMISSION START ---');
     console.log('Headers:', JSON.stringify(req.headers, null, 2));
     console.log('Body:', JSON.stringify(req.body, null, 2));
