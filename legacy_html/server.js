@@ -813,19 +813,48 @@ async function writeSiteTextDocument(documentId, text, fieldName = 'cssText') {
     });
 }
 
+const siteDataCache = new Map();
+const templateCache = new Map();
+
+function readHtmlTemplate(filePath) {
+    if (templateCache.has(filePath)) {
+        return Promise.resolve(templateCache.get(filePath));
+    }
+    return new Promise((resolve, reject) => {
+        fs.readFile(filePath, 'utf8', (err, content) => {
+            if (err) return reject(err);
+            templateCache.set(filePath, content);
+            resolve(content);
+        });
+    });
+}
+
 async function readSiteDataWithFallback(documentId, fallbackReader) {
-    if (hasFirebaseServerCredentials()) {
-        try {
-            const firebaseValue = await readSiteJsonDocument(documentId);
-            if (firebaseValue !== null) {
-                return firebaseValue;
-            }
-        } catch (error) {
-            console.error(`Failed to read ${documentId} from Firebase:`, error.message);
-        }
+    if (siteDataCache.has(documentId)) {
+        return siteDataCache.get(documentId);
     }
 
-    return fallbackReader();
+    const fetchPromise = (async () => {
+        if (hasFirebaseServerCredentials()) {
+            try {
+                const firebaseValue = await readSiteJsonDocument(documentId);
+                if (firebaseValue !== null) {
+                    return firebaseValue;
+                }
+            } catch (error) {
+                console.error(`Failed to read ${documentId} from Firebase:`, error.message);
+            }
+        }
+        return fallbackReader();
+    })();
+
+    siteDataCache.set(documentId, fetchPromise);
+
+    fetchPromise.catch(() => {
+        siteDataCache.delete(documentId);
+    });
+
+    return fetchPromise;
 }
 
 async function persistSiteData(documentId, payload, localWriter) {
@@ -861,22 +890,39 @@ async function persistSiteData(documentId, payload, localWriter) {
         throw lastError || new Error(`Could not persist ${documentId}`);
     }
 
+    // Update in-memory cache directly with new resolved payload
+    siteDataCache.set(documentId, Promise.resolve(payload));
+
     return { savedToFirebase, savedToFile };
 }
 
 async function readStyleCssWithFallback(fallbackReader) {
-    if (hasFirebaseServerCredentials()) {
-        try {
-            const cssText = await readSiteTextDocument('style');
-            if (cssText !== null) {
-                return cssText;
-            }
-        } catch (error) {
-            console.error('Failed to read style from Firebase:', error.message);
-        }
+    const cacheKey = 'style_css';
+    if (siteDataCache.has(cacheKey)) {
+        return siteDataCache.get(cacheKey);
     }
 
-    return fallbackReader();
+    const fetchPromise = (async () => {
+        if (hasFirebaseServerCredentials()) {
+            try {
+                const cssText = await readSiteTextDocument('style');
+                if (cssText !== null) {
+                    return cssText;
+                }
+            } catch (error) {
+                console.error('Failed to read style from Firebase:', error.message);
+            }
+        }
+        return fallbackReader();
+    })();
+
+    siteDataCache.set(cacheKey, fetchPromise);
+
+    fetchPromise.catch(() => {
+        siteDataCache.delete(cacheKey);
+    });
+
+    return fetchPromise;
 }
 
 async function persistStyleCss(cssText, localWriter) {
@@ -911,6 +957,9 @@ async function persistStyleCss(cssText, localWriter) {
     if (!savedToFirebase && !savedToFile) {
         throw lastError || new Error('Could not persist style');
     }
+
+    // Update in-memory cache directly
+    siteDataCache.set('style_css', Promise.resolve(cssText));
 
     return { savedToFirebase, savedToFile };
 }
@@ -3174,8 +3223,9 @@ async function renderPageWithSeo(req, res, reqFile, matchedBlogPost = null) {
         ogImage = resolveAbsoluteAssetUrl(configuredLogo || 'img/logo/d.png', req);
     }
 
-    fs.readFile(path.join(__dirname, reqFile), 'utf8', async (err, html) => {
-        if (err) return res.status(404).send('Page not found');
+    try {
+        const filePath = path.join(__dirname, reqFile);
+        const html = await readHtmlTemplate(filePath);
 
         let translatedHtml = html;
         try {
@@ -3256,7 +3306,10 @@ async function renderPageWithSeo(req, res, reqFile, matchedBlogPost = null) {
         }
 
         res.send(injectedHtml);
-    });
+    } catch (err) {
+        console.error('Error serving template:', err);
+        res.status(404).send('Page not found');
+    }
 }
 
 // Server-Side Meta Injection + clean URL redirects
