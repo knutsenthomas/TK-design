@@ -188,6 +188,26 @@ const emailReportLimiter = createRateLimiter({ windowMs: 15 * 60 * 1000, max: 5,
 const pagespeedLimiter = createRateLimiter({ windowMs: 60 * 1000, max: 10, message: 'For mange analyser på kort tid. Prøv igjen om et minutt.' });
 const commentsLimiter = createRateLimiter({ windowMs: 10 * 60 * 1000, max: 10, message: 'Du har publisert for mange kommentarer på kort tid.' });
 
+let adminInstance = null;
+function getAdminInstance() {
+    if (!adminInstance) {
+        const admin = require('firebase-admin');
+        const { projectId, clientEmail, privateKey } = getFirebaseConfig();
+        if (admin.apps.length > 0) {
+            adminInstance = admin.apps[0];
+        } else {
+            adminInstance = admin.initializeApp({
+                credential: admin.credential.cert({
+                    projectId,
+                    clientEmail,
+                    privateKey
+                })
+            });
+        }
+    }
+    return adminInstance;
+}
+
 async function verifyAdminToken(req, res, next) {
     const authHeader = req.headers.authorization || '';
     const adminSecretHeader = req.headers['x-admin-secret'] || req.headers['x-tk-admin-secret'] || '';
@@ -205,6 +225,7 @@ async function verifyAdminToken(req, res, next) {
                 req.user = decodedToken;
                 return next();
             } catch (error) {
+                console.error('[verifyAdminToken] Verification error:', error.message, error.stack);
                 return res.status(401).json({ success: false, error: 'Ugyldig eller utløpt autentiseringstoken.' });
             }
         } else if (expectedSecret && idToken === expectedSecret) {
