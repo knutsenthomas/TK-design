@@ -3074,6 +3074,7 @@ input[type="range"] {
     display: flex;
     flex-direction: column;
     height: 100vh;
+    width: 100% !important;
 }
 
 .editor-header-v2 {
