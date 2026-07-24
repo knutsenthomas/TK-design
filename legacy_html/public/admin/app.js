@@ -1,3 +1,38 @@
+// --- Fetch Interceptor for Firebase Auth ---
+(function() {
+    const originalFetch = window.fetch;
+    window.fetch = async function(resource, options = {}) {
+        const urlStr = typeof resource === 'string' ? resource : (resource?.url || '');
+        const isApiRequest = urlStr.includes('/api/') || urlStr.startsWith('/api/');
+
+        if (isApiRequest) {
+            try {
+                if (window.firebaseAuth && window.firebaseAuth.currentUser) {
+                    const token = await window.firebaseAuth.currentUser.getIdToken();
+                    if (token) {
+                        options.headers = options.headers || {};
+                        if (options.headers instanceof Headers) {
+                            options.headers.set('Authorization', `Bearer ${token}`);
+                        } else if (Array.isArray(options.headers)) {
+                            const authIdx = options.headers.findIndex(h => h[0]?.toLowerCase() === 'authorization');
+                            if (authIdx !== -1) {
+                                options.headers[authIdx] = ['Authorization', `Bearer ${token}`];
+                            } else {
+                                options.headers.push(['Authorization', `Bearer ${token}`]);
+                            }
+                        } else {
+                            options.headers['Authorization'] = `Bearer ${token}`;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error attaching auth token to fetch request:', error);
+            }
+        }
+        return originalFetch(resource, options);
+    };
+})();
+
 function getAdminApiUrl() {
     const host = window.location.hostname || 'localhost';
     const isLocalHost = ['localhost', '127.0.0.1'].includes(host);
