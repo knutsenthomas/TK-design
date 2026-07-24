@@ -5517,7 +5517,7 @@ body.homepage-refresh .info-card:hover {
 body.homepage-refresh .info-card-icon {
     width: 48px;
     height: 48px;
-    color: #1B4965;
+    color: var(--refresh-accent);
     margin-bottom: 20px;
     display: flex;
     align-items: center;
