@@ -241,9 +241,17 @@
         }
     }
 
+    function scheduleCookieBanner() {
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(() => initCookieBanner(), { timeout: 2000 });
+        } else {
+            setTimeout(initCookieBanner, 1200);
+        }
+    }
+
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initCookieBanner);
+        document.addEventListener('DOMContentLoaded', scheduleCookieBanner);
     } else {
-        initCookieBanner();
+        scheduleCookieBanner();
     }
 })();
