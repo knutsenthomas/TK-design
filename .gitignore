@@ -12,3 +12,4 @@ public/final-test.txt
 firebase-debug.log*
 .firebaserc
 EOF
+.vercel
