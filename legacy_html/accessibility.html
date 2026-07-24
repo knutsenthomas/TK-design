@@ -260,13 +260,12 @@
     <script src="translations.js?v=12"></script>
     <script src="script.js?v=3"></script>
     <script src="js/cookies.js?v=3"></script>
-    <script type="importmap">
-        {
-            "imports": {
-            }
-        }
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+        window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
     </script>
-    <script type="module" src="/js/speed-insights-init.js"></script>
+    <script defer src="/_vercel/insights/script.js"></script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
 </body>
 
 </html>
