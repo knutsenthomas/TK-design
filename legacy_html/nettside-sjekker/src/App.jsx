@@ -620,38 +620,38 @@ export default function App() {
             className="flex flex-col min-h-screen"
           >
             {/* Top Navbar */}
-            <nav className="bg-surface shadow-sm sticky top-0 z-50 border-b border-outline-variant/30">
-              <div className="flex justify-between items-center w-full px-6 py-4 max-w-[1200px] mx-auto">
-                <div className="flex items-center gap-4">
-                  <img
-                    alt="tk-design logo"
-                    className="h-10 w-10 object-contain rounded-lg shadow-sm"
-                    src="/img/logo/d.webp"
-                    onError={(e) => {
-                      e.target.src = 'https://lh3.googleusercontent.com/aida/AP1WRLso6p_p4C3-THKsDJ13fkgnPWsTU06X-8KNE2J-fA1HpzexuTiDRJVh1Q0KltbAVlCkyfDpgZwrDdDy45tGMXujB6vqqS18CW8a2vMrSTU4mzjwT0D5-q_cFh8KOL5x188L1KBQgNAjA-iWeRWEEqzTPdZ6aEbGEsRVfyPkIX4yPteuN_C6vZ_wgmdaRxqbutybmSDMxoG4FLWaUcgRYlNW0oEPGEN76Vl0CfqbPmvYLxhUgzeZbmtU1ckp';
-                    }}
-                  />
-                  <span className="font-headline-sm text-headline-sm font-extrabold text-primary">Nettside-sjekker</span>
-                </div>
-                <div className="hidden md:flex items-center gap-8">
-                  {SITE_NAV_ITEMS.map((item) => (
-                    <a
-                      key={item.key}
-                      className="text-on-surface-variant hover:text-primary transition-colors font-label-bold text-label-bold"
-                      href={item.href}
-                    >
-                      {item.label}
-                    </a>
-                  ))}
-                </div>
-                <a
-                  href="/#contact"
-                  className="bg-primary text-on-primary px-6 py-3 rounded-lg font-label-bold text-label-bold hover:opacity-90 hover:scale-[1.02] transition-all active:scale-95 text-center cursor-pointer"
-                >
-                  Kom i gang
+            <header className="header">
+              <div className="container nav-container">
+                <a href="/" className="logo" aria-label="tk-design">
+                  <span className="logo-icon">
+                    <img src="/img/logo/d.webp" alt="tk-design logo" />
+                  </span>
+                  <span className="logo-text">tk-design</span>
                 </a>
+                <nav className="nav-desktop">
+                  <ul>
+                    <li><a href="/" data-i18n="nav.home">Hjem</a></li>
+                    <li><a href="/?section=about" data-i18n="nav.about">Om oss</a></li>
+                    <li className="has-dropdown">
+                      <a href="/?section=services" data-i18n="nav.services">Tjenester <i className="fas fa-chevron-down nav-chevron"></i></a>
+                      <ul className="submenu">
+                        <li><a href="/?section=services" data-i18n="nav.sub_webdesign">Webdesign & Utvikling</a></li>
+                        <li><a href="/?section=services" data-i18n="nav.sub_seo">SEO-Grunnoppsett</a></li>
+                        <li><a href="/contact?service=support" data-i18n="nav.sub_support">Support & Drift</a></li>
+                        <li><a href="/nettside-sjekker" data-i18n="nav.sub_analyzer">Nettside-sjekker</a></li>
+                      </ul>
+                    </li>
+                    <li><a href="/?section=projects" data-i18n="nav.portfolio">Prosjekter</a></li>
+                    <li><a href="/blog" data-i18n="nav.blog">Aktuelt</a></li>
+                    <li><a href="/contact" data-i18n="nav.contact">Kontakt</a></li>
+                  </ul>
+                </nav>
+                <div className="lang-switch-desktop">
+                  <button className="lang-btn">EN</button>
+                  <button className="lang-btn active">NO</button>
+                </div>
               </div>
-            </nav>
+            </header>
 
             <main className="max-w-[1200px] mx-auto px-6 flex-grow">
               {/* Hero Section */}
@@ -921,70 +921,75 @@ export default function App() {
             </main>
 
             {/* Footer */}
-            <footer className="bg-surface-container-highest border-t border-outline-variant/30">
-              <div className="w-full px-6 py-20 max-w-[1200px] mx-auto flex flex-col gap-12">
-                <div className="flex flex-col md:flex-row justify-between items-start gap-8">
-                  <div className="max-w-xs">
-                    <span className="font-headline-md text-headline-md font-extrabold text-on-surface mb-4 block">
-                      tk-design.no
-                    </span>
-                    <p className="text-on-surface-variant text-body-md mb-6">{pageCopy.footer.intro}</p>
+            <footer className="footer pt_120 pb_120" style={{ borderTop: '1px solid var(--clr-border)' }}>
+              <div className="container">
+                <div className="footer-cta">
+                  <h2 data-i18n="footer.cta">La oss starte</h2>
+                </div>
+
+                <div className="footer-content">
+                  <div className="footer-info">
+                    <p style={{ fontSize: '20px', color: 'var(--clr-base)', marginBottom: '20px' }} data-i18n="footer.intro">
+                      Vi bygger din digitale identitet med skreddersydd webdesign, SEO og SoMe-strategi.
+                    </p>
                     <a
-                      className="font-headline-sm text-headline-sm text-primary hover:underline transition-all"
                       href="mailto:thomas@tk-design.no"
+                      style={{ fontSize: '30px', textDecoration: 'underline', color: 'var(--clr-base)' }}
+                      data-i18n="contact.email_val"
                     >
                       thomas@tk-design.no
                     </a>
                   </div>
-                  
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
-                    <div className="flex flex-col gap-2">
-                      <p className="font-label-bold text-label-bold text-on-surface mb-2">Tjenester</p>
-                      <a className="text-on-surface-variant hover:text-primary transition-colors font-semibold" href="/#services">Webdesign</a>
-                      <a className="text-on-surface-variant hover:text-primary transition-colors font-semibold" href="/speed-test">SEO Analyse</a>
-                      <a className="text-on-surface-variant hover:text-primary transition-colors font-semibold" href="/#services">Konvertering</a>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <p className="font-label-bold text-label-bold text-on-surface mb-2">Ressurser</p>
-                      <a className="text-on-surface-variant hover:text-primary transition-colors font-semibold" href="/blog">Blogg</a>
-                      <a className="text-on-surface-variant hover:text-primary transition-colors font-semibold" href="/#projects">Kundecaser</a>
-                      <a className="text-on-surface-variant hover:text-primary transition-colors font-semibold" href="mailto:thomas@tk-design.no">Support</a>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <p className="font-label-bold text-label-bold text-on-surface mb-2">Følg Oss</p>
-                      <a
-                        className="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1 font-semibold"
-                        href="https://www.facebook.com/profile.php?id=61574614704737&amp;locale=nb_NO"
-                        target="_blank"
-                        rel="nofollow noopener noreferrer"
-                      >
-                        Facebook <span className="material-symbols-outlined text-sm">north_east</span>
-                      </a>
-                      <a
-                        className="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1 font-semibold"
-                        href="https://www.instagram.com/tkdesign777"
-                        target="_blank"
-                        rel="nofollow noopener noreferrer"
-                      >
-                        Instagram <span className="material-symbols-outlined text-sm">north_east</span>
-                      </a>
-                      <a
-                        className="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1 font-semibold"
-                        href="https://www.linkedin.com/in/thomas-knutsen-a6aa2793/"
-                        target="_blank"
-                        rel="nofollow noopener noreferrer"
-                      >
-                        LinkedIn <span className="material-symbols-outlined text-sm">north_east</span>
-                      </a>
-                    </div>
+
+                  <div className="footer-links" style={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+                    <a
+                      href="https://www.facebook.com/profile.php?id=61574614704737&amp;locale=nb_NO"
+                      className="social-link"
+                      target="_blank"
+                      rel="nofollow noopener noreferrer"
+                    >
+                      Facebook <i className="fas fa-arrow-right"></i>
+                    </a>
+                    <a
+                      href="https://www.instagram.com/tkdesign777"
+                      className="social-link"
+                      target="_blank"
+                      rel="nofollow noopener noreferrer"
+                    >
+                      Instagram <i className="fas fa-arrow-right"></i>
+                    </a>
+                    <a
+                      href="https://www.linkedin.com/in/thomas-knutsen-a6aa2793/"
+                      className="social-link"
+                      target="_blank"
+                      rel="nofollow noopener noreferrer"
+                    >
+                      LinkedIn <i className="fas fa-arrow-right"></i>
+                    </a>
                   </div>
                 </div>
 
-                <div className="border-t border-outline-variant pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-on-surface-variant text-sm">
-                  <p>© 2026 tk-design.no. Alle rettigheter reservert.</p>
+                <div
+                  className="flex flex-wrap justify-between items-center"
+                  style={{ borderTop: '1px solid var(--clr-border)', paddingTop: '30px' }}
+                >
+                  <p>
+                    <span data-i18n="footer.copyright">Copyright © 2026</span>{' '}
+                    <a href="/" style={{ color: 'var(--clr-base)' }}>
+                      TK-design
+                    </a>{' '}
+                    <span data-i18n="footer.rights">All rights reserved.</span>
+                  </p>
                   <div className="flex gap-4">
-                    <a className="hover:text-primary transition-colors font-semibold font-semibold" href="/privacy">{pageCopy.footer.privacy}</a>
-                    <a className="hover:text-primary transition-colors font-semibold font-semibold" href="/accessibility">{pageCopy.footer.accessibility}</a>
+                    <a href="/accessibility" style={{ color: 'var(--clr-base)' }} data-i18n="footer.accessibility">
+                      Accessibility Statement
+                    </a>
+                    <a href="/privacy" style={{ color: 'var(--clr-base)' }} data-i18n="footer.privacy">
+                      Privacy Policy
+                    </a>
+                    <a href="/admin/" className="admin-secret" style={{ color: '#777', fontSize: '0.8em' }}>
+                      Admin
+                    </a>
                   </div>
                 </div>
               </div>
