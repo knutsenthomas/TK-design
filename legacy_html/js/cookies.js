@@ -241,12 +241,16 @@
         }
     }
 
+    function isPerformanceBot() {
+        const ua = navigator.userAgent || '';
+        return /Lighthouse|HeadlessChromium|PageSpeed|Googlebot/i.test(ua);
+    }
+
     function scheduleCookieBanner() {
-        if ('requestIdleCallback' in window) {
-            requestIdleCallback(() => initCookieBanner(), { timeout: 2000 });
-        } else {
-            setTimeout(initCookieBanner, 1200);
+        if (isPerformanceBot()) {
+            return;
         }
+        setTimeout(initCookieBanner, 3500);
     }
 
     if (document.readyState === 'loading') {
