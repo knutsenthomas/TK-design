@@ -1,4 +1,8 @@
-import { db, collection, getDocs, query, orderBy } from './firebase-init.js';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+
+const app = initializeApp(window.__TK_FIREBASE_CONFIG__, "graphic-public-app");
+const db = getFirestore(app);
 
 const graphicGrid = document.getElementById('graphic-docs-grid');
 
