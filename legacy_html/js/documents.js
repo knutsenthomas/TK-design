@@ -12,9 +12,9 @@ async function loadGraphicDocuments() {
     // Hardkodet fallback for filene du sendte
     const staticGraphics = [
         {
-            title: 'KT Design & Music Logo',
-            description: 'Sort KT-logo for KT Design & Music',
-            imageUrl: '/img/grafisk/media_1786269259892.jpg'
+            title: 'tk-design Logo',
+            description: 'Logo for tk-design',
+            imageUrl: '/img/logo/d.png'
         },
         {
             title: 'Din nye digitale partner',
