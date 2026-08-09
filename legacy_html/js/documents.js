@@ -9,45 +9,81 @@ const graphicGrid = document.getElementById('graphic-docs-grid');
 async function loadGraphicDocuments() {
     if (!graphicGrid) return;
     
+    // Hardkodet fallback for filene du sendte
+    const staticGraphics = [
+        {
+            title: 'KT Design & Music Logo',
+            description: 'Sort KT-logo for KT Design & Music',
+            imageUrl: '/img/grafisk/media_1786269259892.jpg'
+        },
+        {
+            title: 'Din nye digitale partner',
+            description: 'Markedsføringsbilde med to personer og post-its',
+            imageUrl: '/img/grafisk/media_1786269598603.jpg'
+        },
+        {
+            title: 'Trenger du nettside?',
+            description: 'Rødt banner for webdesign med illustrasjon',
+            imageUrl: '/img/grafisk/media_1786269614933.png'
+        },
+        {
+            title: 'CONNECT17 COURAGE',
+            description: 'Connect 17 Courage plakat med løvehode og folk på fjell',
+            imageUrl: '/img/grafisk/media_1786270633681.jpg'
+        }
+    ];
+
     try {
         const q = query(collection(db, "graphicDocs"), orderBy("createdAt", "desc"));
         const querySnapshot = await getDocs(q);
         
-        if (querySnapshot.empty) {
-            graphicGrid.innerHTML = '<p>Ingen grafiske dokumenter tilgjengelig enda.</p>';
-            return;
-        }
-
         graphicGrid.innerHTML = '';
         
+        // Render Firebase documents
         querySnapshot.forEach((docSnap) => {
             const data = docSnap.data();
-            
-            // Lag kort for hvert dokument
-            const article = document.createElement('article');
-            article.className = 'card';
-
-            const preview = `<img src="${data.imageUrl}" alt="${data.title}" class="card-img" style="object-fit: cover; background: #fff; border-bottom: 1px solid #eee;" onerror="this.src='/img/placeholder.png'">`;
-
-            article.innerHTML = `
-                ${preview}
-                <div class="card-content">
-                    <h3 class="card-title">${data.title || 'Uten tittel'}</h3>
-                    <p class="card-desc" style="font-size: 14px; margin-bottom: 16px;">${data.description || ''}</p>
-                    <div class="tags" style="margin-top: auto; margin-bottom: 24px;">
-                        <span class="tag">Grafisk Design</span>
-                    </div>
-                    <a href="${data.imageUrl}" target="_blank" rel="noopener noreferrer" class="btn" style="width: 100%; text-align: center; display: block;">Åpne bilde</a>
-                </div>
-            `;
-            
-            graphicGrid.appendChild(article);
+            renderCard(data.title, data.description, data.imageUrl);
         });
+
+        // Render static documents
+        staticGraphics.forEach(data => {
+            renderCard(data.title, data.description, data.imageUrl);
+        });
+
+        if (graphicGrid.innerHTML === '') {
+            graphicGrid.innerHTML = '<p style="text-align: center; width: 100%; color: #666;">Ingen grafiske arbeider funnet.</p>';
+        }
 
     } catch (error) {
         console.error("Feil ved henting av grafiske dokumenter:", error);
-        graphicGrid.innerHTML = '<p>Kunne ikke laste dokumenter. Prøv igjen senere.</p>';
+        
+        // Fallback: Still render the static ones if Firebase fails
+        graphicGrid.innerHTML = '';
+        staticGraphics.forEach(data => {
+            renderCard(data.title, data.description, data.imageUrl);
+        });
     }
+}
+
+function renderCard(title, description, imageUrl) {
+    const article = document.createElement('article');
+    article.className = 'card';
+    article.style.borderRadius = '16px';
+    article.style.overflow = 'hidden';
+    article.style.background = '#fff';
+    article.style.boxShadow = '0 4px 20px rgba(0,0,0,0.05)';
+    article.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
+    
+    article.innerHTML = `
+        <img src="${imageUrl}" alt="${title}" style="width: 100%; height: 300px; object-fit: cover; display: block; border-bottom: 1px solid #eee;">
+        <div style="padding: 24px;">
+            <h3 style="font-size: 1.25rem; margin-bottom: 8px; font-weight: 600; color: var(--clr-base);">${title || 'Uten tittel'}</h3>
+            <p style="color: var(--clr-common-text); font-size: 0.95rem; line-height: 1.5; margin-bottom: 16px;">${description || ''}</p>
+            <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" class="primary-cta" style="display: inline-block; padding: 8px 16px; text-decoration: none; font-size: 0.9rem; border-radius: 8px; background-color: var(--clr-base); color: var(--clr-white);">Åpne bilde</a>
+        </div>
+    `;
+    
+    graphicGrid.appendChild(article);
 }
 
 // Initialiser når DOM er klar
