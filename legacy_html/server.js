@@ -7331,6 +7331,7 @@ const htmlPages = [
     'service-details',
     'privacy',
     'accessibility',
+    'grafisk'
 ];
 
 htmlPages.forEach(page => {
