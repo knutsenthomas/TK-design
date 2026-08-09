@@ -491,6 +491,13 @@
                         <p id="graphicUploadProgress" style="margin-top: 8px; color: #666;"></p>
                     </form>
                 </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom: 16px;">Opplastet Portefølje</h3>
+                    <div id="graphicPortfolioGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px;">
+                        <!-- Lastes inn med JS -->
+                    </div>
+                </div>
             </div>
 
             <!-- Home / Overview Tab -->
@@ -2422,7 +2429,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
         // Firebase configuration
@@ -2445,6 +2452,45 @@
         const titleInput = document.getElementById('graphicTitle');
         const descInput = document.getElementById('graphicDesc');
         const progressEl = document.getElementById('graphicUploadProgress');
+
+        const loadGraphics = async () => {
+            const grid = document.getElementById('graphicPortfolioGrid');
+            if (!grid) return;
+            grid.innerHTML = '<p style="color: var(--text-muted); font-size: 14px;">Laster inn grafikk...</p>';
+
+            try {
+                const q = query(collection(db, "graphicDocs"), orderBy("createdAt", "desc"));
+                const querySnapshot = await getDocs(q);
+                
+                grid.innerHTML = '';
+                if (querySnapshot.empty) {
+                    grid.innerHTML = '<p style="color: var(--text-muted); font-size: 14px;">Ingen opplastede bilder ennå.</p>';
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const card = document.createElement('div');
+                    card.style.cssText = "border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; background: white; box-shadow: var(--shadow-sm);";
+                    card.innerHTML = `
+                        <div style="width: 100%; height: 200px; background: #f0f0f0;">
+                            <img src="${data.imageUrl}" alt="${data.title}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='/img/placeholder.png'">
+                        </div>
+                        <div style="padding: 12px;">
+                            <h4 style="margin: 0 0 4px 0; font-size: 16px; color: var(--text-main); font-weight: 600;">${data.title}</h4>
+                            <p style="margin: 0; font-size: 13px; color: var(--text-muted);">${data.description}</p>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch(e) {
+                console.error("Error loading graphics:", e);
+                grid.innerHTML = '<p style="color: red; font-size: 14px;">Kunne ikke laste inn portefølje. Sjekk Firebase rules eller konsollen.</p>';
+            }
+        };
+
+        // Load initially
+        loadGraphics();
 
         if (form) {
             form.addEventListener('submit', async (e) => {
@@ -2485,6 +2531,8 @@
                             form.reset();
                             submitBtn.disabled = false;
                             
+                            loadGraphics();
+
                             setTimeout(() => { progressEl.textContent = ""; }, 3000);
                         }
                     );
