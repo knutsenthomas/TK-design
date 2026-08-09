@@ -6,7 +6,7 @@ async function loadGraphicDocuments() {
     if (!graphicGrid) return;
     
     try {
-        const q = query(collection(db, "graphic_docs"), orderBy("createdAt", "desc"));
+        const q = query(collection(db, "graphicDocs"), orderBy("createdAt", "desc"));
         const querySnapshot = await getDocs(q);
         
         if (querySnapshot.empty) {
@@ -23,20 +23,17 @@ async function loadGraphicDocuments() {
             const article = document.createElement('article');
             article.className = 'card';
 
-            const isImage = data.type && data.type.startsWith('image/');
-            const preview = isImage 
-                ? `<img src="${data.url}" alt="${data.title}" class="card-img" style="object-fit: cover; background: #fff; border-bottom: 1px solid #eee;">`
-                : `<div class="card-img" style="display:flex; align-items:center; justify-content:center; background:#f0f4f8; color:#3b82f6; font-weight:bold; font-size:1.5rem;">📄 PDF Dokument</div>`;
+            const preview = `<img src="${data.imageUrl}" alt="${data.title}" class="card-img" style="object-fit: cover; background: #fff; border-bottom: 1px solid #eee;" onerror="this.src='/img/placeholder.png'">`;
 
             article.innerHTML = `
                 ${preview}
                 <div class="card-content">
-                    <h3 class="card-title">${data.title}</h3>
-                    <div class="tags" style="margin-top: 12px; margin-bottom: 24px;">
-                        <span class="tag">Grafisk</span>
-                        <span class="tag">${isImage ? 'Bilde' : 'Dokument'}</span>
+                    <h3 class="card-title">${data.title || 'Uten tittel'}</h3>
+                    <p class="card-desc" style="font-size: 14px; margin-bottom: 16px;">${data.description || ''}</p>
+                    <div class="tags" style="margin-top: auto; margin-bottom: 24px;">
+                        <span class="tag">Grafisk Design</span>
                     </div>
-                    <a href="${data.url}" target="_blank" rel="noopener noreferrer" class="btn" style="width: 100%; text-align: center; display: block;">Åpne dokument</a>
+                    <a href="${data.imageUrl}" target="_blank" rel="noopener noreferrer" class="btn" style="width: 100%; text-align: center; display: block;">Åpne bilde</a>
                 </div>
             `;
             
