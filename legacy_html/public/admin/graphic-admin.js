@@ -32,11 +32,11 @@
         return payload.publicUrl || payload.url;
     }
 
-    async function loadGraphicDocuments() {
+    window.loadGraphicDocuments = async function() {
         if (!graphicPortfolioGrid) return;
         
         if (!window.firebaseDb) {
-            setTimeout(loadGraphicDocuments, 500);
+            setTimeout(window.loadGraphicDocuments, 500);
             return;
         }
 
@@ -77,7 +77,7 @@
                                 e.target.innerText = 'Sletter...';
                                 e.target.disabled = true;
                                 await window.firebaseDb.collection("graphicDocs").doc(id).delete();
-                                loadGraphicDocuments();
+                                window.loadGraphicDocuments();
                             } catch (err) {
                                 console.error('Feil ved sletting:', err);
                                 alert('Kunne ikke slette dokumentet. ' + err.message);
@@ -98,8 +98,8 @@
 
     // Initialize when DOM is ready
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadGraphicDocuments);
+        document.addEventListener('DOMContentLoaded', window.loadGraphicDocuments);
     } else {
-        loadGraphicDocuments();
+        window.loadGraphicDocuments();
     }
 })();
