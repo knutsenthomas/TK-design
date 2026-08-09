@@ -51,16 +51,20 @@
             snapshot.forEach((documentSnap) => {
                 const data = documentSnap.data();
                 const id = documentSnap.id;
-                html += `
+                const badge = (data.imageUrls && data.imageUrls.length > 1) 
+                    ? \`<div style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold;">📁 \${data.imageUrls.length} bilder</div>\` 
+                    : '';
+                html += \`
                     <div class="card" style="position: relative; display: flex; flex-direction: column;">
-                        <img src="${data.imageUrl}" alt="${data.title}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">
+                        <img src="\${data.imageUrl}" alt="\${data.title}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">
+                        \${badge}
                         <div style="padding: 16px 0 0 0;">
-                            <h4 style="margin: 0 0 8px 0;">${data.title}</h4>
-                            <p style="color: #666; font-size: 0.9rem; margin: 0 0 16px 0;">${data.description}</p>
+                            <h4 style="margin: 0 0 8px 0;">\${data.title}</h4>
+                            <p style="color: #666; font-size: 0.9rem; margin: 0 0 16px 0;">\${data.description}</p>
                         </div>
-                        <button class="delete-graphic-btn" data-id="${id}" style="margin-top: auto; background: var(--danger, #ef4444); color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer;">Slett</button>
+                        <button class="delete-graphic-btn" data-id="\${id}" style="margin-top: auto; background: var(--danger, #ef4444); color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer;">Slett</button>
                     </div>
-                `;
+                \`;
             });
             
             if (html === '') {

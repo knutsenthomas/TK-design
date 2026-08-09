@@ -484,8 +484,8 @@
                             <input type="text" id="graphicDesc" required class="sidebar-control" style="width: 100%; max-width: 400px; padding: 8px;">
                         </div>
                         <div style="margin-bottom: 16px;">
-                            <label>Bilde</label>
-                            <input type="file" id="graphicFile" accept="image/*" required style="display: block; margin-top: 8px;">
+                            <label>Bilde(r)</label>
+                            <input type="file" id="graphicFile" accept="image/*" multiple required style="display: block; margin-top: 8px;">
                         </div>
                         <button type="submit" class="save-btn" style="margin-top: 8px; padding: 10px 20px; font-weight: 600;">Last opp & publiser</button>
                         <p id="graphicUploadProgress" style="margin-top: 8px; color: #666;"></p>
@@ -507,45 +507,52 @@
                             const title = document.getElementById('graphicTitle').value;
                             const desc = document.getElementById('graphicDesc').value;
                             const fileInput = document.getElementById('graphicFile');
-                            const file = fileInput.files[0];
+                            const files = Array.from(fileInput.files);
                             
-                            if (!file) return alert('Velg et bilde!');
+                            if (files.length === 0) return alert('Velg minst ett bilde!');
                             
                             const btn = form.querySelector('button');
                             btn.disabled = true;
                             btn.innerText = 'Laster opp...';
-                            progress.innerText = 'Laster opp bilde...';
+                            progress.innerText = \`Laster opp \${files.length} bilde(r)...\`;
                             progress.style.color = '#666';
                             
                             try {
-                                const formData = new FormData();
-                                formData.append('file', file);
-                                formData.append('folder', 'grafisk');
-                                
                                 let token = null;
                                 if (window.firebaseAuth && window.firebaseAuth.currentUser) {
                                     token = await window.firebaseAuth.currentUser.getIdToken();
                                 }
                                 
                                 const headers = {};
-                                if (token) headers['Authorization'] = `Bearer ${token}`;
+                                if (token) headers['Authorization'] = \`Bearer \${token}\`;
+
+                                const imageUrls = [];
                                 
-                                const res = await fetch('/api/admin/storage/upload', {
-                                    method: 'POST',
-                                    headers: headers,
-                                    body: formData
-                                });
-                                
-                                const payload = await res.json();
-                                if (!res.ok) throw new Error(payload?.details || payload?.error || 'Opplasting feilet');
+                                for (let i = 0; i < files.length; i++) {
+                                    progress.innerText = \`Laster opp bilde \${i + 1} av \${files.length}...\`;
+                                    const formData = new FormData();
+                                    formData.append('file', files[i]);
+                                    formData.append('folder', 'grafisk');
+                                    
+                                    const res = await fetch('/api/admin/storage/upload', {
+                                        method: 'POST',
+                                        headers: headers,
+                                        body: formData
+                                    });
+                                    
+                                    const payload = await res.json();
+                                    if (!res.ok) throw new Error(payload?.details || payload?.error || \`Opplasting av bilde \${i + 1} feilet\`);
+                                    
+                                    imageUrls.push(payload.publicUrl || payload.url);
+                                }
                                 
                                 progress.innerText = 'Lagrer i database...';
-                                const imageUrl = payload.publicUrl || payload.url;
                                 
                                 await window.firebaseDb.collection('graphicDocs').add({
                                     title: title,
                                     description: desc,
-                                    imageUrl: imageUrl,
+                                    imageUrl: imageUrls[0], // For bakoverkompatibilitet
+                                    imageUrls: imageUrls,
                                     createdAt: window.firebase.firestore.FieldValue.serverTimestamp()
                                 });
                                 
