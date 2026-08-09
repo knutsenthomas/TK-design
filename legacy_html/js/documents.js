@@ -79,7 +79,7 @@ function renderCard(title, description, imageUrl) {
         <div style="padding: 24px;">
             <h3 style="font-size: 1.25rem; margin-bottom: 8px; font-weight: 600; color: var(--clr-base);">${title || 'Uten tittel'}</h3>
             <p style="color: var(--clr-common-text); font-size: 0.95rem; line-height: 1.5; margin-bottom: 16px;">${description || ''}</p>
-            <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" class="primary-cta" style="display: inline-block; padding: 8px 16px; text-decoration: none; font-size: 0.9rem; border-radius: 8px; background-color: var(--clr-base); color: var(--clr-white);">Åpne bilde</a>
+            <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" style="display: block; text-align: center; padding: 10px 16px; text-decoration: none; font-size: 0.95rem; font-weight: 500; border-radius: 8px; background-color: var(--clr-base); color: var(--clr-white); transition: background-color 0.2s ease;">Åpne bilde</a>
         </div>
     `;
     
