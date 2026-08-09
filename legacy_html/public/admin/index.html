@@ -17,8 +17,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    <link rel="stylesheet" href="css/dashboard.css?v=20260603_V15">
-    <link rel="stylesheet" href="css/admin-unified.css?v=20260602_V12">
+    <link rel="stylesheet" href="/admin/css/dashboard.css?v=20260603_V15">
+    <link rel="stylesheet" href="/admin/css/admin-unified.css?v=20260602_V12">
     <link rel="stylesheet" href="/admin/style.css?v=69">
     <link rel="stylesheet" href="/admin/panel.css?v=5">
     
@@ -2427,12 +2427,12 @@
 
         // Firebase configuration
         const firebaseConfig = {
-            apiKey: window.firebaseConfig.apiKey,
-            authDomain: window.firebaseConfig.authDomain,
-            projectId: window.firebaseConfig.projectId,
-            storageBucket: window.firebaseConfig.storageBucket,
-            messagingSenderId: window.firebaseConfig.messagingSenderId,
-            appId: window.firebaseConfig.appId
+            apiKey: window.__TK_FIREBASE_CONFIG__.apiKey,
+            authDomain: window.__TK_FIREBASE_CONFIG__.authDomain,
+            projectId: window.__TK_FIREBASE_CONFIG__.projectId,
+            storageBucket: window.__TK_FIREBASE_CONFIG__.storageBucket,
+            messagingSenderId: window.__TK_FIREBASE_CONFIG__.messagingSenderId,
+            appId: window.__TK_FIREBASE_CONFIG__.appId
         };
 
         const app = initializeApp(firebaseConfig, "graphic-app");
