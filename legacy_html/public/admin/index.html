@@ -348,10 +348,6 @@
                                 <span class="material-symbols-outlined">palette</span>
                                 <span>Design</span>
                             </button>
-                            <button class="nav-btn nav-link" data-tab="graphic">
-                                <span class="material-symbols-outlined">brush</span>
-                                <span>Grafisk Design</span>
-                            </button>
                         </li>
                         <li class="nav-item">
                             <button class="nav-btn nav-link" data-tab="social-planner" data-i18n="nav_social_planner">
@@ -459,43 +455,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- =========================================
-                 GRAFISK DESIGN TAB
-                 ========================================= -->
-            <div id="graphic-tab" class="tab-content section-container">
-                <header class="section-header">
-                    <h2>Grafisk Design Portefølje</h2>
-                    <p>Last opp og administrer grafiske dokumenter til porteføljen.</p>
-                </header>
-
-                <div class="card" style="margin-bottom: 24px;">
-                    <h3>Last opp nytt bilde</h3>
-                    <form id="graphicUploadForm" style="margin-top: 16px;">
-                        <div style="margin-bottom: 16px;">
-                            <label>Tittel</label>
-                            <input type="text" id="graphicTitle" required class="sidebar-control" style="width: 100%; max-width: 400px; padding: 8px;">
-                        </div>
-                        <div style="margin-bottom: 16px;">
-                            <label>Beskrivelse</label>
-                            <input type="text" id="graphicDesc" required class="sidebar-control" style="width: 100%; max-width: 400px; padding: 8px;">
-                        </div>
-                        <div style="margin-bottom: 16px;">
-                            <label>Bilde</label>
-                            <input type="file" id="graphicFile" accept="image/*" required style="display: block; margin-top: 8px;">
-                        </div>
-                        <button type="submit" class="btn" style="background: var(--primary); color: white; padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer;">Last opp & publiser</button>
-                        <p id="graphicUploadProgress" style="margin-top: 8px; color: #666;"></p>
-                    </form>
-                </div>
-
-                <div class="card">
-                    <h3 style="margin-bottom: 16px;">Opplastet Portefølje</h3>
-                    <div id="graphicPortfolioGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px;">
-                        <!-- Lastes inn med JS -->
                     </div>
                 </div>
             </div>
@@ -2442,107 +2401,9 @@
             appId: window.__TK_FIREBASE_CONFIG__.appId
         };
 
-        const app = initializeApp(firebaseConfig, "graphic-app");
+        const app = initializeApp(window.__TK_FIREBASE_CONFIG__, "admin-app");
         const db = getFirestore(app);
         const storage = getStorage(app);
-
-        // Upload Logic
-        const form = document.getElementById('graphicUploadForm');
-        const fileInput = document.getElementById('graphicFile');
-        const titleInput = document.getElementById('graphicTitle');
-        const descInput = document.getElementById('graphicDesc');
-        const progressEl = document.getElementById('graphicUploadProgress');
-
-        const loadGraphics = async () => {
-            const grid = document.getElementById('graphicPortfolioGrid');
-            if (!grid) return;
-            grid.innerHTML = '<p style="color: var(--text-muted); font-size: 14px;">Laster inn grafikk...</p>';
-
-            try {
-                const q = query(collection(db, "graphicDocs"), orderBy("createdAt", "desc"));
-                const querySnapshot = await getDocs(q);
-                
-                grid.innerHTML = '';
-                if (querySnapshot.empty) {
-                    grid.innerHTML = '<p style="color: var(--text-muted); font-size: 14px;">Ingen opplastede bilder ennå.</p>';
-                    return;
-                }
-
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const card = document.createElement('div');
-                    card.style.cssText = "border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; background: white; box-shadow: var(--shadow-sm);";
-                    card.innerHTML = `
-                        <div style="width: 100%; height: 200px; background: #f0f0f0;">
-                            <img src="${data.imageUrl}" alt="${data.title}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='/img/placeholder.png'">
-                        </div>
-                        <div style="padding: 12px;">
-                            <h4 style="margin: 0 0 4px 0; font-size: 16px; color: var(--text-main); font-weight: 600;">${data.title}</h4>
-                            <p style="margin: 0; font-size: 13px; color: var(--text-muted);">${data.description}</p>
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
-            } catch(e) {
-                console.error("Error loading graphics:", e);
-                grid.innerHTML = '<p style="color: red; font-size: 14px;">Kunne ikke laste inn portefølje. Sjekk Firebase rules eller konsollen.</p>';
-            }
-        };
-
-        // Load initially
-        loadGraphics();
-
-        if (form) {
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const file = fileInput.files[0];
-                if (!file) return;
-
-                const submitBtn = form.querySelector('button[type="submit"]');
-                submitBtn.disabled = true;
-                progressEl.textContent = "Laster opp bilde...";
-
-                try {
-                    const storageRef = ref(storage, 'graphic-docs/' + Date.now() + '_' + file.name);
-                    const uploadTask = uploadBytesResumable(storageRef, file);
-
-                    uploadTask.on('state_changed', 
-                        (snapshot) => {
-                            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                            progressEl.textContent = 'Laster opp... ' + Math.round(progress) + '%';
-                        },
-                        (error) => {
-                            console.error("Upload error", error);
-                            progressEl.textContent = "Feil ved opplasting.";
-                            submitBtn.disabled = false;
-                        },
-                        async () => {
-                            progressEl.textContent = "Lagrer i database...";
-                            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                            
-                            await addDoc(collection(db, "graphicDocs"), {
-                                title: titleInput.value,
-                                description: descInput.value,
-                                imageUrl: downloadURL,
-                                createdAt: serverTimestamp()
-                            });
-
-                            progressEl.textContent = "Vellykket! Bildet er lagt til i porteføljen.";
-                            form.reset();
-                            submitBtn.disabled = false;
-                            
-                            loadGraphics();
-
-                            setTimeout(() => { progressEl.textContent = ""; }, 3000);
-                        }
-                    );
-                } catch(err) {
-                    console.error("Save error", err);
-                    progressEl.textContent = "En feil oppstod. Prøv igjen.";
-                    submitBtn.disabled = false;
-                }
-            });
-        }
     </script>
 
     <script type="importmap">
