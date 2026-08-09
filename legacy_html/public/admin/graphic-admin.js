@@ -94,67 +94,7 @@
         }
     }
 
-    if (graphicUploadForm) {
-        graphicUploadForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            if (!window.firebaseDb) {
-                alert('Firebase er ikke klar enda. Prøv igjen om et øyeblikk.');
-                return;
-            }
-            
-            const title = document.getElementById('graphicTitle').value;
-            const description = document.getElementById('graphicDesc').value;
-            const fileInput = document.getElementById('graphicFile');
-            const file = fileInput.files[0];
-            
-            if (!file) {
-                alert('Velg et bilde!');
-                return;
-            }
-            
-            const submitBtn = graphicUploadForm.querySelector('button[type="submit"]');
-            submitBtn.disabled = true;
-            submitBtn.innerText = 'Laster opp...';
-            graphicUploadProgress.innerText = 'Laster opp bilde til server...';
-            
-            try {
-                // 1. Last opp bilde via admin API
-                const imageUrl = await uploadFileViaAdminApi(file, 'grafisk');
-                
-                graphicUploadProgress.innerText = 'Lagrer i databasen...';
-                
-                // 2. Lagre dokument i Firestore (V10 Compat)
-                await window.firebaseDb.collection("graphicDocs").add({
-                    title,
-                    description,
-                    imageUrl,
-                    createdAt: window.firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                graphicUploadProgress.innerText = 'Vellykket!';
-                graphicUploadProgress.style.color = 'green';
-                
-                // Reset form
-                graphicUploadForm.reset();
-                setTimeout(() => {
-                    graphicUploadProgress.innerText = '';
-                    graphicUploadProgress.style.color = '#666';
-                }, 3000);
-                
-                // Refresh grid
-                loadGraphicDocuments();
-                
-            } catch (err) {
-                console.error("Feil ved opplasting:", err);
-                graphicUploadProgress.innerText = 'Feil: ' + err.message;
-                graphicUploadProgress.style.color = 'red';
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = 'Last opp & publiser';
-            }
-        });
-    }
+    // The submit listener has been moved to an inline script in index.html to guarantee it runs
 
     // Initialize when DOM is ready
     if (document.readyState === 'loading') {
