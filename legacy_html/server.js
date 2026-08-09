@@ -55,7 +55,8 @@ const PAGE_ROUTE_MAP = {
     '/privacy': 'privacy.html',
     '/accessibility': 'accessibility.html',
     '/speed-test': 'speed-test/index.html',
-    '/nettside-sjekker': 'speed-test/index.html'
+    '/nettside-sjekker': 'speed-test/index.html',
+    '/portefolje': 'portefolje.html'
 };
 const LEGACY_REDIRECT_MAP = {
     '/index.html': '/',
