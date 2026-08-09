@@ -2425,7 +2425,7 @@ function handleUrlHashRouting() {
             startNewPost();
         }, 150);
     } else {
-        const sections = ['home', 'content', 'blog', 'media', 'style', 'social-planner', 'seo', 'analytics'];
+        const sections = ['home', 'content', 'blog', 'media', 'style', 'graphic', 'social-planner', 'seo', 'analytics'];
         const possibleSection = hash.startsWith('#') ? hash.substring(1) : hash;
         if (sections.includes(possibleSection)) {
             switchTab(possibleSection, false);
