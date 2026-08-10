@@ -68,9 +68,17 @@ const LEGACY_REDIRECT_MAP = {
     '/project-details.html': '/project-details',
     '/blog-details.html': '/blog-details',
     '/contact.html': '/contact',
-    '/service-details.html': '/service-details',
+    '/service-details.html': '/webdesign',
     '/privacy.html': '/privacy',
-    '/accessibility.html': '/accessibility'
+    '/accessibility.html': '/accessibility',
+    // 301 Redirects for Legacy URLs reported in Google Search Console
+    '/en': '/',
+    '/tjenester': '/webdesign',
+    '/om-oss': '/',
+    '/nyheter': '/blog',
+    '/en/nyheter': '/blog',
+    '/personvernserklæring': '/privacy',
+    '/personvernerklaering': '/privacy'
 };
 const SEO_GLOBAL_DEFAULTS = {
     siteTitle: 'TK-design',
@@ -3429,6 +3437,11 @@ app.get('/blog/:postSlug', async (req, res) => {
         console.error('Error serving pretty blog URL:', error);
         return res.status(500).send('Page not found');
     }
+});
+
+// Catch-all 301 redirects for legacy blog URLs (e.g. /post/..., /nyheter/...) reported in Search Console
+app.get(['/post/*', '/nyheter/*'], (req, res) => {
+    return res.redirect(301, '/blog');
 });
 
 app.get([...Object.keys(PAGE_ROUTE_MAP), ...Object.keys(LEGACY_REDIRECT_MAP)], async (req, res) => {
