@@ -2,5 +2,8 @@
   "hosting": {
     "site": "tk-design-f43f6",
     "public": "public"
+  },
+  "firestore": {
+    "rules": "firestore.rules"
   }
 }

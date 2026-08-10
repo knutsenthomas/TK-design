@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="no">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Taler og forkynnelse fra Familiekirka Mandal.">
+    <title>Taler | Familiekirka Mandal</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <header class="site-header" id="top">
+      <a class="brand" href="index.html" aria-label="Til forsiden">
+        <span class="brand-mark">
+          <img src="assets/familiekirka-logo-transparent.png" alt="">
+        </span>
+      </a>
+      <nav class="main-nav" aria-label="Hovedmeny">
+        <a href="index.html#kalender">Kalender</a>
+        <a href="taler.html" aria-current="page">Taler</a>
+        <a href="index.html#barn-unge">Neste generasjon</a>
+        <a href="index.html#om">Visjon</a>
+        <a href="index.html#kontakt">Kontakt</a>
+      </nav>
+      <div class="header-actions">
+        <a class="header-button ghost" href="index.html">Forside</a>
+        <a class="header-button solid" href="index.html#kontakt">Besøk oss</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="subhero sermons-hero">
+        <div>
+          <p class="hero-word">Familiekirka Mandal</p>
+          <p class="eyebrow">Taler</p>
+          <h1>Forkynnelse for hverdagslivet</h1>
+          <p>Her kan du høre taler og forkynnelse fra Familiekirka Mandal.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#tale-arkiv">Se talearkiv</a>
+            <a class="button secondary" href="https://soundcloud.com/familiekirken-mandal" target="_blank" rel="noreferrer">Åpne SoundCloud</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section sermon-feature">
+        <div class="sermon-feature-card">
+          <div>
+            <p class="eyebrow">Siste tale</p>
+            <h2 id="latest-title">Å være velsignet for å velsigne</h2>
+            <p id="latest-text">Nyeste episode hentet fra SoundCloud-profilen til Familiekirken-Mandal.</p>
+            <div class="sermon-meta">
+              <span id="latest-date">21.12.2024</span>
+              <span id="latest-speaker">Pål Kristian Helmersen</span>
+              <span id="latest-duration">31:39</span>
+            </div>
+            <a class="button primary" href="#inline-player" data-featured-play>Lytt nå</a>
+          </div>
+          <img src="https://images.unsplash.com/photo-1695559564759-9aedf04c359d?q=85&w=1800&auto=format&fit=crop" alt="Mikrofon til podcast og taler">
+        </div>
+      </section>
+
+      <section class="section sermon-archive" id="tale-arkiv">
+        <div class="section-heading left">
+          <p class="eyebrow">Arkiv</p>
+          <h2>Taler og serier</h2>
+          <p>Alle 147 spor fra SoundCloud-profilen er hentet inn i arkivet. Søk etter tittel eller taler, eller filtrer etter år.</p>
+        </div>
+        <div class="inline-player" id="inline-player">
+          <div>
+            <p class="eyebrow">Spiller nå</p>
+            <h3 id="player-title">Velg en tale i arkivet</h3>
+            <p id="player-meta">Trykk “Lytt” på en tale for å spille den av her på siden.</p>
+            <p id="player-status" class="player-status">Klar.</p>
+          </div>
+          <audio id="track-audio" controls preload="none"></audio>
+        </div>
+        <div class="sermon-tools">
+          <label>
+            <span>Søk etter tittel, taler eller dato</span>
+            <input id="sermon-search" type="search" placeholder="Søk i taler...">
+          </label>
+          <div class="sermon-filters" id="sermon-filters" aria-label="Filtrer taler etter år">
+            <button class="active" type="button" data-sermon-year="alle">Alle</button>
+          </div>
+        </div>
+        <div class="sermon-list" id="sermon-list"></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Taleside for Familiekirka Mandal. Podcast koblet til SoundCloud-profilen Familiekirken-Mandal.</p>
+      <a href="index.html">Til forsiden</a>
+    </footer>
+    <script src="taler.js"></script>
+  </body>
+</html>
