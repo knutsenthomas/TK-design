@@ -4686,10 +4686,11 @@ body.homepage-refresh .nav-desktop a {
     }
 
     body.homepage-refresh .lang-switch-desktop {
-        flex: 1 1 0%;
+        flex: 0 0 auto;
         display: inline-flex !important;
-        justify-content: flex-end;
+        justify-content: center;
         min-width: fit-content;
+        margin-left: auto;
     }
 
     body.homepage-refresh .menu-trigger {
