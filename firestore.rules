@@ -14,6 +14,11 @@ service cloud.firestore {
       allow read, write: if isSignedIn() && request.auth.uid == userId;
     }
 
+    match /graphicDocs/{docId} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
     // Standard fallback-regel (valgfritt)
     // Siden backend API-et kjører med admin-rettigheter, trenger vi ikke 
     // åpne opp andre samlinger for klientskriving her.
