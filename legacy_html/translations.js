@@ -30,18 +30,8 @@ const translations = {
         portfolio_page: {
             title: "Portfolio | TK-design",
             heading: "Our Portfolio",
+            subtitle: "Explore a selection of our tailored websites, web design and digital solutions.",
             loading: "Loading graphic portfolio..."
-        },
-        contact_page: {
-            opt_1: "Web design + SEO (Recommended - Most popular)",
-            opt_2: "SEO (Search Engine Optimization)",
-            opt_3: "Ongoing operations and support",
-            tag_modern: "Modern & Clean",
-            tag_minimal: "Minimalist",
-            tag_dark: "Exclusive & Dark",
-            tag_shop: "E-commerce",
-            tag_multilingual: "Multilingual",
-            desired_features: "Desired website features"
         },
         nav: {
             home: "Home",
@@ -192,7 +182,24 @@ const translations = {
             step_2_title: "2. I review the need",
             step_2_desc: "I look at goals, scope and the best next step for you.",
             step_3_title: "3. You get a concrete reply",
-            step_3_desc: "You get a response with recommendations, clarification or an invitation to talk."
+            step_3_desc: "You get a response with recommendations, clarification or an invitation to talk.",
+            opt_1: "Web design + SEO (Recommended - Most popular)",
+            opt_custom_web: "Custom Web Design only",
+            opt_2: "SEO (Search Engine Optimization)",
+            opt_some: "SoMe Content Strategy",
+            opt_3: "Ongoing operations and support",
+            service_select_label: "Which service do you need help with?",
+            design_style_label: "Preferred design style",
+            tag_modern: "Modern & Clean",
+            tag_minimal: "Minimalist",
+            tag_dark: "Exclusive & Dark",
+            tag_shop: "E-commerce",
+            tag_multilingual: "Multilingual",
+            desired_features: "Desired website features",
+            step_start: "Started (100%)",
+            step_config: "1. Configuration",
+            step_company: "2. Business Info",
+            step_contact: "3. Contact"
         },
         services: {
             title: "Our core areas",
@@ -502,13 +509,6 @@ const translations = {
             tag: "Documented Loss",
             title: "How much does a slow site cost you?",
             desc: "Did you know that a slow website on average costs businesses 65% of their customers before the page has even loaded? Don't let competitors capture the 200% organic traffic you miss out on every month."
-        },
-        contact_page: {
-            step_start: "Started (100%)",
-            step_config: "1. Configuration",
-            step_company: "2. Business Info",
-            step_contact: "3. Contact",
-            form_submit: "Get My Custom Proposal"
         }
     },
     no: {
@@ -542,6 +542,7 @@ const translations = {
         portfolio_page: {
             title: "Portefølje | TK-design",
             heading: "Vår Portefølje",
+            subtitle: "Utforsk et utvalg av våre skreddersydde nettsider, webdesign og digitale løsninger.",
             loading: "Laster inn grafisk portefølje..."
         },
         contact_page: {
@@ -703,7 +704,24 @@ const translations = {
             step_2_title: "2. Jeg går gjennom behovet",
             step_2_desc: "Jeg ser på mål, omfang og hva som er beste neste steg.",
             step_3_title: "3. Du får et konkret svar",
-            step_3_desc: "Du får respons med forslag, avklaring eller invitasjon til en prat."
+            step_3_desc: "Du får respons med forslag, avklaring eller invitasjon til en prat.",
+            opt_1: "Webdesign + SEO (Anbefalt - Mest populær)",
+            opt_custom_web: "Kun skreddersydd Webdesign",
+            opt_2: "SEO (Søkemotoroptimalisering)",
+            opt_some: "SoMe Innholdsstrategi",
+            opt_3: "Løpende drift og support",
+            service_select_label: "Hvilken tjeneste trenger du hjelp med?",
+            design_style_label: "Foretrukket designstil",
+            tag_modern: "Moderne & Rent",
+            tag_minimal: "Minimalistisk",
+            tag_dark: "Eksklusivt & Mørkt",
+            tag_shop: "Nettbutikk",
+            tag_multilingual: "Flerspråklig",
+            desired_features: "Ønskede funksjoner på nettsiden",
+            step_start: "Startet (100%)",
+            step_config: "1. Konfigurasjon",
+            step_company: "2. Bedriftsinfo",
+            step_contact: "3. Kontakt"
         },
         services: {
             title: "Våre kjerneområder",
