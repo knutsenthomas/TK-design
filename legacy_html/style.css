@@ -9934,6 +9934,7 @@ body#home.homepage-refresh .hero-showcase-base {
     font-weight: 800;
     color: var(--clr-base, #1B4965);
     line-height: 1;
+    white-space: nowrap;
 }
 .pricing-price-period {
     font-size: 0.95rem;
