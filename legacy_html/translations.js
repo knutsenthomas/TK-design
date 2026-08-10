@@ -100,7 +100,8 @@ const translations = {
             p6_title: "Maintenance and further development",
             p6_desc: "Support",
             p7_title: "Mandal Regnskapskontor",
-            p7_desc: "Accounting"
+            p7_desc: "Accounting",
+            see_full: "See full portfolio"
         },
         meeting: {
             title: "Let's start",
@@ -564,7 +565,8 @@ const translations = {
             p6_title: "Vedlikehold og videreutvikling",
             p6_desc: "Support",
             p7_title: "Mandal Regnskapskontor",
-            p7_desc: "Regnskap"
+            p7_desc: "Regnskap",
+            see_full: "Se full portefølje"
         },
         meeting: {
             title: "La oss starte",
