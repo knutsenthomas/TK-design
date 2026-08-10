@@ -37,8 +37,19 @@
       }
     }
     </script>
+    <!-- Resource hints for faster network connections -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+
+    <!-- Preload critical fonts for immediate FCP/LCP boost and zero CLS -->
+    <link rel="preload" href="/assets/fonts/kanit-400.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/assets/fonts/kanit-700.woff2" as="font" type="font/woff2" crossorigin>
+
     <link rel="stylesheet" href="/style.css?v=83">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Non-blocking FontAwesome icon stylesheet -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     <link rel="icon" type="image/png" href="img/logo/d.png">
 
     <!-- Google Analytics GA4 -->
@@ -414,10 +425,10 @@
         </div>
     </footer>
 
-    <script src="translations.js?v=12"></script>
-    <script src="script.js?v=3"></script>
-    <script src="js/cookies.js?v=3"></script>
-    <script src="js/contact-page.js"></script>
+    <script defer src="translations.js?v=12"></script>
+    <script defer src="script.js?v=3"></script>
+    <script defer src="js/cookies.js?v=3"></script>
+    <script defer src="js/contact-page.js"></script>
     <script>
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
         window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
