@@ -460,6 +460,7 @@ const translations = {
             content_p2: "The result is a website and digital profile that feels professional, performs better and is easier to build on over time."
         },
         pricing: {
+            badge: "Recommended",
             title: "Simple & Predictable: Support & Maintenance",
             subtitle: "Pricing Plans",
             desc: "Select a support agreement rather than hiring a full-time developer – save money and eliminate risk.",
@@ -955,6 +956,7 @@ const translations = {
             content_p2: "Resultatet er en nettside og digital profil som oppleves profesjonell, presterer bedre og er enklere å bygge videre på over tid."
         },
         pricing: {
+            badge: "Anbefalt",
             title: "Enkelt og forutsigbart: Løpende support & drift",
             subtitle: "Priser",
             desc: "Velg en supportavtale fremfor å ansette en fulltids utvikler – spar penger og unngå risiko.",
