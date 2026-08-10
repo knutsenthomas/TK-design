@@ -336,7 +336,7 @@
                                         <span>Hjem</span>
                                         <span>Om oss</span>
                                         <span>Tjenester</span>
-                                        <span>Portefølje</span>
+                                        <span data-i18n="nav.portfolio">Portefølje</span>
                                     </div>
                                 </div>
 
@@ -346,7 +346,7 @@
                                             <div class="mandal-backdrop"></div>
                                             <div class="mandal-copy">
                                                 <div class="mandal-headline" data-i18n="projects.p7_title">Mandal Regnskapskontor</div>
-                                                <div class="mandal-subline">Regnskap, Fakturering, Lønn og operativ lederstøtte</div>
+                                                <div class="mandal-subline" data-i18n="projects.mandal_subline">Regnskap, Fakturering, Lønn og operativ lederstøtte</div>
                                                 <span class="mandal-button">Kontakt oss</span>
                                             </div>
                                         </div>
@@ -447,9 +447,9 @@
                             <div class="info-card-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                             </div>
-                            <p class="info-card-label">SoMe</p>
+                            <p class="info-card-label" data-i18n="about.experience_tab.some_label">SoMe</p>
                             <h3 data-i18n="about.experience_tab.junior_role">Hilde Karin Knutsen</h3>
-                            <p>Innhold og synlighet</p>
+                            <p data-i18n="about.experience_tab.some_desc">Innhold og synlighet</p>
                         </div>
                     </div>
                     <!-- Education Tab -->
@@ -458,7 +458,7 @@
                             <div class="info-card-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="12 6 12 12 16 14"/></svg>
                             </div>
-                            <p class="info-card-label">Vår misjon</p>
+                            <p class="info-card-label" data-i18n="about.education_tab.mission_label">Vår misjon</p>
                             <h3 data-i18n="about.education_tab.degree">Hjelpe bedrifter å lykkes på nett</h3>
                             <p data-i18n="about.education_tab.university">Skreddersydde løsninger for små og mellomstore bedrifter som ønsker å vokse digitalt.</p>
                         </div>
@@ -563,7 +563,7 @@
                         <h3>Organisk Trafikk</h3>
                         <div class="chart-container">
                             <div class="chart-bar" style="--bar-height: 30%;">
-                                <span class="chart-label">Før</span>
+                                <span class="chart-label" data-i18n="seo.chart_before">Før</span>
                             </div>
                             <div class="chart-bar highlight-bar" style="--bar-height: 90%;">
                                 <div class="chart-value">+200%</div>
@@ -576,7 +576,7 @@
                         <h3>Konverteringsrate</h3>
                         <div class="chart-container">
                             <div class="chart-bar" style="--bar-height: 40%;">
-                                <span class="chart-label">Før</span>
+                                <span class="chart-label" data-i18n="seo.chart_before">Før</span>
                             </div>
                             <div class="chart-bar highlight-bar" style="--bar-height: 85%;">
                                 <div class="chart-value">+150%</div>
@@ -589,7 +589,7 @@
                         <h3>Sidelast (Hastighet)</h3>
                         <div class="chart-container">
                             <div class="chart-bar highlight-bar-reverse" style="--bar-height: 80%;">
-                                <span class="chart-label">Før</span>
+                                <span class="chart-label" data-i18n="seo.chart_before">Før</span>
                             </div>
                             <div class="chart-bar highlight-bar-green" style="--bar-height: 30%;">
                                 <div class="chart-value">-65%</div>
@@ -1090,7 +1090,7 @@
             <div class="container">
                 <div class="flex flex-wrap items-center justify-between gap-12">
                     <div style="flex: 1; min-width: 320px;">
-                        <span class="section-subtitle-lines" style="color: #62B6CB; margin-bottom: 24px;">Gratis verktøy</span>
+                        <span class="section-subtitle-lines" style="color: #62B6CB; margin-bottom: 24px;" data-i18n="free_tool.subtitle">Gratis verktøy</span>
                         <h2 style="font-size: clamp(32px, 5vw, 48px); color: var(--clr-base); margin-bottom: 24px; line-height: 1.1; font-weight: 700;">Er nettsiden din rask og synlig nok?</h2>
                         <p style="color: var(--clr-common-text); font-size: 18px; margin-bottom: 30px; max-width: 520px; line-height: 1.6;">
                             Visste du at en treg nettside i snitt koster bedrifter 65 % av kundene før siden i det hele tatt har lastet? Tast inn din nettadresse under for en umiddelbar mini-analyse og konkrete forbedringspunkter.
@@ -1109,7 +1109,7 @@
                             <div id="analyzerDefaultState" style="text-align: center; width: 100%;">
                                 <div style="font-size: 56px; color: var(--clr-base); margin-bottom: 20px; opacity: 0.85;"><i class="fas fa-laptop-code"></i></div>
                                 <h4 style="color: var(--clr-base); font-size: 1.25rem; font-weight: 700; margin-bottom: 10px;">Klar for skanning</h4>
-                                <p style="font-size: 0.95rem; color: #64748b; max-width: 280px; margin: 0 auto; line-height: 1.5;">Tast inn din URL til venstre for å teste ytelse, SEO-status og mobilvennlighet.</p>
+                                <p style="font-size: 0.95rem; color: #64748b; max-width: 280px; margin: 0 auto; line-height: 1.5;"><span data-i18n="free_tool.desc">Tast inn din URL til venstre for å teste ytelse, SEO-status og mobilvennlighet.</span></p>
                             </div>
 
                             <!-- 2. Loading State -->
@@ -1150,29 +1150,29 @@
                                     <div class="analyzer-point-item">
                                         <div class="analyzer-point-icon"><i class="fas fa-exclamation-triangle"></i></div>
                                         <div class="analyzer-point-content">
-                                            <h4>Treg responstid på server (TTFB)</h4>
-                                            <p>Siden din bruker 1.4s på første byte, som gjør at du taper opptil 30% av besøkende før siden har lastet.</p>
+                                            <h4 data-i18n="free_tool.report_1_title">Treg responstid på server (TTFB)</h4>
+                                            <p data-i18n="free_tool.report_1_desc">Siden din bruker 1.4s på første byte, som gjør at du taper opptil 30% av besøkende før siden har lastet.</p>
                                         </div>
                                     </div>
                                     <div class="analyzer-point-item">
                                         <div class="analyzer-point-icon"><i class="fas fa-exclamation-triangle"></i></div>
                                         <div class="analyzer-point-content">
-                                            <h4>Unødvendig tunge bilder (Mangler WebP)</h4>
-                                            <p>Store bildefiler øker sidelasten med flere megabytes. Google straffer dette tungt i søkeresultatene.</p>
+                                            <h4 data-i18n="free_tool.report_2_title">Unødvendig tunge bilder (Mangler WebP)</h4>
+                                            <p data-i18n="free_tool.report_2_desc">Store bildefiler øker sidelasten med flere megabytes. Google straffer dette tungt i søkeresultatene.</p>
                                         </div>
                                     </div>
                                     <div class="analyzer-point-item">
                                         <div class="analyzer-point-icon"><i class="fas fa-exclamation-triangle"></i></div>
                                         <div class="analyzer-point-content">
                                             <h4>Mangelfull H1-struktur og metadata</h4>
-                                            <p>Viktige søkeord mangler i overskriftsstrukturen, som lar konkurrentene dine rangere høyere på Google.</p>
+                                            <p data-i18n="free_tool.report_3_desc">Viktige søkeord mangler i overskriftsstrukturen, som lar konkurrentene dine rangere høyere på Google.</p>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Lead Capture Box -->
                                 <div class="analyzer-save-box">
-                                    <h4>Vil du ha den komplette rapporten med steg-for-steg løsninger?</h4>
+                                    <h4 data-i18n="free_tool.report_cta">Vil du ha den komplette rapporten med steg-for-steg løsninger?</h4>
                                     <p>Vi sender deg en skreddersydd PDF-handlingsplan helt gratis.</p>
                                     <form id="analyzerSaveForm" class="analyzer-save-form" onsubmit="submitAnalyzerLead(event)">
                                         <input type="hidden" id="analyzerLeadUrl" name="url">

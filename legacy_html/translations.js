@@ -1,5 +1,33 @@
 const translations = {
     en: {
+        seo: { chart_before: "Before" },
+        free_tool: {
+            subtitle: "Free tools",
+            desc: "Enter your URL on the left to test performance, SEO status, and mobile friendliness.",
+            report_1_title: "Slow server response time (TTFB)",
+            report_1_desc: "Your site takes 1.4s on the first byte, causing you to lose up to 30% of visitors before the site has loaded.",
+            report_2_title: "Unnecessarily heavy images (Missing WebP)",
+            report_2_desc: "Large image files increase the page load by several megabytes. Google penalizes this heavily in search results.",
+            report_3_desc: "Important keywords are missing in the heading structure, allowing your competitors to rank higher on Google.",
+            report_4_desc: "Missing meta descriptions on several key pages.",
+            report_cta: "Do you want the complete report with step-by-step solutions?"
+        },
+        portfolio_page: {
+            title: "Portfolio | TK-design",
+            heading: "Our Portfolio",
+            loading: "Loading graphic portfolio..."
+        },
+        contact_page: {
+            opt_1: "Web design + SEO (Recommended - Most popular)",
+            opt_2: "SEO (Search Engine Optimization)",
+            opt_3: "Ongoing operations and support",
+            tag_modern: "Modern & Clean",
+            tag_minimal: "Minimalist",
+            tag_dark: "Exclusive & Dark",
+            tag_shop: "E-commerce",
+            tag_multilingual: "Multilingual",
+            desired_features: "Desired website features"
+        },
         nav: {
             home: "Home",
             about: "About us",
@@ -60,7 +88,9 @@ const translations = {
             },
             experience_tab: {
                 senior_role: "Thomas Knutsen",
-                junior_role: "Hilde Karin Knutsen"
+                junior_role: "Hilde Karin Knutsen",
+            some_label: "SoMe",
+            some_desc: "Innhold og synlighet"
             },
             education_tab: {
                 degree: "Helping businesses succeed online",
@@ -101,6 +131,7 @@ const translations = {
             p6_desc: "Support",
             p7_title: "Mandal Regnskapskontor",
             p7_desc: "Accounting",
+            mandal_subline: "Accounting, Invoicing, Payroll, and operational support",
             see_full: "See full portfolio"
         },
         meeting: {
@@ -465,6 +496,34 @@ const translations = {
         }
     },
     no: {
+        seo: { chart_before: "Før" },
+        free_tool: {
+            subtitle: "Gratis verktøy",
+            desc: "Tast inn din URL til venstre for å teste ytelse, SEO-status og mobilvennlighet.",
+            report_1_title: "Treg responstid på server (TTFB)",
+            report_1_desc: "Siden din bruker 1.4s på første byte, som gjør at du taper opptil 30% av besøkende før siden har lastet.",
+            report_2_title: "Unødvendig tunge bilder (Mangler WebP)",
+            report_2_desc: "Store bildefiler øker sidelasten med flere megabytes. Google straffer dette tungt i søkeresultatene.",
+            report_3_desc: "Viktige søkeord mangler i overskriftsstrukturen, som lar konkurrentene dine rangere høyere på Google.",
+            report_4_desc: "Mangler metabeskrivelse på flere sentrale sider.",
+            report_cta: "Vil du ha den komplette rapporten med steg-for-steg løsninger?"
+        },
+        portfolio_page: {
+            title: "Portefølje | TK-design",
+            heading: "Vår Portefølje",
+            loading: "Laster inn grafisk portefølje..."
+        },
+        contact_page: {
+            opt_1: "Webdesign + SEO (Anbefalt - Mest populær)",
+            opt_2: "SEO (Søkemotoroptimalisering)",
+            opt_3: "Løpende drift og support",
+            tag_modern: "Moderne & Rent",
+            tag_minimal: "Minimalistisk",
+            tag_dark: "Eksklusivt & Mørkt",
+            tag_shop: "Nettbutikk",
+            tag_multilingual: "Flerspråklig",
+            desired_features: "Ønskede funksjoner på nettsiden"
+        },
         nav: {
             home: "Hjem",
             about: "Om oss",
@@ -528,7 +587,8 @@ const translations = {
                 junior_role: "Hilde Karin Knutsen"
             },
             education_tab: {
-                degree: "Hjelpe bedrifter å lykkes på nett",
+                mission_label: "Vår misjon",
+            degree: "Hjelpe bedrifter å lykkes på nett",
                 university: "Skreddersydde løsninger for små og mellomstore bedrifter som ønsker å vokse digitalt."
             },
             skills_tab: {
@@ -566,6 +626,7 @@ const translations = {
             p6_desc: "Support",
             p7_title: "Mandal Regnskapskontor",
             p7_desc: "Regnskap",
+            mandal_subline: "Regnskap, Fakturering, Lønn og operativ lederstøtte",
             see_full: "Se full portefølje"
         },
         meeting: {
