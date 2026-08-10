@@ -1091,14 +1091,14 @@
                 <div class="flex flex-wrap items-center justify-between gap-12">
                     <div style="flex: 1; min-width: 320px;">
                         <span class="section-subtitle-lines" style="color: #62B6CB; margin-bottom: 24px;" data-i18n="free_tool.subtitle">Gratis verktøy</span>
-                        <h2 style="font-size: clamp(32px, 5vw, 48px); color: var(--clr-base); margin-bottom: 24px; line-height: 1.1; font-weight: 700;">Er nettsiden din rask og synlig nok?</h2>
-                        <p style="color: var(--clr-common-text); font-size: 18px; margin-bottom: 30px; max-width: 520px; line-height: 1.6;">
+                        <h2 style="font-size: clamp(32px, 5vw, 48px); color: var(--clr-base); margin-bottom: 24px; line-height: 1.1; font-weight: 700;" data-i18n="free_tool.heading">Er nettsiden din rask og synlig nok?</h2>
+                        <p style="color: var(--clr-common-text); font-size: 18px; margin-bottom: 30px; max-width: 520px; line-height: 1.6;" data-i18n="free_tool.intro">
                             Visste du at en treg nettside i snitt koster bedrifter 65 % av kundene før siden i det hele tatt har lastet? Tast inn din nettadresse under for en umiddelbar mini-analyse og konkrete forbedringspunkter.
                         </p>
                         
                         <div class="analyzer-input-group" style="max-width: 500px;">
-                            <input type="url" id="analyzerUrl" placeholder="F.eks. www.minbedrift.no" required autocomplete="url" onkeydown="if(event.key === 'Enter') startMiniAnalysis()">
-                            <button type="button" class="analyzer-btn" onclick="startMiniAnalysis()">Analyser nå <i class="fas fa-bolt"></i></button>
+                            <input type="url" id="analyzerUrl" placeholder="F.eks. www.minbedrift.no" data-i18n-placeholder="free_tool.placeholder" required autocomplete="url" onkeydown="if(event.key === 'Enter') startMiniAnalysis()">
+                            <button type="button" class="analyzer-btn" onclick="startMiniAnalysis()" data-i18n="free_tool.btn">Analyser nå <i class="fas fa-bolt"></i></button>
                         </div>
                     </div>
                     
@@ -1108,41 +1108,41 @@
                             <!-- 1. Default Scanner State -->
                             <div id="analyzerDefaultState" style="text-align: center; width: 100%;">
                                 <div style="font-size: 56px; color: var(--clr-base); margin-bottom: 20px; opacity: 0.85;"><i class="fas fa-laptop-code"></i></div>
-                                <h4 style="color: var(--clr-base); font-size: 1.25rem; font-weight: 700; margin-bottom: 10px;">Klar for skanning</h4>
+                                <h4 style="color: var(--clr-base); font-size: 1.25rem; font-weight: 700; margin-bottom: 10px;" data-i18n="free_tool.ready_title">Klar for skanning</h4>
                                 <p style="font-size: 0.95rem; color: #64748b; max-width: 280px; margin: 0 auto; line-height: 1.5;"><span data-i18n="free_tool.desc">Tast inn din URL til venstre for å teste ytelse, SEO-status og mobilvennlighet.</span></p>
                             </div>
 
                             <!-- 2. Loading State -->
                             <div id="analyzerLoadingState" class="analyzer-loader" style="display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%;">
                                 <div class="analyzer-spinner-ring" style="margin-bottom: 20px;"></div>
-                                <p id="analyzerStatusText" style="font-size: 1.15rem; font-weight: 700; color: var(--clr-base); margin-bottom: 12px; text-align: center;">Etablerer forbindelse...</p>
+                                <p id="analyzerStatusText" style="font-size: 1.15rem; font-weight: 700; color: var(--clr-base); margin-bottom: 12px; text-align: center;" data-i18n="free_tool.connecting">Etablerer forbindelse...</p>
                                 <div style="width: 100%; max-width: 240px; height: 6px; background: rgba(27, 73, 101, 0.08); border-radius: 10px; overflow: hidden; margin-bottom: 12px;">
                                     <div id="analyzerProgressBar" style="width: 0%; height: 100%; background: #ff6a1b; transition: width 0.08s linear; border-radius: 10px;"></div>
                                 </div>
-                                <span class="analyzer-loader-sub" style="color: #64748b; font-size: 0.9rem;">Analysen tar kun ca. 3 sekunder</span>
+                                <span class="analyzer-loader-sub" style="color: #64748b; font-size: 0.9rem;" data-i18n="free_tool.loader_sub">Analysen tar kun ca. 3 sekunder</span>
                             </div>
 
                             <!-- 3. Report Dashboard State -->
                             <div id="analyzerDashboardState" class="analyzer-result-dashboard" style="width: 100%;">
                                 <h4 style="font-size: 1.2rem; color: var(--clr-base); font-weight: 800; margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
-                                    <i class="fas fa-chart-bar" style="color: #ff6a1b;"></i> Rapport for: <span id="reportDomainName" style="color: #62B6CB;">minbedrift.no</span>
+                                    <i class="fas fa-chart-bar" style="color: #ff6a1b;"></i> <span data-i18n="free_tool.report_for">Rapport for:</span> <span id="reportDomainName" style="color: #62B6CB;">minbedrift.no</span>
                                 </h4>
                                 
                                 <div class="analyzer-metrics-grid">
                                     <div class="analyzer-metric-card" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
                                         <div style="font-size: 1.2rem; color: #ff6a1b;"><i class="fas fa-tachometer-alt"></i></div>
                                         <div class="analyzer-circle-score score-warn">68</div>
-                                        <span class="analyzer-metric-label">Ytelse</span>
+                                        <span class="analyzer-metric-label" data-i18n="free_tool.metric_performance">Ytelse</span>
                                     </div>
                                     <div class="analyzer-metric-card" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
                                         <div style="font-size: 1.2rem; color: #ef4444;"><i class="fas fa-search"></i></div>
                                         <div class="analyzer-circle-score score-danger">55</div>
-                                        <span class="analyzer-metric-label">SEO</span>
+                                        <span class="analyzer-metric-label" data-i18n="free_tool.metric_seo">SEO</span>
                                     </div>
                                     <div class="analyzer-metric-card" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
                                         <div style="font-size: 1.2rem; color: #ff6a1b;"><i class="fas fa-mobile-alt"></i></div>
                                         <div class="analyzer-circle-score score-warn">72</div>
-                                        <span class="analyzer-metric-label">Mobil</span>
+                                        <span class="analyzer-metric-label" data-i18n="free_tool.metric_mobile">Mobil</span>
                                     </div>
                                 </div>
 
@@ -1164,7 +1164,7 @@
                                     <div class="analyzer-point-item">
                                         <div class="analyzer-point-icon"><i class="fas fa-exclamation-triangle"></i></div>
                                         <div class="analyzer-point-content">
-                                            <h4>Mangelfull H1-struktur og metadata</h4>
+                                            <h4 data-i18n="free_tool.report_3_title">Mangelfull H1-struktur og metadata</h4>
                                             <p data-i18n="free_tool.report_3_desc">Viktige søkeord mangler i overskriftsstrukturen, som lar konkurrentene dine rangere høyere på Google.</p>
                                         </div>
                                     </div>
@@ -1173,11 +1173,11 @@
                                 <!-- Lead Capture Box -->
                                 <div class="analyzer-save-box">
                                     <h4 data-i18n="free_tool.report_cta">Vil du ha den komplette rapporten med steg-for-steg løsninger?</h4>
-                                    <p>Vi sender deg en skreddersydd PDF-handlingsplan helt gratis.</p>
+                                    <p data-i18n="free_tool.pdf_plan">Vi sender deg en skreddersydd PDF-handlingsplan helt gratis.</p>
                                     <form id="analyzerSaveForm" class="analyzer-save-form" onsubmit="submitAnalyzerLead(event)">
                                         <input type="hidden" id="analyzerLeadUrl" name="url">
-                                        <input type="email" id="analyzerLeadEmail" placeholder="Din e-postadresse" required style="width: 100%;">
-                                        <button type="submit" class="analyzer-save-btn" id="analyzerSaveBtn" style="white-space: nowrap;">Send rapport <i class="fas fa-paper-plane"></i></button>
+                                        <input type="email" id="analyzerLeadEmail" placeholder="Din e-postadresse" data-i18n-placeholder="free_tool.email_placeholder" required style="width: 100%;">
+                                        <button type="submit" class="analyzer-save-btn" id="analyzerSaveBtn" style="white-space: nowrap;" data-i18n="free_tool.send_report">Send rapport <i class="fas fa-paper-plane"></i></button>
                                     </form>
                                     <div id="analyzerSaveStatus" style="font-size: 0.9rem; font-weight: 700; margin-top: 12px; line-height: 1.4;"></div>
                                 </div>

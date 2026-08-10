@@ -408,13 +408,29 @@ function applyLanguage(lang) {
 
     elements.forEach(el => {
         const key = el.getAttribute('data-i18n');
-        // key like "nav.home" -> translations[lang].nav.home
         const text = getNestedTranslation(translations[lang], key);
         if (text) {
-            el.textContent = text;
+            const icon = el.querySelector('i');
+            if (icon) {
+                // If element has an icon child, update the text child node or innerHTML safely
+                const clonedIcon = icon.cloneNode(true);
+                el.textContent = text + ' ';
+                el.appendChild(clonedIcon);
+            } else {
+                el.textContent = text;
+            }
             if (el.classList.contains('designers')) {
                 el.setAttribute('data-text', text);
             }
+        }
+    });
+
+    const placeholderElements = document.querySelectorAll('[data-i18n-placeholder]');
+    placeholderElements.forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        const text = getNestedTranslation(translations[lang], key);
+        if (text) {
+            el.setAttribute('placeholder', text);
         }
     });
 
