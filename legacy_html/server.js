@@ -52,6 +52,10 @@ const PAGE_ROUTE_MAP = {
     '/blog-details': 'blog-details.html',
     '/contact': 'contact.html',
     '/service-details': 'service-details.html',
+    '/webdesign': 'service-details.html',
+    '/seo': 'service-details.html',
+    '/support-og-vedlikehold': 'service-details.html',
+    '/sosiale-medier': 'service-details.html',
     '/privacy': 'privacy.html',
     '/accessibility': 'accessibility.html',
     '/speed-test': 'speed-test/index.html',
@@ -71,30 +75,55 @@ const LEGACY_REDIRECT_MAP = {
 const SEO_GLOBAL_DEFAULTS = {
     siteTitle: 'TK-design',
     separator: '|',
-    defaultKeywords: 'design, portfolio, webutvikling, grafisk design',
+    defaultKeywords: 'design, portfolio, webutvikling, grafisk design, webdesign, seo',
     googleAnalyticsId: '',
     blogCommentsEnabled: true
 };
 const SEO_PAGE_DEFAULTS = {
     'index.html': {
-        title: 'Hjem',
-        description: 'Portefølje for Thomas Knutsen - Grafisk Designer og Webutvikler.',
-        keywords: 'thomas knutsen, portefølje, hjem'
+        title: 'Webdesign og SEO for små bedrifter',
+        description: 'Skreddersydd webdesign, søkemotoroptimalisering (SEO) og løpende drift for små og mellomstore bedrifter i Norge. Raske, konverterende nettsider.',
+        keywords: 'webdesign små bedrifter, seo for bedrifter, ny nettside, tk-design, webdesigner norge'
     },
     'blog.html': {
-        title: 'Blogg',
-        description: 'Les mine siste tanker og oppdateringer om design og teknologi.',
-        keywords: 'blogg, design, tech'
+        title: 'Blogg & Råd om Webdesign og SEO',
+        description: 'Les guider, SEO-tips og råd om hvordan du får mer trafikk og flere kunder med en profesjonell nettside.',
+        keywords: 'blogg, seo tips, webdesign råd, google rangering, nettside tips'
     },
     'contact.html': {
-        title: 'Kontakt',
-        description: 'Ta kontakt med TK-design for profesjonell nettside, webdesign og SEO.',
-        keywords: 'kontakt webdesigner, bestille nettside, tk-design kontakt'
+        title: 'Kontakt webdesigner & SEO-spesialist',
+        description: 'Ta kontakt med Thomas Knutsen i TK-design for uforpliktende pristilbud på ny nettside, SEO-optimalisering eller supportavtale.',
+        keywords: 'kontakt webdesigner, bestille nettside, seo konsultasjon, tk-design kontakt'
+    },
+    'portefolje.html': {
+        title: 'Portefølje – Prosjekter og webdesign',
+        description: 'Se utvalgte kundeprosjekter, webdesign og grafisk arbeid levert av TK-design.',
+        keywords: 'portefølje webdesign, nettside eksempler, kundereferanser tk-design'
     },
     'service-details.html': {
-        title: 'Tjenester',
-        description: 'Tjenester fra TK-design: UI/UX-design, webutvikling, digital markedsføring og merkevarebygging.',
-        keywords: 'ui ux design, webutvikling, digital markedsføring, merkevarebygging'
+        title: 'Tjenester innen Webdesign, SEO og Drift',
+        description: 'Skreddersydd webdesign, søkemotoroptimalisering (SEO), SoMe-innholdsstrategi og løpende drift/support for bedrifter.',
+        keywords: 'webdesign tjenester, seo søkemotoroptimalisering, nettside support, some strategi'
+    },
+    '/webdesign': {
+        title: 'Skreddersydd Webdesign for Bedrifter',
+        description: 'Unike, lynraske og mobilvennlige nettsider skreddersydd for din bedrift. Profesjonelt uttrykk som bygger tillit og skaffer kunder.',
+        keywords: 'webdesign, ny nettside, skreddersydd nettside, mobilvennlig nettside'
+    },
+    '/seo': {
+        title: 'SEO & Søkemotoroptimalisering for Bedrifter',
+        description: 'Bli synlig øverst på Google. Vi optimaliserer struktur, innhold og teknisk SEO slik at potensielle kunder finner deg.',
+        keywords: 'seo, søkemotoroptimalisering, rangere høyere på google, økt organisk trafikk'
+    },
+    '/support-og-vedlikehold': {
+        title: 'Support, Drift & Vedlikehold av Nettside',
+        description: 'Unngå krasj, treghet og sikkerhetshull. Fleksible supportavtaler med ukentlig vedlikehold, overvåking og lynrask hjelp.',
+        keywords: 'vedlikehold nettside, supportavtale nettside, drift av nettside, sikkerhetsoppdateringer'
+    },
+    '/sosiale-medier': {
+        title: 'SoMe Innholdsstrategi & Synlighet',
+        description: 'Bygg merkevare og tiltrekk kunder i sosiale medier med en gjennomtenkt innholdsstrategi.',
+        keywords: 'some strategi, sosiale medier for bedrifter, innholdsstrategi, merkevarebygging'
     },
     'project-details.html': {
         title: 'Prosjekter',
@@ -3231,7 +3260,7 @@ async function renderPageWithSeo(req, res, reqFile, matchedBlogPost = null) {
 
     // Default Page Logic if not blog details or post not found
     if (!title) {
-        const pageSeo = seoData.pages[reqFile] || {};
+        const pageSeo = seoData.pages[req.path] || seoData.pages[reqFile] || {};
         title = pageSeo.title || '';
         description = pageSeo.description || '';
         keywords = pageSeo.keywords || globalSeo.defaultKeywords || '';
@@ -3275,6 +3304,57 @@ async function renderPageWithSeo(req, res, reqFile, matchedBlogPost = null) {
             }
         } catch (e) {
             console.error('Error during server-side translation:', e);
+        }
+
+        // SSR Pre-rendering for blog.html listing so search engines see all blog posts on initial HTML load
+        if (reqFile === 'blog.html') {
+            try {
+                const posts = await readSiteDataWithFallback('posts', readBlogPosts);
+                const publishedPosts = (posts || []).filter(p => p && p.status !== 'draft');
+                if (publishedPosts.length > 0) {
+                    const latest = publishedPosts[0];
+                    const latestTitle = (lang === 'en' && latest.titleEn) ? latest.titleEn : (latest.title || '');
+                    const latestSummary = (lang === 'en' && latest.summaryEn) ? latest.summaryEn : (latest.summary || latest.lead || '');
+                    const latestUrl = normalizeStoredBlogPostLink(latest.link, latest.id, getBlogPostTitleForUrl(latest));
+
+                    translatedHtml = translatedHtml
+                        .replace('<h2 id="blogFeaturedTitle">Laster innlegg...</h2>', `<h2 id="blogFeaturedTitle">${escapeHtml(latestTitle)}</h2>`)
+                        .replace(/<p id="blogFeaturedSummary"[^>]*>Laster innlegg...<\/p>/, `<p id="blogFeaturedSummary">${escapeHtml(latestSummary)}</p>`)
+                        .replace('href="/blog" class="blog-list-spotlight" id="blogFeaturedCardLink"', `href="${latestUrl}" class="blog-list-spotlight" id="blogFeaturedCardLink"`)
+                        .replace('<strong class="blog-list-overview-value" id="blogTotalPosts">0</strong>', `<strong class="blog-list-overview-value" id="blogTotalPosts">${publishedPosts.length}</strong>`);
+
+                    const gridHtml = publishedPosts.map(p => {
+                        const pTitle = (lang === 'en' && p.titleEn) ? p.titleEn : (p.title || '');
+                        const pSummary = (lang === 'en' && p.summaryEn) ? p.summaryEn : (p.summary || p.lead || '');
+                        const pUrl = normalizeStoredBlogPostLink(p.link, p.id, getBlogPostTitleForUrl(p));
+                        const pImg = p.image || p.imageUrl || 'img/blog/b-1.png';
+                        const pCat = p.category || 'Webdesign';
+                        const pDate = p.date || '';
+                        return `
+                        <article class="blog-list-card">
+                            <a href="${pUrl}" class="blog-list-card-media">
+                                <img src="${pImg}" alt="${escapeHtml(pTitle)}">
+                            </a>
+                            <div class="blog-list-card-content">
+                                <div class="blog-list-card-meta">
+                                    <span class="blog-list-card-category">${escapeHtml(pCat)}</span>
+                                    <span class="blog-list-card-date">${escapeHtml(pDate)}</span>
+                                </div>
+                                <h3 class="blog-list-card-title"><a href="${pUrl}">${escapeHtml(pTitle)}</a></h3>
+                                <p class="blog-list-card-summary">${escapeHtml(pSummary)}</p>
+                                <a href="${pUrl}" class="blog-list-card-link">Les mer <i class="fas fa-arrow-right"></i></a>
+                            </div>
+                        </article>`;
+                    }).join('\n');
+
+                    translatedHtml = translatedHtml.replace(
+                        /<div class="blog-list-grid" id="blogListGrid">[\s\S]*?<\/div>/,
+                        `<div class="blog-list-grid" id="blogListGrid">${gridHtml}</div>`
+                    );
+                }
+            } catch (err) {
+                console.error('Error pre-rendering blog.html SSR:', err);
+            }
         }
 
         let injectedHtml = translatedHtml
@@ -3361,6 +3441,19 @@ app.get([...Object.keys(PAGE_ROUTE_MAP), ...Object.keys(LEGACY_REDIRECT_MAP)], a
     const reqFile = PAGE_ROUTE_MAP[req.path];
     if (!reqFile) {
         return res.status(404).send('Page not found');
+    }
+
+    if (req.path === '/service-details') {
+        const serviceId = (req.query.id || '').toLowerCase();
+        if (serviceId === 'seo') {
+            return res.redirect(301, '/seo');
+        } else if (serviceId === 'support' || serviceId === 'vedlikehold') {
+            return res.redirect(301, '/support-og-vedlikehold');
+        } else if (serviceId === 'some') {
+            return res.redirect(301, '/sosiale-medier');
+        } else {
+            return res.redirect(301, '/webdesign');
+        }
     }
 
     if (reqFile === 'blog-details.html' && req.query.id) {

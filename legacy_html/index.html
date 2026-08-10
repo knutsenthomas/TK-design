@@ -96,17 +96,27 @@
             "latitude": "58.0294",
             "longitude": "7.4602"
           },
-          "areaServed": {
-            "@type": "Country",
-            "name": "Norway"
-          },
+          "areaServed": [
+            {
+              "@type": "Country",
+              "name": "Norway"
+            },
+            {
+              "@type": "AdministrativeArea",
+              "name": "Østlandet"
+            },
+            {
+              "@type": "AdministrativeArea",
+              "name": "Agder / Sørlandet"
+            }
+          ],
           "priceRange": "$$",
           "openingHours": "Mo-Fr 08:00-17:00",
           "sameAs": [
             "https://www.facebook.com/profile.php?id=61574614704737",
             "https://www.instagram.com/tkdesign777"
           ],
-          "serviceType": ["Webdesign", "Nettside-utvikling", "SEO", "SoMe-strategi"]
+          "serviceType": ["Webdesign", "Nettside-utvikling", "SEO", "Support og Vedlikehold", "SoMe-strategi"]
         },
         {
           "@type": "Person",
@@ -123,24 +133,36 @@
         },
         {
           "@type": "Service",
-          "@id": "https://tk-design.no/#service-webdesign",
+          "@id": "https://tk-design.no/webdesign",
           "name": "Skreddersydd Webdesign og Nettside-utvikling",
+          "url": "https://tk-design.no/webdesign",
           "provider": {"@id": "https://tk-design.no/#business"},
           "areaServed": {"@type": "Country", "name": "Norway"},
           "description": "Profesjonelle nettsider for norske bedrifter. Vi lager moderne, raske, og konverteringsoptimaliserte nettsider."
         },
         {
           "@type": "Service",
-          "@id": "https://tk-design.no/#service-seo",
+          "@id": "https://tk-design.no/seo",
           "name": "Søkemotoroptimalisering (SEO)",
+          "url": "https://tk-design.no/seo",
           "provider": {"@id": "https://tk-design.no/#business"},
           "areaServed": {"@type": "Country", "name": "Norway"},
           "description": "Få din bedrift øverst i Google-søk. Vi øker organisk synlighet, trafikk og konverteringer med datadrevet SEO."
         },
         {
           "@type": "Service",
-          "@id": "https://tk-design.no/#service-some",
+          "@id": "https://tk-design.no/support-og-vedlikehold",
+          "name": "Support, Drift og Vedlikehold av Nettside",
+          "url": "https://tk-design.no/support-og-vedlikehold",
+          "provider": {"@id": "https://tk-design.no/#business"},
+          "areaServed": {"@type": "Country", "name": "Norway"},
+          "description": "Drift, sikkerhetsoppdateringer og overvåking av nettsider for små bedrifter."
+        },
+        {
+          "@type": "Service",
+          "@id": "https://tk-design.no/sosiale-medier",
           "name": "SoMe-strategi og Markedsføring",
+          "url": "https://tk-design.no/sosiale-medier",
           "provider": {"@id": "https://tk-design.no/#business"},
           "areaServed": {"@type": "Country", "name": "Norway"},
           "description": "Strategisk innhold og målrettet markedsføring i sosiale medier for å bygge din merkevare."
@@ -238,9 +260,9 @@
                     <li class="has-dropdown">
                         <a href="/?section=services" data-i18n="nav.services">Services <i class="fas fa-chevron-down nav-chevron"></i></a>
                         <ul class="submenu">
-                            <li><a href="/?section=services" data-i18n="nav.sub_webdesign">Webdesign & Utvikling</a></li>
-                            <li><a href="/?section=services" data-i18n="nav.sub_seo">SEO-Grunnoppsett</a></li>
-                            <li><a href="/contact?service=support" data-i18n="nav.sub_support">Support & Drift</a></li>
+                            <li><a href="/webdesign" data-i18n="nav.sub_webdesign">Webdesign & Utvikling</a></li>
+                            <li><a href="/seo" data-i18n="nav.sub_seo">SEO-Grunnoppsett</a></li>
+                            <li><a href="/support-og-vedlikehold" data-i18n="nav.sub_support">Support & Drift</a></li>
                             <li><a href="/nettside-sjekker" data-i18n="nav.sub_analyzer">Nettside-sjekker</a></li>
                         </ul>
                     </li>
@@ -270,9 +292,9 @@
                         <i class="fas fa-chevron-down mobile-sub-icon"></i>
                     </div>
                     <ul class="mobile-submenu">
-                        <li><a href="/?section=services" data-i18n="nav.sub_webdesign">Webdesign & Utvikling</a></li>
-                        <li><a href="/?section=services" data-i18n="nav.sub_seo">SEO-Grunnoppsett</a></li>
-                        <li><a href="/contact?service=support" data-i18n="nav.sub_support">Support & Drift</a></li>
+                        <li><a href="/webdesign" data-i18n="nav.sub_webdesign">Webdesign & Utvikling</a></li>
+                        <li><a href="/seo" data-i18n="nav.sub_seo">SEO-Grunnoppsett</a></li>
+                        <li><a href="/support-og-vedlikehold" data-i18n="nav.sub_support">Support & Drift</a></li>
                         <li><a href="/nettside-sjekker" data-i18n="nav.sub_analyzer">Nettside-sjekker</a></li>
                     </ul>
                 </li>
@@ -826,12 +848,12 @@
                         <div class="service-content">
                             <p class="service-category" style="color: #666; margin-bottom: 5px;"
                                 data-i18n="services.s1_cat">Webdesign</p>
-                            <h3><a href="/service-details" style="color: var(--clr-base); text-decoration: none;"
+                            <h3><a href="/webdesign" style="color: var(--clr-base); text-decoration: none;"
                                     data-i18n="services.s1_title">Skreddersydd webdesign</a></h3>
                             <p style="max-width: 500px;" data-i18n="services.s1_desc">Unike nettsider som fanger din
                                 merkevare og skaper engasjerende kundeopplevelser på alle skjermer.</p>
                         </div>
-                        <div class="service-arrow"><a href="/service-details"
+                        <div class="service-arrow"><a href="/webdesign"
                                 aria-label="Les mer om Skreddersydd webdesign"><i class="fas fa-arrow-right"></i></a>
                         </div>
                     </div>
@@ -841,12 +863,12 @@
                         <div class="service-content">
                             <p class="service-category" style="color: #666; margin-bottom: 5px;"
                                 data-i18n="services.s2_cat">SEO</p>
-                            <h3><a href="/service-details" style="color: var(--clr-base); text-decoration: none;"
+                            <h3><a href="/seo" style="color: var(--clr-base); text-decoration: none;"
                                     data-i18n="services.s2_title">Søkemotoroptimalisering</a></h3>
                             <p style="max-width: 500px;" data-i18n="services.s2_desc">Vi sørger for at din bedrift blir
                                 funnet av de riktige personene ved å øke synligheten din i Google.</p>
                         </div>
-                        <div class="service-arrow"><a href="/service-details"
+                        <div class="service-arrow"><a href="/seo"
                                 aria-label="Les mer om Søkemotoroptimalisering"><i class="fas fa-arrow-right"></i></a>
                         </div>
                     </div>
@@ -856,12 +878,12 @@
                         <div class="service-content">
                             <p class="service-category" style="color: #666; margin-bottom: 5px;"
                                 data-i18n="services.s3_cat">SoMe</p>
-                            <h3><a href="/service-details" style="color: var(--clr-base); text-decoration: none;"
+                            <h3><a href="/sosiale-medier" style="color: var(--clr-base); text-decoration: none;"
                                     data-i18n="services.s3_title">Strategi for sosiale medier</a></h3>
                             <p style="max-width: 500px;" data-i18n="services.s3_desc">Målrettet innhold og strategisk
                                 tilstedeværelse som bygger merkevaren din i sosiale kanaler.</p>
                         </div>
-                        <div class="service-arrow"><a href="/service-details"
+                        <div class="service-arrow"><a href="/sosiale-medier"
                                 aria-label="Les mer om Strategi for sosiale medier"><i
                                     class="fas fa-arrow-right"></i></a>
                         </div>
@@ -872,12 +894,12 @@
                         <div class="service-content">
                             <p class="service-category" style="color: #666; margin-bottom: 5px;"
                                 data-i18n="services.s4_cat">Support</p>
-                            <h3><a href="/service-details" style="color: var(--clr-base); text-decoration: none;"
+                            <h3><a href="/support-og-vedlikehold" style="color: var(--clr-base); text-decoration: none;"
                                     data-i18n="services.s4_title">Support og vedlikehold</a></h3>
                             <p style="max-width: 500px;" data-i18n="services.s4_desc">Pålitelig støtte og oppdateringer
                                 som sørger for at nettsiden alltid fungerer optimalt.</p>
                         </div>
-                        <div class="service-arrow"><a href="/service-details"
+                        <div class="service-arrow"><a href="/support-og-vedlikehold"
                                 aria-label="Les mer om Support og vedlikehold"><i class="fas fa-arrow-right"></i></a>
                         </div>
                     </div>
@@ -887,12 +909,12 @@
                         <div class="service-content">
                             <p class="service-category" style="color: #666; margin-bottom: 5px;"
                                 data-i18n="services.s5_cat">Analyse</p>
-                            <h3><a href="/service-details" style="color: var(--clr-base); text-decoration: none;"
+                            <h3><a href="/nettside-sjekker" style="color: var(--clr-base); text-decoration: none;"
                                     data-i18n="services.s5_title">Nettstedsanalyse</a></h3>
                             <p style="max-width: 500px;" data-i18n="services.s5_desc">Innsikt og forbedringer som gjør
                                 den digitale tilstedeværelsen din sterkere over tid.</p>
                         </div>
-                        <div class="service-arrow"><a href="/service-details"
+                        <div class="service-arrow"><a href="/nettside-sjekker"
                                 aria-label="Les mer om Nettstedsanalyse"><i class="fas fa-arrow-right"></i></a>
                         </div>
                     </div>
