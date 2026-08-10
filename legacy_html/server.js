@@ -7064,10 +7064,17 @@ app.post('/api/social/publish-direct', verifyAdminToken, async (req, res) => {
         }
 
         const anySuccess = Object.values(results).some(r => r.ok);
+        const errorDetails = Object.entries(results)
+            .filter(([_, res]) => !res.ok)
+            .map(([platform, res]) => `${platform.toUpperCase()}: ${res.error}`)
+            .join(' | ');
+
         res.json({
             success: anySuccess,
             results,
-            message: anySuccess ? 'Publisert til sosiale medier via API!' : 'Ingen kontoer publisert via API. Sjekk at miljøvariabler (FB_PAGE_ACCESS_TOKEN, FB_PAGE_ID, INSTAGRAM_ACCOUNT_ID, LINKEDIN_ACCESS_TOKEN, LINKEDIN_ORGANIZATION_ID) er lagt inn i .env eller Vercel.'
+            message: anySuccess
+                ? 'Publisert til sosiale medier via API!'
+                : (errorDetails || 'Ingen kontoer publisert via API. Sjekk at miljøvariabler er lagt inn i Vercel og at du har trykket Redeploy.')
         });
     } catch (error) {
         console.error('[Social API] Publish direct error:', error);
