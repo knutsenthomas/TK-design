@@ -7759,6 +7759,106 @@ async function fetchBlogPosts() {
     }
 }
 
+let currentSharePost = null;
+
+window.openShareModal = function (index) {
+    const post = blogData[index];
+    if (!post) return;
+    currentSharePost = post;
+
+    const modal = document.getElementById('social-share-modal');
+    if (!modal) return;
+
+    const titleEl = document.getElementById('share-modal-title');
+    const urlEl = document.getElementById('share-modal-url');
+
+    const postUrl = typeof buildBlogPostLink === 'function' ? buildBlogPostLink(post.id, post.title) : `/blog-details?id=${post.id}`;
+    const fullUrl = `https://www.tk-design.no${postUrl.startsWith('/') ? '' : '/'}${postUrl}`;
+
+    if (titleEl) titleEl.textContent = post.title || 'Uten tittel';
+    if (urlEl) urlEl.textContent = fullUrl;
+
+    modal.style.display = 'flex';
+};
+
+window.closeShareModal = function () {
+    const modal = document.getElementById('social-share-modal');
+    if (modal) modal.style.display = 'none';
+};
+
+window.shareToFacebook = function () {
+    if (!currentSharePost) return;
+    const postUrl = typeof buildBlogPostLink === 'function' ? buildBlogPostLink(currentSharePost.id, currentSharePost.title) : `/blog-details?id=${currentSharePost.id}`;
+    const fullUrl = `https://www.tk-design.no${postUrl.startsWith('/') ? '' : '/'}${postUrl}`;
+    const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(fullUrl)}`;
+    window.open(fbUrl, '_blank', 'width=600,height=500,location=no,toolbar=no');
+};
+
+window.shareToLinkedIn = function () {
+    if (!currentSharePost) return;
+    const postUrl = typeof buildBlogPostLink === 'function' ? buildBlogPostLink(currentSharePost.id, currentSharePost.title) : `/blog-details?id=${currentSharePost.id}`;
+    const fullUrl = `https://www.tk-design.no${postUrl.startsWith('/') ? '' : '/'}${postUrl}`;
+    const liUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(fullUrl)}`;
+    window.open(liUrl, '_blank', 'width=600,height=600,location=no,toolbar=no');
+};
+
+window.copyInstagramText = function () {
+    if (!currentSharePost) return;
+    const postUrl = typeof buildBlogPostLink === 'function' ? buildBlogPostLink(currentSharePost.id, currentSharePost.title) : `/blog-details?id=${currentSharePost.id}`;
+    const fullUrl = `https://www.tk-design.no${postUrl.startsWith('/') ? '' : '/'}${postUrl}`;
+
+    const title = currentSharePost.title || '';
+    const summary = currentSharePost.excerpt || currentSharePost.summary || currentSharePost.seoDesc || '';
+    const text = `${title}\n\n${summary}\n\nLes hele artikkelen her:\n${fullUrl}\n\n#webdesign #seo #tkdesign #norskebedrifter #nettside #digitalmarkedsføring #bedrift`;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+            if (typeof showAdminNotice === 'function') {
+                showAdminNotice('Tekst og emneknagger er kopiert til utklippstavlen! Klart til å limes inn i Instagram.', {
+                    title: 'Kopiert for Instagram',
+                    variant: 'success'
+                });
+            } else {
+                alert('Kopiert til utklippstavlen!');
+            }
+        }).catch(() => {
+            alert(text);
+        });
+    } else {
+        alert(text);
+    }
+};
+
+window.openMetaBusinessSuite = function () {
+    window.open('https://business.facebook.com/latest/composer', '_blank');
+};
+
+window.triggerEditorShareModal = function () {
+    if (typeof currentEditingId !== 'undefined' && currentEditingId != null) {
+        const index = blogData.findIndex(p => p.id == currentEditingId);
+        if (index !== -1) {
+            openShareModal(index);
+            return;
+        }
+    }
+    const tempPost = {
+        id: currentEditingId || Date.now(),
+        title: document.getElementById('post-title')?.value || 'Nytt innlegg',
+        excerpt: document.getElementById('post-excerpt')?.value || '',
+        image: document.getElementById('post-image')?.value || ''
+    };
+    currentSharePost = tempPost;
+    const modal = document.getElementById('social-share-modal');
+    if (!modal) return;
+    const titleEl = document.getElementById('share-modal-title');
+    const urlEl = document.getElementById('share-modal-url');
+    const postUrl = typeof buildBlogPostLink === 'function' ? buildBlogPostLink(tempPost.id, tempPost.title) : `/blog-details?id=${tempPost.id}`;
+    const fullUrl = `https://www.tk-design.no${postUrl.startsWith('/') ? '' : '/'}${postUrl}`;
+    if (titleEl) titleEl.textContent = tempPost.title;
+    if (urlEl) urlEl.textContent = fullUrl;
+    modal.style.display = 'flex';
+};
+
 function renderBlogList() {
     const listContainer = document.getElementById('blog-list');
     if (!listContainer) return;
@@ -7776,6 +7876,7 @@ function renderBlogList() {
             <div class="blog-meta">${post.date}</div>
             <div class="blog-meta">${post.author || 'Admin'}</div>
             <div class="blog-actions">
+                <button onclick="openShareModal(${index})" class="blog-action-btn share" title="Del i sosiale medier" style="color: #6366f1; background: #eef2ff;"><i class="fas fa-share-nodes"></i></button>
                 <button onclick="openEditModal(${index})" class="blog-action-btn" title="Rediger"><i class="fas fa-edit"></i></button>
                 <button onclick="deletePost(${index})" class="blog-action-btn delete" title="Slett"><i class="fas fa-trash"></i></button>
             </div>

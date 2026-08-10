@@ -1894,6 +1894,10 @@
                     <span class="material-symbols-outlined">translate</span>
                     <span>Oversett</span>
                 </button>
+                <button class="btn-outline" id="share-col-item" onclick="triggerEditorShareModal()" style="border-color: #6366f1; color: #6366f1;">
+                    <span class="material-symbols-outlined">share</span>
+                    <span>Del</span>
+                </button>
                 <button class="btn-outline" id="toggle-split-preview" onclick="window.toggleSplitPreview()">
                     <span class="material-symbols-outlined">preview</span>
                     <span>Forhåndsvis</span>
@@ -2480,6 +2484,86 @@
                         onclick="closeProfileModal()">Cancel</button>
                     <button data-i18n="btn_save_changes" class="save-btn" id="save-profile-btn"
                         onclick="saveUserProfile()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Social Share Modal -->
+    <div id="social-share-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 520px; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.15); border: none;">
+            <div class="modal-header" style="background: #f8fafc; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="font-size: 1.25rem; font-weight: 700; margin: 0; color: #0f172a; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-share-nodes" style="color: #6366f1;"></i> Del innlegg i sosiale medier
+                </h2>
+                <button onclick="closeShareModal()" class="text-btn" style="border: none; background: none; font-size: 1.2rem; cursor: pointer; color: #64748b;">✕</button>
+            </div>
+            <div class="modal-body" style="padding: 24px;">
+                <div style="margin-bottom: 20px;">
+                    <h3 id="share-modal-title" style="font-size: 1.1rem; font-weight: 700; margin: 0 0 6px 0; color: #1e293b;">-</h3>
+                    <p id="share-modal-url" style="font-size: 0.85rem; color: #64748b; word-break: break-all; margin: 0; padding: 8px 12px; background: #f1f5f9; border-radius: 8px; font-family: monospace;">https://tk-design.no/</p>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 14px;">
+                    <!-- Facebook Share Card -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border: 1px solid #e2e8f0; border-radius: 14px; background: #ffffff; transition: all 0.2s ease;">
+                        <div style="display: flex; align-items: center; gap: 14px;">
+                            <div style="width: 42px; height: 42px; border-radius: 12px; background: #1877f2; color: white; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                                <i class="fab fa-facebook-f"></i>
+                            </div>
+                            <div>
+                                <strong style="display: block; font-size: 0.95rem; color: #0f172a;">Facebook</strong>
+                                <span style="font-size: 0.8rem; color: #64748b;">Åpne direkte deling for Facebook</span>
+                            </div>
+                        </div>
+                        <button onclick="shareToFacebook()" style="background: #1877f2; color: white; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                            Del nå <i class="fas fa-arrow-up-right-from-square"></i>
+                        </button>
+                    </div>
+
+                    <!-- LinkedIn Share Card -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border: 1px solid #e2e8f0; border-radius: 14px; background: #ffffff; transition: all 0.2s ease;">
+                        <div style="display: flex; align-items: center; gap: 14px;">
+                            <div style="width: 42px; height: 42px; border-radius: 12px; background: #0a66c2; color: white; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                                <i class="fab fa-linkedin-in"></i>
+                            </div>
+                            <div>
+                                <strong style="display: block; font-size: 0.95rem; color: #0f172a;">LinkedIn</strong>
+                                <span style="font-size: 0.8rem; color: #64748b;">Post direkte til dine kontakter & side</span>
+                            </div>
+                        </div>
+                        <button onclick="shareToLinkedIn()" style="background: #0a66c2; color: white; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                            Del nå <i class="fas fa-arrow-up-right-from-square"></i>
+                        </button>
+                    </div>
+
+                    <!-- Instagram & Meta Suite Card -->
+                    <div style="display: flex; flex-direction: column; gap: 12px; padding: 16px 18px; border: 1px solid #e2e8f0; border-radius: 14px; background: linear-gradient(135deg, rgba(225, 48, 108, 0.05) 0%, rgba(253, 29, 29, 0.05) 50%, rgba(252, 176, 69, 0.05) 100%);">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 14px;">
+                                <div style="width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 22px;">
+                                    <i class="fab fa-instagram"></i>
+                                </div>
+                                <div>
+                                    <strong style="display: block; font-size: 0.95rem; color: #0f172a;">Instagram / Meta Suite</strong>
+                                    <span style="font-size: 0.8rem; color: #64748b;">Kopier tekst & emneknagger eller åpne Meta Composer</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; margin-top: 4px;">
+                            <button onclick="copyInstagramText()" style="flex: 1; background: #ffffff; color: #0f172a; border: 1px solid #cbd5e1; padding: 10px 14px; border-radius: 10px; font-weight: 600; font-size: 0.82rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                <i class="fas fa-copy"></i> Kopier tekst for Instagram
+                            </button>
+                            <button onclick="openMetaBusinessSuite()" style="flex: 1; background: #e1306c; color: white; border: none; padding: 10px 14px; border-radius: 10px; font-weight: 600; font-size: 0.82rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                Meta Business Suite <i class="fas fa-arrow-up-right-from-square"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px; text-align: right;">
+                    <button class="save-btn" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; cursor: pointer;" onclick="closeShareModal()">Lukk</button>
                 </div>
             </div>
         </div>
