@@ -7861,6 +7861,63 @@ window.openSocialPlannerFromPost = function () {
     }
 };
 
+window.publishDirectViaApi = async function () {
+    if (!currentSharePost) return;
+
+    const postUrl = typeof buildBlogPostLink === 'function' ? buildBlogPostLink(currentSharePost.id, currentSharePost.title) : `/blog-details?id=${currentSharePost.id}`;
+    const fullUrl = `https://www.tk-design.no${postUrl.startsWith('/') ? '' : '/'}${postUrl}`;
+
+    const text = `${currentSharePost.title || ''}\n\n${currentSharePost.excerpt || currentSharePost.summary || currentSharePost.seoDesc || ''}\n\nLes artikkelen her: ${fullUrl}\n\n#webdesign #seo #tkdesign #norskebedrifter #nettside`;
+    const imageUrl = currentSharePost.image || '';
+
+    try {
+        const token = localStorage.getItem('adminToken') || '';
+        const response = await fetch(`${API_URL}/social/publish-direct`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                title: currentSharePost.title,
+                text,
+                link: fullUrl,
+                imageUrl,
+                targets: ['facebook', 'instagram', 'linkedin']
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            if (typeof showAdminNotice === 'function') {
+                showAdminNotice('Innlegget ble publisert til dine tilkoblede kontoer!', {
+                    title: 'Publisert via API 🚀',
+                    variant: 'success'
+                });
+            } else {
+                alert('Publisert via API!');
+            }
+        } else {
+            const msg = data.message || data.error || 'Ingen API-nøkler er satt opp i miljøvariablene i Vercel.';
+            if (typeof showAdminNotice === 'function') {
+                showAdminNotice(msg, {
+                    title: 'API-nøkler mangler / Status',
+                    variant: 'warning'
+                });
+            } else {
+                alert(msg);
+            }
+        }
+    } catch (err) {
+        if (typeof showAdminNotice === 'function') {
+            showAdminNotice(`Feil ved API-publisering: ${err.message}`, { variant: 'danger' });
+        } else {
+            alert(`Feil ved API: ${err.message}`);
+        }
+    }
+};
+
 window.triggerEditorShareModal = function () {
     if (typeof currentEditingId !== 'undefined' && currentEditingId != null) {
         const index = blogData.findIndex(p => p.id == currentEditingId);

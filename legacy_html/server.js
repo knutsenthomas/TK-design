@@ -5086,18 +5086,163 @@ async function postPayloadToSocialWebhook(payload = {}, options = {}) {
                 sent: true,
                 simulated: true,
                 code: 'social_webhook_simulated',
-                details: 'Publisert lokalt fordi webhook-kall feilet.',
+                details: `Publisert lokalt fordi webhook feilet: ${error.message || 'Ukjent feil'}.`,
                 httpStatus: 200
             };
         }
 
         return {
             sent: false,
-            error: 'Failed to trigger social auto-post',
-            code: 'social_webhook_request_failed',
-            details: String(error?.message || 'Unknown webhook error'),
-            httpStatus: 500
+            error: 'Social webhook error',
+            code: 'social_webhook_fetch_failed',
+            details: `Webhook request failed: ${error.message || 'Ukjent nettverksfeil'}`,
+            httpStatus: 502
         };
+    }
+}
+
+// --- Direct Social Media API Integration (Meta Graph API & LinkedIn API) ---
+async function publishToFacebookPageApi({ message, link, imageUrl }) {
+    const pageId = String(process.env.FB_PAGE_ID || '').trim();
+    const token = String(process.env.FB_PAGE_ACCESS_TOKEN || '').trim();
+
+    if (!pageId || !token) {
+        return { ok: false, error: 'FB_PAGE_ID eller FB_PAGE_ACCESS_TOKEN mangler i miljøvariabler.' };
+    }
+
+    try {
+        const fetch = await getFetch();
+        let url, body;
+
+        if (imageUrl) {
+            url = `https://graph.facebook.com/v19.0/${pageId}/photos`;
+            body = new URLSearchParams({
+                url: imageUrl,
+                caption: message || '',
+                access_token: token
+            });
+        } else {
+            url = `https://graph.facebook.com/v19.0/${pageId}/feed`;
+            body = new URLSearchParams({
+                message: message || '',
+                link: link || '',
+                access_token: token
+            });
+        }
+
+        const response = await fetch(url, { method: 'POST', body });
+        const data = await response.json();
+
+        if (data.error) {
+            return { ok: false, error: data.error.message || 'Facebook Graph API feilet.' };
+        }
+
+        return { ok: true, id: data.id || data.post_id, url: `https://facebook.com/${data.id || data.post_id}` };
+    } catch (err) {
+        return { ok: false, error: err.message };
+    }
+}
+
+async function publishToInstagramApi({ caption, imageUrl }) {
+    const igId = String(process.env.INSTAGRAM_ACCOUNT_ID || '').trim();
+    const token = String(process.env.FB_PAGE_ACCESS_TOKEN || '').trim();
+
+    if (!igId || !token) {
+        return { ok: false, error: 'INSTAGRAM_ACCOUNT_ID eller FB_PAGE_ACCESS_TOKEN mangler i miljøvariabler.' };
+    }
+
+    if (!imageUrl) {
+        return { ok: false, error: 'Instagram krever et gyldig bilde for publisering via API.' };
+    }
+
+    try {
+        const fetch = await getFetch();
+
+        // Step 1: Create Container
+        const containerRes = await fetch(`https://graph.facebook.com/v19.0/${igId}/media`, {
+            method: 'POST',
+            body: new URLSearchParams({
+                image_url: imageUrl,
+                caption: caption || '',
+                access_token: token
+            })
+        });
+        const containerData = await containerRes.json();
+
+        if (containerData.error) {
+            return { ok: false, error: containerData.error.message || 'Instagram Container API feilet.' };
+        }
+
+        const creationId = containerData.id;
+
+        // Step 2: Publish Container
+        const publishRes = await fetch(`https://graph.facebook.com/v19.0/${igId}/media_publish`, {
+            method: 'POST',
+            body: new URLSearchParams({
+                creation_id: creationId,
+                access_token: token
+            })
+        });
+        const publishData = await publishRes.json();
+
+        if (publishData.error) {
+            return { ok: false, error: publishData.error.message || 'Instagram Publish API feilet.' };
+        }
+
+        return { ok: true, id: publishData.id };
+    } catch (err) {
+        return { ok: false, error: err.message };
+    }
+}
+
+async function publishToLinkedInCompanyApi({ text, title, url }) {
+    const orgId = String(process.env.LINKEDIN_ORGANIZATION_ID || '').trim();
+    const token = String(process.env.LINKEDIN_ACCESS_TOKEN || '').trim();
+
+    if (!orgId || !token) {
+        return { ok: false, error: 'LINKEDIN_ORGANIZATION_ID eller LINKEDIN_ACCESS_TOKEN mangler i miljøvariabler.' };
+    }
+
+    try {
+        const fetch = await getFetch();
+        const payload = {
+            author: `urn:li:organization:${orgId}`,
+            lifecycleState: 'PUBLISHED',
+            specificContent: {
+                'com.linkedin.ugc.ShareContent': {
+                    shareCommentary: { text: text || '' },
+                    shareMediaCategory: url ? 'ARTICLE' : 'NONE',
+                    media: url ? [{
+                        status: 'READY',
+                        originalUrl: url,
+                        title: { text: title || 'TK-design' }
+                    }] : []
+                }
+            },
+            visibility: {
+                'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC'
+            }
+        };
+
+        const response = await fetch('https://api.linkedin.com/v2/ugcPosts', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'X-Restli-Protocol-Version': '2.0.0'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text().catch(() => '');
+            return { ok: false, error: `LinkedIn API feilet (${response.status}): ${errorText}` };
+        }
+
+        const data = await response.json().catch(() => ({}));
+        return { ok: true, id: data.id };
+    } catch (err) {
+        return { ok: false, error: err.message };
     }
 }
 
@@ -6900,7 +7045,35 @@ app.delete('/api/social-planner/entries/:entryId', async (req, res) => {
     }
 });
 
-app.post('/api/social-planner/entries/:entryId/publish', verifyAdminToken, async (req, res) => {
+app.post('/api/social/publish-direct', verifyAdminToken, async (req, res) => {
+    try {
+        const { title, text, link, imageUrl, targets = ['facebook', 'instagram', 'linkedin'] } = req.body || {};
+        const results = {};
+        const fullText = text || `${title || ''}\n\n${link || ''}\n\n#webdesign #seo #tkdesign`;
+
+        if (targets.includes('facebook')) {
+            results.facebook = await publishToFacebookPageApi({ message: fullText, link, imageUrl });
+        }
+
+        if (targets.includes('instagram')) {
+            results.instagram = await publishToInstagramApi({ caption: fullText, imageUrl });
+        }
+
+        if (targets.includes('linkedin')) {
+            results.linkedin = await publishToLinkedInCompanyApi({ text: fullText, title, url: link });
+        }
+
+        const anySuccess = Object.values(results).some(r => r.ok);
+        res.json({
+            success: anySuccess,
+            results,
+            message: anySuccess ? 'Publisert til sosiale medier via API!' : 'Ingen kontoer publisert via API. Sjekk at miljøvariabler (FB_PAGE_ACCESS_TOKEN, FB_PAGE_ID, INSTAGRAM_ACCOUNT_ID, LINKEDIN_ACCESS_TOKEN, LINKEDIN_ORGANIZATION_ID) er lagt inn i .env eller Vercel.'
+        });
+    } catch (error) {
+        console.error('[Social API] Publish direct error:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
     try {
         const publishResult = await publishSocialPlannerEntryById(req.params.entryId, req, {
             keepScheduledOnFail: parseBooleanFlag(req.body?.keepScheduledOnFail, false)
