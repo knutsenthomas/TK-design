@@ -7074,6 +7074,8 @@ app.post('/api/social/publish-direct', verifyAdminToken, async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 });
+
+app.post('/api/social-planner/entries/:entryId/publish', verifyAdminToken, async (req, res) => {
     try {
         const publishResult = await publishSocialPlannerEntryById(req.params.entryId, req, {
             keepScheduledOnFail: parseBooleanFlag(req.body?.keepScheduledOnFail, false)
