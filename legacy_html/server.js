@@ -2574,7 +2574,7 @@ function writeCustomStyleCss(cssText) {
 // API: Get Content
 app.get('/api/content', async (req, res) => {
     try {
-        const content = await readSiteDataWithFallback('content', readDashboardContent);
+        const content = readDashboardContent();
         res.json(content);
     } catch (error) {
         console.error(error);
@@ -3252,7 +3252,7 @@ async function renderPageWithSeo(req, res, reqFile, matchedBlogPost = null) {
 
         let translatedHtml = html;
         try {
-            const translations = await readSiteDataWithFallback('content', readDashboardContent);
+            const translations = readDashboardContent();
             const langData = translations[lang];
 
             if (langData) {
@@ -3382,9 +3382,9 @@ app.get([...Object.keys(PAGE_ROUTE_MAP), ...Object.keys(LEGACY_REDIRECT_MAP)], a
     return renderPageWithSeo(req, res, reqFile);
 });
 
-app.get('/translations.js', async (req, res) => {
+app.get('/translations.js', (req, res) => {
     try {
-        const content = await readSiteDataWithFallback('content', readDashboardContent);
+        const content = readDashboardContent();
         res.type('application/javascript');
         res.send(serializeDashboardContent(content));
     } catch (error) {
