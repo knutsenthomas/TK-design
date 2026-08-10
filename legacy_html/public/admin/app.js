@@ -7833,6 +7833,34 @@ window.openMetaBusinessSuite = function () {
     window.open('https://business.facebook.com/latest/composer', '_blank');
 };
 
+window.openSocialPlannerFromPost = function () {
+    if (!currentSharePost) return;
+    closeShareModal();
+
+    const postUrl = typeof buildBlogPostLink === 'function' ? buildBlogPostLink(currentSharePost.id, currentSharePost.title) : `/blog-details?id=${currentSharePost.id}`;
+    const fullUrl = `https://www.tk-design.no${postUrl.startsWith('/') ? '' : '/'}${postUrl}`;
+
+    const text = `${currentSharePost.title || ''}\n\n${currentSharePost.excerpt || currentSharePost.summary || currentSharePost.seoDesc || ''}\n\nLes innlegget her: ${fullUrl}\n\n#webdesign #seo #tkdesign #norskebedrifter #nettside`;
+
+    if (typeof window.openSocialPlannerComposer === 'function') {
+        window.openSocialPlannerComposer({
+            reset: true,
+            panel: 'preview'
+        });
+        setTimeout(() => {
+            const contentInput = document.getElementById('sp-entry-content');
+            if (contentInput) {
+                contentInput.value = text;
+                contentInput.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        }, 150);
+    } else {
+        if (typeof window.switchSidebarPanel === 'function') {
+            window.switchSidebarPanel(null, 'social-planner');
+        }
+    }
+};
+
 window.triggerEditorShareModal = function () {
     if (typeof currentEditingId !== 'undefined' && currentEditingId != null) {
         const index = blogData.findIndex(p => p.id == currentEditingId);
