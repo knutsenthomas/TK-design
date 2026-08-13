@@ -685,6 +685,12 @@ header h1 {
 /* Buttons */
 /* Buttons */
 .save-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    line-height: 1;
+    vertical-align: middle;
     background-color: var(--primary-color);
     color: white;
     border: none;
@@ -695,6 +701,18 @@ header h1 {
     font-size: 14px;
     transition: all 0.2s;
     box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
+}
+
+.save-btn i,
+.save-btn svg,
+.save-btn .material-symbols-outlined {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    margin: 0;
+    vertical-align: middle;
+    transform: translateY(-0.5px);
 }
 
 .save-btn:hover {
