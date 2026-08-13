@@ -9390,9 +9390,9 @@ body#home.homepage-refresh .hero-mobile-frame {
     bottom: 12px;
     width: clamp(100px, 26%, 170px);
     height: clamp(180px, 78%, 320px);
-    background: #000;
-    border-radius: 20px;
-    border: 3px solid #334155;
+    background: #fff;
+    border-radius: 22px;
+    border: 3px solid #0f172a;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
     overflow: hidden;
     z-index: 10;
@@ -9418,8 +9418,10 @@ body#home.homepage-refresh .hero-mobile-notch {
 body#home.homepage-refresh .hero-mobile-frame img {
     width: 100%;
     height: 100%;
+    border-radius: 0 !important;
     object-fit: cover;
     object-position: top center;
+    display: block;
 }
 
 body#home.homepage-refresh .hero-carousel-controls {
