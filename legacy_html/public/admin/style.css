@@ -712,7 +712,14 @@ header h1 {
     line-height: 1;
     margin: 0;
     vertical-align: middle;
-    transform: translateY(-0.5px);
+    transform: translateY(0.5px);
+}
+
+.save-btn span.btn-text,
+.save-btn > span {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
 }
 
 .save-btn:hover {

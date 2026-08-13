@@ -581,14 +581,10 @@ function updateDashboardLanguage() {
                 el.innerHTML = '';
                 el.appendChild(icon);
                 
-                // If it is a navigation button or it originally had a text-span, preserve that span structure
-                if (el.classList.contains('nav-btn') || el.classList.contains('nav-link') || el.closest('.sidebar')) {
-                    const textSpan = document.createElement('span');
-                    textSpan.textContent = t[key];
-                    el.appendChild(textSpan);
-                } else {
-                    el.appendChild(document.createTextNode(' ' + t[key]));
-                }
+                const textSpan = document.createElement('span');
+                textSpan.className = 'btn-text';
+                textSpan.textContent = t[key];
+                el.appendChild(textSpan);
             } else {
                 el.innerText = t[key];
             }
