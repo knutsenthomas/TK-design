@@ -10191,12 +10191,12 @@ body#home.homepage-refresh .hero-showcase-base {
 .pricing-card:hover {
     transform: translateY(-6px);
     box-shadow: 0 24px 48px rgba(15, 23, 42, 0.1);
-    border-color: rgba(16, 185, 129, 0.3);
+    border-color: rgba(255, 106, 27, 0.35);
 }
 
 .pricing-card.featured {
-    border: 2px solid var(--clr-base, #10b981);
-    box-shadow: 0 20px 44px rgba(16, 185, 129, 0.14);
+    border: 2px solid #ff6a1b;
+    box-shadow: 0 20px 44px rgba(255, 106, 27, 0.18);
 }
 
 .pricing-card.featured:hover {
@@ -10207,7 +10207,7 @@ body#home.homepage-refresh .hero-showcase-base {
     position: absolute;
     top: -14px;
     right: 24px;
-    background: var(--accent-gradient, linear-gradient(135deg, #10b981 0%, #059669 100%));
+    background: var(--accent-gradient, linear-gradient(135deg, #ff6a1b 0%, #ff5500 100%));
     color: #ffffff;
     font-size: 0.75rem;
     font-weight: 700;
@@ -10215,23 +10215,23 @@ body#home.homepage-refresh .hero-showcase-base {
     border-radius: 20px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 4px 12px rgba(255, 106, 27, 0.35);
 }
 
 .pricing-badge {
     display: inline-block;
     padding: 4px 12px;
     border-radius: 20px;
-    background: rgba(16, 185, 129, 0.08);
-    color: var(--clr-base, #10b981);
+    background: rgba(255, 106, 27, 0.08);
+    color: #ff6a1b;
     font-size: 0.78rem;
     font-weight: 700;
     margin-bottom: 14px;
 }
 
 .pricing-badge.featured-badge {
-    background: rgba(249, 115, 22, 0.1);
-    color: #f97316;
+    background: rgba(255, 85, 0, 0.12);
+    color: #ff5500;
 }
 
 .pricing-header h3 {
@@ -10295,7 +10295,7 @@ body#home.homepage-refresh .hero-showcase-base {
 }
 
 .pricing-features li i {
-    color: var(--clr-base, #10b981);
+    color: #ff6a1b;
     font-size: 0.85rem;
     flex-shrink: 0;
 }
@@ -10311,8 +10311,9 @@ body#home.homepage-refresh .hero-showcase-base {
 }
 
 .pricing-btn.featured-btn {
-    background: var(--accent-gradient, linear-gradient(135deg, #10b981 0%, #059669 100%));
-    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25);
+    background: var(--accent-gradient, linear-gradient(135deg, #ff6a1b 0%, #ff5500 100%));
+    box-shadow: 0 8px 20px rgba(255, 106, 27, 0.3);
+    color: #ffffff !important;
 }
 
 .pricing-some-banner {
