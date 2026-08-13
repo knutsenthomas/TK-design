@@ -9261,10 +9261,10 @@ body#home.homepage-refresh .hero-showcase-camera {
 body#home.homepage-refresh .hero-showcase-screen {
     position: relative;
     aspect-ratio: 16 / 10;
-    border-radius: 14px;
+    border-radius: 12px;
     overflow: hidden;
-    border: 3px solid #0f151d;
-    background: #e9eff4;
+    border: 2px solid #1e293b;
+    background: #0f172a;
 }
 
 body#home.homepage-refresh .hero-showcase-topbar {
@@ -9298,10 +9298,11 @@ body#home.homepage-refresh .hero-showcase-nav {
 
 body#home.homepage-refresh .hero-showcase-stage {
     position: relative;
-    height: calc(100% - 42px);
-    padding: 16px;
-    background:
-        linear-gradient(170deg, #d9e3eb 0%, #edf3f8 45%, #f9fcff 100%);
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    overflow: hidden;
+    background: #0f172a;
 }
 
 body#home.homepage-refresh .hero-showcase-window,
