@@ -346,7 +346,7 @@
                         </div>
                     </div>
 
-                    <div class="banner-image hero-showcase-visual-wrap" aria-hidden="true">
+                    <div class="banner-image hero-showcase-visual-wrap" id="hero-carousel-wrap">
                         <div class="hero-showcase-laptop">
                             <div class="hero-showcase-camera"></div>
                             <div class="hero-showcase-screen">
@@ -355,36 +355,40 @@
                                     <span></span>
                                     <span></span>
                                     <div class="hero-showcase-nav">
-                                        <span>Hjem</span>
-                                        <span>Om oss</span>
-                                        <span>Tjenester</span>
-                                        <span data-i18n="nav.portfolio">Portefølje</span>
+                                        <span id="hero-project-badge" style="font-weight: 700; color: #fff;">1. TK-design</span>
                                     </div>
                                 </div>
 
-                                <div class="hero-showcase-stage">
-                                    <figure class="hero-showcase-window hero-showcase-window-main hero-showcase-window-mandal">
-                                        <div class="mandal-panel" aria-hidden="true">
-                                            <div class="mandal-backdrop"></div>
-                                            <div class="mandal-copy">
-                                                <div class="mandal-headline" data-i18n="projects.p7_title">Mandal Regnskapskontor</div>
-                                                <div class="mandal-subline" data-i18n="projects.mandal_subline">Regnskap, Fakturering, Lønn og operativ lederstøtte</div>
-                                                <span class="mandal-button">Kontakt oss</span>
-                                            </div>
-                                        </div>
-                                    </figure>
-                                    <figure class="hero-showcase-window hero-showcase-window-left">
-                                        <img src="img/project/pro2.webp" alt="" fetchpriority="high">
-                                    </figure>
-                                    <figure class="hero-showcase-window hero-showcase-window-right">
-                                        <img src="img/project/pro4.webp" alt="">
-                                    </figure>
-                                    <figure class="hero-showcase-phone">
-                                        <img src="img/project/pro6.webp" alt="">
-                                    </figure>
+                                <div class="hero-showcase-stage" id="hero-carousel-stage">
+                                    <!-- Laptop Screen Image (Desktop View) -->
+                                    <div class="hero-desktop-view">
+                                        <img id="hero-desktop-img" src="img/project/pro5.webp" alt="TK-design desktop" fetchpriority="high">
+                                    </div>
+                                    <!-- Phone Screen Overlay (Mobile View) -->
+                                    <div class="hero-mobile-frame">
+                                        <div class="hero-mobile-notch"></div>
+                                        <img id="hero-mobile-img" src="img/project/pro6.webp" alt="TK-design mobile">
+                                    </div>
                                 </div>
                             </div>
                             <div class="hero-showcase-base"></div>
+                        </div>
+
+                        <!-- Carousel Controls Bar -->
+                        <div class="hero-carousel-controls">
+                            <button type="button" class="hero-carousel-arrow prev" id="hero-prev-btn" aria-label="Forrige prosjekt">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <div class="hero-carousel-pills" id="hero-carousel-pills">
+                                <button type="button" class="hero-pill active" data-index="0">1. TK-design</button>
+                                <button type="button" class="hero-pill" data-index="1">2. Mandal Regnskap</button>
+                                <button type="button" class="hero-pill" data-index="2">3. HKM</button>
+                                <button type="button" class="hero-pill" data-index="3">4. Kudos Regnskap</button>
+                                <button type="button" class="hero-pill" data-index="4">9. Stevneregister</button>
+                            </div>
+                            <button type="button" class="hero-carousel-arrow next" id="hero-next-btn" aria-label="Neste prosjekt">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1479,11 +1483,126 @@
     <script defer src="/_vercel/insights/script.js"></script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').catch(() => { });
+        document.addEventListener('DOMContentLoaded', () => {
+            const projects = [
+                {
+                    num: "1",
+                    title: "TK-design",
+                    desktopImg: "img/project/pro5.webp",
+                    mobileImg: "img/project/pro6.webp"
+                },
+                {
+                    num: "2",
+                    title: "Mandal Regnskapskontor",
+                    desktopImg: "img/project/pro1.webp",
+                    mobileImg: "img/project/pro6.webp"
+                },
+                {
+                    num: "3",
+                    title: "His Kingdom Ministry",
+                    desktopImg: "img/project/hkm-preview.webp",
+                    mobileImg: "img/project/pro3.webp"
+                },
+                {
+                    num: "4",
+                    title: "Kudos Regnskap AS",
+                    desktopImg: "img/project/Kudos Regnskap.webp",
+                    mobileImg: "img/project/pro4.webp"
+                },
+                {
+                    num: "9",
+                    title: "Nasjonalt Stevneregister",
+                    desktopImg: "img/project/pro2.webp",
+                    mobileImg: "img/project/pro6.webp"
+                }
+            ];
+
+            let currentIndex = 0;
+            let timer = null;
+
+            const desktopImg = document.getElementById('hero-desktop-img');
+            const mobileImg = document.getElementById('hero-mobile-img');
+            const projectBadge = document.getElementById('hero-project-badge');
+            const pills = document.querySelectorAll('.hero-pill');
+            const prevBtn = document.getElementById('hero-prev-btn');
+            const nextBtn = document.getElementById('hero-next-btn');
+            const carouselWrap = document.getElementById('hero-carousel-wrap');
+
+            function updateCarousel(index) {
+                currentIndex = index;
+                const p = projects[currentIndex];
+                if (!p) return;
+
+                if (desktopImg) {
+                    desktopImg.style.opacity = '0';
+                    setTimeout(() => {
+                        desktopImg.src = p.desktopImg;
+                        desktopImg.alt = p.title;
+                        desktopImg.style.opacity = '1';
+                    }, 150);
+                }
+
+                if (mobileImg) {
+                    mobileImg.style.opacity = '0';
+                    setTimeout(() => {
+                        mobileImg.src = p.mobileImg;
+                        mobileImg.alt = p.title + ' mobil';
+                        mobileImg.style.opacity = '1';
+                    }, 150);
+                }
+
+                if (projectBadge) {
+                    projectBadge.textContent = `${p.num}. ${p.title}`;
+                }
+
+                pills.forEach((pill, idx) => {
+                    if (idx === currentIndex) {
+                        pill.classList.add('active');
+                    } else {
+                        pill.classList.remove('active');
+                    }
+                });
+            }
+
+            function nextSlide() {
+                const nextIdx = (currentIndex + 1) % projects.length;
+                updateCarousel(nextIdx);
+            }
+
+            function prevSlide() {
+                const prevIdx = (currentIndex - 1 + projects.length) % projects.length;
+                updateCarousel(prevIdx);
+            }
+
+            function startAutoPlay() {
+                stopAutoPlay();
+                timer = setInterval(nextSlide, 5000);
+            }
+
+            function stopAutoPlay() {
+                if (timer) clearInterval(timer);
+            }
+
+            if (prevBtn) prevBtn.addEventListener('click', () => { prevSlide(); startAutoPlay(); });
+            if (nextBtn) nextBtn.addEventListener('click', () => { nextSlide(); startAutoPlay(); });
+
+            pills.forEach((pill) => {
+                pill.addEventListener('click', () => {
+                    const idx = parseInt(pill.dataset.index, 10);
+                    if (!isNaN(idx)) {
+                        updateCarousel(idx);
+                        startAutoPlay();
+                    }
+                });
             });
-        }
+
+            if (carouselWrap) {
+                carouselWrap.addEventListener('mouseenter', stopAutoPlay);
+                carouselWrap.addEventListener('mouseleave', startAutoPlay);
+            }
+
+            startAutoPlay();
+        });
     </script>
 </body>
 
