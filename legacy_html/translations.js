@@ -115,7 +115,7 @@ const translations = {
             popular: "Most Popular"
         },
         hero: {
-            subtitle: "Professional web design",
+            subtitle: "Tailored Web Design & SEO",
             title_1: "YOUR DIGITAL",
             title_1_line1: "YOUR",
             title_1_line2: "DIGITAL",
@@ -676,7 +676,7 @@ const translations = {
             popular: "Mest populær"
         },
         hero: {
-            subtitle: "Profesjonell webdesign",
+            subtitle: "Skreddersydd Webdesign & SEO",
             title_1: "DIN DIGITALE",
             title_1_line1: "DIN",
             title_1_line2: "DIGITALE",
