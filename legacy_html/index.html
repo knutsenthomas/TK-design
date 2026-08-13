@@ -1508,6 +1508,14 @@
                 }
             ];
 
+            // Preload all project images in memory so image swaps are 100% instant and flicker-free
+            projects.forEach(p => {
+                const imgD = new Image();
+                imgD.src = p.desktopImg;
+                const imgM = new Image();
+                imgM.src = p.mobileImg;
+            });
+
             let currentIndex = 0;
             let timer = null;
 
@@ -1525,21 +1533,13 @@
                 if (!p) return;
 
                 if (desktopImg) {
-                    desktopImg.style.opacity = '0';
-                    setTimeout(() => {
-                        desktopImg.src = p.desktopImg;
-                        desktopImg.alt = p.title;
-                        desktopImg.style.opacity = '1';
-                    }, 150);
+                    desktopImg.src = p.desktopImg;
+                    desktopImg.alt = p.title;
                 }
 
                 if (mobileImg) {
-                    mobileImg.style.opacity = '0';
-                    setTimeout(() => {
-                        mobileImg.src = p.mobileImg;
-                        mobileImg.alt = p.title + ' mobil';
-                        mobileImg.style.opacity = '1';
-                    }, 150);
+                    mobileImg.src = p.mobileImg;
+                    mobileImg.alt = p.title + ' mobil';
                 }
 
                 if (projectBadge) {
