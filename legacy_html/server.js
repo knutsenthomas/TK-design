@@ -889,6 +889,22 @@ function readHtmlTemplate(filePath) {
     });
 }
 
+function getFallbackBlogImage(idOrSlug) {
+    const images = [
+        '/img/blog/bblog1.png',
+        '/img/blog/bblog2.png',
+        '/img/blog/bblog3.png',
+        '/img/blog/bblog4.png'
+    ];
+    let str = String(idOrSlug || '1');
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i);
+        hash |= 0;
+    }
+    return images[Math.abs(hash) % images.length];
+}
+
 function parseFirestoreDocToBlogPost(doc) {
     if (!doc || !doc.fields) return null;
     const fields = doc.fields;
@@ -907,7 +923,14 @@ function parseFirestoreDocToBlogPost(doc) {
     const slug = getVal(fields.slug) || docId;
     const author = getVal(fields.author) || 'TK-design';
     const publishedAt = getVal(fields.publishedAt) || getVal(fields.createdAt) || doc.createTime || '';
-    const image = getVal(fields.image) || getVal(fields.imageUrl) || 'img/blog/b-1.png';
+    
+    let image = getVal(fields.image) || getVal(fields.imageUrl);
+    if (!image || image.includes('b-1.png')) {
+        image = getFallbackBlogImage(slug || docId);
+    } else if (!image.startsWith('http') && !image.startsWith('/')) {
+        image = '/' + image;
+    }
+
     const summary = getVal(fields.summary) || getVal(fields.excerpt) || '';
     const category = getVal(fields.category) || 'Webdesign';
 
