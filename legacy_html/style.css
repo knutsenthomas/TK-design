@@ -9415,25 +9415,28 @@ body#home.homepage-refresh .hero-mobile-frame:hover {
 }
 
 body#home.homepage-refresh .hero-mobile-topbar {
-    height: 14px;
+    height: 18px;
     background: #090d16;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 8px;
+    padding: 3px 9px 0 11px;
     position: relative;
     z-index: 15;
     flex-shrink: 0;
 }
 
 body#home.homepage-refresh .mobile-time {
-    font-size: 7.5px;
+    font-size: 8px;
     font-weight: 700;
     color: #ffffff;
     letter-spacing: -0.02em;
     line-height: 1;
+    display: inline-flex;
+    align-items: center;
 }
 
+body#home.homepage-refresh .hero-icons,
 body#home.homepage-refresh .mobile-icons {
     display: flex;
     align-items: center;
@@ -9442,11 +9445,11 @@ body#home.homepage-refresh .mobile-icons {
 
 body#home.homepage-refresh .hero-mobile-notch {
     position: absolute;
-    top: 3px;
+    top: 4.5px;
     left: 50%;
     transform: translateX(-50%);
-    width: 28px;
-    height: 7px;
+    width: 30px;
+    height: 8.5px;
     background: #000000;
     border-radius: 999px;
     z-index: 16;
@@ -9455,7 +9458,7 @@ body#home.homepage-refresh .hero-mobile-notch {
 body#home.homepage-refresh .hero-mobile-frame img {
     flex: 1;
     width: 100%;
-    height: calc(100% - 14px);
+    height: calc(100% - 18px);
     border-radius: 0 !important;
     border: none !important;
     outline: none !important;
