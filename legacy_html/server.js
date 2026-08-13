@@ -1001,13 +1001,51 @@ async function readSiteDataWithFallback(documentId, fallbackReader) {
 
         const adminPosts = (firestoreAdminPosts && Array.isArray(firestoreAdminPosts)) ? firestoreAdminPosts : fallbackPosts;
 
-        const combined = [...firestoreCollectionPosts];
-        const existingIds = new Set(firestoreCollectionPosts.map(p => String(p.id)));
-        const existingSlugs = new Set(firestoreCollectionPosts.map(p => p.slug));
+        const adminMap = new Map();
+        (adminPosts || []).forEach(p => {
+            if (!p) return;
+            const id = String(p.id || '');
+            const linkSlug = p.link ? p.link.replace(/^\/blog\//, '').replace(/\?.*$/, '') : '';
+            const slug = p.slug || linkSlug;
+
+            if (id && (!adminMap.has(id) || (!adminMap.get(id).titleEn && p.titleEn))) {
+                adminMap.set(id, p);
+            }
+            if (slug && (!adminMap.has(slug) || (!adminMap.get(slug).titleEn && p.titleEn))) {
+                adminMap.set(slug, p);
+            }
+        });
+
+        const combined = firestoreCollectionPosts.map(sPost => {
+            const matchedAdmin = adminMap.get(sPost.slug) || adminMap.get(String(sPost.id));
+            if (matchedAdmin) {
+                return {
+                    ...matchedAdmin,
+                    ...sPost,
+                    titleEn: sPost.titleEn || matchedAdmin.titleEn,
+                    contentEn: sPost.contentEn || matchedAdmin.contentEn,
+                    summaryEn: sPost.summaryEn || matchedAdmin.summaryEn || matchedAdmin.excerptEn,
+                    excerptEn: sPost.excerptEn || matchedAdmin.excerptEn,
+                    categoryEn: sPost.categoryEn || matchedAdmin.categoryEn,
+                    seoTitleEn: sPost.seoTitleEn || matchedAdmin.seoTitleEn,
+                    seoDescEn: sPost.seoDescEn || matchedAdmin.seoDescEn,
+                    seoKeywordsEn: sPost.seoKeywordsEn || matchedAdmin.seoKeywordsEn,
+                    detailSummaryEn: sPost.detailSummaryEn || matchedAdmin.detailSummaryEn,
+                    detailOutlineEn: sPost.detailOutlineEn || matchedAdmin.detailOutlineEn
+                };
+            }
+            return sPost;
+        });
+
+        const existingIds = new Set(combined.map(p => String(p.id)));
+        const existingSlugs = new Set(combined.map(p => p.slug || (p.link ? p.link.replace(/^\/blog\//, '').replace(/\?.*$/, '') : '')));
 
         for (const p of (adminPosts || [])) {
-            if (p && !existingIds.has(String(p.id)) && (!p.slug || !existingSlugs.has(p.slug))) {
+            const pSlug = p.slug || (p.link ? p.link.replace(/^\/blog\//, '').replace(/\?.*$/, '') : '');
+            if (p && !existingIds.has(String(p.id)) && (!pSlug || !existingSlugs.has(pSlug))) {
                 combined.push(p);
+                existingIds.add(String(p.id));
+                if (pSlug) existingSlugs.add(pSlug);
             }
         }
         return combined;
