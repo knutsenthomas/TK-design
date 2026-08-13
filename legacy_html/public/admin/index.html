@@ -305,11 +305,15 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header" style="display: flex; align-items: center; justify-content: space-between; padding: 16px 12px; margin-bottom: 24px;">
-                <div class="logo" style="margin-bottom: 0; display: flex; align-items: center; gap: 10px;">
-                    <img src="../img/logo/d.png" alt="tk-design Logo" style="width: 28px; height: 28px; object-fit: contain;">
-                    <div class="logo-title-group" style="display: flex; flex-direction: column;">
-                        <h1 class="logo-text" style="font-size: 14px; font-weight: 800; margin: 0; line-height: 1.2; color: #0f172a;">Nettside - HKM</h1>
-                        <span style="font-size: 11px; color: #64748b; font-weight: 600;">tk-design Studio</span>
+                <div class="logo logo-hover-expand-wrapper" id="sidebar-logo-trigger" data-admin-sidebar-toggle="open" role="button" title="Vis full meny" style="margin-bottom: 0;">
+                    <img src="../img/logo/d.png" alt="tk-design Logo" class="logo-img" style="width: 32px; height: 32px; object-fit: contain;">
+                    <h1 class="logo-text">tk-design Studio</h1>
+                    <div class="logo-expand-icon" aria-hidden="true">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect>
+                            <line x1="9" y1="3" x2="9" y2="21"></line>
+                            <path d="M12 9l3 3-3 3"></path>
+                        </svg>
                     </div>
                 </div>
                 <button id="mobile-sidebar-close" data-admin-sidebar-toggle="close"
@@ -426,7 +430,7 @@
                                     <span class="breadcrumb-item active">Hjem</span>
                                 </nav>
                             </h2>
-                            <p id="dashboard-main-header-subtitle" class="section-subtitle" style="margin: 4px 0 0 0; font-size: 12px; color: var(--text-muted); font-weight: 600;">Område: <span style="color: #ff6a1b; font-weight: 700;">Nettside - HKM</span> (His Kingdom Ministry)</p>
+                            <p id="dashboard-main-header-subtitle" class="section-subtitle" style="margin: 4px 0 0 0; font-size: 12px; color: var(--text-muted);">tk-design Studio administrasjonspanel</p>
                         </div>
 
                         <div class="section-header-actions" style="display: flex; align-items: center; gap: 20px;">

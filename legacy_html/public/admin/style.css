@@ -4422,6 +4422,57 @@ body.admin-dashboard-refresh.admin-sidebar-collapsed .sidebar {
     pointer-events: none;
 }
 
+/* Logo Hover-to-Expand Interaction */
+.logo-hover-expand-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.logo-hover-expand-wrapper .logo-img {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.logo-hover-expand-wrapper .logo-expand-icon {
+    position: absolute;
+    left: -2px;
+    top: 50%;
+    transform: translateY(-50%) scale(0.8);
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.14);
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+    z-index: 20;
+}
+
+.logo-hover-expand-wrapper:hover .logo-expand-icon {
+    color: #ff6a1b;
+    border-color: rgba(255, 106, 27, 0.4);
+}
+
+body.admin-sidebar-collapsed .logo-hover-expand-wrapper:hover .logo-img {
+    opacity: 0;
+    transform: scale(0.75);
+}
+
+body.admin-sidebar-collapsed .logo-hover-expand-wrapper:hover .logo-expand-icon {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(-50%) scale(1);
+}
+
 body.admin-dashboard-refresh header {
     margin-bottom: 26px;
 }
