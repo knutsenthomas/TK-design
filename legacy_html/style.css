@@ -9414,13 +9414,13 @@ body#home.homepage-refresh .hero-mobile-frame:hover {
 
 body#home.homepage-refresh .hero-mobile-notch {
     position: absolute;
-    top: 4px;
+    top: 3px;
     left: 50%;
     transform: translateX(-50%);
-    width: 35%;
-    height: 8px;
+    width: 20%;
+    height: 4.5px;
     background: #000;
-    border-radius: 8px;
+    border-radius: 999px;
     z-index: 12;
 }
 
