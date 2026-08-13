@@ -1635,12 +1635,14 @@
                 }
             ];
 
-            // Preload all project images in memory so image swaps are 100% instant and flicker-free
+            // Preload and pre-decode all project images in memory for 100% synchronized, atomic swapping
+            const imageCache = {};
             projects.forEach(p => {
                 const imgD = new Image();
                 imgD.src = p.desktopImg;
                 const imgM = new Image();
                 imgM.src = p.mobileImg;
+                imageCache[p.num] = { desktop: imgD, mobile: imgM };
             });
 
             let currentIndex = 0;
@@ -1659,19 +1661,31 @@
                 const p = projects[currentIndex];
                 if (!p) return;
 
-                if (desktopImg) {
-                    desktopImg.src = p.desktopImg;
-                    desktopImg.alt = p.title;
+                const cache = imageCache[p.num];
+                const decodePromises = [];
+                if (cache && cache.desktop && cache.desktop.decode) {
+                    decodePromises.push(cache.desktop.decode().catch(() => {}));
+                }
+                if (cache && cache.mobile && cache.mobile.decode) {
+                    decodePromises.push(cache.mobile.decode().catch(() => {}));
                 }
 
-                if (mobileImg) {
-                    mobileImg.src = p.mobileImg;
-                    mobileImg.alt = p.title + ' mobil';
-                }
-
-                if (projectBadge) {
-                    projectBadge.textContent = `${p.num}. ${p.title}`;
-                }
+                // Batch both DOM updates in a single animation frame after decoding to guarantee 0ms offset
+                Promise.all(decodePromises).then(() => {
+                    requestAnimationFrame(() => {
+                        if (desktopImg) {
+                            desktopImg.src = p.desktopImg;
+                            desktopImg.alt = p.title;
+                        }
+                        if (mobileImg) {
+                            mobileImg.src = p.mobileImg;
+                            mobileImg.alt = p.title + ' mobil';
+                        }
+                        if (projectBadge) {
+                            projectBadge.textContent = `${p.num}. ${p.title}`;
+                        }
+                    });
+                });
 
                 pills.forEach((pill, idx) => {
                     if (idx === currentIndex) {
