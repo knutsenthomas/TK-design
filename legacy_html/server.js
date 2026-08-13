@@ -987,17 +987,26 @@ async function readFirestorePostsCollection() {
 
 async function readSiteDataWithFallback(documentId, fallbackReader) {
     if (documentId === 'posts') {
-        const firestorePosts = await readFirestorePostsCollection();
+        const firestoreCollectionPosts = await readFirestorePostsCollection();
+        let firestoreAdminPosts = null;
+        if (hasFirebaseServerCredentials()) {
+            try {
+                firestoreAdminPosts = await readSiteJsonDocument('posts');
+            } catch (e) {}
+        }
         let fallbackPosts = [];
         try {
             fallbackPosts = await fallbackReader();
-        } catch (err) {
-            fallbackPosts = [];
-        }
-        const combined = [...firestorePosts];
-        const existingSlugs = new Set(firestorePosts.map(p => p.slug || p.id));
-        for (const p of (fallbackPosts || [])) {
-            if (p && !existingSlugs.has(p.slug || String(p.id))) {
+        } catch (err) {}
+
+        const adminPosts = (firestoreAdminPosts && Array.isArray(firestoreAdminPosts)) ? firestoreAdminPosts : fallbackPosts;
+
+        const combined = [...firestoreCollectionPosts];
+        const existingIds = new Set(firestoreCollectionPosts.map(p => String(p.id)));
+        const existingSlugs = new Set(firestoreCollectionPosts.map(p => p.slug));
+
+        for (const p of (adminPosts || [])) {
+            if (p && !existingIds.has(String(p.id)) && (!p.slug || !existingSlugs.has(p.slug))) {
                 combined.push(p);
             }
         }

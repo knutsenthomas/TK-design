@@ -314,38 +314,54 @@
         }
 
         async function fetchBlogListPosts() {
-            let firestorePosts = [];
+            let symphonyPosts = [];
+            let adminPosts = [];
             let localPosts = [];
 
-            // 1. Fetch from Firestore
+            // 1. Fetch Symphony posts from Firestore 'posts' collection
             try {
                 const response = await fetch('https://firestore.googleapis.com/v1/projects/tk-design-f43f6/databases/(default)/documents/posts');
                 if (response.ok) {
                     const data = await response.json();
                     if (data && Array.isArray(data.documents)) {
-                        firestorePosts = data.documents.map(parseFirestoreDocToBlogPost).filter(Boolean);
+                        symphonyPosts = data.documents.map(parseFirestoreDocToBlogPost).filter(Boolean);
                     }
                 }
             } catch (e) {
-                console.warn('Feil ved henting fra Firestore:', e);
+                console.warn('Feil ved henting fra Firestore posts:', e);
             }
 
-            // 2. Fetch local posts fallback
+            // 2. Fetch admin posts from Firestore 'siteAdminData/posts' document
             try {
-                const response = await fetch('/data/posts.json');
+                const response = await fetch('https://firestore.googleapis.com/v1/projects/tk-design-f43f6/databases/(default)/documents/siteAdminData/posts');
                 if (response.ok) {
                     const data = await response.json();
-                    if (Array.isArray(data)) {
-                        localPosts = data;
+                    const jsonStr = data.fields?.json?.stringValue;
+                    if (jsonStr) {
+                        const parsed = JSON.parse(jsonStr);
+                        if (Array.isArray(parsed)) adminPosts = parsed;
                     }
                 }
             } catch (e) {}
 
-            // 3. Merge: Firestore posts first, then local posts (deduplicated by slug/id)
-            const combined = [...firestorePosts];
-            const existingSlugs = new Set(firestorePosts.map(p => p.slug || p.id));
-            for (const p of localPosts) {
-                if (p && !existingSlugs.has(p.slug || String(p.id))) {
+            // 3. Fetch local fallback posts.json
+            try {
+                const response = await fetch('/data/posts.json');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (Array.isArray(data)) localPosts = data;
+                }
+            } catch (e) {}
+
+            const baseAdminPosts = adminPosts.length > 0 ? adminPosts : localPosts;
+
+            // Merge Symphony posts first, then admin posts
+            const combined = [...symphonyPosts];
+            const existingIds = new Set(symphonyPosts.map(p => String(p.id)));
+            const existingSlugs = new Set(symphonyPosts.map(p => p.slug));
+
+            for (const p of baseAdminPosts) {
+                if (p && !existingIds.has(String(p.id)) && (!p.slug || !existingSlugs.has(p.slug))) {
                     combined.push(p);
                 }
             }
