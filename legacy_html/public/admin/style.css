@@ -711,8 +711,9 @@ header h1 {
     justify-content: center;
     line-height: 1;
     margin: 0;
+    padding: 0;
     vertical-align: middle;
-    transform: translateY(0.5px);
+    transform: none;
 }
 
 .save-btn span.btn-text,

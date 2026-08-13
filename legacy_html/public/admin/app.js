@@ -575,8 +575,8 @@ function updateDashboardLanguage() {
                 return;
             }
 
-            // Preserve icon if it exists (either FontAwesome <i> or Material Symbol/Icon <span>)
-            const icon = el.querySelector('i, span.material-symbols-outlined, span.material-icons');
+            // Preserve icon if it exists (FontAwesome <i>, Material <span>, or SVG)
+            const icon = el.querySelector('i, span.material-symbols-outlined, span.material-icons, svg');
             if (icon) {
                 el.innerHTML = '';
                 el.appendChild(icon);
