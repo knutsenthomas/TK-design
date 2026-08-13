@@ -387,8 +387,60 @@
             return BLOG_DETAIL_RUNTIME[currentLang] || BLOG_DETAIL_RUNTIME.no;
         }
 
+        function parseFirestoreDocToBlogPost(doc) {
+            if (!doc || !doc.fields) return null;
+            const fields = doc.fields;
+            const getVal = (field) => {
+                if (!field) return '';
+                if ('stringValue' in field) return field.stringValue;
+                if ('timestampValue' in field) return field.timestampValue;
+                if ('integerValue' in field) return Number(field.integerValue);
+                if ('booleanValue' in field) return field.booleanValue;
+                return '';
+            };
+
+            const docId = doc.name ? doc.name.split('/').pop() : '';
+            const title = getVal(fields.title) || 'Uten tittel';
+            const content = getVal(fields.content) || '';
+            const slug = getVal(fields.slug) || docId;
+            const author = getVal(fields.author) || 'TK-design';
+            const publishedAt = getVal(fields.publishedAt) || getVal(fields.createdAt) || doc.createTime || '';
+            const image = getVal(fields.image) || getVal(fields.imageUrl) || 'img/blog/b-1.png';
+            const summary = getVal(fields.summary) || getVal(fields.excerpt) || '';
+            const category = getVal(fields.category) || 'Webdesign';
+
+            let dateStr = '';
+            if (publishedAt) {
+                try {
+                    const d = new Date(publishedAt);
+                    if (!isNaN(d.getTime())) {
+                        dateStr = d.toLocaleDateString('no-NO', { year: 'numeric', month: 'long', day: 'numeric' });
+                    }
+                } catch (e) {}
+            }
+
+            return {
+                id: docId,
+                title,
+                content,
+                slug,
+                link: `/blog/${slug}`,
+                author,
+                publishedAt,
+                date: dateStr,
+                image,
+                summary,
+                category,
+                status: getVal(fields.status) || 'published'
+            };
+        }
+
         async function fetchBlogPosts() {
-            const sources = ['/data/posts.json', 'http://localhost:3000/api/posts'];
+            const sources = [
+                'https://firestore.googleapis.com/v1/projects/tk-design-f43f6/databases/(default)/documents/posts',
+                '/data/posts.json',
+                '/api/posts'
+            ];
 
             for (const source of sources) {
                 try {
@@ -397,9 +449,14 @@
                         continue;
                     }
 
-                    const posts = await response.json();
-                    if (Array.isArray(posts) && posts.length) {
-                        return posts;
+                    const data = await response.json();
+                    if (data && Array.isArray(data.documents)) {
+                        const firestorePosts = data.documents.map(parseFirestoreDocToBlogPost).filter(Boolean);
+                        if (firestorePosts.length > 0) {
+                            return firestorePosts;
+                        }
+                    } else if (Array.isArray(data) && data.length) {
+                        return data;
                     }
                 } catch (error) {
                     // Try next source.

@@ -889,7 +889,98 @@ function readHtmlTemplate(filePath) {
     });
 }
 
+function parseFirestoreDocToBlogPost(doc) {
+    if (!doc || !doc.fields) return null;
+    const fields = doc.fields;
+    const getVal = (field) => {
+        if (!field) return '';
+        if ('stringValue' in field) return field.stringValue;
+        if ('timestampValue' in field) return field.timestampValue;
+        if ('integerValue' in field) return Number(field.integerValue);
+        if ('booleanValue' in field) return field.booleanValue;
+        return '';
+    };
+
+    const docId = doc.name ? doc.name.split('/').pop() : '';
+    const title = getVal(fields.title) || 'Uten tittel';
+    const content = getVal(fields.content) || '';
+    const slug = getVal(fields.slug) || docId;
+    const author = getVal(fields.author) || 'TK-design';
+    const publishedAt = getVal(fields.publishedAt) || getVal(fields.createdAt) || doc.createTime || '';
+    const image = getVal(fields.image) || getVal(fields.imageUrl) || 'img/blog/b-1.png';
+    const summary = getVal(fields.summary) || getVal(fields.excerpt) || '';
+    const category = getVal(fields.category) || 'Webdesign';
+
+    let dateStr = '';
+    if (publishedAt) {
+        try {
+            const d = new Date(publishedAt);
+            if (!isNaN(d.getTime())) {
+                dateStr = d.toLocaleDateString('no-NO', { year: 'numeric', month: 'long', day: 'numeric' });
+            }
+        } catch (e) {}
+    }
+
+    return {
+        id: docId,
+        title,
+        content,
+        slug,
+        link: `/blog/${slug}`,
+        author,
+        publishedAt,
+        date: dateStr,
+        image,
+        summary,
+        category,
+        status: getVal(fields.status) || 'published'
+    };
+}
+
+async function readFirestorePostsCollection() {
+    try {
+        const url = `https://firestore.googleapis.com/v1/projects/tk-design-f43f6/databases/(default)/documents/posts`;
+        const fetch = await getFetch();
+        let headers = {};
+        if (hasFirebaseServerCredentials()) {
+            try {
+                const accessToken = await getFirebaseAccessToken();
+                if (accessToken) {
+                    headers['Authorization'] = `Bearer ${accessToken}`;
+                }
+            } catch (err) {}
+        }
+        const response = await fetch(url, { headers });
+        if (!response.ok) return [];
+        const data = await response.json();
+        if (data && Array.isArray(data.documents)) {
+            return data.documents.map(parseFirestoreDocToBlogPost).filter(Boolean);
+        }
+    } catch (e) {
+        console.error('Feil ved lesing av Firestore posts samling:', e.message);
+    }
+    return [];
+}
+
 async function readSiteDataWithFallback(documentId, fallbackReader) {
+    if (documentId === 'posts') {
+        const firestorePosts = await readFirestorePostsCollection();
+        let fallbackPosts = [];
+        try {
+            fallbackPosts = await fallbackReader();
+        } catch (err) {
+            fallbackPosts = [];
+        }
+        const combined = [...firestorePosts];
+        const existingSlugs = new Set(firestorePosts.map(p => p.slug || p.id));
+        for (const p of (fallbackPosts || [])) {
+            if (p && !existingSlugs.has(p.slug || String(p.id))) {
+                combined.push(p);
+            }
+        }
+        return combined;
+    }
+
     if (siteDataCache.has(documentId)) {
         return siteDataCache.get(documentId);
     }
@@ -4602,6 +4693,12 @@ function findBlogPostByRouteSegment(posts = [], routeSegment = '') {
         decodedSegment = String(routeSegment || '').trim();
     }
 
+    // Direct match by slug or id
+    const directMatch = posts.find(p => p && (p.slug === decodedSegment || String(p.id) === decodedSegment));
+    if (directMatch) {
+        return directMatch;
+    }
+
     const idMatch = decodedSegment.match(/-(\d+)$/);
     if (idMatch) {
         const matchedById = posts.find((post) => Number(post.id) === Number(idMatch[1]));
@@ -4615,7 +4712,11 @@ function findBlogPostByRouteSegment(posts = [], routeSegment = '') {
         return null;
     }
 
-    return posts.find((post) => normalizeBlogSlugPart(getBlogPostTitleForUrl(post)) === normalizedSegment) || null;
+    return posts.find((post) => {
+        if (!post) return false;
+        if (post.slug && normalizeBlogSlugPart(post.slug) === normalizedSegment) return true;
+        return normalizeBlogSlugPart(getBlogPostTitleForUrl(post)) === normalizedSegment;
+    }) || null;
 }
 
 function resolveAbsolutePostUrl(linkValue, req, fallbackPostId, fallbackTitle = '') {

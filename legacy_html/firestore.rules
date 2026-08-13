@@ -22,6 +22,11 @@ service cloud.firestore {
     // Standard fallback-regel (valgfritt)
     // Siden backend API-et kjører med admin-rettigheter, trenger vi ikke 
     // åpne opp andre samlinger for klientskriving her.
+    match /posts/{postId} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
     match /{document=**} {
       allow read: if true;
       allow write: if false;
