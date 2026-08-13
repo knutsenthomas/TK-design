@@ -88,6 +88,9 @@ const translations = {
             p4_f5: "High visual quality & engagement",
             p4_f6: "No lock-in – flexible agreement",
             p4_btn: "Order SoMe",
+            support_subtitle_tag: "Maintenance & Support",
+            support_main_title: "Need continuous operation and support?",
+            support_main_desc: "Avoid unexpected developer expenses. With a fixed support agreement, you always have a dedicated specialist looking after and monitoring your website.",
             btn: "Choose Package",
             btn_popular: "Choose Package",
             popular: "Most Popular"
@@ -671,6 +674,9 @@ const translations = {
             p4_f5: "Høy visuell kvalitet & engasjement",
             p4_f6: "Ingen bindingstid – fleksibel avtale",
             p4_btn: "Bestill SoMe",
+            support_subtitle_tag: "Drift & Vedlikehold",
+            support_main_title: "Trenger du løpende drift og support?",
+            support_main_desc: "Slipp uforutsette utviklerutgifter. Med en fast supportavtale har du alltid en dedikert spesialist som passer på og overvåker nettsiden din.",
             btn: "Velg pakke",
             btn_popular: "Velg pakke",
             popular: "Mest populær"
