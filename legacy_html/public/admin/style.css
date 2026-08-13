@@ -4140,19 +4140,33 @@ body.admin-dashboard-refresh .admin-header {
 }
 
 body.admin-dashboard-refresh .sidebar-toggle-btn {
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    background: rgba(255, 255, 255, 0.95);
-    color: #475569;
-    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: none;
+    background: transparent;
+    color: #0f172a;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    box-shadow: none;
 }
 
 body.admin-dashboard-refresh .sidebar-toggle-btn:hover {
-    color: #0f172a;
-    border-color: rgba(249, 115, 22, 0.26);
-    background: #fff7ed;
+    color: #ff6a1b;
+    background: rgba(15, 23, 42, 0.05);
+}
+
+body.admin-dashboard-refresh .sidebar-toggle-svg {
+    width: 22px;
+    height: 22px;
+    display: block;
+    stroke: currentColor;
+    stroke-width: 2.2px;
+    transition: transform 0.2s ease;
 }
 
 body.admin-dashboard-refresh .admin-container {

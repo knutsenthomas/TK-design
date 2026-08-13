@@ -7265,10 +7265,17 @@ function updateAdminSidebarToggleButton(collapsed) {
         button.setAttribute('title', collapsed ? 'Vis meny' : 'Skjul meny');
         button.setAttribute('aria-label', collapsed ? 'Vis meny' : 'Skjul meny');
 
+        // Update SVG chevron if present
+        const svgChevron = button.querySelector('.sidebar-chevron');
+        if (svgChevron) {
+            svgChevron.setAttribute('d', collapsed ? 'M12 9l3 3-3 3' : 'M15 9l-3 3 3 3');
+        }
+
         const icon = button.querySelector('i');
-        if (!icon) return;
-        icon.classList.remove('fa-bars', 'fa-xmark', 'fa-angle-left', 'fa-angle-right', 'fa-angles-left', 'fa-angles-right');
-        icon.classList.add(collapsed ? control.collapsedIcon : control.expandedIcon);
+        if (icon) {
+            icon.classList.remove('fa-bars', 'fa-xmark', 'fa-angle-left', 'fa-angle-right', 'fa-angles-left', 'fa-angles-right');
+            icon.classList.add(collapsed ? control.collapsedIcon : control.expandedIcon);
+        }
     });
 }
 
