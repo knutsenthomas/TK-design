@@ -266,6 +266,7 @@
                             <li><a href="/nettside-sjekker" data-i18n="nav.sub_analyzer">Nettside-sjekker</a></li>
                         </ul>
                     </li>
+                    <li><a href="/#pricing" data-i18n="nav.pricing">Priser</a></li>
                     <li><a href="/portefolje" data-i18n="nav.portfolio">Portfolio</a></li>
                     <li><a href="/?section=testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
                     <li><a href="/blog" data-i18n="nav.blog">Aktuelt</a></li>
@@ -298,6 +299,7 @@
                         <li><a href="/nettside-sjekker" data-i18n="nav.sub_analyzer">Nettside-sjekker</a></li>
                     </ul>
                 </li>
+                <li><a href="/#pricing" data-i18n="nav.pricing">Priser</a></li>
                 <li><a href="/portefolje" class="is-current" data-i18n="nav.portfolio">Portfolio</a></li>
                 <li><a href="/?section=testimonial" class="is-current" data-i18n="nav.testimonial">Testimonial</a></li>
                 <li><a href="/blog" data-i18n="nav.blog">Aktuelt</a></li>
@@ -917,57 +919,112 @@
             </div>
         </section>
 
-        <!-- Pricing Contrast Section (Contrast Effect) -->
-        <section class="pricing-contrast-section pt_120 pb_120" data-aos="fade-up">
+        <!-- =========================================
+             PRICING & PACKAGES SECTION
+             ========================================= -->
+        <section id="pricing" class="pt_120 pb_120 pricing-section" data-aos="fade-up">
             <div class="container">
                 <div class="text-center mb-50">
-                    <span class="section-subtitle-lines" style="margin-bottom: 24px;" data-i18n="pricing.subtitle">Support & drift</span>
-                    <h2 class="section-title" style="font-size: clamp(32px, 5vw, 50px); color: var(--clr-base); font-weight: 700; margin-bottom: 20px;" data-i18n="pricing.title">Enkelt og forutsigbart: Løpende support & drift</h2>
-                    <p style="max-width: 600px; margin: 0 auto; color: var(--clr-common-text);" data-i18n="pricing.desc">
-                        Velg en supportavtale fremfor å ansette en fulltids utvikler – spar penger og unngå risiko.
-                    </p>
+                    <div class="flex justify-center">
+                        <span class="section-subtitle-lines" style="margin-bottom: 24px;" data-i18n="pricing.subtitle">Forutsigbare priser</span>
+                    </div>
+                    <h2 class="section-title" style="font-size: 50px;" data-i18n="pricing.title">Våre pakker og priser</h2>
+                    <p class="pricing-lead-text" data-i18n="pricing.desc">Gjennomsiktige priser tilpasset din bedrifts behov. Ingen skjulte kostnader.</p>
                 </div>
 
                 <div class="pricing-grid">
-                    <!-- Option 1: In-house Dev (Anchor) -->
-                    <div class="pricing-card">
+                    <!-- Package 1: Enkel Nettside -->
+                    <div class="pricing-card" data-aos="fade-up" data-aos-delay="100">
                         <div class="pricing-header">
-                            <h3 data-i18n="pricing.dev_title">Ansette fulltids utvikler</h3>
-                            <p data-i18n="pricing.dev_subtitle">Internt i bedriften</p>
+                            <span class="pricing-badge" data-i18n="pricing.p1_badge">Rask start</span>
+                            <h3 data-i18n="pricing.p1_name">Enkel nettside</h3>
+                            <p class="pricing-card-desc" data-i18n="pricing.p1_desc">Perfekt for en rask og effektiv tilstedeværelse på nett.</p>
+                            <div class="pricing-amount">
+                                <span class="currency">kr</span>
+                                <span class="price">7 000</span>
+                                <span class="vat">,- ex. mva</span>
+                            </div>
                         </div>
-                        <div class="pricing-price-box">
-                            <span class="pricing-price-value" data-i18n="pricing.dev_price">60 000,-</span>
-                            <span class="pricing-price-period" data-i18n="pricing.dev_period">kr / mnd (snittlønn + avg.)</span>
-                        </div>
-                        <div class="pricing-divider"></div>
-                        <ul class="pricing-features-list">
-                            <li><i class="fas fa-times-circle"></i> <span data-i18n="pricing.dev_feat1">Høy økonomisk risiko & binding</span></li>
-                            <li><i class="fas fa-times-circle"></i> <span data-i18n="pricing.dev_feat2">Arbeidsgiveravgift & feriepenger</span></li>
-                            <li><i class="fas fa-times-circle"></i> <span data-i18n="pricing.dev_feat3">Opplæring & utstyr kreves</span></li>
-                            <li><i class="fas fa-times-circle"></i> <span data-i18n="pricing.dev_feat4">Sykefravær & administrasjon</span></li>
+                        <ul class="pricing-features">
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p1_f1">Profesjonell landingsside</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p1_f2">"Om oss"- & kontaktside</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p1_f3">100% mobilvennlig responsivt design</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p1_f4">Grunnleggende SEO-optimalisering</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p1_f5">SSL-sertifikat for sikkerhet</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p1_f6">Opplæring & kundestøtte</span></li>
                         </ul>
-                        <button class="pricing-action-btn btn-outline" style="cursor: not-allowed;" disabled data-i18n="pricing.dev_action">Krever høyt budsjett</button>
+                        <div class="pricing-footer">
+                            <a href="/contact?package=enkel" class="award-link pricing-btn" data-i18n="pricing.btn">Velg pakke <i class="fas fa-arrow-right"></i></a>
+                        </div>
                     </div>
 
-                    <!-- Option 2: Support Agreement (Highlighted Choice) -->
-                    <div class="pricing-card premium-highlight">
-                        <div class="pricing-card-badge" data-i18n="pricing.badge">Anbefalt</div>
+                    <!-- Package 2: Middels stor nettside (Mest Populær) -->
+                    <div class="pricing-card featured" data-aos="fade-up" data-aos-delay="200">
+                        <div class="pricing-popular-ribbon" data-i18n="pricing.popular">Mest populær</div>
                         <div class="pricing-header">
-                            <h3 data-i18n="pricing.support_title">TK-design Supportavtale</h3>
-                            <p data-i18n="pricing.support_subtitle">Fleksibel månedlig avtale</p>
+                            <span class="pricing-badge featured-badge" data-i18n="pricing.p2_badge">Vår anbefaling</span>
+                            <h3 data-i18n="pricing.p2_name">Middels stor nettside</h3>
+                            <p class="pricing-card-desc" data-i18n="pricing.p2_desc">Mer engasjerende opplevelse med fleksible undersider.</p>
+                            <div class="pricing-amount">
+                                <span class="currency">kr</span>
+                                <span class="price">12 000</span>
+                                <span class="vat">,- ex. mva</span>
+                            </div>
                         </div>
-                        <div class="pricing-price-box">
-                            <span class="pricing-price-value" data-i18n="pricing.support_price">Fra 1 990,-</span>
-                            <span class="pricing-price-period" data-i18n="pricing.support_period">kr / mnd (eks. mva)</span>
-                        </div>
-                        <div class="pricing-divider"></div>
-                        <ul class="pricing-features-list">
-                            <li><i class="fas fa-check-circle"></i> <span data-i18n="pricing.support_feat1">Ingen bindingstid – avslutt når som helst</span></li>
-                            <li><i class="fas fa-check-circle"></i> <span data-i18n="pricing.support_feat2">Lynrask feilretting og support</span></li>
-                            <li><i class="fas fa-check-circle"></i> <span data-i18n="pricing.support_feat3">Ukentlige sikkerhetsoppdateringer</span></li>
-                            <li><i class="fas fa-check-circle"></i> <span data-i18n="pricing.support_feat4">SEO-overvåking & ytelsessjekk</span></li>
+                        <ul class="pricing-features">
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p2_f1">Flere skreddersydde undersider</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p2_f2">Bildegalleri eller integrert blogg</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p2_f3">Brukervennlig struktur & navigasjon</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p2_f4">Avansert SEO-optimalisering</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p2_f5">Lynrask sidelasting (Core Web Vitals)</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p2_f6">Prioritert opplæring & support</span></li>
                         </ul>
-                        <a href="/contact?service=support" class="pricing-action-btn" data-i18n="pricing.support_action">Sikre min supportavtale</a>
+                        <div class="pricing-footer">
+                            <a href="/contact?package=middels" class="award-link pricing-btn featured-btn" style="color: #fff;" data-i18n="pricing.btn_popular">Velg pakke <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- Package 3: Avansert Nettside -->
+                    <div class="pricing-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="pricing-header">
+                            <span class="pricing-badge" data-i18n="pricing.p3_badge">Komplett løsning</span>
+                            <h3 data-i18n="pricing.p3_name">Avansert nettside</h3>
+                            <p class="pricing-card-desc" data-i18n="pricing.p3_desc">Skreddersydd løsning for komplekse behov eller e-handel.</p>
+                            <div class="pricing-amount">
+                                <span class="currency">fra kr</span>
+                                <span class="price">20 000</span>
+                                <span class="vat">,- ex. mva</span>
+                            </div>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p3_f1">E-handelsløsning / Nettbutikk</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p3_f2">Tilpassede moduler & API-integrasjon</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p3_f3">Skreddersydd merkevare-design</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p3_f4">Full SEO-strategi & GEO/JSON-LD</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p3_f5">Høy ytelse & maksimal sikkerhet</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p3_f6">Dedikert drift & vedlikeholdsavtale</span></li>
+                        </ul>
+                        <div class="pricing-footer">
+                            <a href="/contact?package=avansert" class="award-link pricing-btn" data-i18n="pricing.btn">Få pristilbud <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Extra Services Banner (SoMe & Additional) -->
+                <div class="pricing-some-banner" data-aos="fade-up" data-aos-delay="400">
+                    <div class="pricing-some-content">
+                        <div class="pricing-some-text">
+                            <span class="pricing-some-tag" data-i18n="pricing.some_tag">Sosiale Medier & Tilleggstjenester</span>
+                            <h3 data-i18n="pricing.some_title">Innholdsproduksjon & SoMe-design</h3>
+                            <p data-i18n="pricing.some_desc">Innhold som engasjerer dine følgere. Profesjonelt designet for Facebook og Instagram.</p>
+                        </div>
+                        <div class="pricing-some-rate">
+                            <span class="some-price-label" data-i18n="pricing.some_label">Grafisk innlegg</span>
+                            <div class="some-price-val">kr 250 – 500,- <small data-i18n="pricing.per_post">/ per innlegg</small></div>
+                        </div>
+                        <a href="/contact?service=some" class="award-link" style="justify-content: flex-start;">
+                            <span data-i18n="pricing.some_cta">Bestill SoMe-pakke</span> <i class="fas fa-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
             </div>
