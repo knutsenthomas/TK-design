@@ -9390,10 +9390,10 @@ body#home.homepage-refresh .hero-mobile-frame {
     bottom: 12px;
     width: clamp(100px, 26%, 170px);
     height: clamp(180px, 78%, 320px);
-    background: #fff;
-    border-radius: 22px;
-    border: 3px solid #0f172a;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+    background: #090d16;
+    border-radius: 20px;
+    border: 2.5 solid #0f172a;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
     overflow: hidden;
     z-index: 10;
     transition: transform 0.25s ease, opacity 0.3s ease;
@@ -9422,6 +9422,7 @@ body#home.homepage-refresh .hero-mobile-frame img {
     object-fit: cover;
     object-position: top center;
     display: block;
+    transform: scale(1.03);
 }
 
 body#home.homepage-refresh .hero-carousel-controls {
