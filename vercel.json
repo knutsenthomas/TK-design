@@ -23,6 +23,7 @@
                     "legacy_html/robots.txt",
                     "legacy_html/sitemap.xml",
                     "legacy_html/data/**",
+                    "legacy_html/assets/**",
                     "legacy_html/img/**",
                     "legacy_html/js/**",
                     "legacy_html/public/**",

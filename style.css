@@ -193,11 +193,21 @@ a {
 .eyebrow,
 .tag {
   margin: 0 0 10px;
-  color: var(--lime);
+  color: var(--green);
   font-size: 0.78rem;
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.hero .eyebrow,
+.subhero .eyebrow,
+.manifesto .eyebrow,
+.nextgen-section .eyebrow,
+.statement-band .eyebrow,
+.contact-band .eyebrow,
+.sermon-feature-card .eyebrow {
+  color: var(--lime);
 }
 
 .hero h1,
@@ -440,7 +450,12 @@ a {
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  opacity: 0.72;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.quick-bar a:nth-child(4) span {
+  color: var(--green-dark);
+  opacity: 0.9;
 }
 
 .quick-bar strong {
