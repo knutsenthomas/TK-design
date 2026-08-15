@@ -51,10 +51,10 @@
             </a>
             <nav class="nav-desktop">
                 <ul>
-                    <li><a href="/" data-i18n="nav.home">Home</a></li>
-                    <li><a href="/?section=about" data-i18n="nav.about">About</a></li>
+                    <li><a href="/" data-i18n="nav.home">Hjem</a></li>
+                    <li><a href="/?section=about" data-i18n="nav.about">Om oss</a></li>
                     <li class="has-dropdown">
-                        <a href="/?section=services" data-i18n="nav.services">Services <i class="fas fa-chevron-down nav-chevron"></i></a>
+                        <a href="/?section=services" data-i18n="nav.services">Tjenester <i class="fas fa-chevron-down nav-chevron"></i></a>
                         <ul class="submenu">
                             <li><a href="/webdesign" data-i18n="nav.sub_webdesign">Webdesign & Utvikling</a></li>
                             <li><a href="/seo" data-i18n="nav.sub_seo">SEO-Grunnoppsett</a></li>
@@ -62,17 +62,18 @@
                             <li><a href="/nettside-sjekker" data-i18n="nav.sub_analyzer">Nettside-sjekker</a></li>
                         </ul>
                     </li>
-                    <li><a href="/?section=projects" data-i18n="nav.portfolio">Portfolio</a></li>
-                    <li><a href="/?section=testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
+                    <li><a href="/#pricing" data-i18n="nav.pricing">Priser</a></li>
+                    <li><a href="/portefolje" data-i18n="nav.portfolio">Prosjekter</a></li>
+                    <li><a href="/#advantages" data-i18n="nav.advantages">Hvorfor oss</a></li>
                     <li><a href="/blog" class="is-current" data-i18n="nav.blog">Aktuelt</a></li>
-                    <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
+                    <li><a href="/contact" data-i18n="nav.contact">Kontakt</a></li>
                 </ul>
             </nav>
             <div class="lang-switch-desktop">
                 <button onclick="switchLanguage('en')" class="lang-btn">EN</button>
                 <button onclick="switchLanguage('no')" class="lang-btn active">NO</button>
             </div>
-            <button class="menu-trigger"><i class="fas fa-bars"></i></button>
+            <button class="menu-trigger" aria-label="Åpne meny"><i class="fas fa-bars"></i></button>
         </div>
     </header>
 
@@ -80,11 +81,11 @@
     <div class="mobile-menu-overlay">
         <nav class="mobile-nav">
             <ul>
-                <li><a href="/" data-i18n="nav.home">Home</a></li>
-                <li><a href="/?section=about" data-i18n="nav.about">About</a></li>
+                <li><a href="/" data-i18n="nav.home">Hjem</a></li>
+                <li><a href="/?section=about" data-i18n="nav.about">Om oss</a></li>
                 <li>
                     <div class="mobile-nav-has-sub">
-                        <a href="/?section=services" data-i18n="nav.services">Services</a>
+                        <a href="/?section=services" data-i18n="nav.services">Tjenester</a>
                         <i class="fas fa-chevron-down mobile-sub-icon"></i>
                     </div>
                     <ul class="mobile-submenu">
@@ -94,10 +95,11 @@
                         <li><a href="/nettside-sjekker" data-i18n="nav.sub_analyzer">Nettside-sjekker</a></li>
                     </ul>
                 </li>
-                <li><a href="/?section=projects" data-i18n="nav.portfolio">Portfolio</a></li>
-                <li><a href="/?section=testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
+                <li><a href="/#pricing" data-i18n="nav.pricing">Priser</a></li>
+                <li><a href="/portefolje" data-i18n="nav.portfolio">Prosjekter</a></li>
+                <li><a href="/#advantages" data-i18n="nav.advantages">Hvorfor oss</a></li>
                 <li><a href="/blog" class="is-current" data-i18n="nav.blog">Aktuelt</a></li>
-                <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
+                <li><a href="/contact" data-i18n="nav.contact">Kontakt</a></li>
             </ul>
 
             <div class="mobile-menu-footer">
@@ -108,86 +110,92 @@
                 <div class="mobile-social-links">
                     <a href="https://www.facebook.com/profile.php?id=61574614704737&amp;locale=nb_NO" target="_blank"
                         rel="nofollow noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://www.instagram.com/tkdesign777" target="_blank" rel="nofollow noopener noreferrer"><i
-                            class="fab fa-instagram"></i></a>
+                    <a href="https://www.instagram.com/tkdesign777" target="_blank"
+                        rel="nofollow noopener noreferrer"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
         </nav>
     </div>
 
     <main>
-        <section class="page-banner blog-list-page-banner">
+        <!-- Modern Subpage Hero Banner -->
+        <section class="subpage-hero-section">
             <div class="container">
-                <div class="blog-list-hero">
-                    <div class="blog-list-copy">
-                        <span class="section-subtitle-lines" data-i18n="blog_page.eyebrow">Aktuelt</span>
-                        <h1 class="section-title blog-list-title" data-i18n="blog_page.title">Alle blogginnlegg fra
-                            TK-design</h1>
-                        <p class="blog-list-summary" data-i18n="blog_page.lead">
-                            Alle innlegg samlet på ett sted. Praktiske tips om webdesign, SEO, innhold og digital
-                            synlighet.
-                        </p>
-                        <div class="blog-list-actions">
-                            <a href="/contact" class="blog-list-primary-btn" data-i18n="blog_page.contact_cta">Trenger du hjelp?</a>
-                            <a href="/" class="blog-list-back-link" data-i18n="blog_page.back_home"><i class="fas fa-arrow-left" style="margin-right: 8px;"></i> Tilbake til forsiden</a>
-                        </div>
-                        <ul class="breadcrumb">
-                            <li><a href="/" data-i18n="nav.home">Home</a></li>
-                            <li data-i18n="nav.blog">Aktuelt</li>
-                        </ul>
+                <div class="subpage-hero-inner">
+                    <div class="subpage-breadcrumb">
+                        <a href="/" data-i18n="nav.home">Hjem</a>
+                        <span class="subpage-breadcrumb-sep">/</span>
+                        <span data-i18n="nav.blog">Aktuelt</span>
                     </div>
-
-                    <a href="/blog" class="blog-list-spotlight" id="blogFeaturedCardLink">
-                        <span class="blog-list-spotlight-badge" data-i18n="blog_page.featured_label">Siste innlegg</span>
-                        <h2 id="blogFeaturedTitle">Laster innlegg...</h2>
-                        <p id="blogFeaturedSummary" data-i18n="blog_page.loading">Laster innlegg...</p>
-                        <div class="blog-list-spotlight-meta">
-                            <span id="blogFeaturedCategory">Webdesign</span>
-                            <span id="blogFeaturedDate">2025</span>
+                    <div class="hero-eyebrow-badge" style="margin: 0 auto 16px auto;">
+                        <span class="hero-badge-dot"></span>
+                        <span data-i18n="blog_page.eyebrow">AKTUELT &amp; GUIDER</span>
+                    </div>
+                    <h1 class="subpage-title" data-i18n="blog_page.title">
+                        Faglige råd om <span class="hero-title-highlight">webdesign og SEO</span>
+                    </h1>
+                    <p class="subpage-lead" data-i18n="blog_page.lead">
+                        Praktiske guider, beste praksis og analyser for hvordan du får mer organisk trafikk, bedre rangering på Google og flere betalende kunder.
+                    </p>
+                    <div class="subpage-stat-pills">
+                        <div class="subpage-stat-pill">
+                            <i class="fas fa-search"></i>
+                            <span>Google SEO &amp; GEO-råd</span>
                         </div>
-                        <div class="blog-list-spotlight-link">
-                            <span id="blogFeaturedLinkText" data-i18n="blog_page.open_post">Åpne innlegg</span>
-                            <i class="fas fa-arrow-right"></i>
+                        <div class="subpage-stat-pill">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Core Web Vitals guider</span>
                         </div>
-                    </a>
+                        <div class="subpage-stat-pill">
+                            <i class="fas fa-robot"></i>
+                            <span>AI &amp; Digital strategi</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section class="blog-list-main pb_120">
+        <!-- Blog Main Section -->
+        <section class="pb_120" data-aos="fade-up">
             <div class="container">
-                <div class="blog-list-wrapper">
-                    <div class="blog-list-overview-grid">
-                        <div class="blog-list-overview-card">
-                            <span class="blog-list-overview-label" data-i18n="blog_page.total_posts">Innlegg</span>
-                            <strong class="blog-list-overview-value" id="blogTotalPosts">0</strong>
+                <!-- Featured Latest Post Banner -->
+                <div class="subpage-dark-card" style="margin-bottom: 48px;">
+                    <a href="/blog" id="blogFeaturedCardLink" style="text-decoration: none; color: inherit; display: block;">
+                        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 16px;">
+                            <div class="hero-eyebrow-badge" style="background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.2);">
+                                <span class="hero-badge-dot"></span>
+                                <span style="color: #ffffff;" data-i18n="blog_page.featured_label">SISTE INNLEGG</span>
+                            </div>
+                            <div style="display: flex; gap: 12px; font-size: 0.85rem; color: #94a3b8;">
+                                <span id="blogFeaturedCategory" style="color: #ff8442; font-weight: 700;">Webdesign</span>
+                                <span>•</span>
+                                <span id="blogFeaturedDate">2026</span>
+                            </div>
                         </div>
-                        <div class="blog-list-overview-card">
-                            <span class="blog-list-overview-label" data-i18n="blog_page.total_topics">Temaer</span>
-                            <strong class="blog-list-overview-value" id="blogTotalTopics">0</strong>
+                        <h2 id="blogFeaturedTitle" style="font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 800; color: #ffffff; line-height: 1.25; margin: 0 0 16px 0;">Laster innlegg...</h2>
+                        <p id="blogFeaturedSummary" style="font-size: 1.05rem; color: #cbd5e1; line-height: 1.6; max-width: 780px; margin: 0 0 24px 0;" data-i18n="blog_page.loading">Laster innlegg...</p>
+                        <div style="display: inline-flex; align-items: center; gap: 8px; color: #ff8442; font-weight: 800; font-size: 0.95rem;">
+                            <span id="blogFeaturedLinkText" data-i18n="blog_page.open_post">Les hele artikkelen</span>
+                            <i class="fas fa-arrow-right"></i>
                         </div>
-                        <div class="blog-list-overview-card">
-                            <span class="blog-list-overview-label" data-i18n="blog_page.latest_update">Sist
-                                oppdatert</span>
-                            <strong class="blog-list-overview-value" id="blogLatestUpdate">-</strong>
-                        </div>
-                    </div>
+                    </a>
+                </div>
 
-                    <div class="blog-list-section-head">
-                        <div>
-                            <span class="section-subtitle-lines" data-i18n="blog_page.eyebrow">Aktuelt</span>
-                            <h2 data-i18n="blog_page.all_posts_title">Alle innlegg</h2>
+                <!-- All Posts Header -->
+                <div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px;">
+                    <div>
+                        <div class="hero-eyebrow-badge" style="margin-bottom: 8px;">
+                            <span class="hero-badge-dot"></span>
+                            <span>OVERSIKT</span>
                         </div>
-                        <p data-i18n="blog_page.all_posts_intro">
-                            En samlet oversikt over alle innlegg du kan klikke deg videre inn i.
-                        </p>
+                        <h2 style="font-size: 2rem; font-weight: 800; color: #11263c; margin: 0;" data-i18n="blog_page.all_posts_title">Alle artikler og guider</h2>
                     </div>
+                </div>
 
-                    <div class="blog-list-grid" id="blogListGrid">
-                        <article class="blog-list-card blog-list-empty-card">
-                            <p data-i18n="blog_page.loading">Laster innlegg...</p>
-                        </article>
-                    </div>
+                <div class="blog-list-grid" id="blogListGrid">
+                    <article class="blog-list-card blog-list-empty-card">
+                        <p data-i18n="blog_page.loading">Laster innlegg...</p>
+                    </article>
                 </div>
             </div>
         </section>

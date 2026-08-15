@@ -29,7 +29,7 @@ const translations = {
         },
         portfolio_page: {
             title: "Portfolio | TK-design",
-            heading: "Our Portfolio",
+            heading: "Our <span class=\"hero-title-highlight\">Portfolio</span>",
             subtitle: "Explore a selection of our tailored websites, web design and digital solutions.",
             loading: "Loading graphic portfolio..."
         },
@@ -144,6 +144,7 @@ const translations = {
             bottom_5: "Growth and analysis"
         },
         about: {
+            badge: "ABOUT TK-DESIGN",
             intro: "TK-design helps your business succeed online. We offer everything from websites and social media to strategic advice and support, so you can reach your goals with a clear digital identity.",
             tabs: {
                 about: "About us",
@@ -347,7 +348,7 @@ const translations = {
         },
         blog_page: {
             eyebrow: "Insights",
-            title: "All articles from TK-design",
+            title: "Expert insights on <span class=\"hero-title-highlight\">web design and SEO</span>",
             lead: "All posts collected in one place. Practical tips about web design, SEO, content and digital visibility.",
             back_home: "Back to home",
             contact_cta: "Need help with this?",
@@ -598,7 +599,7 @@ const translations = {
         },
         portfolio_page: {
             title: "Portefølje | TK-design",
-            heading: "Vår Portefølje",
+            heading: "Vår <span class=\"hero-title-highlight\">Portefølje</span>",
             subtitle: "Utforsk et utvalg av våre skreddersydde nettsider, webdesign og digitale løsninger.",
             loading: "Laster inn grafisk portefølje..."
         },
@@ -705,7 +706,8 @@ const translations = {
             bottom_5: "Målbar vekst og analyse"
         },
         about: {
-            intro: "TK-design hjelper din bedrift å lykkes på nett. Vi tilbyr alt fra nettsider og sosiale medier til strategisk rådgivning og support, slik at du kan nå dine mål med en tydelig digital identitet.",
+            badge: "OM TK-DESIGN",
+            intro: "TK-design hjelper bedrifter å lykkes på nett. Vi kombinerer skreddersydd webdesign, søkemotoroptimalisering og engasjerende innhold for å bygge en sterk og konverterende digital tilstedeværelse.",
             tabs: {
                 about: "Om oss",
                 experience: "Team",
@@ -907,7 +909,7 @@ const translations = {
         },
         blog_page: {
             eyebrow: "Aktuelt",
-            title: "Alle blogginnlegg fra TK-design",
+            title: "Faglige råd om <span class=\"hero-title-highlight\">webdesign og SEO</span>",
             lead: "Alle innlegg samlet på ett sted. Praktiske tips om webdesign, SEO, innhold og digital synlighet.",
             back_home: "Tilbake til forsiden",
             contact_cta: "Trenger du hjelp?",

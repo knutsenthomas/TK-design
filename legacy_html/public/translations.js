@@ -38,6 +38,7 @@ const translations = {
             bottom_5: "Growth and analysis"
         },
         about: {
+            badge: "ABOUT TK-DESIGN",
             intro: "TK-design helps your business succeed online. We offer everything from websites and social media to strategic advice and support, so you can reach your goals with a clear digital identity.",
             tabs: {
                 about: "About us",
@@ -457,7 +458,8 @@ const translations = {
             bottom_5: "Målbar vekst og analyse"
         },
         about: {
-            intro: "TK-design hjelper din bedrift å lykkes på nett. Vi tilbyr alt fra nettsider og sosiale medier til strategisk rådgivning og support, slik at du kan nå dine mål med en tydelig digital identitet.",
+            badge: "OM TK-DESIGN",
+            intro: "TK-design hjelper bedrifter å lykkes på nett. Vi kombinerer skreddersydd webdesign, søkemotoroptimalisering og engasjerende innhold for å bygge en sterk og konverterende digital tilstedeværelse.",
             tabs: {
                 about: "Om oss",
                 experience: "Team",

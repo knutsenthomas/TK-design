@@ -38,10 +38,10 @@
             </a>
             <nav class="nav-desktop">
                 <ul>
-                    <li><a href="/" data-i18n="nav.home">Home</a></li>
-                    <li><a href="/?section=about" data-i18n="nav.about">About</a></li>
+                    <li><a href="/" data-i18n="nav.home">Hjem</a></li>
+                    <li><a href="/?section=about" data-i18n="nav.about">Om oss</a></li>
                     <li class="has-dropdown">
-                        <a href="/?section=services" data-i18n="nav.services">Services <i class="fas fa-chevron-down nav-chevron"></i></a>
+                        <a href="/?section=services" data-i18n="nav.services">Tjenester <i class="fas fa-chevron-down nav-chevron"></i></a>
                         <ul class="submenu">
                             <li><a href="/webdesign" data-i18n="nav.sub_webdesign">Webdesign & Utvikling</a></li>
                             <li><a href="/seo" data-i18n="nav.sub_seo">SEO-Grunnoppsett</a></li>
@@ -49,17 +49,18 @@
                             <li><a href="/nettside-sjekker" data-i18n="nav.sub_analyzer">Nettside-sjekker</a></li>
                         </ul>
                     </li>
-                    <li><a href="/?section=projects" data-i18n="nav.portfolio">Portfolio</a></li>
-                    <li><a href="/?section=testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
+                    <li><a href="/#pricing" data-i18n="nav.pricing">Priser</a></li>
+                    <li><a href="/portefolje" class="is-current" data-i18n="nav.portfolio">Prosjekter</a></li>
+                    <li><a href="/#advantages" data-i18n="nav.advantages">Hvorfor oss</a></li>
                     <li><a href="/blog" data-i18n="nav.blog">Aktuelt</a></li>
-                    <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
+                    <li><a href="/contact" data-i18n="nav.contact">Kontakt</a></li>
                 </ul>
             </nav>
             <div class="lang-switch-desktop">
                 <button onclick="switchLanguage('en')" class="lang-btn">EN</button>
                 <button onclick="switchLanguage('no')" class="lang-btn active">NO</button>
             </div>
-            <button class="menu-trigger"><i class="fas fa-bars"></i></button>
+            <button class="menu-trigger" aria-label="Åpne meny"><i class="fas fa-bars"></i></button>
         </div>
     </header>
 
@@ -67,11 +68,11 @@
     <div class="mobile-menu-overlay">
         <nav class="mobile-nav">
             <ul>
-                <li><a href="/" data-i18n="nav.home">Home</a></li>
-                <li><a href="/?section=about" data-i18n="nav.about">About</a></li>
+                <li><a href="/" data-i18n="nav.home">Hjem</a></li>
+                <li><a href="/?section=about" data-i18n="nav.about">Om oss</a></li>
                 <li>
                     <div class="mobile-nav-has-sub">
-                        <a href="/?section=services" data-i18n="nav.services">Services</a>
+                        <a href="/?section=services" data-i18n="nav.services">Tjenester</a>
                         <i class="fas fa-chevron-down mobile-sub-icon"></i>
                     </div>
                     <ul class="mobile-submenu">
@@ -81,10 +82,11 @@
                         <li><a href="/nettside-sjekker" data-i18n="nav.sub_analyzer">Nettside-sjekker</a></li>
                     </ul>
                 </li>
-                <li><a href="/?section=projects" data-i18n="nav.portfolio">Portfolio</a></li>
-                <li><a href="/?section=testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
+                <li><a href="/#pricing" data-i18n="nav.pricing">Priser</a></li>
+                <li><a href="/portefolje" class="is-current" data-i18n="nav.portfolio">Prosjekter</a></li>
+                <li><a href="/#advantages" data-i18n="nav.advantages">Hvorfor oss</a></li>
                 <li><a href="/blog" data-i18n="nav.blog">Aktuelt</a></li>
-                <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
+                <li><a href="/contact" data-i18n="nav.contact">Kontakt</a></li>
             </ul>
 
             <div class="mobile-menu-footer">
@@ -103,124 +105,110 @@
     </div>
 
     <main>
-        <section class="page-banner project-page-banner">
+        <!-- Modern Subpage Hero Banner -->
+        <section class="subpage-hero-section">
             <div class="container">
-                <div class="project-page-hero">
-                    <div class="project-page-copy">
-                        <span class="section-subtitle-lines" data-i18n="project_details.eyebrow">Utvalgt prosjekt</span>
-                        <h1 class="section-title project-page-title" id="projectTitle">Kudos Regnskap AS</h1>
-                        <p class="project-page-summary" id="projectSummary">
-                            En trygg og tydelig nettside for et autorisert regnskapskontor, med fokus på nærhet,
-                            kvalitet og enkel kundekontakt.
-                        </p>
-                        <div class="project-page-actions">
-                            <a href="/?section=projects" class="primary-cta" data-i18n="project_details.back_to_projects">
-                                Tilbake til prosjekter
-                            </a>
-                            <a href="https://www.kudosregnskap.no" class="project-page-secondary" id="projectActionLink"
-                                target="_blank" rel="nofollow noopener noreferrer">Besøk nettsiden</a>
-                        </div>
-                        <ul class="breadcrumb">
-                            <li><a href="/" data-i18n="nav.home">Home</a></li>
-                            <li><a href="/?section=projects" data-i18n="nav.portfolio">Portfolio</a></li>
-                            <li id="projectBreadcrumb">Kudos Regnskap AS</li>
-                        </ul>
+                <div class="subpage-hero-inner">
+                    <div class="subpage-breadcrumb">
+                        <a href="/" data-i18n="nav.home">Hjem</a>
+                        <span class="subpage-breadcrumb-sep">/</span>
+                        <a href="/portefolje" data-i18n="nav.portfolio">Prosjekter</a>
+                        <span class="subpage-breadcrumb-sep">/</span>
+                        <span id="projectBreadcrumb">Kudos Regnskap AS</span>
                     </div>
-
-                    <div class="project-page-preview" aria-hidden="true">
-                        <div class="project-preview-shell">
-                            <span class="project-preview-badge" id="projectCategoryBadge">Regnskap</span>
-                            <h2 id="projectPreviewTitle">Kudos Regnskap AS</h2>
-                            <p id="projectPreviewLead">
-                                Strukturert innhold, tydelige kontaktpunkter og et uttrykk som bygger tillit fra første
-                                skjerm.
-                            </p>
-                            <div class="project-preview-tags" id="projectPreviewTags">
-                                <span>Skreddersydd design</span>
-                                <span>Kontaktflyt</span>
-                                <span>Responsiv</span>
-                            </div>
-                        </div>
+                    <div class="hero-eyebrow-badge" style="margin: 0 auto 16px auto;">
+                        <span class="hero-badge-dot"></span>
+                        <span id="projectCategoryBadge">KUNDECASER &amp; LEVERANSER</span>
+                    </div>
+                    <h1 class="subpage-title">
+                        <span id="projectTitle">Kudos Regnskap AS</span> – <span class="hero-title-highlight">Skreddersydd nettside</span>
+                    </h1>
+                    <p class="subpage-lead" id="projectSummary">
+                        En trygg og tydelig nettside for et autorisert regnskapskontor, med fokus på nærhet, kvalitet og enkel kundekontakt.
+                    </p>
+                    <div class="hero-button-group" style="display: flex; justify-content: center; gap: 14px; margin-top: 24px;">
+                        <a href="https://www.kudosregnskap.no" class="hero-btn-primary" id="projectActionLink" target="_blank" rel="nofollow noopener noreferrer">
+                            <span>Besøk nettsiden</span>
+                            <span class="hero-btn-arrow">↗</span>
+                        </a>
+                        <a href="/portefolje" class="hero-btn-secondary" data-i18n="project_details.back_to_projects">
+                            ← Se alle prosjekter
+                        </a>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="project-details-area pb_120">
+        <!-- Project Details Bento Content -->
+        <section class="pb_120" data-aos="fade-up">
             <div class="container">
-                <div class="project-details-wrapper">
-
-                    <div class="project-detail-grid">
-                        <article class="project-copy-card">
-                            <h2 data-i18n="project_details.goal_title">Mål og retning</h2>
+                <div style="display: flex; flex-direction: column; gap: 32px;">
+                    <!-- 3-Pillar Bento Grid -->
+                    <div class="case-study-pillars">
+                        <div class="case-pillar-card subpage-card">
+                            <div class="contact-step-badge" style="margin-bottom: 12px;"><i class="fas fa-bullseye"></i></div>
+                            <h3 data-i18n="project_details.goal_title">Mål og retning</h3>
                             <p id="projectGoal">
-                                Målet var å gjøre tjenestene enkle å forstå og bygge tillit fra første skjerm. Designet
-                                måtte føles ryddig, profesjonelt og lokalt forankret.
+                                Målet var å gjøre tjenestene enkle å forstå og bygge tillit fra første skjerm. Designet måtte føles ryddig, profesjonelt og lokalt forankret.
                             </p>
-                        </article>
+                        </div>
 
-                        <article class="project-copy-card">
-                            <h2 data-i18n="project_details.rules_title">Designregler</h2>
-                            <ul class="project-bullet-list" id="projectRules">
-                                <li>Bruk høy kontrast og tydelige CTA-er for rask kontakt.</li>
-                                <li>Hold navigasjonen kort og forutsigbar for nye besøkende.</li>
-                                <li>La typografi og luft gi et profesjonelt og troverdig uttrykk.</li>
+                        <div class="case-pillar-card subpage-card">
+                            <div class="contact-step-badge" style="margin-bottom: 12px;"><i class="fas fa-layer-group"></i></div>
+                            <h3 data-i18n="project_details.rules_title">Designregler &amp; UX</h3>
+                            <ul class="project-bullet-list" id="projectRules" style="padding-left: 18px; margin: 8px 0 0 0; color: #4b5563; font-size: 0.92rem; line-height: 1.6;">
+                                <li>Høy kontrast og tydelige CTA-er for rask kontakt.</li>
+                                <li>Kort og forutsigbar informasjonsflyt for nye besøkende.</li>
+                                <li>Typografi og luft som gir et troverdig og solid uttrykk.</li>
                             </ul>
-                        </article>
+                        </div>
+
+                        <div class="case-pillar-card subpage-card">
+                            <div class="contact-step-badge" style="margin-bottom: 12px;"><i class="fas fa-check-double"></i></div>
+                            <h3 data-i18n="project_details.delivery_title">Innhold og leveranse</h3>
+                            <p id="projectDelivery">
+                                Prosjektet inkluderte struktur, design og innholdstilpasning for forsiden, tjenesteflater og kontaktpunkter. Alt ble bygget responsivt for å fungere like godt på mobil som desktop.
+                            </p>
+                        </div>
                     </div>
 
-                    <article class="project-copy-card project-delivery-card">
-                        <h2 data-i18n="project_details.delivery_title">Innhold og leveranse</h2>
-                        <p id="projectDelivery">
-                            Prosjektet inkluderte struktur, design og innholdstilpasning for forsiden, tjenesteflater
-                            og kontaktpunkter. Alt ble bygget responsivt for å fungere like godt på mobil som desktop.
-                        </p>
-                        <ul class="project-chip-list" id="projectDeliverables">
-                            <li>Skreddersydd design</li>
-                            <li>Tjenestestruktur</li>
-                            <li>Kontaktflyt</li>
-                            <li>Responsiv tilpasning</li>
-                        </ul>
-                    </article>
-
-                    <section class="project-highlights-block">
-                        <h2 data-i18n="project_details.highlights_title">Sentrale fokusområder</h2>
-                        <div class="project-highlights-grid" id="projectHighlights">
-                            <article class="project-highlight-card">
-                                <h3>Tydelig hero</h3>
-                                <p>En åpningsflate som raskt forteller hvem kunden er og hva de tilbyr.</p>
-                            </article>
-                            <article class="project-highlight-card">
-                                <h3>Trygg struktur</h3>
-                                <p>Ren informasjonsarkitektur som gjør det enkelt å finne tjenester og kontaktinfo.</p>
-                            </article>
-                            <article class="project-highlight-card">
-                                <h3>Lokal tillit</h3>
-                                <p>Et uttrykk som kombinerer nærhet, kvalitet og seriøsitet for riktig førsteinntrykk.
-                                </p>
-                            </article>
+                    <!-- Deliverables Chips & Highlights Card -->
+                    <div class="subpage-card">
+                        <h2 style="font-size: 1.5rem; font-weight: 800; color: #11263c; margin: 0 0 16px 0;" data-i18n="project_details.highlights_title">Sentrale fokusområder</h2>
+                        <div class="case-study-pillars" id="projectHighlights" style="margin-top: 0;">
+                            <div class="case-pillar-card" style="background: rgba(255, 106, 27, 0.04); border-color: rgba(255, 106, 27, 0.15);">
+                                <h3 style="color: #11263c;">Tydelig hero &amp; identitet</h3>
+                                <p>En åpningsflate som raskt forteller hvem bedriften er, hvilke verdier de står for og hva de tilbyr.</p>
+                            </div>
+                            <div class="case-pillar-card" style="background: rgba(255, 106, 27, 0.04); border-color: rgba(255, 106, 27, 0.15);">
+                                <h3 style="color: #11263c;">Trygg struktur</h3>
+                                <p>Ren informasjonsarkitektur som gjør det enkelt å finne tjenester, priser og kontaktinfo.</p>
+                            </div>
+                            <div class="case-pillar-card" style="background: rgba(255, 106, 27, 0.04); border-color: rgba(255, 106, 27, 0.15);">
+                                <h3 style="color: #11263c;">Lokal tillit &amp; autoritet</h3>
+                                <p>Et uttrykk som kombinerer nærhet, kvalitet og seriøsitet for det perfekte førsteinntrykket.</p>
+                            </div>
                         </div>
-                    </section>
+                    </div>
 
-                    <div class="project-nav">
-                        <a href="/project-details?project=support" class="project-nav-link prev-project"
-                            id="prevProjectLink">
-                            <i class="fas fa-arrow-left"></i>
+                    <!-- Navigation Between Projects -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 24px;">
+                        <a href="/project-details?project=support" class="subpage-card" id="prevProjectLink" style="display: inline-flex; align-items: center; gap: 14px; text-decoration: none; padding: 16px 24px;">
+                            <i class="fas fa-arrow-left" style="color: #ff6a1b;"></i>
                             <div>
-                                <span data-i18n="project_details.prev_project">Forrige prosjekt</span>
-                                <strong id="prevProjectName">Vedlikehold og videreutvikling</strong>
+                                <span style="display: block; font-size: 0.76rem; color: #64748b; text-transform: uppercase;" data-i18n="project_details.prev_project">Forrige prosjekt</span>
+                                <strong id="prevProjectName" style="color: #11263c; font-size: 0.95rem;">Vedlikehold og videreutvikling</strong>
                             </div>
                         </a>
-                        <a href="/?section=projects" class="grid-view project-grid-view" aria-label="Tilbake til prosjekter">
+                        <a href="/portefolje" class="subpage-card" style="display: inline-flex; align-items: center; justify-content: center; width: 50px; height: 50px; text-decoration: none; color: #11263c;" aria-label="Tilbake til prosjekter">
                             <i class="fas fa-th"></i>
                         </a>
-                        <a href="/project-details?project=hkm" class="project-nav-link next-project"
-                            id="nextProjectLink">
+                        <a href="/project-details?project=hkm" class="subpage-card" id="nextProjectLink" style="display: inline-flex; align-items: center; gap: 14px; text-decoration: none; padding: 16px 24px; text-align: right;">
                             <div>
-                                <span data-i18n="project_details.next_project">Neste prosjekt</span>
-                                <strong id="nextProjectName">His Kingdom Ministry</strong>
+                                <span style="display: block; font-size: 0.76rem; color: #64748b; text-transform: uppercase;" data-i18n="project_details.next_project">Neste prosjekt</span>
+                                <strong id="nextProjectName" style="color: #11263c; font-size: 0.95rem;">His Kingdom Ministry</strong>
                             </div>
-                            <i class="fas fa-arrow-right"></i>
+                            <i class="fas fa-arrow-right" style="color: #ff6a1b;"></i>
                         </a>
                     </div>
                 </div>
@@ -816,12 +804,12 @@
                 const labels = PROJECT_ACTION_LABELS[lang];
                 if (project.liveUrl) {
                     actionLink.href = project.liveUrl;
-                    actionLink.textContent = labels.live;
+                    actionLink.innerHTML = `<span>${labels.live}</span><span class="hero-btn-arrow">↗</span>`;
                     actionLink.target = '_blank';
                     actionLink.rel = 'noopener noreferrer';
                 } else {
                     actionLink.href = '/contact';
-                    actionLink.textContent = labels.fallback;
+                    actionLink.innerHTML = `<span>${labels.fallback}</span><span class="hero-btn-arrow">→</span>`;
                     actionLink.removeAttribute('target');
                     actionLink.removeAttribute('rel');
                 }

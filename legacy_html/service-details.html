@@ -35,10 +35,10 @@
             </a>
             <nav class="nav-desktop">
                 <ul>
-                    <li><a href="/" data-i18n="nav.home">Home</a></li>
-                    <li><a href="/?section=about" data-i18n="nav.about">About</a></li>
+                    <li><a href="/" data-i18n="nav.home">Hjem</a></li>
+                    <li><a href="/?section=about" data-i18n="nav.about">Om oss</a></li>
                     <li class="has-dropdown">
-                        <a href="/?section=services" data-i18n="nav.services">Services <i class="fas fa-chevron-down nav-chevron"></i></a>
+                        <a href="/?section=services" class="is-current" data-i18n="nav.services">Tjenester <i class="fas fa-chevron-down nav-chevron"></i></a>
                         <ul class="submenu">
                             <li><a href="/webdesign" data-i18n="nav.sub_webdesign">Webdesign & Utvikling</a></li>
                             <li><a href="/seo" data-i18n="nav.sub_seo">SEO-Grunnoppsett</a></li>
@@ -46,17 +46,18 @@
                             <li><a href="/nettside-sjekker" data-i18n="nav.sub_analyzer">Nettside-sjekker</a></li>
                         </ul>
                     </li>
-                    <li><a href="/?section=projects" data-i18n="nav.portfolio">Portfolio</a></li>
-                    <li><a href="/?section=testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
+                    <li><a href="/#pricing" data-i18n="nav.pricing">Priser</a></li>
+                    <li><a href="/portefolje" data-i18n="nav.portfolio">Prosjekter</a></li>
+                    <li><a href="/#advantages" data-i18n="nav.advantages">Hvorfor oss</a></li>
                     <li><a href="/blog" data-i18n="nav.blog">Aktuelt</a></li>
-                    <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
+                    <li><a href="/contact" data-i18n="nav.contact">Kontakt</a></li>
                 </ul>
             </nav>
             <div class="lang-switch-desktop">
                 <button onclick="switchLanguage('en')" class="lang-btn">EN</button>
                 <button onclick="switchLanguage('no')" class="lang-btn active">NO</button>
             </div>
-            <button class="menu-trigger"><i class="fas fa-bars"></i></button>
+            <button class="menu-trigger" aria-label="Åpne meny"><i class="fas fa-bars"></i></button>
         </div>
     </header>
 
@@ -64,11 +65,11 @@
     <div class="mobile-menu-overlay">
         <nav class="mobile-nav">
             <ul>
-                <li><a href="/" data-i18n="nav.home">Home</a></li>
-                <li><a href="/?section=about" data-i18n="nav.about">About</a></li>
+                <li><a href="/" data-i18n="nav.home">Hjem</a></li>
+                <li><a href="/?section=about" data-i18n="nav.about">Om oss</a></li>
                 <li>
                     <div class="mobile-nav-has-sub">
-                        <a href="/?section=services" data-i18n="nav.services">Services</a>
+                        <a href="/?section=services" data-i18n="nav.services">Tjenester</a>
                         <i class="fas fa-chevron-down mobile-sub-icon"></i>
                     </div>
                     <ul class="mobile-submenu">
@@ -78,10 +79,11 @@
                         <li><a href="/nettside-sjekker" data-i18n="nav.sub_analyzer">Nettside-sjekker</a></li>
                     </ul>
                 </li>
-                <li><a href="/?section=projects" data-i18n="nav.portfolio">Portfolio</a></li>
-                <li><a href="/?section=testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
+                <li><a href="/#pricing" data-i18n="nav.pricing">Priser</a></li>
+                <li><a href="/portefolje" data-i18n="nav.portfolio">Prosjekter</a></li>
+                <li><a href="/#advantages" data-i18n="nav.advantages">Hvorfor oss</a></li>
                 <li><a href="/blog" data-i18n="nav.blog">Aktuelt</a></li>
-                <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
+                <li><a href="/contact" data-i18n="nav.contact">Kontakt</a></li>
             </ul>
 
             <div class="mobile-menu-footer">
@@ -92,134 +94,164 @@
                 <div class="mobile-social-links">
                     <a href="https://www.facebook.com/profile.php?id=61574614704737&amp;locale=nb_NO" target="_blank"
                         rel="nofollow noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://www.instagram.com/tkdesign777" target="_blank" rel="nofollow noopener noreferrer"><i
-                            class="fab fa-instagram"></i></a>
+                    <a href="https://www.instagram.com/tkdesign777" target="_blank"
+                        rel="nofollow noopener noreferrer"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
         </nav>
     </div>
 
     <main>
-        <!-- Page Banner -->
-        <section class="page-banner service-page-banner">
+        <!-- Modern Subpage Hero Banner -->
+        <section class="subpage-hero-section">
             <div class="container">
-                <div class="service-page-hero">
-                    <div class="service-page-copy">
-                        <span class="section-subtitle-lines" id="serviceEyebrow">Tjeneste</span>
-                        <h1 class="section-title service-page-title" id="serviceBannerTitle">UI/UX-design</h1>
-                        <p class="service-page-summary" id="serviceBannerSummary">
-                            Strategisk design av struktur, innhold og brukerflyt som gjør nettsiden enklere å bruke og
-                            lettere å forstå.
-                        </p>
-                        <ul class="breadcrumb">
-                            <li><a href="/" data-i18n="nav.home">Home</a></li>
-                            <li><a href="/?section=services" data-i18n="nav.services">Services</a></li>
-                            <li id="serviceBreadcrumb">UI/UX-design</li>
-                        </ul>
+                <div class="subpage-hero-inner">
+                    <div class="subpage-breadcrumb">
+                        <a href="/" data-i18n="nav.home">Hjem</a>
+                        <span class="subpage-breadcrumb-sep">/</span>
+                        <a href="/?section=services" data-i18n="nav.services">Tjenester</a>
+                        <span class="subpage-breadcrumb-sep">/</span>
+                        <span id="serviceBreadcrumb">UI/UX-design</span>
                     </div>
-                    <div class="service-page-spotlight" aria-hidden="true">
-                        <span class="service-page-spotlight-badge">TK-design</span>
-                        <h2 id="serviceSpotlightTitle">Design som skaper tydelig retning</h2>
-                        <p id="serviceSpotlightText">Vi bygger tjenester med tydelig struktur, klare prioriteringer og
-                            målbar effekt.</p>
-                        <ul class="service-page-spotlight-list" id="serviceSpotlightList">
-                            <li>Brukeropplevelse først</li>
-                            <li>Konkrete leveranser</li>
-                            <li>Tilpasset din bedrift</li>
-                        </ul>
+                    <div class="hero-eyebrow-badge" style="margin: 0 auto 16px auto;">
+                        <span class="hero-badge-dot"></span>
+                        <span id="serviceEyebrow">TJENESTER &amp; LEVERANSER</span>
+                    </div>
+                    <h1 class="subpage-title" id="serviceBannerTitle">
+                        Webdesign &amp; <span class="hero-title-highlight">Utvikling</span>
+                    </h1>
+                    <p class="subpage-lead" id="serviceBannerSummary">
+                        Strategisk design av struktur, innhold og brukerflyt som gjør nettsiden enklere å bruke, raskere å laste og mer selgende.
+                    </p>
+                    <div class="subpage-stat-pills">
+                        <div class="subpage-stat-pill">
+                            <i class="fas fa-bolt"></i>
+                            <span>100/100 Core Web Vitals</span>
+                        </div>
+                        <div class="subpage-stat-pill">
+                            <i class="fas fa-bullseye"></i>
+                            <span>Konverteringsfokusert</span>
+                        </div>
+                        <div class="subpage-stat-pill">
+                            <i class="fas fa-code"></i>
+                            <span>100% Egenkodet løsning</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="service-details-area pb_120">
+        <!-- Service Main Content Area -->
+        <section class="pb_120" data-aos="fade-up">
             <div class="container">
-                <div class="service-details-shell">
-                    <aside class="service-sidebar-card">
-                        <h3 data-i18n="service_details.sidebar_title">Alle tjenester</h3>
-                        <ul class="service-sidebar-list">
-                            <li>
-                                <a href="/service-details?service=uiux" class="service-sidebar-link" data-service="uiux">
-                                    <span class="service-sidebar-label">UI/UX-design</span>
-                                    <i class="fas fa-arrow-right"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/service-details?service=web_dev" class="service-sidebar-link"
-                                    data-service="web_dev">
-                                    <span class="service-sidebar-label">Webutvikling</span>
-                                    <i class="fas fa-arrow-right"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/service-details?service=digital_marketing" class="service-sidebar-link"
-                                    data-service="digital_marketing">
-                                    <span class="service-sidebar-label">Digital markedsføring</span>
-                                    <i class="fas fa-arrow-right"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/service-details?service=branding" class="service-sidebar-link"
-                                    data-service="branding">
-                                    <span class="service-sidebar-label">Merkevarebygging</span>
-                                    <i class="fas fa-arrow-right"></i>
-                                </a>
-                            </li>
-                        </ul>
-                        <a href="/?section=services" class="service-sidebar-back">
-                            <i class="fas fa-th-large"></i>
-                            <span data-i18n="service_details.back_to_overview">Tilbake til tjenesteoversikt</span>
-                        </a>
+                <div class="service-details-layout">
+                    <!-- Left Sidebar Menu -->
+                    <aside class="service-nav-card subpage-card">
+                        <div class="hero-eyebrow-badge" style="margin-bottom: 16px;">
+                            <span class="hero-badge-dot"></span>
+                            <span data-i18n="service_details.sidebar_title">ALLE TJENESTER</span>
+                        </div>
+                        <nav style="display: flex; flex-direction: column; gap: 6px;">
+                            <a href="/webdesign" class="service-nav-link" data-service="web_dev">
+                                <span>Webdesign &amp; Utvikling</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                            <a href="/service-details?service=uiux" class="service-nav-link" data-service="uiux">
+                                <span>UI/UX-design &amp; Konsept</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                            <a href="/seo" class="service-nav-link" data-service="digital_marketing">
+                                <span>SEO &amp; Synlighet</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                            <a href="/support-og-vedlikehold" class="service-nav-link" data-service="branding">
+                                <span>Support &amp; Vedlikehold</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </nav>
+
+                        <!-- Consultation Quick Card -->
+                        <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(18, 55, 92, 0.08);">
+                            <h4 style="font-size: 1rem; font-weight: 800; color: #11263c; margin: 0 0 8px 0;">Trenger du råd?</h4>
+                            <p style="font-size: 0.88rem; color: #64748b; margin: 0 0 16px 0;">Vi hjelper deg å velge riktig løsning for din bedrifts mål.</p>
+                            <a href="/contact" class="hero-btn-primary" style="display: block; text-align: center; font-size: 0.88rem; padding: 10px 16px;">Få uforpliktende tilbud</a>
+                        </div>
                     </aside>
 
-                    <article class="service-detail-card">
-                        <figure class="service-detail-media">
-                            <img src="img/project/pro3.png" alt="Tjenesteillustrasjon" id="serviceDetailImage">
-                        </figure>
-                        <div class="service-detail-copy">
-                            <span class="service-detail-tag" id="serviceDetailTag">Brukeropplevelse</span>
-                            <h2 id="serviceDetailTitle">Design som gir bedre flyt og tydelig kommunikasjon</h2>
-                            <p class="service-detail-lead" id="serviceDetailLead">
-                                Vi planlegger struktur, navigasjon og innhold slik at besøkende raskt finner riktig
-                                informasjon og forstår hva du tilbyr.
+                    <!-- Right Main Content -->
+                    <article class="subpage-card">
+                        <div style="margin-bottom: 24px;">
+                            <span class="project-metric-pill" id="serviceDetailTag" style="margin-bottom: 12px;">Brukeropplevelse</span>
+                            <h2 style="font-size: 2rem; font-weight: 800; color: #11263c; margin: 12px 0 16px 0;" id="serviceDetailTitle">Design som gir bedre flyt og tydelig kommunikasjon</h2>
+                            <p style="font-size: 1.1rem; color: #1e293b; font-weight: 500; line-height: 1.6;" id="serviceDetailLead">
+                                Vi planlegger struktur, navigasjon og innhold slik at besøkende raskt finner riktig informasjon og forstår hva du tilbyr.
                             </p>
-                            <p class="service-detail-body" id="serviceDetailBody">
-                                Arbeidet kombinerer analyse, konsept og visuell retning. Resultatet er en løsning som
-                                styrker merkevaren og gir en mer effektiv kundereise.
+                            <p style="font-size: 0.95rem; color: #4b5563; line-height: 1.65;" id="serviceDetailBody">
+                                Arbeidet kombinerer analyse, konsept og visuell retning. Resultatet er en nettside som styrker din autoritet og gir en mer effektiv kundereise.
                             </p>
+                        </div>
 
-                            <div class="service-feature-grid">
-                                <article class="service-feature-card">
-                                    <h3 id="serviceFeature1Title">Brukerinnsikt</h3>
-                                    <p id="serviceFeature1Desc">Kartlegging av behov, målgruppe og prioriterte
-                                        handlinger.</p>
-                                </article>
-                                <article class="service-feature-card">
-                                    <h3 id="serviceFeature2Title">Struktur og flyt</h3>
-                                    <p id="serviceFeature2Desc">Tydelig informasjonsarkitektur med fokus på enkel
-                                        navigasjon.</p>
-                                </article>
-                                <article class="service-feature-card">
-                                    <h3 id="serviceFeature3Title">Prototyper</h3>
-                                    <p id="serviceFeature3Desc">Klikkbare utkast som testes før publisering.</p>
-                                </article>
+                        <!-- 3-Pillar Feature Grid -->
+                        <div class="case-study-pillars">
+                            <div class="case-pillar-card">
+                                <h3><i class="fas fa-users" style="color: #ff6a1b;"></i> <span id="serviceFeature1Title">Brukerinnsikt</span></h3>
+                                <p id="serviceFeature1Desc">Kartlegging av kundenes behov, målgruppe og prioriterte handlinger.</p>
+                            </div>
+                            <div class="case-pillar-card">
+                                <h3><i class="fas fa-sitemap" style="color: #ff6a1b;"></i> <span id="serviceFeature2Title">Struktur &amp; Flyt</span></h3>
+                                <p id="serviceFeature2Desc">Tydelig informasjonsarkitektur med fokus på ergonomisk og enkel navigasjon.</p>
+                            </div>
+                            <div class="case-pillar-card">
+                                <h3><i class="fas fa-rocket" style="color: #ff6a1b;"></i> <span id="serviceFeature3Title">Prototyper &amp; Kode</span></h3>
+                                <p id="serviceFeature3Desc">Skreddersydd semantisk kode og testing for lynrask responsivitet.</p>
+                            </div>
+                        </div>
+
+                        <!-- Deliverables -->
+                        <div style="margin-top: 36px; padding: 28px; border-radius: 20px; background: rgba(255, 106, 27, 0.04); border: 1px solid rgba(255, 106, 27, 0.15);">
+                            <h3 style="font-size: 1.25rem; font-weight: 800; color: #11263c; margin: 0 0 16px 0;" id="serviceDeliverablesTitle">Dette inngår i leveransen:</h3>
+                            <div class="deliverables-grid">
+                                <div class="deliverable-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>
+                                        <strong style="color: #11263c; font-size: 0.95rem;">Informasjonsarkitektur</strong>
+                                        <p style="font-size: 0.85rem; color: #64748b; margin: 2px 0 0 0;">Struktur og innholdsflyt</p>
+                                    </div>
+                                </div>
+                                <div class="deliverable-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>
+                                        <strong style="color: #11263c; font-size: 0.95rem;">Responsivt UI/UX-design</strong>
+                                        <p style="font-size: 0.85rem; color: #64748b; margin: 2px 0 0 0;">Pikselperfekt på mobil og desktop</p>
+                                    </div>
+                                </div>
+                                <div class="deliverable-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>
+                                        <strong style="color: #11263c; font-size: 0.95rem;">Teknisk SEO-grunnoppsett</strong>
+                                        <p style="font-size: 0.85rem; color: #64748b; margin: 2px 0 0 0;">JSON-LD strukturert data og indeksering</p>
+                                    </div>
+                                </div>
+                                <div class="deliverable-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>
+                                        <strong style="color: #11263c; font-size: 0.95rem;">100/100 Ytelse &amp; WCAG</strong>
+                                        <p style="font-size: 0.85rem; color: #64748b; margin: 2px 0 0 0;">Universell utforming og lynrask lastetid</p>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="service-deliverables-card">
-                                <h3 id="serviceDeliverablesTitle">Typiske leveranser</h3>
-                                <ul class="service-deliverables-list" id="serviceDeliverablesList">
-                                    <li>Informasjonsarkitektur</li>
-                                    <li>Interaksjonsdesign</li>
-                                    <li>Designsystem</li>
-                                    <li>Klikkbar prototype</li>
-                                </ul>
+                            <div style="margin-top: 24px; display: flex; justify-content: flex-end;">
+                                <a href="/contact" class="hero-btn-primary">
+                                    <span>Start ditt prosjekt</span>
+                                    <span class="hero-btn-arrow">→</span>
+                                </a>
                             </div>
                         </div>
                     </article>
                 </div>
             </div>
         </section>
-
     </main>
 
     <footer class="footer pt_120 pb_120" style="border-top: 1px solid var(--clr-border);">
@@ -311,6 +343,48 @@
                     deliverables: ["Frontend-utvikling", "Responsiv tilpasning", "Teknisk QA", "Lanseringsstøtte"],
                     image: "img/project/pro1.png",
                     metaDescription: "Webutvikling fra TK-design med responsiv kode, ytelsesfokus og trygg lansering."
+                },
+                seo: {
+                    menuLabel: "SEO & Synlighet",
+                    bannerTitle: "SEO & Synlighet",
+                    summary: "Teknisk SEO, strukturert data og GEO-optimalisering som rangerer din bedrift på relevante søk i Google og AI-motorer.",
+                    tag: "Organisk Trafikk",
+                    title: "Bli funnet av kundene når de søker etter dine tjenester",
+                    lead: "Vi setter opp strukturert data (JSON-LD), søkemotorvennlig arkitektur, metabeskrivelser og Core Web Vitals slik at du klatrer på Google.",
+                    body: "SEO er ikke magi, men solid teknisk håndverk. Med riktig semantisk kode, 1-til-1 301 redirects og rask lastetid sikrer vi at nettstedet ditt presterer optimalt.",
+                    spotlightTitle: "Teknisk SEO som fungerer",
+                    spotlightText: "Vi sikrer at Google og AI-søkemotorer forstår og prioriterer innholdet ditt.",
+                    spotlightList: ["100/100 Teknisk SEO", "JSON-LD Strukturert data", "Lokal synlighet"],
+                    features: [
+                        { title: "Teknisk SEO", desc: "Feilfrie sitemaps, robots.txt og kanoniske URL-er." },
+                        { title: "JSON-LD & Schema", desc: "LocalBusiness og FAQPage markup for AI og Google Rich Snippets." },
+                        { title: "Hastighet & Vitals", desc: "Optimalisering for 100/100 Core Web Vitals." }
+                    ],
+                    deliverablesTitle: "Hva inngår i SEO-oppsettet:",
+                    deliverables: ["Teknisk SEO-revisjon", "JSON-LD strukturert data", "Søkeordskartlegging", "301 Redirect kart"],
+                    image: "img/project/pro2.png",
+                    metaDescription: "SEO og søkemotoroptimalisering fra TK-design for topplasseringer på Google."
+                },
+                support: {
+                    menuLabel: "Support & Drift",
+                    bannerTitle: "Support & Drift",
+                    summary: "Løpende teknisk oppfølging, sikkerhetsoppdateringer, overvåking og videreutvikling så du slipper bekymringer.",
+                    tag: "Trygg Drift",
+                    title: "Problemfri drift og rask hjelp når du trenger det",
+                    lead: "En nettside trenger jevnlig omsorg for å holde seg rask, trygg og oppdatert mot nye trusler og standarder.",
+                    body: "Vi overvåker oppetid, ruller ut sikkerhetspatcher og bistår med innholdsendringer og tekniske justeringer fortløpende.",
+                    spotlightTitle: "Trygghet i hverdagen",
+                    spotlightText: "Teknisk forvaltning og support slik at du kan fokusere på kjernevirksomheten.",
+                    spotlightList: ["Kontinuerlig overvåking", "Rask bistand", "Sikkerhetskopier"],
+                    features: [
+                        { title: "Kontinuerlig overvåking", desc: "Automatisk sjekk av oppetid og sikkerhet." },
+                        { title: "Rask responstid", desc: "Direkte kontakt uten kompliserte ticketsystemer." },
+                        { title: "Videreutvikling", desc: "Småjusteringer og nye funksjoner etter behov." }
+                    ],
+                    deliverablesTitle: "Hva inngår i driftsavtalen:",
+                    deliverables: ["Månedlig helsesjekk", "Sikkerhetsoppdateringer", "Inkludert support-tid", "Oppetidsovervåking"],
+                    image: "img/project/pro6.webp",
+                    metaDescription: "Support, vedlikehold og stabil drift av nettsider fra TK-design."
                 },
                 digital_marketing: {
                     menuLabel: "Digital markedsføring",
@@ -444,6 +518,11 @@
         };
 
         function getSelectedServiceKey() {
+            const pathname = window.location.pathname;
+            if (pathname === '/seo') return 'seo';
+            if (pathname === '/webdesign') return 'web_dev';
+            if (pathname === '/support-og-vedlikehold') return 'support';
+            if (pathname === '/sosiale-medier') return 'digital_marketing';
             const params = new URLSearchParams(window.location.search);
             const requested = (params.get("service") || "").trim();
             return SERVICE_DETAILS_CONTENT.no[requested] ? requested : "uiux";
@@ -495,7 +574,10 @@
                 if (el && value) el.textContent = value;
             };
 
-            setText(ids.bannerTitle, data.bannerTitle);
+            const bannerTitleEl = document.getElementById(ids.bannerTitle);
+            if (bannerTitleEl && data.bannerTitle) {
+                bannerTitleEl.innerHTML = `${data.bannerTitle} &amp; <span class="hero-title-highlight">${lang === 'en' ? 'Solutions' : 'Løsninger'}</span>`;
+            }
             setText(ids.bannerSummary, data.summary);
             setText(ids.breadcrumb, data.bannerTitle);
             setText(ids.spotlightTitle, data.spotlightTitle);

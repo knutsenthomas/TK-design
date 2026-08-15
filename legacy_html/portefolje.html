@@ -227,16 +227,16 @@
         <div class="container nav-container">
             <a href="/" class="logo" aria-label="tk-design">
                 <span class="logo-icon">
-                    <img src="img/logo/d.webp" alt="tk-design logo">
+                    <img src="img/logo/d.png" alt="tk-design logo">
                 </span>
                 <span class="logo-text">tk-design</span>
             </a>
             <nav class="nav-desktop">
                 <ul>
-                    <li><a href="/" data-i18n="nav.home">Home</a></li>
-                    <li><a href="/?section=about" data-i18n="nav.about">About</a></li>
+                    <li><a href="/" data-i18n="nav.home">Hjem</a></li>
+                    <li><a href="/?section=about" data-i18n="nav.about">Om oss</a></li>
                     <li class="has-dropdown">
-                        <a href="/?section=services" data-i18n="nav.services">Services <i class="fas fa-chevron-down nav-chevron"></i></a>
+                        <a href="/?section=services" data-i18n="nav.services">Tjenester <i class="fas fa-chevron-down nav-chevron"></i></a>
                         <ul class="submenu">
                             <li><a href="/webdesign" data-i18n="nav.sub_webdesign">Webdesign & Utvikling</a></li>
                             <li><a href="/seo" data-i18n="nav.sub_seo">SEO-Grunnoppsett</a></li>
@@ -244,10 +244,11 @@
                             <li><a href="/nettside-sjekker" data-i18n="nav.sub_analyzer">Nettside-sjekker</a></li>
                         </ul>
                     </li>
-                    <li><a href="/?section=projects" data-i18n="nav.portfolio">Portfolio</a></li>
-                    <li><a href="/?section=testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
+                    <li><a href="/#pricing" data-i18n="nav.pricing">Priser</a></li>
+                    <li><a href="/portefolje" class="is-current" data-i18n="nav.portfolio">Prosjekter</a></li>
+                    <li><a href="/#advantages" data-i18n="nav.advantages">Hvorfor oss</a></li>
                     <li><a href="/blog" data-i18n="nav.blog">Aktuelt</a></li>
-                    <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
+                    <li><a href="/contact" data-i18n="nav.contact">Kontakt</a></li>
                 </ul>
             </nav>
             <div class="lang-switch-desktop">
@@ -262,11 +263,11 @@
     <div class="mobile-menu-overlay">
         <nav class="mobile-nav">
             <ul>
-                <li><a href="/" class="is-current" data-i18n="nav.home">Home</a></li>
-                <li><a href="/?section=about" class="is-current" data-i18n="nav.about">About</a></li>
+                <li><a href="/" data-i18n="nav.home">Hjem</a></li>
+                <li><a href="/?section=about" data-i18n="nav.about">Om oss</a></li>
                 <li>
                     <div class="mobile-nav-has-sub">
-                        <a href="/?section=services" data-i18n="nav.services">Services</a>
+                        <a href="/?section=services" data-i18n="nav.services">Tjenester</a>
                         <i class="fas fa-chevron-down mobile-sub-icon"></i>
                     </div>
                     <ul class="mobile-submenu">
@@ -276,10 +277,11 @@
                         <li><a href="/nettside-sjekker" data-i18n="nav.sub_analyzer">Nettside-sjekker</a></li>
                     </ul>
                 </li>
-                <li><a href="/?section=projects" class="is-current" data-i18n="nav.portfolio">Portfolio</a></li>
-                <li><a href="/?section=testimonial" class="is-current" data-i18n="nav.testimonial">Testimonial</a></li>
+                <li><a href="/#pricing" data-i18n="nav.pricing">Priser</a></li>
+                <li><a href="/portefolje" class="is-current" data-i18n="nav.portfolio">Prosjekter</a></li>
+                <li><a href="/#advantages" data-i18n="nav.advantages">Hvorfor oss</a></li>
                 <li><a href="/blog" data-i18n="nav.blog">Aktuelt</a></li>
-                <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
+                <li><a href="/contact" data-i18n="nav.contact">Kontakt</a></li>
             </ul>
 
             <div class="mobile-menu-footer">
@@ -297,34 +299,53 @@
         </nav>
     </div>
 
-    
-    <main class="container" style="padding-top: 120px; padding-bottom: 120px; min-height: 80vh;">
-        <header style="text-align: center; margin-bottom: 64px;">
-            <h1 style="font-size: 3rem; margin-bottom: 16px; font-weight: 700; color: var(--clr-base);" data-i18n="portfolio_page.heading">Vår Portefølje</h1>
-            <p style="font-size: 1.25rem; color: #64748b; max-width: 600px; margin: 0 auto;" data-i18n="portfolio_page.subtitle">Utforsk et utvalg av våre skreddersydde nettsider, webdesign og digitale løsninger.</p>
-        </header>
-
-        <!-- Webdesign Projects -->
-        <div style="margin-bottom: 80px;">
-            <h2 style="font-size: 2rem; margin-bottom: 32px; border-bottom: 2px solid var(--clr-base); display: inline-block; padding-bottom: 8px; color: var(--clr-base);">Webdesign & Nettsider</h2>
-            <section id="projects" class="pt_120 pb_120" data-aos="fade-up">
+    <main>
+        <!-- Modern Subpage Hero Banner -->
+        <section class="subpage-hero-section">
             <div class="container">
-                <div class="text-center mb-50">
-                    <div class="flex justify-center">
-                        <span class="section-subtitle-lines" style="margin-bottom: 24px;"
-                            data-i18n="projects.subtitle">Vårt arbeid</span>
+                <div class="subpage-hero-inner">
+                    <div class="subpage-breadcrumb">
+                        <a href="/" data-i18n="nav.home">Hjem</a>
+                        <span class="subpage-breadcrumb-sep">/</span>
+                        <span data-i18n="nav.portfolio">Prosjekter</span>
                     </div>
-                    <h2 class="section-title" style="font-size: 50px;" data-i18n="projects.title">Utvalgte prosjekter og
-                        leveranser
-                    </h2>
+                    <div class="hero-eyebrow-badge" style="margin: 0 auto 16px auto;">
+                        <span class="hero-badge-dot"></span>
+                        <span data-i18n="projects.subtitle">VÅRT ARBEID</span>
+                    </div>
+                    <h1 class="subpage-title" data-i18n="portfolio_page.heading">
+                        Utvalgte prosjekter og <span class="hero-title-highlight">leveranser</span>
+                    </h1>
+                    <p class="subpage-lead" data-i18n="portfolio_page.subtitle">
+                        Utforsk et utvalg av våre egenkodede nettsider, webdesign og digitale løsninger bygget for maksimal ytelse og konvertering.
+                    </p>
+                    <div class="subpage-stat-pills">
+                        <div class="subpage-stat-pill">
+                            <i class="fas fa-bolt"></i>
+                            <span>100/100 Google PageSpeed</span>
+                        </div>
+                        <div class="subpage-stat-pill">
+                            <i class="fas fa-magic"></i>
+                            <span>100% Unikt Design</span>
+                        </div>
+                        <div class="subpage-stat-pill">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Optimal SEO-struktur</span>
+                        </div>
+                    </div>
                 </div>
+            </div>
+        </section>
 
+        <!-- Projects Grid Section -->
+        <section class="pb_120" data-aos="fade-up">
+            <div class="container">
                 <div class="portfolio-grid">
-                    <!-- Project 1 -->
+                    <!-- Project 1: Kudos -->
                     <div class="project-card project-card-kudos" data-aos="fade-up" data-aos-delay="100">
                         <div class="project-img-wrapper">
                             <a href="/project-details?project=kudos" aria-label="Kudos Regnskap AS">
-                                <img src="img/project/real_kudos_desktop.jpg" alt="Kudos Regnskap AS" loading="lazy">
+                                <img src="img/project/real_kudos_desktop.jpg" alt="Kudos Regnskap AS" loading="lazy" width="600" height="400">
                             </a>
                             <a href="/project-details?project=kudos" class="project-arrow-btn"
                                 aria-label="Se prosjektdetaljer for Kudos Regnskap AS">
@@ -332,17 +353,24 @@
                             </a>
                         </div>
                         <div class="project-content">
-                            <span class="project-category" data-i18n="projects.p1_desc">Regnskap</span>
+                            <div class="project-tags-row">
+                                <span class="project-category" data-i18n="projects.p1_desc">Regnskap</span>
+                                <span class="project-metric-pill">⚡ 100/100 Ytelse</span>
+                                <span class="project-metric-pill">📍 Askøy & Bergen</span>
+                            </div>
                             <h3 class="project-title"><a href="/project-details?project=kudos"
                                     data-i18n="projects.p1_title">Kudos Regnskap AS</a></h3>
+                            <p class="project-summary-text">
+                                Komplett egenkodet bedriftsprofil med lynrask responstid, autoritetsbyggende tillitsdesign og integrert henvendelsesflyt.
+                            </p>
                         </div>
                     </div>
 
-                    <!-- Project 2 -->
+                    <!-- Project 2: HKM -->
                     <div class="project-card project-card-hkm" data-aos="fade-up" data-aos-delay="200">
                         <div class="project-img-wrapper">
                             <a href="/project-details?project=hkm" aria-label="His Kingdom Ministry">
-                                <img src="img/project/real_hkm_desktop.jpg" alt="His Kingdom Ministry" loading="lazy">
+                                <img src="img/project/real_hkm_desktop.jpg" alt="His Kingdom Ministry" loading="lazy" width="600" height="400">
                             </a>
                             <a href="/project-details?project=hkm" class="project-arrow-btn"
                                 aria-label="Se prosjektdetaljer for His Kingdom Ministry">
@@ -350,17 +378,24 @@
                             </a>
                         </div>
                         <div class="project-content">
-                            <span class="project-category" data-i18n="projects.p2_desc">Frivillig organisasjon</span>
+                            <div class="project-tags-row">
+                                <span class="project-category" data-i18n="projects.p2_desc">Frivillig organisasjon</span>
+                                <span class="project-metric-pill">🎥 Medieplattform</span>
+                                <span class="project-metric-pill">📅 Kurs & Påmelding</span>
+                            </div>
                             <h3 class="project-title"><a href="/project-details?project=hkm"
                                     data-i18n="projects.p2_title">His Kingdom Ministry</a></h3>
+                            <p class="project-summary-text">
+                                Dynamisk medie- og kursplattform med videostrømming, podcast-arkiv og integrert arrangementspåmelding.
+                            </p>
                         </div>
                     </div>
 
-                    <!-- Project 3 -->
+                    <!-- Project 3: Mandal -->
                     <div class="project-card project-card-mandal" data-aos="fade-up" data-aos-delay="300">
                         <div class="project-img-wrapper">
                             <a href="/project-details?project=mandal" aria-label="Mandal Regnskapskontor">
-                                <img src="img/project/real_mandal_desktop.jpg" alt="Mandal Regnskapskontor" loading="lazy">
+                                <img src="img/project/real_mandal_desktop.jpg" alt="Mandal Regnskapskontor" loading="lazy" width="600" height="400">
                             </a>
                             <a href="/project-details?project=mandal" class="project-arrow-btn"
                                 aria-label="Se prosjektdetaljer for Mandal Regnskapskontor">
@@ -368,92 +403,92 @@
                             </a>
                         </div>
                         <div class="project-content">
-                            <span class="project-category" data-i18n="projects.p7_desc">Regnskap</span>
+                            <div class="project-tags-row">
+                                <span class="project-category" data-i18n="projects.p7_desc">Regnskap</span>
+                                <span class="project-metric-pill">💼 Rådgivning</span>
+                                <span class="project-metric-pill">📱 100% Responsiv</span>
+                            </div>
                             <h3 class="project-title"><a href="/project-details?project=mandal"
                                     data-i18n="projects.p7_title">Mandal Regnskapskontor</a></h3>
+                            <p class="project-summary-text">
+                                Profesjonelt og tillitvekkende nettsted med oversikt over autoriserte regnskapstjenester og enkel rådgivningsbooking.
+                            </p>
                         </div>
                     </div>
 
-                    <!-- Project 4 -->
+                    <!-- Project 4: Custom Webdesign -->
                     <div class="project-card project-card-identikon" data-aos="fade-up" data-aos-delay="400">
                         <div class="project-img-wrapper">
-                            <a href="/project-details?project=custom-design">
-                                <img src="img/project/pro5.webp" alt="Project 3" loading="lazy">
+                            <a href="/webdesign">
+                                <img src="img/project/pro5.webp" alt="Skreddersydd Webdesign" loading="lazy" width="600" height="400">
                             </a>
-                            <a href="/project-details?project=custom-design" class="project-arrow-btn"
-                                aria-label="Se prosjektdetaljer for Skreddersydd design fra bunnen av">
+                            <a href="/webdesign" class="project-arrow-btn"
+                                aria-label="Se detaljer for Skreddersydd design fra bunnen av">
                                 <i class="fas fa-arrow-right"></i>
                             </a>
                         </div>
                         <div class="project-content">
-                            <span class="project-category" data-i18n="projects.p3_desc">Webdesign</span>
-                            <h3 class="project-title"><a href="/project-details?project=custom-design"
+                            <div class="project-tags-row">
+                                <span class="project-category" data-i18n="projects.p3_desc">Webdesign</span>
+                                <span class="project-metric-pill">🎨 100% Skreddersøm</span>
+                            </div>
+                            <h3 class="project-title"><a href="/webdesign"
                                     data-i18n="projects.p3_title">Skreddersydd design fra bunnen av</a></h3>
+                            <p class="project-summary-text">
+                                Pikselperfekt UI/UX tilpasset din bedrifts merkevareidentitet for optimal konvertering.
+                            </p>
                         </div>
                     </div>
 
-                    <!-- Project 5 -->
+                    <!-- Project 5: SEO -->
                     <div class="project-card" data-aos="fade-up" data-aos-delay="500">
                         <div class="project-img-wrapper">
-                            <a href="/project-details?project=seo">
-                                <img src="img/project/pro2.webp" alt="Project 4" loading="lazy">
+                            <a href="/seo">
+                                <img src="img/project/pro2.webp" alt="SEO Optimalisering" loading="lazy" width="600" height="400">
                             </a>
-                            <a href="/project-details?project=seo" class="project-arrow-btn"
-                                aria-label="Se prosjektdetaljer for Synlighet i Google">
+                            <a href="/seo" class="project-arrow-btn"
+                                aria-label="Se detaljer for Synlighet i Google">
                                 <i class="fas fa-arrow-right"></i>
                             </a>
                         </div>
                         <div class="project-content">
-                            <span class="project-category" data-i18n="projects.p4_desc">SEO</span>
-                            <h3 class="project-title"><a href="/project-details?project=seo"
+                            <div class="project-tags-row">
+                                <span class="project-category" data-i18n="projects.p4_desc">SEO</span>
+                                <span class="project-metric-pill">📈 Topplassering</span>
+                            </div>
+                            <h3 class="project-title"><a href="/seo"
                                     data-i18n="projects.p4_title">Synlighet i Google</a></h3>
+                            <p class="project-summary-text">
+                                Teknisk SEO, strukturert data og GEO-optimalisering som rangerer din bedrift på relevante søk.
+                            </p>
                         </div>
                     </div>
 
-                    <!-- Project 6 -->
+                    <!-- Project 6: Support -->
                     <div class="project-card" data-aos="fade-up" data-aos-delay="600">
                         <div class="project-img-wrapper">
-                            <a href="/project-details?project=social-media">
-                                <img src="img/project/pro4.webp" alt="Project 5" loading="lazy">
+                            <a href="/support-og-vedlikehold">
+                                <img src="img/project/pro6.webp" alt="Support og Drift" loading="lazy" width="600" height="400">
                             </a>
-                            <a href="/project-details?project=social-media" class="project-arrow-btn"
-                                aria-label="Se prosjektdetaljer for Merkevare i sosiale medier">
+                            <a href="/support-og-vedlikehold" class="project-arrow-btn"
+                                aria-label="Se detaljer for Vedlikehold og videreutvikling">
                                 <i class="fas fa-arrow-right"></i>
                             </a>
                         </div>
                         <div class="project-content">
-                            <span class="project-category" data-i18n="projects.p5_desc">SoMe</span>
-                            <h3 class="project-title"><a href="/project-details?project=social-media"
-                                    data-i18n="projects.p5_title">Merkevare i sosiale medier</a></h3>
-                        </div>
-                    </div>
-
-                    <!-- Project 7 -->
-                    <div class="project-card" data-aos="fade-up" data-aos-delay="700">
-                        <div class="project-img-wrapper">
-                            <a href="/project-details?project=support">
-                                <img src="img/project/pro6.webp" alt="Project 6" loading="lazy">
-                            </a>
-                            <a href="/project-details?project=support" class="project-arrow-btn"
-                                aria-label="Se prosjektdetaljer for Vedlikehold og videreutvikling">
-                                <i class="fas fa-arrow-right"></i>
-                            </a>
-                        </div>
-                        <div class="project-content">
-                            <span class="project-category" data-i18n="projects.p6_desc">Support</span>
-                            <h3 class="project-title"><a href="/project-details?project=support"
+                            <div class="project-tags-row">
+                                <span class="project-category" data-i18n="projects.p6_desc">Support</span>
+                                <span class="project-metric-pill">🛡️ Trygg Drift</span>
+                            </div>
+                            <h3 class="project-title"><a href="/support-og-vedlikehold"
                                     data-i18n="projects.p6_title">Vedlikehold og videreutvikling</a></h3>
+                            <p class="project-summary-text">
+                                Løpende sikkerhetsoppdateringer, overvåking og teknisk bistand så du slipper bekymringer.
+                            </p>
                         </div>
-                    </div>
-
-                </div>
-
-                <div style="text-align: center; margin-top: 64px;">
-                    <a href="/portefolje" class="btn btn-primary" style="padding: 16px 40px; font-size: 1.125rem;" data-i18n="projects.see_full">Se full portefølje</a>
                 </div>
             </div>
         </section>
-        </div>
 
         <!-- Graphic Design -->
         <div>

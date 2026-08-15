@@ -414,10 +414,18 @@ function applyLanguage(lang) {
             if (icon) {
                 // If element has an icon child, update the text child node or innerHTML safely
                 const clonedIcon = icon.cloneNode(true);
-                el.textContent = text + ' ';
+                if (text.includes('<') && text.includes('>')) {
+                    el.innerHTML = text + ' ';
+                } else {
+                    el.textContent = text + ' ';
+                }
                 el.appendChild(clonedIcon);
             } else {
-                el.textContent = text;
+                if (text.includes('<') && text.includes('>')) {
+                    el.innerHTML = text;
+                } else {
+                    el.textContent = text;
+                }
             }
             if (el.classList.contains('designers')) {
                 el.setAttribute('data-text', text);

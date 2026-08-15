@@ -31,16 +31,16 @@
         <div class="container nav-container">
             <a href="/" class="logo" aria-label="tk-design">
                 <span class="logo-icon">
-                    <img src="/img/logo/d.png" alt="tk-design logo">
+                    <img src="img/logo/d.png" alt="tk-design logo">
                 </span>
                 <span class="logo-text">tk-design</span>
             </a>
             <nav class="nav-desktop">
                 <ul>
-                    <li><a href="/" data-i18n="nav.home">Home</a></li>
-                    <li><a href="/?section=about" data-i18n="nav.about">About</a></li>
+                    <li><a href="/" data-i18n="nav.home">Hjem</a></li>
+                    <li><a href="/?section=about" data-i18n="nav.about">Om oss</a></li>
                     <li class="has-dropdown">
-                        <a href="/?section=services" data-i18n="nav.services">Services <i class="fas fa-chevron-down nav-chevron"></i></a>
+                        <a href="/?section=services" data-i18n="nav.services">Tjenester <i class="fas fa-chevron-down nav-chevron"></i></a>
                         <ul class="submenu">
                             <li><a href="/webdesign" data-i18n="nav.sub_webdesign">Webdesign & Utvikling</a></li>
                             <li><a href="/seo" data-i18n="nav.sub_seo">SEO-Grunnoppsett</a></li>
@@ -48,17 +48,18 @@
                             <li><a href="/nettside-sjekker" data-i18n="nav.sub_analyzer">Nettside-sjekker</a></li>
                         </ul>
                     </li>
-                    <li><a href="/?section=projects" data-i18n="nav.portfolio">Portfolio</a></li>
-                    <li><a href="/?section=testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
+                    <li><a href="/#pricing" data-i18n="nav.pricing">Priser</a></li>
+                    <li><a href="/portefolje" data-i18n="nav.portfolio">Prosjekter</a></li>
+                    <li><a href="/#advantages" data-i18n="nav.advantages">Hvorfor oss</a></li>
                     <li><a href="/blog" class="is-current" data-i18n="nav.blog">Aktuelt</a></li>
-                    <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
+                    <li><a href="/contact" data-i18n="nav.contact">Kontakt</a></li>
                 </ul>
             </nav>
             <div class="lang-switch-desktop">
                 <button onclick="switchLanguage('en')" class="lang-btn">EN</button>
                 <button onclick="switchLanguage('no')" class="lang-btn active">NO</button>
             </div>
-            <button class="menu-trigger"><i class="fas fa-bars"></i></button>
+            <button class="menu-trigger" aria-label="Åpne meny"><i class="fas fa-bars"></i></button>
         </div>
     </header>
 
@@ -66,11 +67,11 @@
     <div class="mobile-menu-overlay">
         <nav class="mobile-nav">
             <ul>
-                <li><a href="/" data-i18n="nav.home">Home</a></li>
-                <li><a href="/?section=about" data-i18n="nav.about">About</a></li>
+                <li><a href="/" data-i18n="nav.home">Hjem</a></li>
+                <li><a href="/?section=about" data-i18n="nav.about">Om oss</a></li>
                 <li>
                     <div class="mobile-nav-has-sub">
-                        <a href="/?section=services" data-i18n="nav.services">Services</a>
+                        <a href="/?section=services" data-i18n="nav.services">Tjenester</a>
                         <i class="fas fa-chevron-down mobile-sub-icon"></i>
                     </div>
                     <ul class="mobile-submenu">
@@ -80,10 +81,11 @@
                         <li><a href="/nettside-sjekker" data-i18n="nav.sub_analyzer">Nettside-sjekker</a></li>
                     </ul>
                 </li>
-                <li><a href="/?section=projects" data-i18n="nav.portfolio">Portfolio</a></li>
-                <li><a href="/?section=testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
-                <li><a href="/blog" data-i18n="nav.blog">Aktuelt</a></li>
-                <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
+                <li><a href="/#pricing" data-i18n="nav.pricing">Priser</a></li>
+                <li><a href="/portefolje" data-i18n="nav.portfolio">Prosjekter</a></li>
+                <li><a href="/#advantages" data-i18n="nav.advantages">Hvorfor oss</a></li>
+                <li><a href="/blog" class="is-current" data-i18n="nav.blog">Aktuelt</a></li>
+                <li><a href="/contact" data-i18n="nav.contact">Kontakt</a></li>
             </ul>
 
             <div class="mobile-menu-footer">
@@ -92,36 +94,54 @@
                     <a href="tel:+4793094615">930 94 615</a>
                 </div>
                 <div class="mobile-social-links">
-                    <a href="https://www.facebook.com/profile.php?id=61574614704737&amp;locale=nb_NO" target="_blank" rel="nofollow noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://www.instagram.com/tkdesign777" target="_blank" rel="nofollow noopener noreferrer"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.facebook.com/profile.php?id=61574614704737&amp;locale=nb_NO" target="_blank"
+                        rel="nofollow noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/tkdesign777" target="_blank"
+                        rel="nofollow noopener noreferrer"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
         </nav>
     </div>
 
     <main>
-        <section class="page-banner blog-page-banner">
+        <!-- Modern Subpage Hero Banner -->
+        <section class="subpage-hero-section">
             <div class="container">
-                <div class="blog-page-hero">
-                    <div class="blog-page-copy">
-                        <span class="section-subtitle-lines" data-i18n="blog_details.eyebrow">Aktuelt</span>
-                        <h1 class="section-title blog-page-title" id="blogDetailTitle">Laster inn innlegg...</h1>
-                        <p class="blog-page-summary" id="blogDetailSummary" data-i18n="blog_details.loading">
-                            Laster inn innhold...
-                        </p>
-                        <div class="blog-page-actions">
-                            <a href="/blog" class="primary-cta" data-i18n="blog_details.back_to_blog">
-                                Tilbake til aktuelt
-                            </a>
-                            <a href="/contact" class="blog-page-secondary" data-i18n="blog_details.contact_cta">
-                                Start et prosjekt
-                            </a>
+                <div class="subpage-hero-inner">
+                    <div class="subpage-breadcrumb">
+                        <a href="/" data-i18n="nav.home">Hjem</a>
+                        <span class="subpage-breadcrumb-sep">/</span>
+                        <a href="/blog" data-i18n="nav.blog">Aktuelt</a>
+                        <span class="subpage-breadcrumb-sep">/</span>
+                        <span id="blogDetailBreadcrumb" data-i18n="blog_details.breadcrumb">Artikkel</span>
+                    </div>
+                    <div class="hero-eyebrow-badge" style="margin: 0 auto 16px auto;">
+                        <span class="hero-badge-dot"></span>
+                        <span data-i18n="blog_details.eyebrow">AKTUELT FRA TK-DESIGN</span>
+                    </div>
+                    <h1 class="subpage-title" id="blogDetailTitle">
+                        Laster inn innlegg...
+                    </h1>
+                    <p class="subpage-lead" id="blogDetailSummary" data-i18n="blog_details.loading">
+                        Laster inn innhold...
+                    </p>
+                    <div class="subpage-stat-pills">
+                        <div class="subpage-stat-pill">
+                            <i class="fas fa-folder"></i>
+                            <span id="blogOverviewCategory">Webdesign</span>
                         </div>
-                        <ul class="breadcrumb">
-                            <li><a href="/" data-i18n="nav.home">Home</a></li>
-                            <li><a href="/blog" data-i18n="nav.blog">Aktuelt</a></li>
-                            <li id="blogDetailBreadcrumb" data-i18n="blog_details.breadcrumb">Bloggdetaljer</li>
-                        </ul>
+                        <div class="subpage-stat-pill">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span id="blogOverviewDate">2026</span>
+                        </div>
+                        <div class="subpage-stat-pill">
+                            <i class="fas fa-user-edit"></i>
+                            <span id="blogOverviewAuthor">Thomas Knutsen</span>
+                        </div>
+                        <div class="subpage-stat-pill">
+                            <i class="fas fa-clock"></i>
+                            <span id="blogReadingTime">2 min lesetid</span>
+                        </div>
                     </div>
                 </div>
             </div>
