@@ -3335,33 +3335,48 @@ app.get('/sitemap.xml', async (req, res) => {
         const baseUrl = 'https://tk-design.no';
 
         let xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">`;
 
-        for (const page of Object.keys((seoConfig && seoConfig.pages) || {})) {
-            const normalizedPage = String(page || '').replace(/^\/+/, '');
-            const cleanPage = normalizedPage === 'index.html'
-                ? ''
-                : normalizedPage.replace(/\.html$/i, '');
+        // Clean static canonical pages list
+        const canonicalPages = [
+            { path: '', priority: '1.0', changefreq: 'weekly' },
+            { path: '/webdesign', priority: '0.9', changefreq: 'weekly' },
+            { path: '/seo', priority: '0.9', changefreq: 'weekly' },
+            { path: '/support-og-vedlikehold', priority: '0.8', changefreq: 'weekly' },
+            { path: '/sosiale-medier', priority: '0.8', changefreq: 'weekly' },
+            { path: '/portefolje', priority: '0.9', changefreq: 'weekly' },
+            { path: '/blog', priority: '0.9', changefreq: 'weekly' },
+            { path: '/contact', priority: '0.8', changefreq: 'monthly' },
+            { path: '/privacy', priority: '0.3', changefreq: 'yearly' },
+            { path: '/accessibility', priority: '0.3', changefreq: 'yearly' }
+        ];
+
+        for (const page of canonicalPages) {
             xml += `
     <url>
-        <loc>${baseUrl}${cleanPage ? `/${cleanPage}` : ''}</loc>
-        <changefreq>weekly</changefreq>
-        <priority>${cleanPage === '' ? '1.0' : '0.8'}</priority>
+        <loc>${baseUrl}${page.path}</loc>
+        <changefreq>${page.changefreq}</changefreq>
+        <priority>${page.priority}</priority>
+        <xhtml:link rel="alternate" hreflang="no" href="${baseUrl}${page.path || '/'}"/>
+        <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}${page.path || '/'}"/>
     </url>`;
         }
 
-        (posts || []).forEach((post) => {
+        // Dynamic blog posts with canonical permalinks
+        (posts || []).filter(p => p && p.status !== 'draft').forEach((post) => {
             const postPath = normalizeStoredBlogPostLink(post.link, post.id, getBlogPostTitleForUrl(post));
             xml += `
     <url>
         <loc>${baseUrl}${postPath}</loc>
         <changefreq>monthly</changefreq>
-        <priority>0.6</priority>
+        <priority>0.7</priority>
     </url>`;
         });
 
         xml += `\n</urlset>`;
         res.header('Content-Type', 'application/xml');
+        res.header('Cache-Control', 'public, max-age=3600');
         res.send(xml);
     } catch (error) {
         console.error('Error generating sitemap:', error);
@@ -3454,9 +3469,6 @@ async function renderPageWithSeo(req, res, reqFile, matchedBlogPost = null) {
             const langData = translations[lang];
 
             if (langData) {
-                // Regex to find elements with data-i18n attribute
-                // It looks for tags like <span data-i18n="nav.home">Any Content</span>
-                // and replaces "Any Content" with the translated value.
                 translatedHtml = html.replace(/<([^>]+data-i18n="([^"]+)"[^>]*)>([\s\S]*?)<\/\s*([a-zA-Z0-9]+)\s*>/g, (match, openingTag, key, oldContent, tagName) => {
                     const keys = key.split('.');
                     let text = langData;
@@ -3465,7 +3477,6 @@ async function renderPageWithSeo(req, res, reqFile, matchedBlogPost = null) {
                     }
 
                     if (text && typeof text === 'string') {
-                        // Keep the opening tag exactly as it is (with the data-i18n attribute)
                         return `<${openingTag}>${text}</${tagName}>`;
                     }
                     return match;
@@ -3543,6 +3554,14 @@ async function renderPageWithSeo(req, res, reqFile, matchedBlogPost = null) {
         if (ogImage) {
             injectedHtml = upsertHeadMetaTag(injectedHtml, 'property', 'og:image', ogImage);
             injectedHtml = upsertHeadMetaTag(injectedHtml, 'name', 'twitter:image', ogImage);
+        }
+
+        // Auto-inject / Upsert Canonical URL to prevent duplicate content indexing
+        const canonicalTarget = ogUrl || `https://tk-design.no${req.path === '/' ? '/' : req.path}`;
+        if (/<link\s+[^>]*rel=["']canonical["'][^>]*>/i.test(injectedHtml)) {
+            injectedHtml = injectedHtml.replace(/<link\s+[^>]*rel=["']canonical["'][^>]*>/i, `<link rel="canonical" href="${canonicalTarget}">`);
+        } else {
+            injectedHtml = injectedHtml.replace('</head>', `    <link rel="canonical" href="${canonicalTarget}">\n</head>`);
         }
 
         if (!/custom-style\.css/i.test(injectedHtml)) {
