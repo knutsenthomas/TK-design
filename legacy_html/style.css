@@ -6612,8 +6612,11 @@ body.homepage-refresh .project-img-wrapper {
 }
 
 body.homepage-refresh .project-img-wrapper img {
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 16 / 10;
+    width: 100%;
     object-fit: cover;
+    object-position: top center;
+    display: block;
 }
 
 body.homepage-refresh .project-card-kudos .project-img-wrapper {
