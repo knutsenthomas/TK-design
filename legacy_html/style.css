@@ -10418,12 +10418,12 @@ body#home.homepage-refresh .hero-showcase-base {
 body#home.homepage-refresh .hero-light-showcase,
 .hero-light-showcase {
     position: relative;
-    min-height: clamp(620px, 86vh, 880px);
+    min-height: clamp(520px, 78vh, 760px);
     display: flex;
     align-items: center;
     overflow: hidden;
     background: #f6fbff;
-    padding: clamp(72px, 11vw, 128px) 0 clamp(56px, 8vw, 96px) !important;
+    padding: clamp(36px, 5vw, 64px) 0 clamp(36px, 4.5vw, 56px) !important;
     isolation: isolate;
 }
 
@@ -10449,7 +10449,7 @@ body#home.homepage-refresh .hero-light-showcase::after {
     height: 100%;
     object-fit: cover;
     object-position: right center;
-    opacity: 0.96;
+    opacity: 0.98;
 }
 
 .hero-light-showcase .hero-bg-gradient-mask {
@@ -10457,10 +10457,10 @@ body#home.homepage-refresh .hero-light-showcase::after {
     inset: 0;
     background: linear-gradient(90deg, 
         #f6fbff 0%, 
-        #f6fbff 36%, 
-        rgba(246, 251, 255, 0.94) 48%, 
-        rgba(246, 251, 255, 0.65) 68%, 
-        transparent 100%
+        #f6fbff 32%, 
+        rgba(246, 251, 255, 0.92) 44%, 
+        rgba(246, 251, 255, 0.50) 62%, 
+        transparent 85%
     );
 }
 
@@ -10468,8 +10468,8 @@ body#home.homepage-refresh .hero-light-showcase::after {
     .hero-light-showcase .hero-bg-gradient-mask {
         background: linear-gradient(180deg, 
             rgba(246, 251, 255, 0.96) 0%, 
-            rgba(246, 251, 255, 0.90) 50%, 
-            rgba(246, 251, 255, 0.72) 100%
+            rgba(246, 251, 255, 0.88) 45%, 
+            rgba(246, 251, 255, 0.65) 100%
         );
     }
 }
@@ -10484,23 +10484,23 @@ body#home.homepage-refresh .hero-light-showcase::after {
 }
 
 .hero-light-showcase .hero-content-wrap {
-    max-width: 650px;
+    max-width: 580px;
 }
 
 .hero-light-showcase .hero-eyebrow-badge {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 18px;
+    padding: 7px 16px;
     border-radius: 9999px;
-    background: rgba(255, 255, 255, 0.92);
-    border: 1px solid rgba(255, 106, 27, 0.22);
-    box-shadow: 0 4px 14px rgba(255, 106, 27, 0.08);
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(255, 106, 27, 0.24);
+    box-shadow: 0 4px 12px rgba(255, 106, 27, 0.08);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    margin-bottom: 24px;
+    margin-bottom: 18px;
     font-family: var(--font-primary, 'Kanit', sans-serif);
-    font-size: 0.82rem;
+    font-size: 0.80rem;
     font-weight: 800;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -10520,9 +10520,9 @@ body#home.homepage-refresh .hero-light-showcase::after {
 .hero-light-showcase .hero-display-title {
     margin: 0;
     font-family: 'Playfair Display', Georgia, 'Times New Roman', serif !important;
-    font-size: clamp(3.2rem, 7.8vw, 5.8rem) !important;
+    font-size: clamp(2.6rem, 5.4vw, 4.5rem) !important;
     font-weight: 900 !important;
-    line-height: 0.95 !important;
+    line-height: 0.96 !important;
     letter-spacing: -0.025em;
     color: var(--refresh-heading, #11263c) !important;
     text-transform: uppercase;
@@ -10543,11 +10543,11 @@ body#home.homepage-refresh .hero-light-showcase::after {
 }
 
 .hero-light-showcase .hero-sublead-text {
-    margin: 24px 0 32px 0;
-    max-width: 540px;
+    margin: 18px 0 28px 0;
+    max-width: 500px;
     font-family: var(--font-primary, 'Kanit', sans-serif);
-    font-size: clamp(1.05rem, 1.35vw, 1.18rem);
-    line-height: 1.65;
+    font-size: clamp(1rem, 1.25vw, 1.12rem);
+    line-height: 1.62;
     color: var(--refresh-text, #4b5563);
     font-weight: 400;
 }
