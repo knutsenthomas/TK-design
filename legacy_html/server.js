@@ -3359,7 +3359,7 @@ app.get('/sitemap.xml', async (req, res) => {
         <changefreq>${page.changefreq}</changefreq>
         <priority>${page.priority}</priority>
         <xhtml:link rel="alternate" hreflang="no" href="${baseUrl}${page.path || '/'}"/>
-        <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}${page.path || '/'}"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="${baseUrl}${page.path || '/'}"/>
     </url>`;
         }
 
