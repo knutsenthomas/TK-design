@@ -7,39 +7,39 @@
     },
     "pages": {
         "index.html": {
-            "title": "Hjem",
-            "description": "Portefølje for Thomas Knutsen - Grafisk Designer og Webutvikler.",
-            "keywords": "thomas knutsen, portefølje, hjem"
+            "title": "Profesjonell Webdesign & SEO i Norge",
+            "description": "TK-design leverer skreddersydd webdesign, lynrask nettside-utvikling og målrettet SEO for små og mellomstore bedrifter i Norge.",
+            "keywords": "webdesign norge, profesjonell nettside, seo byrå, tk-design"
         },
         "blog.html": {
-            "title": "Blogg",
-            "description": "Les mine siste tanker og oppdateringer om design og teknologi.",
-            "keywords": "blogg, design, tech"
+            "title": "Blogg & Innsikt om Webdesign og SEO",
+            "description": "Les faglige artikler, SEO-guider og praktiske råd om webdesign og digital synlighet fra Thomas Knutsen i TK-design.",
+            "keywords": "blogg, seo tips, webdesign råd, google rangering"
         },
         "contact.html": {
-            "title": "Kontakt",
-            "description": "Ta kontakt med TK-design for profesjonell nettside, webdesign og SEO.",
-            "keywords": "kontakt webdesigner, bestille nettside, tk-design kontakt"
+            "title": "Kontakt Thomas Knutsen i TK-design",
+            "description": "Ta kontakt med Thomas Knutsen i TK-design for et uforpliktende tilbud på profesjonell nettside, teknisk SEO eller supportavtale.",
+            "keywords": "kontakt webdesigner, bestille nettside, seo konsultasjon, tk-design kontakt"
         },
         "service-details.html": {
-            "title": "Tjenester",
-            "description": "Tjenester fra TK-design: UI/UX-design, webutvikling, digital markedsføring og merkevarebygging.",
-            "keywords": "ui ux design, webutvikling, digital markedsføring, merkevarebygging"
+            "title": "Våre Tjenester innen Webdesign og SEO",
+            "description": "Utforsk våre tjenester innen skreddersydd webdesign, søkemotoroptimalisering (SEO), innholdsstrategi og løpende drift av nettsider.",
+            "keywords": "webdesign tjenester, seo søkemotoroptimalisering, supportavtale nettside"
         },
         "project-details.html": {
-            "title": "Prosjekter",
-            "description": "Utvalgte prosjekter fra TK-design med fokus på design, ytelse og synlighet.",
-            "keywords": "prosjekter, webdesign case, tk-design"
+            "title": "Prosjekter og Kundecaser",
+            "description": "Se utvalgte prosjekter, referanser og kundecaser levert av TK-design med fokus på moderne design, høy fart og konvertering.",
+            "keywords": "prosjekter, portefølje webdesign, kundereferanser tk-design"
         },
         "privacy.html": {
-            "title": "Personvern",
-            "description": "Personvernerklæring for TK-design og hvordan data behandles på nettsiden.",
+            "title": "Personvernerklæring",
+            "description": "Personvernerklæring for TK-design med utfyllende informasjon om hvordan personopplysninger og informasjonskapsler behandles trygt.",
             "keywords": "personvern, personvernerklæring, tk-design"
         },
         "accessibility.html": {
-            "title": "Tilgjengelighet",
-            "description": "Tilgjengelighetserklæring for TK-design med informasjon om universell utforming.",
-            "keywords": "tilgjengelighet, universell utforming, tilgjengelighetserklæring"
+            "title": "Tilgjengelighetserklæring",
+            "description": "Tilgjengelighetserklæring for TK-design med informasjon om vårt arbeid for universell utforming og WCAG-krav på nettsiden.",
+            "keywords": "tilgjengelighet, universell utforming, wcag krav"
         }
     }
 }

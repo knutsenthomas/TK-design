@@ -18,8 +18,8 @@
 
 ## Priority Pages
 - [Home](https://tk-design.no/) - Main company overview and value proposition.
-- [Services](https://tk-design.no/service-details) - Detailed service descriptions.
-- [Projects](https://tk-design.no/project-details) - Selected project work.
+- [Services](https://tk-design.no/webdesign) - Detailed service descriptions.
+- [Portfolio](https://tk-design.no/portefolje) - Selected project work and client cases.
 - [Blog](https://tk-design.no/blog) - Articles on SEO, GEO, and digital growth.
 - [Contact](https://tk-design.no/contact) - Main contact and lead page.
 

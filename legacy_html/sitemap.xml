@@ -5,76 +5,75 @@
   <!-- Forside -->
   <url>
     <loc>https://tk-design.no/</loc>
-    <lastmod>2026-08-15</lastmod>
+    <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="no" href="https://tk-design.no/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://tk-design.no/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://tk-design.no/"/>
   </url>
 
   <!-- Tjenester (Dedikerte Landing Pages for SEO) -->
   <url>
     <loc>https://tk-design.no/webdesign</loc>
-    <lastmod>2026-08-15</lastmod>
+    <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="no" href="https://tk-design.no/webdesign"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://tk-design.no/webdesign"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tk-design.no/webdesign"/>
   </url>
   <url>
     <loc>https://tk-design.no/seo</loc>
-    <lastmod>2026-08-15</lastmod>
+    <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="no" href="https://tk-design.no/seo"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://tk-design.no/seo"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tk-design.no/seo"/>
   </url>
   <url>
     <loc>https://tk-design.no/support-og-vedlikehold</loc>
-    <lastmod>2026-08-15</lastmod>
+    <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="no" href="https://tk-design.no/support-og-vedlikehold"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://tk-design.no/support-og-vedlikehold"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tk-design.no/support-og-vedlikehold"/>
   </url>
   <url>
     <loc>https://tk-design.no/sosiale-medier</loc>
-    <lastmod>2026-08-15</lastmod>
+    <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="no" href="https://tk-design.no/sosiale-medier"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://tk-design.no/sosiale-medier"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tk-design.no/sosiale-medier"/>
   </url>
 
   <!-- Portefølje -->
   <url>
     <loc>https://tk-design.no/portefolje</loc>
-    <lastmod>2026-08-15</lastmod>
+    <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="no" href="https://tk-design.no/portefolje"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://tk-design.no/portefolje"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tk-design.no/portefolje"/>
   </url>
 
   <!-- Blogg -->
   <url>
     <loc>https://tk-design.no/blog</loc>
-    <lastmod>2026-08-15</lastmod>
+    <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="no" href="https://tk-design.no/blog"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://tk-design.no/blog"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tk-design.no/blog"/>
   </url>
 
   <!-- Kontakt -->
   <url>
     <loc>https://tk-design.no/contact</loc>
-    <lastmod>2026-08-15</lastmod>
+    <lastmod>2026-08-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="no" href="https://tk-design.no/contact"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://tk-design.no/contact"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tk-design.no/contact"/>
   </url>
 
   <!-- Personvern -->

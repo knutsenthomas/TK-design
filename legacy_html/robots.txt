@@ -1,9 +1,13 @@
 User-agent: *
 Allow: /
 
-# Ikke indekser admin-panelet
+# Ikke indekser admin, api, testfiler og data
 Disallow: /admin/
 Disallow: /api/
+Disallow: /data/
+Disallow: /*-report.html
+Disallow: /reference_blog.html
+Disallow: /test-hosting.html
 
 # Sitemap
 Sitemap: https://tk-design.no/sitemap.xml
