@@ -1,298 +1,1686 @@
-<!doctype html>
-<html lang="no">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Moderne nettside for Familiekirka Mandal.">
-    <title>Familiekirka Mandal</title>
-    <link rel="preconnect" href="https://static.wixstatic.com">
-    <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
-    <header class="site-header" id="top">
-      <a class="brand" href="#top" aria-label="Til toppen">
-        <span class="brand-mark">
-          <img src="assets/familiekirka-logo-transparent.png" alt="">
-        </span>
-      </a>
-      <nav class="main-nav" aria-label="Hovedmeny">
-        <a href="#kalender">Kalender</a>
-        <a href="taler.html">Taler</a>
-        <a href="#barn-unge">Neste generasjon</a>
-        <a href="#om">Visjon</a>
-        <a href="#kontakt">Kontakt</a>
-      </nav>
-      <div class="header-actions">
-        <a class="header-button ghost" href="taler.html">Taler</a>
-        <a class="header-button solid" href="#kontakt">Besøk oss</a>
-      </div>
+<!DOCTYPE html>
+<html lang="no" prefix="og: https://ogp.me/ns#">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ===================== SEO CORE ===================== -->
+    <title>TK-design | Profesjonell webdesign og nettside i Norge</title>
+    <meta name="description"
+        content="TK-design er din ekspert på profesjonell webdesign, sylskarp SEO og engasjerende sosiale medier (SoMe) i Norge. Fra idé til en konverterende lansering.">
+    <meta name="keywords"
+        content="webdesign norge, lage nettside, webbyrå, profesjonell nettside, webdesigner, SEO byrå norge, søkemotoroptimalisering, SoMe strategi, sosiale medier bedrift, tk-design, digital markedsføring, konvertering">
+    <meta name="author" content="Thomas Knutsen – TK-design">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="canonical" href="https://tk-design.no/">
+
+    <!-- ===================== PWA ===================== -->
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/img/logo/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="TK-design">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- ===================== HREFLANG ===================== -->
+    <link rel="alternate" hreflang="no" href="https://tk-design.no/">
+    <link rel="alternate" hreflang="en" href="https://tk-design.no/">
+    <link rel="alternate" hreflang="x-default" href="https://tk-design.no/">
+
+    <!-- ===================== OPEN GRAPH ===================== -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tk-design.no/">
+    <meta property="og:site_name" content="TK-design">
+    <meta property="og:title" content="TK-design | Profesjonell webdesign og nettside i Norge">
+    <meta property="og:description"
+        content="Vi bygger din digitale identitet med skreddersydd webdesign, SEO og SoMe-strategi. Fra idé til lansering – enkelt, profesjonelt og synlig.">
+    <meta property="og:image" content="https://tk-design.no/img/logo/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="TK-design – Profesjonell webdesign i Norge">
+    <meta property="og:locale" content="nb_NO">
+
+    <!-- ===================== TWITTER CARD ===================== -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="TK-design | Profesjonell webdesign i Norge">
+    <meta name="twitter:description"
+        content="Vi bygger din digitale identitet med skreddersydd webdesign, SEO og SoMe-strategi.">
+    <meta name="twitter:image" content="https://tk-design.no/img/logo/og-image.png">
+
+    <!-- ===================== JSON-LD STRUKTURERTE DATA (GEO) ===================== -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://tk-design.no/#website",
+          "url": "https://tk-design.no/",
+          "name": "TK-design",
+          "description": "Profesjonell webdesign og digitale løsninger for bedrifter i Norge",
+          "inLanguage": ["nb-NO", "en"],
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://tk-design.no/blog?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": ["LocalBusiness", "ProfessionalService"],
+          "@id": "https://tk-design.no/#business",
+          "name": "TK-design",
+          "legalName": "TK-design",
+          "url": "https://tk-design.no/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://tk-design.no/img/logo/d.png",
+            "width": 200,
+            "height": 200
+          },
+          "image": "https://tk-design.no/img/logo/og-image.png",
+          "description": "TK-design tilbyr profesjonell webdesign, nettside-utvikling, SEO og SoMe-strategi for bedrifter på Østlandet og i hele Norge.",
+          "telephone": "+4793094615",
+          "email": "thomas@tk-design.no",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "NO",
+            "addressRegion": "Østlandet"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "59.9139",
+            "longitude": "10.7522"
+          },
+          "areaServed": [
+            {
+              "@type": "Country",
+              "name": "Norway"
+            },
+            {
+              "@type": "AdministrativeArea",
+              "name": "Østlandet"
+            },
+            {
+              "@type": "AdministrativeArea",
+              "name": "Oslo og Viken"
+            },
+            {
+              "@type": "AdministrativeArea",
+              "name": "Agder / Sørlandet"
+            }
+          ],
+          "priceRange": "$$",
+          "openingHours": "Mo-Fr 08:00-17:00",
+          "sameAs": [
+            "https://www.facebook.com/profile.php?id=61574614704737",
+            "https://www.instagram.com/tkdesign777"
+          ],
+          "serviceType": ["Webdesign", "Nettside-utvikling", "SEO", "Support og Vedlikehold", "SoMe-strategi"]
+        },
+        {
+          "@type": "Person",
+          "@id": "https://tk-design.no/#person",
+          "name": "Thomas Knutsen",
+          "url": "https://tk-design.no/",
+          "jobTitle": "Webdesigner og digitalt strateg",
+          "worksFor": {"@id": "https://tk-design.no/#business"},
+          "email": "thomas@tk-design.no",
+          "telephone": "+4793094615",
+          "sameAs": [
+            "https://www.instagram.com/tkdesign777"
+          ]
+        },
+        {
+          "@type": "Service",
+          "@id": "https://tk-design.no/webdesign",
+          "name": "Skreddersydd Webdesign og Nettside-utvikling",
+          "url": "https://tk-design.no/webdesign",
+          "provider": {"@id": "https://tk-design.no/#business"},
+          "areaServed": {"@type": "Country", "name": "Norway"},
+          "description": "Profesjonelle nettsider for norske bedrifter. Vi lager moderne, raske, og konverteringsoptimaliserte nettsider."
+        },
+        {
+          "@type": "Service",
+          "@id": "https://tk-design.no/seo",
+          "name": "Søkemotoroptimalisering (SEO)",
+          "url": "https://tk-design.no/seo",
+          "provider": {"@id": "https://tk-design.no/#business"},
+          "areaServed": {"@type": "Country", "name": "Norway"},
+          "description": "Få din bedrift øverst i Google-søk. Vi øker organisk synlighet, trafikk og konverteringer med datadrevet SEO."
+        },
+        {
+          "@type": "Service",
+          "@id": "https://tk-design.no/support-og-vedlikehold",
+          "name": "Support, Drift og Vedlikehold av Nettside",
+          "url": "https://tk-design.no/support-og-vedlikehold",
+          "provider": {"@id": "https://tk-design.no/#business"},
+          "areaServed": {"@type": "Country", "name": "Norway"},
+          "description": "Drift, sikkerhetsoppdateringer og overvåking av nettsider for små bedrifter."
+        },
+        {
+          "@type": "Service",
+          "@id": "https://tk-design.no/sosiale-medier",
+          "name": "SoMe-strategi og Markedsføring",
+          "url": "https://tk-design.no/sosiale-medier",
+          "provider": {"@id": "https://tk-design.no/#business"},
+          "areaServed": {"@type": "Country", "name": "Norway"},
+          "description": "Strategisk innhold og målrettet markedsføring i sosiale medier for å bygge din merkevare."
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://tk-design.no/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Hva koster en profesjonell nettside hos TK-design?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Prisen for en skreddersydd nettside varierer avhengig av omfang og funksjonalitet. Vi tilbyr fleksible pakker tilpasset både små og mellomstore bedrifter, med fokus på høy konvertering og SEO."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Hvor lang tid tar det å få lansert en ny nettside?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Normal leveringstid for en komplett nettside er vanligvis mellom 1 til 3 uker, avhengig av prosjektets kompleksitet og hvor raskt innhold avklares."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Hjelper TK-design med søkemotoroptimalisering (SEO)?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Ja, teknisk SEO, lynrask innlasting (Core Web Vitals), semantisk HTML5 og strukturert data (JSON-LD) er alltid inkludert i alle våre nettsideleveranser."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Kan jeg oppdatere nettsiden selv i etterkant?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Ja, vi bygger brukervennlige løsninger og publiseringsverktøy slik at du enkelt kan oppdatere tekst, bilder og blogginnlegg selv når siden er lansert."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+
+    <!-- ===================== PRELOAD KRITISK LCP ===================== -->
+    <link rel="preload" as="image" href="/img/banner/hero-light-waves.jpg" fetchpriority="high">
+    <link rel="preload" as="image" href="/img/logo/d.webp">
+
+    <!-- ===================== FONTER & RESSURSER ===================== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&display=swap" rel="stylesheet">
+    <!-- Preload critical fonts for immediate FCP/LCP boost and zero CLS -->
+    <link rel="preload" href="/assets/fonts/kanit-400.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/assets/fonts/kanit-700.woff2" as="font" type="font/woff2" crossorigin>
+
+    <link rel="stylesheet" href="/style.css?v=83">
+
+    <!-- Ikoner og rammeverk -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    
+    <link rel="preload" href="https://unpkg.com/aos@2.3.1/dist/aos.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css"></noscript>
+
+    <!-- Egendefinert styling -->
+    <link rel="preload" href="admin/custom-style.css?v=62" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="admin/custom-style.css?v=62"></noscript>
+    <link rel="icon" type="image/png" href="img/logo/d.png">
+    <!-- Google Analytics GA4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5RZVDEBBYM"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-5RZVDEBBYM', { anonymize_ip: true });
+    </script>
+</head>
+
+<body id="home" class="homepage-refresh">
+
+    <!-- =========================================
+         HEADER SECTION
+         ========================================= -->
+    <header class="header">
+        <div class="container nav-container">
+            <a href="/" class="logo" aria-label="tk-design">
+                <span class="logo-icon">
+                    <img src="img/logo/d.webp" alt="tk-design logo">
+                </span>
+                <span class="logo-text">tk-design</span>
+            </a>
+            <nav class="nav-desktop">
+                <ul>
+                    <li><a href="/" data-i18n="nav.home">Home</a></li>
+                    <li><a href="/?section=about" data-i18n="nav.about">About</a></li>
+                    <li class="has-dropdown">
+                        <a href="/?section=services" data-i18n="nav.services">Services <i class="fas fa-chevron-down nav-chevron"></i></a>
+                        <ul class="submenu">
+                            <li><a href="/webdesign" data-i18n="nav.sub_webdesign">Webdesign & Utvikling</a></li>
+                            <li><a href="/seo" data-i18n="nav.sub_seo">SEO-Grunnoppsett</a></li>
+                            <li><a href="/support-og-vedlikehold" data-i18n="nav.sub_support">Support & Drift</a></li>
+                            <li><a href="/nettside-sjekker" data-i18n="nav.sub_analyzer">Nettside-sjekker</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="/#pricing" data-i18n="nav.pricing">Priser</a></li>
+                    <li><a href="/portefolje" data-i18n="nav.portfolio">Portfolio</a></li>
+                    <li><a href="/?section=testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
+                    <li><a href="/blog" data-i18n="nav.blog">Aktuelt</a></li>
+                    <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="lang-switch-desktop">
+                <button onclick="switchLanguage('en')" class="lang-btn">EN</button>
+                <button onclick="switchLanguage('no')" class="lang-btn active">NO</button>
+            </div>
+            <button class="menu-trigger" aria-label="Åpne meny"><i class="fas fa-bars"></i></button>
+        </div>
     </header>
 
-    <main>
-      <section class="hero" aria-label="Hovedbanner">
-        <div class="hero-slider" aria-hidden="true">
-          <div class="hero-slide active">
-            <img src="assets/mandal_hero.png" alt="" width="2400" height="1200">
-          </div>
-          <div class="hero-slide">
-            <img src="https://images.unsplash.com/photo-1765947382559-93260e5d6c89?q=85&w=2400&auto=format&fit=crop" alt="" width="2400" height="1200">
-          </div>
-          <div class="hero-slide">
-            <img src="https://images.unsplash.com/photo-1519491050282-cf00c82424b4?q=80&w=2400&auto=format&fit=crop" alt="" width="2400" height="1200">
-          </div>
-        </div>
-        <div class="hero-content">
-          <div class="hero-copy">
-            <p class="hero-word">Familiekirka Mandal</p>
-            <p class="eyebrow" id="hero-kicker">Velkommen til</p>
-            <h1 id="hero-title">Familiekirka Mandal</h1>
-            <p class="lead" id="hero-text">En Jesusfokusert menighet i Mandal for alle generasjoner, med disippelgjøring, fellesskap og neste generasjon i sentrum.</p>
-            <div class="hero-actions">
-              <a class="button primary" id="hero-primary" href="#kalender">Se kalender</a>
-              <a class="button secondary" id="hero-secondary" href="#kontakt">Planlegg besøk</a>
-            </div>
-          </div>
-          <aside class="hero-side" aria-label="Neste samling">
-            <span>Neste faste samling</span>
-            <strong>Søndag 11.00</strong>
-            <p>Sommerkroveien 10</p>
-            <a href="#kontakt">Finn veien hit</a>
-          </aside>
-        </div>
-        <div class="hero-controls" aria-label="Velg hero-slide">
-          <button class="hero-arrow" type="button" data-hero-prev aria-label="Forrige slide">‹</button>
-          <div class="hero-dots">
-            <button class="active" type="button" data-hero-dot="0" aria-label="Slide 1"></button>
-            <button type="button" data-hero-dot="1" aria-label="Slide 2"></button>
-            <button type="button" data-hero-dot="2" aria-label="Slide 3"></button>
-          </div>
-          <button class="hero-arrow" type="button" data-hero-next aria-label="Neste slide">›</button>
-        </div>
-        <p class="hero-credit">Foto: Yosh3000 / Wikimedia Commons, CC BY-SA 3.0</p>
-      </section>
-
-      <section class="section manifesto" id="velkommen">
-        <div class="manifesto-text">
-          <p class="eyebrow">Velkommen hjem</p>
-          <h2>Et fellesskap der tro får kropp, navn og adresse.</h2>
-        </div>
-        <div class="manifesto-copy">
-          <p>Familiekirka Mandal holder til i Sommerkroveien 10 og vil være en menighet for alle generasjoner, hvor Jesus forvandler liv.</p>
-          <p>Vi ønsker å være tydelige, varme og tilstede i byen vår.</p>
-        </div>
-      </section>
-
-      <section class="quick-bar" aria-label="Raske valg">
-        <a href="#kalender">
-          <span>Kalender</span>
-          <strong>Se hva som skjer</strong>
-        </a>
-        <a href="taler.html">
-          <span>Podcast / taler</span>
-          <strong>Hør siste forkynnelse</strong>
-        </a>
-        <a href="#gave">
-          <span>Gi en gave</span>
-          <strong>Støtt arbeidet</strong>
-        </a>
-        <a href="#kontakt">
-          <span>Kontakt oss</span>
-          <strong>Vi vil høre fra deg</strong>
-        </a>
-      </section>
-
-      <section class="section action-section" id="kalender">
-        <div class="section-heading left">
-          <p class="eyebrow">Kalender</p>
-          <h2>Dette skjer i Familiekirka</h2>
-          <p>Gudstjeneste søndag kl. 11.00, bønn tirsdager kl. 19.00 og ulike aktiviteter gjennom uka.</p>
-        </div>
-        <div class="action-grid">
-          <a href="https://www.familiekirkamandal.no/hva-skjer" target="_blank" rel="noreferrer">
-            <span>01</span>
-            <strong>Se full kalender</strong>
-          </a>
-          <a href="#barn-unge">
-            <span>02</span>
-            <strong>Barn & unge</strong>
-          </a>
-          <a href="#kontakt">
-            <span>03</span>
-            <strong>Kontakt menigheten</strong>
-          </a>
-        </div>
-      </section>
-
-      <section class="section media-section" id="taler">
-        <div class="media-card">
-          <div>
-            <p class="eyebrow">Taler</p>
-            <h2>Hør taler fra møter</h2>
-            <p>Familiekirka gjør opptak av en del taler fra møtene. Lytt når det passer, eller finn veien inn til neste samling.</p>
-            <a class="button primary" href="taler.html">Hør siste taler</a>
-          </div>
-          <img src="https://images.unsplash.com/photo-1695559564759-9aedf04c359d?q=85&w=1800&auto=format&fit=crop" alt="Mikrofon til podcast og taler">
-        </div>
-      </section>
-
-      <section class="section stories-section">
-        <div class="section-heading compact">
-          <p class="eyebrow">Bli bedre kjent</p>
-          <h2>Et sted å komme hjem</h2>
-        </div>
-        <div class="story-grid">
-          <article>
-            <p>“Vi ønsker å være en menighet der folk trives og opplever et godt og trygt fellesskap.”</p>
-          </article>
-          <article>
-            <p>“En menighet for alle generasjoner, hvor Jesus forvandler liv.”</p>
-          </article>
-          <article>
-            <p>“Barn og ungdom er en viktig satsing for oss.”</p>
-          </article>
-        </div>
-      </section>
-
-      <section class="section split" id="samlinger">
-        <div class="section-heading left">
-          <p class="eyebrow">Samlinger</p>
-          <h2>Fast rytme i menigheten</h2>
-        </div>
-        <div class="feature-layout">
-          <figure class="feature-image">
-            <img src="https://static.wixstatic.com/media/f458b6_d98b2099a3594308a3b640f61d01bce0~mv2.jpg" alt="Familiekirka Mandal samling">
-            <figcaption>Bildemateriale hentet fra Familiekirka Mandal.</figcaption>
-          </figure>
-          <div class="schedule-panel">
-            <img class="schedule-logo" src="assets/familiekirka-logo-transparent.png" alt="Familiekirka Mandal logo">
-            <h3>Fast rytme</h3>
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay">
+        <nav class="mobile-nav">
             <ul>
-              <li><strong>Gudstjeneste:</strong> søndag kl. 11.00</li>
-              <li><strong>Bønn:</strong> tirsdager kl. 19.00</li>
-              <li><strong>Kontortid:</strong> tirsdag og torsdag kl. 10.00-15.00</li>
-              <li><strong>Møteprogram:</strong> se kalenderen for oppdatert program.</li>
+                <li><a href="/" class="is-current" data-i18n="nav.home">Home</a></li>
+                <li><a href="/?section=about" class="is-current" data-i18n="nav.about">About</a></li>
+                <li>
+                    <div class="mobile-nav-has-sub">
+                        <a href="/?section=services" data-i18n="nav.services">Services</a>
+                        <i class="fas fa-chevron-down mobile-sub-icon"></i>
+                    </div>
+                    <ul class="mobile-submenu">
+                        <li><a href="/webdesign" data-i18n="nav.sub_webdesign">Webdesign & Utvikling</a></li>
+                        <li><a href="/seo" data-i18n="nav.sub_seo">SEO-Grunnoppsett</a></li>
+                        <li><a href="/support-og-vedlikehold" data-i18n="nav.sub_support">Support & Drift</a></li>
+                        <li><a href="/nettside-sjekker" data-i18n="nav.sub_analyzer">Nettside-sjekker</a></li>
+                    </ul>
+                </li>
+                <li><a href="/#pricing" data-i18n="nav.pricing">Priser</a></li>
+                <li><a href="/portefolje" class="is-current" data-i18n="nav.portfolio">Portfolio</a></li>
+                <li><a href="/?section=testimonial" class="is-current" data-i18n="nav.testimonial">Testimonial</a></li>
+                <li><a href="/blog" data-i18n="nav.blog">Aktuelt</a></li>
+                <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
             </ul>
-            <div class="panel-actions">
-              <a class="button primary" href="https://www.familiekirkamandal.no/hva-skjer" target="_blank" rel="noreferrer">Åpne kalender</a>
-              <a class="button outline" href="taler.html">Hør taler</a>
+
+            <div class="mobile-menu-footer">
+                <div class="mobile-contact-info">
+                    <a href="mailto:thomas@tk-design.no">thomas@tk-design.no</a>
+                    <a href="tel:+4793094615">930 94 615</a>
+                </div>
+                <div class="mobile-social-links">
+                    <a href="https://www.facebook.com/profile.php?id=61574614704737&amp;locale=nb_NO" target="_blank"
+                        rel="nofollow noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/tkdesign777" target="_blank"
+                        rel="nofollow noopener noreferrer"><i class="fab fa-instagram"></i></a>
+                </div>
             </div>
-          </div>
-        </div>
-      </section>
+        </nav>
+    </div>
 
-      <section class="statement-band">
-        <div>
-          <p class="eyebrow">Vår retning</p>
-          <h2>Ære Gud. Elske vår neste. Gjøre disipler. Tjene samfunnet.</h2>
-        </div>
-      </section>
+    <main>
+        <!-- =========================================
+             HERO SECTION / BANNER
+             ========================================= -->
+        <section class="banner hero-light-showcase">
+            <div class="hero-bg-visual" aria-hidden="true">
+                <img src="/img/banner/hero-light-waves.jpg" alt="" class="hero-bg-image" fetchpriority="high" width="1376" height="768">
+                <div class="hero-bg-gradient-mask"></div>
+            </div>
+            <div class="container">
+                <div class="hero-content-wrap">
+                    <div class="hero-eyebrow-badge" data-aos="fade-down" data-aos-duration="600">
+                        <span class="hero-badge-dot"></span>
+                        <span class="hero-badge-text" data-i18n="hero.subtitle">Skreddersydd Webdesign &amp; SEO</span>
+                    </div>
+                    <h1 class="hero-display-title" data-aos="fade-up" data-aos-duration="700">
+                        <span class="hero-title-row" data-i18n="hero.title_1_line1">DIN</span>
+                        <span class="hero-title-row hero-title-highlight" data-i18n="hero.title_1_line2">DIGITALE</span>
+                        <span class="hero-title-row" data-i18n="hero.title_2">PARTNER</span>
+                    </h1>
+                    <p class="hero-sublead-text" data-i18n="hero.description" data-aos="fade-up" data-aos-delay="100" data-aos-duration="700">
+                        Vi bygger din digitale identitet med skreddersydd webdesign, SEO og SoMe-strategi. Fra ide til lansering - enkelt, profesjonelt og synlig.
+                    </p>
+                    <div class="hero-button-group" data-aos="fade-up" data-aos-delay="200" data-aos-duration="700">
+                        <a href="/contact" class="hero-btn-primary">
+                            <span data-i18n="hero.cta_primary">Start nå</span>
+                            <span class="hero-btn-arrow" aria-hidden="true">→</span>
+                        </a>
+                        <a href="/portefolje" class="hero-btn-secondary" data-i18n="hero.cta_secondary">
+                            Se vårt arbeid
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-      <section class="section nextgen-section" id="barn-unge">
-        <div class="section-heading left">
-          <p class="eyebrow">Barn & unge</p>
-          <h2>Neste generasjon er ikke et sideprosjekt.</h2>
-          <p>Familiekirka løfter frem barn og ungdom som en viktig satsing, med egne tilbud og aktiviteter for flere aldersgrupper.</p>
+        <!-- Marquee Top -->
+        <div class="marquee-wrapper">
+            <div class="marquee-content">
+                <span class="marquee-item" data-i18n="marquee.top_1">Skreddersydd webdesign</span>
+                <span class="marquee-item" data-i18n="marquee.top_2">SEO-strategi</span>
+                <span class="marquee-item" data-i18n="marquee.top_3">Sosiale medier</span>
+                <span class="marquee-item" data-i18n="marquee.top_4">Support og vedlikehold</span>
+                <span class="marquee-item" data-i18n="marquee.top_5">Nettstedsanalyse</span>
+                <span class="marquee-item" data-i18n="marquee.top_1">Skreddersydd webdesign</span>
+                <span class="marquee-item" data-i18n="marquee.top_2">SEO-strategi</span>
+                <span class="marquee-item" data-i18n="marquee.top_3">Sosiale medier</span>
+                <span class="marquee-item" data-i18n="marquee.top_4">Support og vedlikehold</span>
+                <span class="marquee-item" data-i18n="marquee.top_5">Nettstedsanalyse</span>
+            </div>
         </div>
-        <div class="nextgen-grid">
-          <article class="content-card">
-            <img src="https://static.wixstatic.com/media/f458b6_88cc2b4409244632852e5eaa1cfa4ecc~mv2.jpg/v1/fill/w_494,h_542,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/barnekirka-2.jpg" alt="Barn i aktivitet">
-            <h3>Søndagsskole</h3>
-            <p>Et tilbud for barn på søndager, parallelt med menighetens samlinger.</p>
-          </article>
-          <article class="content-card">
-            <img src="https://static.wixstatic.com/media/f458b6_d4d780b9494344f7923bc97292669ad8~mv2.jpg/v1/crop/x_0,y_47,w_1200,h_1406/fill/w_494,h_542,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/intro-3.jpg" alt="In:tro">
-            <h3>In:tro / Tweens</h3>
-            <p>Aktiviteter og fellesskap for tweens.</p>
-          </article>
-          <article class="content-card">
-            <img src="https://static.wixstatic.com/media/2349da_7f03536f780e4f18bc6b2d7d5ecef56d~mv2.png/v1/crop/x_195,y_0,w_2271,h_2660/fill/w_494,h_542,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Metro%20logo%20HD%20uten%20bakgrunn_edited_edited.png" alt="Me:tro logo">
-            <h3>Me:tro / FK Ung</h3>
-            <p>Ungdomsarbeid og fellesskap for de eldre aldersgruppene.</p>
-          </article>
-        </div>
-      </section>
 
-      <section class="section split" id="om">
-        <div class="section-heading left">
-          <p class="eyebrow">Om oss</p>
-          <h2>Tro, historie og ledelse</h2>
-          <p>Familiekirka Mandal er en evangelisk kristen lokalmenighet tilsluttet Pinsebevegelsen i Norge. Menigheten har røtter i Mandal tilbake til perioden rundt 1915-1920.</p>
-        </div>
-        <div class="card-grid">
-          <article class="content-card">
-            <img src="https://static.wixstatic.com/media/f458b6_004d157196b341e593bdacd03fb7cfb6~mv2.jpg/v1/fill/w_398,h_368,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/p%C3%A5l_jfif.jpg" alt="Pål Kristian Helmersen">
-            <h3>Pål Kristian Helmersen</h3>
-            <p>Ledende eldste / styreleder.</p>
-          </article>
-          <article class="content-card">
-            <img src="https://static.wixstatic.com/media/f458b6_63f04e37e9714bb4b34350181862bca8~mv2.png/v1/fill/w_398,h_368,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/daniel2.png" alt="Daniel Kolltveit">
-            <h3>Daniel Kolltveit</h3>
-            <p>Eldste / hovedpastor.</p>
-          </article>
-          <article class="content-card">
-            <img src="https://static.wixstatic.com/media/158ba942114d480cb7ac1b1a117e8797.jpg/v1/fill/w_398,h_368,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/Topografisk%20kartm%C3%B8nster.jpg" alt="Topografisk kartmønster">
-            <h3>Forbønn og medlemskap</h3>
-            <p>Menigheten har forbedere, kontaktmuligheter og informasjon om medlemskap.</p>
-          </article>
-        </div>
-      </section>
+        <!-- =========================================
+             ABOUT SECTION
+             ========================================= -->
+        <section id="about" class="pt_120 pb_120 about-section" data-aos="fade-up">
+            <div class="container">
+                <div class="flex justify-center">
+                    <div class="hero-eyebrow-badge" style="margin: 0 auto 16px auto;">
+                        <span class="hero-badge-dot"></span>
+                        <span data-i18n="about.badge">OM TK-DESIGN</span>
+                    </div>
+                </div>
 
-      <section class="section contact-band" id="kontakt">
-        <div class="section-heading">
-          <p class="eyebrow">Kontakt</p>
-          <h2>Kom i kontakt med oss</h2>
-        </div>
-        <div class="contact-grid">
-          <article>
-            <h3>Besøk oss</h3>
-            <p>Sommerkroveien 10, 4515 Mandal</p>
-            <p>Kontortid: tirsdag og torsdag kl. 10.00-15.00</p>
-            <a href="https://maps.google.com/?q=Sommerkroveien%2010%2C%204515%20Mandal" target="_blank" rel="noreferrer">Åpne i kart</a>
-          </article>
-          <article>
-            <h3>Kontaktinfo</h3>
-            <p>E-post: post@familiekirka.org</p>
-            <p>Kontor: +47 930 22 579</p>
-            <p>Pastor: +47 900 54 691</p>
-            <a href="https://www.familiekirkamandal.no/kontakt" target="_blank" rel="noreferrer">Kontakt-side</a>
-          </article>
-          <article>
-            <h3>Gi en gave</h3>
-            <p>Gavekonto: 3075.12.75141</p>
-            <p>Vipps gave: #90282</p>
-            <a href="https://www.familiekirkamandal.no/" target="_blank" rel="noreferrer">Mer informasjon</a>
-          </article>
-        </div>
-      </section>
+                <div class="about-header-text">
+                    <h2 class="about-title">
+                        Skaper digitale opplevelser som <span class="hero-title-highlight">gir resultater</span>
+                    </h2>
+                    <div class="about-intro">
+                        <p data-i18n="about.intro">
+                            TK-design hjelper bedrifter å lykkes på nett. Vi kombinerer skreddersydd webdesign, søkemotoroptimalisering og engasjerende innhold for å bygge en sterk og konverterende digital tilstedeværelse.
+                        </p>
+                    </div>
+                </div>
 
-      <section class="section gift-band" id="gave">
-        <div>
-          <p class="eyebrow">Gi en gave</p>
-          <h2>Støtt arbeidet i Familiekirka Mandal</h2>
-          <p>Gavekonto: 3075.12.75141 · Vipps gave: #90282</p>
-        </div>
-      </section>
+                <div class="about-tab-nav-wrapper">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" data-tab="about" data-i18n="about.tabs.about">Om oss</button>
+                        <button class="tab-btn" data-tab="experience" data-i18n="about.tabs.experience">Team</button>
+                        <button class="tab-btn" data-tab="education" data-i18n="about.tabs.education">Misjon</button>
+                        <button class="tab-btn" data-tab="skills" data-i18n="about.tabs.skills">Verdier</button>
+                    </div>
+                </div>
 
-      <section class="section" id="undersider">
-        <div class="section-heading compact">
-          <p class="eyebrow">Videre</p>
-          <h2>Viktige undersider</h2>
+                <div class="tab-content-area">
+                    <!-- About Tab -->
+                    <div id="about-tab" class="tab-content active">
+                        <div class="info-card">
+                            <div class="info-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                            </div>
+                            <span class="info-card-tag">Web & Teknologi</span>
+                            <h3 data-i18n="about.about_tab.based_title">Om TK-design</h3>
+                            <p data-i18n="about.about_tab.based_desc">Vi bygger nettsider, innhold og strategier som gjør bedrifter mer synlige, troverdige og tydelige på nett.</p>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            </div>
+                            <span class="info-card-tag">Tett Samarbeid</span>
+                            <h3 data-i18n="about.about_tab.exp_title">Et lite, dedikert team</h3>
+                            <p data-i18n="about.about_tab.exp_desc">Vi kombinerer webdesign, innhold og strategisk rådgivning i én sømløs og personlig leveranse.</p>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/></svg>
+                            </div>
+                            <span class="info-card-tag">Målbar Vekst</span>
+                            <h3 data-i18n="about.about_tab.client_title">Varige resultater</h3>
+                            <p data-i18n="about.about_tab.client_desc">Fokus på kreativitet, lynrask ytelse og høy kvalitet i hver eneste løsning vi leverer.</p>
+                        </div>
+                    </div>
+
+                    <!-- Experience Tab -->
+                    <div id="experience-tab" class="tab-content">
+                        <div class="info-card team-card">
+                            <div class="info-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            </div>
+                            <span class="info-card-tag">Daglig leder & Utvikler</span>
+                            <h3 data-i18n="about.experience_tab.senior_role">Thomas Knutsen</h3>
+                            <p data-i18n="about.experience_tab.senior_desc">Fullstack-utvikling, UX/UI-design og teknisk SEO med fokus på konverterende nettsider.</p>
+                        </div>
+                        <div class="info-card team-card">
+                            <div class="info-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            </div>
+                            <span class="info-card-tag" data-i18n="about.experience_tab.some_label">SoMe & Innhold</span>
+                            <h3 data-i18n="about.experience_tab.junior_role">Hilde Karin Knutsen</h3>
+                            <p data-i18n="about.experience_tab.some_desc">Innholdsstrategi, engasjerende historiefortelling og digital synlighet i sosiale medier.</p>
+                        </div>
+                    </div>
+
+                    <!-- Education Tab -->
+                    <div id="education-tab" class="tab-content">
+                        <div class="info-card">
+                            <div class="info-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="12 6 12 12 16 14"/></svg>
+                            </div>
+                            <span class="info-card-tag" data-i18n="about.education_tab.mission_label">Vår misjon</span>
+                            <h3 data-i18n="about.education_tab.degree">Hjelpe bedrifter å lykkes på nett</h3>
+                            <p data-i18n="about.education_tab.university">Skreddersydde løsninger for små og mellomstore bedrifter som ønsker å skille seg ut og vokse digitalt.</p>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            </div>
+                            <span class="info-card-tag">Fremtidsrettet</span>
+                            <h3>Teknologi som varer</h3>
+                            <p>Vi bygger modulære, raske og vedlikeholdsvennlige nettsider som gir stabil drift og lave totalkostnader.</p>
+                        </div>
+                    </div>
+
+                    <!-- Skills Tab -->
+                    <div id="skills-tab" class="tab-content">
+                        <div class="info-card">
+                            <div class="info-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                            </div>
+                            <span class="info-card-tag">Design</span>
+                            <h3>Kreativitet</h3>
+                            <p data-i18n="about.skills_tab.creativity_desc">Vi skaper unike, visuelt slående løsninger tilpasset din profil og målgruppe.</p>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/></svg>
+                            </div>
+                            <span class="info-card-tag">Teknologi</span>
+                            <h3>Innovasjon</h3>
+                            <p data-i18n="about.skills_tab.innovation_desc">Vi tar i bruk moderne rammeverk og SEO-metoder for å gi deg et solid forsprang.</p>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-card-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            </div>
+                            <span class="info-card-tag">Ytelse</span>
+                            <h3>Kvalitet</h3>
+                            <p data-i18n="about.skills_tab.quality_desc">Vi leverer gjennomtenkt kode og design som yter optimalt og laster lynraskt over tid.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Marquee Bottom -->
+        <div class="marquee-wrapper">
+            <div class="marquee-content reverse">
+                <span class="marquee-item" data-i18n="marquee.bottom_1">Tydelig digital identitet</span>
+                <span class="marquee-item" data-i18n="marquee.bottom_2">Enkelt og profesjonelt</span>
+                <span class="marquee-item" data-i18n="marquee.bottom_3">Synlighet i Google</span>
+                <span class="marquee-item" data-i18n="marquee.bottom_4">Fra ide til lansering</span>
+                <span class="marquee-item" data-i18n="marquee.bottom_5">Målbar vekst og analyse</span>
+                <span class="marquee-item" data-i18n="marquee.bottom_1">Tydelig digital identitet</span>
+                <span class="marquee-item" data-i18n="marquee.bottom_2">Enkelt og profesjonelt</span>
+                <span class="marquee-item" data-i18n="marquee.bottom_3">Synlighet i Google</span>
+                <span class="marquee-item" data-i18n="marquee.bottom_4">Fra ide til lansering</span>
+                <span class="marquee-item" data-i18n="marquee.bottom_5">Målbar vekst og analyse</span>
+            </div>
         </div>
-        <div class="link-grid">
-          <article class="resource-card" data-source="familiekirka"><span class="source">Familiekirka</span><h3>Om oss</h3><p>Visjon, tro, historie og ledelse.</p><a href="https://www.familiekirkamandal.no/om-oss" target="_blank" rel="noreferrer">Åpne underside</a></article>
-          <article class="resource-card" data-source="familiekirka"><span class="source">Familiekirka</span><h3>Hva skjer</h3><p>Kalender og møteprogram.</p><a href="https://www.familiekirkamandal.no/hva-skjer" target="_blank" rel="noreferrer">Åpne underside</a></article>
-          <article class="resource-card" data-source="familiekirka"><span class="source">Familiekirka</span><h3>Barn & unge</h3><p>Søndagsskole, In:tro, Me:tro, Tentro og trosopplæring.</p><a href="https://www.familiekirkamandal.no/barn-unge" target="_blank" rel="noreferrer">Åpne underside</a></article>
-          <article class="resource-card" data-source="familiekirka"><span class="source">Familiekirka</span><h3>Taler</h3><p>Opptak fra møter.</p><a href="taler.html">Åpne underside</a></article>
-          <article class="resource-card" data-source="familiekirka"><span class="source">Familiekirka</span><h3>Bli med</h3><p>Informasjon om medlemskap og deltakelse.</p><a href="https://www.familiekirkamandal.no/bli-med" target="_blank" rel="noreferrer">Åpne underside</a></article>
-          <article class="resource-card" data-source="familiekirka"><span class="source">Familiekirka</span><h3>Kontakt</h3><p>Kontaktpersoner og kontaktskjema.</p><a href="https://www.familiekirkamandal.no/kontakt" target="_blank" rel="noreferrer">Åpne underside</a></article>
-        </div>
-      </section>
+
+        <!-- =========================================
+             ADVANTAGES / BENTO GRID SECTION
+             ========================================= -->
+        <section id="advantages" class="pt_120 pb_120 advantages-bento-section" data-aos="fade-up">
+            <div class="container">
+                <div class="flex justify-center">
+                    <div class="hero-eyebrow-badge" style="margin: 0 auto 16px auto;">
+                        <span class="hero-badge-dot"></span>
+                        <span>HVORFOR TK-DESIGN</span>
+                    </div>
+                </div>
+                <div class="about-header-text">
+                    <h2 class="about-title">
+                        Hvorfor velge en <span class="hero-title-highlight">skreddersydd nettside?</span>
+                    </h2>
+                    <div class="about-intro">
+                        <p>
+                            Trege maler og generiske temabyggere koster bedrifter verdifulle kunder. Vi bygger fra bunnen av med fokus på ekstrem ytelse, konvertering og varig forretningsverdi.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bento-grid">
+                    <!-- Bento Item 1: Large Featured Core Web Vitals & Lighthouse Score Card -->
+                    <div class="bento-card bento-card-large">
+                        <div class="bento-card-header">
+                            <span class="info-card-tag">Ekstrem Ytelse</span>
+                            <h3 class="bento-title">100/100 Google PageSpeed & Core Web Vitals</h3>
+                            <p class="bento-desc">
+                                Lynrask lastetid som gir en overlegen brukeropplevelse og et solid forsprang i Googles søkeresultater. Ingen unødvendig kode eller trege temabyggere.
+                            </p>
+                        </div>
+                        <div class="lighthouse-score-showcase">
+                            <div class="lighthouse-metric">
+                                <div class="lighthouse-circle">
+                                    <svg viewBox="0 0 36 36" class="circular-chart green">
+                                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                        <path class="circle" stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                        <text x="18" y="20.35" class="percentage">100</text>
+                                    </svg>
+                                </div>
+                                <span class="lighthouse-label">Ytelse</span>
+                            </div>
+                            <div class="lighthouse-metric">
+                                <div class="lighthouse-circle">
+                                    <svg viewBox="0 0 36 36" class="circular-chart green">
+                                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                        <path class="circle" stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                        <text x="18" y="20.35" class="percentage">100</text>
+                                    </svg>
+                                </div>
+                                <span class="lighthouse-label">Tilgjengelighet</span>
+                            </div>
+                            <div class="lighthouse-metric">
+                                <div class="lighthouse-circle">
+                                    <svg viewBox="0 0 36 36" class="circular-chart green">
+                                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                        <path class="circle" stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                        <text x="18" y="20.35" class="percentage">100</text>
+                                    </svg>
+                                </div>
+                                <span class="lighthouse-label">Beste Praksis</span>
+                            </div>
+                            <div class="lighthouse-metric">
+                                <div class="lighthouse-circle">
+                                    <svg viewBox="0 0 36 36" class="circular-chart green">
+                                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                        <path class="circle" stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                        <text x="18" y="20.35" class="percentage">100</text>
+                                    </svg>
+                                </div>
+                                <span class="lighthouse-label">SEO</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bento Item 2: Unik Skreddersøm -->
+                    <div class="bento-card">
+                        <div class="info-card-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/></svg>
+                        </div>
+                        <span class="info-card-tag">Håndverk</span>
+                        <h3 class="bento-title">100% Unik Profil</h3>
+                        <p class="bento-desc">
+                            Ingen ferdigmaler eller oppbrukte malerier. Vi skaper et skreddersydd visuelt uttrykk som forsterker merkevaren din og bygger tillit fra første sekund.
+                        </p>
+                    </div>
+
+                    <!-- Bento Item 3: Konvertering & Salg -->
+                    <div class="bento-card">
+                        <div class="info-card-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                        </div>
+                        <span class="info-card-tag">Konvertering</span>
+                        <h3 class="bento-title">Bygget for salg</h3>
+                        <p class="bento-desc">
+                            Strategisk plasserte knapper, intuitiv navigasjon og optimalisert flyt som gjør vanlige besøkende til betalende kunder.
+                        </p>
+                    </div>
+
+                    <!-- Bento Item 4: Tett Oppfølging & Support -->
+                    <div class="bento-card">
+                        <div class="info-card-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <span class="info-card-tag">Trygghet</span>
+                        <h3 class="bento-title">Tett partnerskap</h3>
+                        <p class="bento-desc">
+                            Direkte kontakt med utvikleren uten fordyrende mellomledd. Vi håndterer drift, sikkerhet og oppdateringer så du kan fokusere på driften.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================
+             PROCESS / WORKFLOW SECTION ("SLIK JOBBER VI")
+             ========================================= -->
+        <section id="process" class="pt_120 pb_120 workflow-section" data-aos="fade-up">
+            <div class="container">
+                <div class="flex justify-center">
+                    <div class="hero-eyebrow-badge" style="margin: 0 auto 16px auto;">
+                        <span class="hero-badge-dot"></span>
+                        <span>SLIK JOBBER VI</span>
+                    </div>
+                </div>
+                <div class="about-header-text">
+                    <h2 class="about-title">
+                        Fra idé til en <span class="hero-title-highlight">konverterende lansering</span>
+                    </h2>
+                    <div class="about-intro">
+                        <p>
+                            En strukturert, transparent og effektiv prosess som sikrer at nettsiden din leveres til avtalt tid, budsjett og med kompromissløs kvalitet.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="workflow-grid">
+                    <!-- Step 1 -->
+                    <div class="workflow-card">
+                        <div class="workflow-step-badge">01</div>
+                        <h3 class="workflow-title">Innsikt & Strategi</h3>
+                        <p class="workflow-desc">
+                            Vi kartlegger dine forretningsmål, målgruppe og konkurrenter for å etablere en krystallklar digital strategi og struktur.
+                        </p>
+                    </div>
+                    <!-- Step 2 -->
+                    <div class="workflow-card">
+                        <div class="workflow-step-badge">02</div>
+                        <h3 class="workflow-title">Skreddersydd UI/UX</h3>
+                        <p class="workflow-desc">
+                            Vi designer et unikt, skreddersydd visuelt konsept med fokus på ergonomi, estetikk og konverteringsoptimaliserte brukeropplevelser.
+                        </p>
+                    </div>
+                    <!-- Step 3 -->
+                    <div class="workflow-card">
+                        <div class="workflow-step-badge">03</div>
+                        <h3 class="workflow-title">Egenkodet Utvikling</h3>
+                        <p class="workflow-desc">
+                            Nettsiden kodes fra bunnen av med ren semantisk kode, 100% Core Web Vitals og optimal responsivitet på tvers av alle enheter.
+                        </p>
+                    </div>
+                    <!-- Step 4 -->
+                    <div class="workflow-card">
+                        <div class="workflow-step-badge">04</div>
+                        <h3 class="workflow-title">SEO & Lansering</h3>
+                        <p class="workflow-desc">
+                            Full teknisk SEO-oppsett, Google Search Console, strukturert data og grundig kvalitetssikring før en vellykket live-lansering.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects / Portfolio -->
+        <!-- =========================================
+             4. PORTFOLIO SECTION
+             ========================================= -->
+        <section id="projects" class="pt_120 pb_120" data-aos="fade-up">
+            <div class="container">
+                <div class="text-center mb-50">
+                    <div class="flex justify-center">
+                        <div class="hero-eyebrow-badge" style="margin: 0 auto 16px auto;">
+                            <span class="hero-badge-dot"></span>
+                            <span data-i18n="projects.subtitle">UTVALGTE KUNDECASER</span>
+                        </div>
+                    </div>
+                    <h2 class="about-title" data-i18n="projects.title">
+                        Nettsider som <span class="hero-title-highlight">skaper resultater</span>
+                    </h2>
+                </div>
+
+                <div class="portfolio-grid">
+                    <!-- Project 1 -->
+                    <div class="project-card project-card-kudos" data-aos="fade-up" data-aos-delay="100">
+                        <div class="project-img-wrapper">
+                            <a href="/project-details?project=kudos" aria-label="Kudos Regnskap AS">
+                                <img src="img/project/real_kudos_desktop.jpg" alt="Kudos Regnskap AS" loading="lazy">
+                            </a>
+                            <a href="/project-details?project=kudos" class="project-arrow-btn"
+                                aria-label="Se prosjektdetaljer for Kudos Regnskap AS">
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div class="project-content">
+                            <div class="project-tags-row">
+                                <span class="project-metric-pill">⚡ 100/100 Ytelse</span>
+                                <span class="project-metric-pill">📍 Askøy & Bergen</span>
+                            </div>
+                            <h3 class="project-title"><a href="/project-details?project=kudos"
+                                    data-i18n="projects.p1_title">Kudos Regnskap AS</a></h3>
+                            <p class="project-summary-text">Skreddersydd nettside for statsautorisert regnskapsfører i Vestland med integrert kontaktsystem og topp SEO-rangering.</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 2 -->
+                    <div class="project-card project-card-hkm" data-aos="fade-up" data-aos-delay="200">
+                        <div class="project-img-wrapper">
+                            <a href="/project-details?project=hkm" aria-label="His Kingdom Ministry">
+                                <img src="img/project/real_hkm_desktop.jpg" alt="His Kingdom Ministry" loading="lazy">
+                            </a>
+                            <a href="/project-details?project=hkm" class="project-arrow-btn"
+                                aria-label="Se prosjektdetaljer for His Kingdom Ministry">
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div class="project-content">
+                            <div class="project-tags-row">
+                                <span class="project-metric-pill">🎥 Medieplattform</span>
+                                <span class="project-metric-pill">📅 Kurs & Påmelding</span>
+                            </div>
+                            <h3 class="project-title"><a href="/project-details?project=hkm"
+                                    data-i18n="projects.p2_title">His Kingdom Ministry</a></h3>
+                            <p class="project-summary-text">Omfattende digital plattform for internasjonal organisasjon med mediearkiv, arrangementer og flerspråklig innhold.</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 3 -->
+                    <div class="project-card project-card-mandal" data-aos="fade-up" data-aos-delay="300">
+                        <div class="project-img-wrapper">
+                            <a href="/project-details?project=mandal" aria-label="Mandal Regnskapskontor">
+                                <img src="img/project/real_mandal_desktop.jpg" alt="Mandal Regnskapskontor" loading="lazy">
+                            </a>
+                            <a href="/project-details?project=mandal" class="project-arrow-btn"
+                                aria-label="Se prosjektdetaljer for Mandal Regnskapskontor">
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div class="project-content">
+                            <div class="project-tags-row">
+                                <span class="project-metric-pill">💼 Rådgivning</span>
+                                <span class="project-metric-pill">📱 100% Responsiv</span>
+                            </div>
+                            <h3 class="project-title"><a href="/project-details?project=mandal"
+                                    data-i18n="projects.p7_title">Mandal Regnskapskontor</a></h3>
+                            <p class="project-summary-text">Klar og tillitsvekkende nettside for etablert regnskapskontor på Sørlandet med enkel kundedialog.</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 4 -->
+                    <div class="project-card project-card-identikon" data-aos="fade-up" data-aos-delay="400">
+                        <div class="project-img-wrapper">
+                            <a href="/project-details?project=custom-design">
+                                <img src="img/project/pro5.webp" alt="Project 3" loading="lazy">
+                            </a>
+                            <a href="/project-details?project=custom-design" class="project-arrow-btn"
+                                aria-label="Se prosjektdetaljer for Skreddersydd design fra bunnen av">
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div class="project-content">
+                            <span class="project-category" data-i18n="projects.p3_desc">Webdesign</span>
+                            <h3 class="project-title"><a href="/project-details?project=custom-design"
+                                    data-i18n="projects.p3_title">Skreddersydd design fra bunnen av</a></h3>
+                        </div>
+                    </div>
+
+                    <!-- Project 5 -->
+                    <div class="project-card" data-aos="fade-up" data-aos-delay="500">
+                        <div class="project-img-wrapper">
+                            <a href="/project-details?project=seo">
+                                <img src="img/project/pro2.webp" alt="Project 4" loading="lazy">
+                            </a>
+                            <a href="/project-details?project=seo" class="project-arrow-btn"
+                                aria-label="Se prosjektdetaljer for Synlighet i Google">
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div class="project-content">
+                            <span class="project-category" data-i18n="projects.p4_desc">SEO</span>
+                            <h3 class="project-title"><a href="/project-details?project=seo"
+                                    data-i18n="projects.p4_title">Synlighet i Google</a></h3>
+                        </div>
+                    </div>
+
+                    <!-- Project 6 -->
+                    <div class="project-card" data-aos="fade-up" data-aos-delay="600">
+                        <div class="project-img-wrapper">
+                            <a href="/project-details?project=social-media">
+                                <img src="img/project/pro4.webp" alt="Project 5" loading="lazy">
+                            </a>
+                            <a href="/project-details?project=social-media" class="project-arrow-btn"
+                                aria-label="Se prosjektdetaljer for Merkevare i sosiale medier">
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div class="project-content">
+                            <span class="project-category" data-i18n="projects.p5_desc">SoMe</span>
+                            <h3 class="project-title"><a href="/project-details?project=social-media"
+                                    data-i18n="projects.p5_title">Merkevare i sosiale medier</a></h3>
+                        </div>
+                    </div>
+
+                    <!-- Project 7 -->
+                    <div class="project-card" data-aos="fade-up" data-aos-delay="700">
+                        <div class="project-img-wrapper">
+                            <a href="/project-details?project=support">
+                                <img src="img/project/pro6.webp" alt="Project 6" loading="lazy">
+                            </a>
+                            <a href="/project-details?project=support" class="project-arrow-btn"
+                                aria-label="Se prosjektdetaljer for Vedlikehold og videreutvikling">
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div class="project-content">
+                            <span class="project-category" data-i18n="projects.p6_desc">Support</span>
+                            <h3 class="project-title"><a href="/project-details?project=support"
+                                    data-i18n="projects.p6_title">Vedlikehold og videreutvikling</a></h3>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div style="text-align: center; margin-top: 64px;">
+                    <a href="/portefolje" class="btn btn-primary" style="padding: 16px 40px; font-size: 1.125rem;" data-i18n="projects.see_full">Se full portefølje</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Meeting Section -->
+        <!-- =========================================
+             5. MEETING / CONTACT SECTION
+             ========================================= -->
+        <section id="contact" class="meeting-section" data-aos="zoom-in">
+            <div class="container">
+                <div class="meeting-bg">
+                    <div class="flex flex-wrap gap-10">
+                        <div style="flex: 1;">
+                            <div class="meeting-content">
+                                <h2 data-i18n="meeting.title">La oss starte</h2>
+                                <p class="section-subtitle-lines" style="margin-bottom: 30px;"
+                                    data-i18n="meeting.subtitle">
+                                    Kontakt oss</p>
+
+                                <div class="meeting-contact-item">
+                                    <div class="meeting-icon"><i class="fas fa-envelope"></i></div>
+                                    <div>
+                                        <span style="display: block; color: var(--clr-common-text);"
+                                            data-i18n="meeting.email_label">Email</span>
+                                        <a href="mailto:thomas@tk-design.no"
+                                            style="font-size: 20px; color: var(--clr-base);"
+                                            data-i18n="meeting.email_val">thomas@tk-design.no</a>
+                                    </div>
+                                </div>
+                                <div class="meeting-contact-item" style="border-bottom: none;">
+                                    <div class="meeting-icon"><i class="fas fa-map-marker-alt"></i></div>
+                                    <div>
+                                        <span style="display: block; color: var(--clr-common-text);"
+                                            data-i18n="meeting.location_label">Telefon</span>
+                                        <span style="font-size: 20px; color: var(--clr-base);"
+                                            data-i18n="meeting.location_val">93094615</span>
+                                    </div>
+                                </div>
+                                <a href="/contact" class="primary-cta meeting-cta" data-i18n="meeting.cta">Gå til
+                                    kontaktsiden</a>
+                            </div>
+                        </div>
+                        <div style="flex: 0.8;">
+                            <img src="img/project/project-need.webp" alt="Project Need" style="border-radius: 10px;" loading="lazy">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <!-- =========================================
+             6. SERVICES SECTION
+             ========================================= -->
+        <section id="services" class="pt_120 pb_120" data-aos="fade-up">
+            <div class="container">
+                <div class="flex justify-center">
+                    <span class="section-subtitle-lines" style="margin-bottom: 18px;"
+                        data-i18n="nav.services">Tjenester</span>
+                </div>
+                <h2 class="section-title text-center" style="font-size: 50px; margin-bottom: 60px;"
+                    data-i18n="services.title">Våre kjerneområder</h2>
+
+                <div class="services-list">
+                    <div class="service-item" data-aos="fade-up" data-aos-delay="100">
+                        <div class="service-id">01</div>
+                        <div class="service-content">
+                            <p class="service-category" style="color: #666; margin-bottom: 5px;"
+                                data-i18n="services.s1_cat">Webdesign</p>
+                            <h3><a href="/webdesign" style="color: var(--clr-base); text-decoration: none;"
+                                    data-i18n="services.s1_title">Skreddersydd webdesign</a></h3>
+                            <p style="max-width: 500px;" data-i18n="services.s1_desc">Unike nettsider som fanger din
+                                merkevare og skaper engasjerende kundeopplevelser på alle skjermer.</p>
+                        </div>
+                        <div class="service-arrow"><a href="/webdesign"
+                                aria-label="Les mer om Skreddersydd webdesign"><i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="service-item" data-aos="fade-up" data-aos-delay="200">
+                        <div class="service-id">02</div>
+                        <div class="service-content">
+                            <p class="service-category" style="color: #666; margin-bottom: 5px;"
+                                data-i18n="services.s2_cat">SEO</p>
+                            <h3><a href="/seo" style="color: var(--clr-base); text-decoration: none;"
+                                    data-i18n="services.s2_title">Søkemotoroptimalisering</a></h3>
+                            <p style="max-width: 500px;" data-i18n="services.s2_desc">Vi sørger for at din bedrift blir
+                                funnet av de riktige personene ved å øke synligheten din i Google.</p>
+                        </div>
+                        <div class="service-arrow"><a href="/seo"
+                                aria-label="Les mer om Søkemotoroptimalisering"><i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="service-item" data-aos="fade-up" data-aos-delay="300">
+                        <div class="service-id">03</div>
+                        <div class="service-content">
+                            <p class="service-category" style="color: #666; margin-bottom: 5px;"
+                                data-i18n="services.s3_cat">SoMe</p>
+                            <h3><a href="/sosiale-medier" style="color: var(--clr-base); text-decoration: none;"
+                                    data-i18n="services.s3_title">Strategi for sosiale medier</a></h3>
+                            <p style="max-width: 500px;" data-i18n="services.s3_desc">Målrettet innhold og strategisk
+                                tilstedeværelse som bygger merkevaren din i sosiale kanaler.</p>
+                        </div>
+                        <div class="service-arrow"><a href="/sosiale-medier"
+                                aria-label="Les mer om Strategi for sosiale medier"><i
+                                    class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="service-item" data-aos="fade-up" data-aos-delay="400">
+                        <div class="service-id">04</div>
+                        <div class="service-content">
+                            <p class="service-category" style="color: #666; margin-bottom: 5px;"
+                                data-i18n="services.s4_cat">Support</p>
+                            <h3><a href="/support-og-vedlikehold" style="color: var(--clr-base); text-decoration: none;"
+                                    data-i18n="services.s4_title">Support og vedlikehold</a></h3>
+                            <p style="max-width: 500px;" data-i18n="services.s4_desc">Pålitelig støtte og oppdateringer
+                                som sørger for at nettsiden alltid fungerer optimalt.</p>
+                        </div>
+                        <div class="service-arrow"><a href="/support-og-vedlikehold"
+                                aria-label="Les mer om Support og vedlikehold"><i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="service-item" data-aos="fade-up" data-aos-delay="500">
+                        <div class="service-id">05</div>
+                        <div class="service-content">
+                            <p class="service-category" style="color: #666; margin-bottom: 5px;"
+                                data-i18n="services.s5_cat">Analyse</p>
+                            <h3><a href="/nettside-sjekker" style="color: var(--clr-base); text-decoration: none;"
+                                    data-i18n="services.s5_title">Nettstedsanalyse</a></h3>
+                            <p style="max-width: 500px;" data-i18n="services.s5_desc">Innsikt og forbedringer som gjør
+                                den digitale tilstedeværelsen din sterkere over tid.</p>
+                        </div>
+                        <div class="service-arrow"><a href="/nettside-sjekker"
+                                aria-label="Les mer om Nettstedsanalyse"><i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================
+             PRICING & PACKAGES SECTION
+             ========================================= -->
+        <section id="pricing" class="pt_120 pb_120 pricing-section" data-aos="fade-up">
+            <div class="container">
+                <div class="text-center mb-50">
+                    <div class="flex justify-center">
+                        <span class="section-subtitle-lines" style="margin-bottom: 24px;" data-i18n="pricing.subtitle">Forutsigbare priser</span>
+                    </div>
+                    <h2 class="section-title" style="font-size: 50px;" data-i18n="pricing.title">Våre pakker og priser</h2>
+                    <p class="pricing-lead-text" data-i18n="pricing.desc">Gjennomsiktige priser tilpasset din bedrifts behov. Ingen skjulte kostnader.</p>
+                </div>
+
+                <div class="pricing-grid">
+                    <!-- Package 1: Enkel Nettside -->
+                    <div class="pricing-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="pricing-header">
+                            <span class="pricing-badge" data-i18n="pricing.p1_badge">Rask start</span>
+                            <h3 data-i18n="pricing.p1_name">Enkel nettside</h3>
+                            <p class="pricing-card-desc" data-i18n="pricing.p1_desc">Perfekt for en rask og effektiv tilstedeværelse på nett.</p>
+                            <div class="pricing-amount">
+                                <span class="currency">kr</span>
+                                <span class="price">7 000</span>
+                                <span class="vat">,- ex. mva</span>
+                            </div>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p1_f1">Profesjonell landingsside</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p1_f2">"Om oss"- & kontaktside</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p1_f3">100% mobilvennlig responsivt design</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p1_f4">Grunnleggende SEO-optimalisering</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p1_f5">SSL-sertifikat for sikkerhet</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p1_f6">Opplæring & kundestøtte</span></li>
+                        </ul>
+                        <div class="pricing-footer">
+                            <a href="/contact?package=enkel" class="award-link pricing-btn" data-i18n="pricing.btn">Velg pakke <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- Package 2: Middels stor nettside (Mest Populær) -->
+                    <div class="pricing-card featured" data-aos="fade-up" data-aos-delay="200">
+                        <div class="pricing-popular-ribbon" data-i18n="pricing.popular">Mest populær</div>
+                        <div class="pricing-header">
+                            <span class="pricing-badge featured-badge" data-i18n="pricing.p2_badge">Vår anbefaling</span>
+                            <h3 data-i18n="pricing.p2_name">Middels stor nettside</h3>
+                            <p class="pricing-card-desc" data-i18n="pricing.p2_desc">Mer engasjerende opplevelse med fleksible undersider.</p>
+                            <div class="pricing-amount">
+                                <span class="currency">kr</span>
+                                <span class="price">12 000</span>
+                                <span class="vat">,- ex. mva</span>
+                            </div>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p2_f1">Flere skreddersydde undersider</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p2_f2">Bildegalleri eller integrert blogg</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p2_f3">Brukervennlig struktur & navigasjon</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p2_f4">Avansert SEO-optimalisering</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p2_f5">Lynrask sidelasting (Core Web Vitals)</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p2_f6">Prioritert opplæring & support</span></li>
+                        </ul>
+                        <div class="pricing-footer">
+                            <a href="/contact?package=middels" class="award-link pricing-btn featured-btn" style="color: #fff;" data-i18n="pricing.btn_popular">Velg pakke <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- Package 3: Avansert Nettside -->
+                    <div class="pricing-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="pricing-header">
+                            <span class="pricing-badge" data-i18n="pricing.p3_badge">Komplett løsning</span>
+                            <h3 data-i18n="pricing.p3_name">Avansert nettside</h3>
+                            <p class="pricing-card-desc" data-i18n="pricing.p3_desc">Skreddersydd løsning for komplekse behov eller e-handel.</p>
+                            <div class="pricing-amount">
+                                <span class="currency">fra kr</span>
+                                <span class="price">20 000</span>
+                                <span class="vat">,- ex. mva</span>
+                            </div>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p3_f1">E-handelsløsning / Nettbutikk</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p3_f2">Tilpassede moduler & API-integrasjon</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p3_f3">Skreddersydd merkevare-design</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p3_f4">Full SEO-strategi & GEO/JSON-LD</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p3_f5">Høy ytelse & maksimal sikkerhet</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p3_f6">Dedikert drift & vedlikeholdsavtale</span></li>
+                        </ul>
+                        <div class="pricing-footer">
+                            <a href="/contact?package=avansert" class="award-link pricing-btn" data-i18n="pricing.btn">Få pristilbud <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- Package 4: SoMe & Innholdsproduksjon -->
+                    <div class="pricing-card" data-aos="fade-up" data-aos-delay="400">
+                        <div class="pricing-header">
+                            <span class="pricing-badge" data-i18n="pricing.p4_badge">Sosiale medier</span>
+                            <h3 data-i18n="pricing.p4_name">SoMe & Innhold</h3>
+                            <p class="pricing-card-desc" data-i18n="pricing.p4_desc">Grafisk design og innlegg som engasjerer følgerne dine.</p>
+                            <div class="pricing-amount">
+                                <span class="currency">kr</span>
+                                <span class="price">250–500</span>
+                                <span class="vat">,- / per innlegg</span>
+                            </div>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p4_f1">Skreddersydd grafisk design</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p4_f2">Tilpasset Facebook & Instagram</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p4_f3">Tekstforfatting & treffsikkert budskap</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p4_f4">Klippekort / pakker på innlegg</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p4_f5">Høy visuell kvalitet & engasjement</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.p4_f6">Ingen bindingstid – fleksibel avtale</span></li>
+                        </ul>
+                        <div class="pricing-footer">
+                            <a href="/contact?service=some" class="award-link pricing-btn" data-i18n="pricing.p4_btn">Bestill SoMe <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Contrast Section (Support & Drift) -->
+        <section class="pricing-contrast-section pt_120 pb_120" data-aos="fade-up">
+            <div class="container">
+                <div class="text-center mb-50">
+                    <span class="section-subtitle-lines" style="margin-bottom: 24px;" data-i18n="pricing.support_subtitle_tag">Drift & Vedlikehold</span>
+                    <h2 class="section-title" style="font-size: clamp(32px, 5vw, 50px); color: var(--refresh-heading); font-weight: 700; margin-bottom: 20px;" data-i18n="pricing.support_main_title">Trenger du løpende drift og support?</h2>
+                    <p style="max-width: 650px; margin: 0 auto; color: var(--clr-common-text); font-size: 1.05rem;" data-i18n="pricing.support_main_desc">
+                        Slipp uforutsette utviklerutgifter. Med en fast supportavtale har du alltid en dedikert spesialist som passer på og overvåker nettsiden din.
+                    </p>
+                </div>
+
+                <div class="pricing-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); max-width: 900px; margin: 0 auto;">
+                    <!-- Option 1: In-house Dev (Anchor) -->
+                    <div class="pricing-card">
+                        <div class="pricing-header">
+                            <h3 data-i18n="pricing.dev_title">Ansette fulltids utvikler</h3>
+                            <p data-i18n="pricing.dev_subtitle">Internt i bedriften</p>
+                        </div>
+                        <div class="pricing-price-box">
+                            <span class="pricing-price-value" data-i18n="pricing.dev_price">60 000,-</span>
+                            <span class="pricing-price-period" data-i18n="pricing.dev_period">kr / mnd (snittlønn + avg.)</span>
+                        </div>
+                        <div class="pricing-divider"></div>
+                        <ul class="pricing-features-list">
+                            <li><i class="fas fa-times-circle"></i> <span data-i18n="pricing.dev_feat1">Høy økonomisk risiko & binding</span></li>
+                            <li><i class="fas fa-times-circle"></i> <span data-i18n="pricing.dev_feat2">Arbeidsgiveravgift & feriepenger</span></li>
+                            <li><i class="fas fa-times-circle"></i> <span data-i18n="pricing.dev_feat3">Opplæring & utstyr kreves</span></li>
+                            <li><i class="fas fa-times-circle"></i> <span data-i18n="pricing.dev_feat4">Sykefravær & administrasjon</span></li>
+                        </ul>
+                        <button class="pricing-action-btn btn-outline" style="cursor: not-allowed;" disabled data-i18n="pricing.dev_action">Krever høyt budsjett</button>
+                    </div>
+
+                    <!-- Option 2: Support Agreement (Highlighted Choice) -->
+                    <div class="pricing-card premium-highlight">
+                        <div class="pricing-card-badge" data-i18n="pricing.badge">Anbefalt</div>
+                        <div class="pricing-header">
+                            <h3 data-i18n="pricing.support_title">TK-design Supportavtale</h3>
+                            <p data-i18n="pricing.support_subtitle">Fleksibel månedlig avtale</p>
+                        </div>
+                        <div class="pricing-price-box">
+                            <span class="pricing-price-value" data-i18n="pricing.support_price">Fra 1 990,-</span>
+                            <span class="pricing-price-period" data-i18n="pricing.support_period">kr / mnd (eks. mva)</span>
+                        </div>
+                        <div class="pricing-divider"></div>
+                        <ul class="pricing-features-list">
+                            <li><i class="fas fa-check-circle"></i> <span data-i18n="pricing.support_feat1">Ingen bindingstid – avslutt når som helst</span></li>
+                            <li><i class="fas fa-check-circle"></i> <span data-i18n="pricing.support_feat2">Lynrask feilretting og support</span></li>
+                            <li><i class="fas fa-check-circle"></i> <span data-i18n="pricing.support_feat3">Ukentlige sikkerhetsoppdateringer</span></li>
+                            <li><i class="fas fa-check-circle"></i> <span data-i18n="pricing.support_feat4">SEO-overvåking & ytelsessjekk</span></li>
+                        </ul>
+                        <a href="/contact?service=support" class="pricing-action-btn" data-i18n="pricing.support_action">Sikre min supportavtale <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================
+             7. PROCESS SECTION
+             ========================================= -->
+        <section class="container pt_120 pb_120" data-aos="fade-up">
+            <div class="process-section">
+                <div class="flex justify-center">
+                    <span class="section-subtitle-lines" style="margin-bottom: 18px;" data-i18n="hero.work_process">Se
+                        prosessen</span>
+                </div>
+                <h2 class="text-center" style="margin-bottom: 60px;" data-i18n="process.title">Prosessen</h2>
+                <div class="process-grid">
+                    <div class="process-card" data-aos="fade-up" data-aos-delay="100">
+                        <h3 style="font-size: 24px; margin-bottom: 20px;" data-i18n="process.c1_title">Kartlegging</h3>
+                        <p style="margin-bottom: 20px;" data-i18n="process.c1_desc">Vi starter med en samtale for å forstå mål, målgruppe og visjon.</p>
+                        <ul style="color: var(--clr-common-text); list-style: disc; padding-left: 20px; font-size: 0.95rem;">
+                            <li data-i18n="process.c1_li1">Mål</li>
+                            <li data-i18n="process.c1_li2">Målgruppe</li>
+                            <li data-i18n="process.c1_li3">Visjon</li>
+                        </ul>
+                    </div>
+                    <div class="process-card" data-aos="fade-up" data-aos-delay="200">
+                        <h3 style="font-size: 24px; margin-bottom: 20px;" data-i18n="process.c2_title">Konsept & Design</h3>
+                        <p style="margin-bottom: 20px;" data-i18n="process.c2_desc">Vi utvikler en løsning som fanger merkevaren din og setter en tydelig retning.</p>
+                        <ul style="color: var(--clr-common-text); list-style: disc; padding-left: 20px; font-size: 0.95rem;">
+                            <li data-i18n="process.c2_li1">Struktur</li>
+                            <li data-i18n="process.c2_li2">Visuell retning</li>
+                            <li data-i18n="process.c2_li3">Tilpasning</li>
+                        </ul>
+                    </div>
+                    <div class="process-card" data-aos="fade-up" data-aos-delay="300">
+                        <h3 style="font-size: 24px; margin-bottom: 20px;" data-i18n="process.c3_title">Utvikling & Testing</h3>
+                        <p style="margin-bottom: 20px;" data-i18n="process.c3_desc">Vi bygger løsningen, setter opp funksjoner og tester at alt fungerer før lansering.</p>
+                        <ul style="color: var(--clr-common-text); list-style: disc; padding-left: 20px; font-size: 0.95rem;">
+                            <li data-i18n="process.c3_li1">Sider og funksjoner</li>
+                            <li data-i18n="process.c3_li2">Integrasjoner</li>
+                            <li data-i18n="process.c3_li3">Testing og kvalitetssikring</li>
+                        </ul>
+                    </div>
+                    <div class="process-card" data-aos="fade-up" data-aos-delay="400">
+                        <h3 style="font-size: 24px; margin-bottom: 20px;" data-i18n="process.c4_title">Lansering & Oppfølging</h3>
+                        <p style="margin-bottom: 20px;" data-i18n="process.c4_desc">Når alt er klart publiserer vi siden, gir opplæring ved behov og følger opp etter lansering.</p>
+                        <ul style="color: var(--clr-common-text); list-style: disc; padding-left: 20px; font-size: 0.95rem;">
+                            <li data-i18n="process.c4_li1">Publisering</li>
+                            <li data-i18n="process.c4_li2">Opplæring</li>
+                            <li data-i18n="process.c4_li3">Oppfølging etter lansering</li>
+                        </ul>
+                    </div>
+                    <div class="process-card" data-aos="fade-up" data-aos-delay="500">
+                        <h3 style="font-size: 24px; margin-bottom: 20px;" data-i18n="process.c5_title">Analyse & Vekst</h3>
+                        <p style="margin-bottom: 20px;" data-i18n="process.c5_desc">Vi analyserer resultater og optimaliserer for å sikre maksimal utbytte.</p>
+                        <ul style="color: var(--clr-common-text); list-style: disc; padding-left: 20px; font-size: 0.95rem;">
+                            <li data-i18n="process.c5_li1">Datainnsikt</li>
+                            <li data-i18n="process.c5_li2">Optimalisering</li>
+                            <li data-i18n="process.c5_li3">Videreutvikling</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonial Section -->
+        <!-- =========================================
+             8. TESTIMONIALS SECTION
+             ========================================= -->
+        <section id="testimonial" class="testimonial-section" data-aos="fade-up">
+            <div class="container">
+                <div class="text-center mb-30">
+                    <div class="flex justify-center">
+                        <span class="section-subtitle-lines" style="margin-bottom: 24px;"
+                            data-i18n="testimonial.tag">Hvorfor oss</span>
+                    </div>
+                    <h2 style="font-size: 50px;" data-i18n="testimonial.title">Tre ting på hvorfor du bør velge oss</h2>
+                </div>
+
+                <div class="testimonial-bg">
+                    <div class="testimonial-slider">
+                        <!-- Custom JS Slider -->
+                        <div class="testimonial-slide active">
+                            <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                    class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <p class="testimonial-text" data-i18n="testimonial.t1_text">"Ved bruk av de nyeste
+                                verktøyene sikrer vi en lynrask og responsiv løsning som fungerer optimalt for alle
+                                brukere. Glem kjedelige maler - vi bygger nettsiden fra bunnen av."
+                            </p>
+                            <div class="client-info">
+                                <h3>Fremtidsrettet teknologi</h3>
+                                <span data-i18n="testimonial.t1_role">Raskt, responsivt og unikt</span>
+                            </div>
+                        </div>
+                        <div class="testimonial-slide">
+                            <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                    class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                    class="fas fa-star-half-alt"></i>
+                            </div>
+                            <p class="testimonial-text" data-i18n="testimonial.t2_text">"Vi kombinerer estetikk med
+                                strategi for å sikre at nettsiden ikke bare er pen, men faktisk gjør besøkende til
+                                kunder. Fra ide til lansering får du støtte hele veien."</p>
+                            <div class="client-info">
+                                <h3>Design som konverterer</h3>
+                                <span data-i18n="testimonial.t2_role">Fra besøkende til kunder</span>
+                            </div>
+                        </div>
+
+                        <div class="testimonial-dots">
+                            <!-- Dots filled by JS -->
+                        </div>
+                    </div>
+                    <!-- Decorative Images -->
+                    <img src="img/testimonial/quote.png" alt="quote"
+                        style="position: absolute; top: 100px; left: 200px; width: 60px; opacity: 0.5;"
+                        class="hidden-mobile">
+                </div>
+
+                <!-- Partner Slider -->
+                <div class="partner-slider-container">
+                    <p style="color: var(--clr-base); margin-bottom: 40px; font-size: 24px;"
+                        data-i18n="testimonial.trusted_text">
+                        Skreddersydd webdesign, SEO og SoMe-strategi</p>
+                    <div class="partner-track">
+                        <span class="partner-chip">Skreddersydd webdesign</span>
+                        <span class="partner-chip">SEO-strategi</span>
+                        <span class="partner-chip">SoMe-innhold</span>
+                        <span class="partner-chip">Support</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Speed Test CTA Section (Reciprocity Mini-Analyzer) -->
+        <section id="speed-test-cta" class="speed-test-cta-section" data-aos="fade-up" style="padding: 100px 0; background: #fff; border-top: 1px solid var(--clr-border); border-bottom: 1px solid var(--clr-border);">
+            <div class="container">
+                <div class="flex flex-wrap items-center justify-between gap-12">
+                    <div style="flex: 1; min-width: 320px;">
+                        <span class="section-subtitle-lines" style="color: #62B6CB; margin-bottom: 24px;" data-i18n="free_tool.subtitle">Gratis verktøy</span>
+                        <h2 style="font-size: clamp(32px, 5vw, 48px); color: var(--clr-base); margin-bottom: 24px; line-height: 1.1; font-weight: 700;" data-i18n="free_tool.heading">Er nettsiden din rask og synlig nok?</h2>
+                        <p style="color: var(--clr-common-text); font-size: 18px; margin-bottom: 30px; max-width: 520px; line-height: 1.6;" data-i18n="free_tool.intro">
+                            Visste du at en treg nettside i snitt koster bedrifter 65 % av kundene før siden i det hele tatt har lastet? Tast inn din nettadresse under for en umiddelbar mini-analyse og konkrete forbedringspunkter.
+                        </p>
+                        
+                        <div class="analyzer-input-group" style="max-width: 500px;">
+                            <input type="url" id="analyzerUrl" placeholder="F.eks. www.minbedrift.no" data-i18n-placeholder="free_tool.placeholder" required autocomplete="url" onkeydown="if(event.key === 'Enter') startMiniAnalysis()">
+                            <button type="button" class="analyzer-btn" onclick="startMiniAnalysis()" data-i18n="free_tool.btn">Analyser nå <i class="fas fa-bolt"></i></button>
+                        </div>
+                    </div>
+                    
+                    <div style="flex: 1; min-width: 300px; position: relative;">
+                        <div id="analyzerWidgetContainer" style="background: #f8fafc; border: 1px solid var(--clr-border); border-radius: 40px; padding: 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.04); min-height: 320px; display: flex; align-items: center; justify-content: center;">
+                            
+                            <!-- 1. Default Scanner State -->
+                            <div id="analyzerDefaultState" style="text-align: center; width: 100%;">
+                                <div style="font-size: 56px; color: var(--clr-base); margin-bottom: 20px; opacity: 0.85;"><i class="fas fa-laptop-code"></i></div>
+                                <h3 style="color: var(--clr-base); font-size: 1.25rem; font-weight: 700; margin-bottom: 10px;" data-i18n="free_tool.ready_title">Klar for skanning</h3>
+                                <p style="font-size: 0.95rem; color: #64748b; max-width: 280px; margin: 0 auto; line-height: 1.5;"><span data-i18n="free_tool.desc">Tast inn din URL til venstre for å teste ytelse, SEO-status og mobilvennlighet.</span></p>
+                            </div>
+
+                            <!-- 2. Loading State -->
+                            <div id="analyzerLoadingState" class="analyzer-loader" style="display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%;">
+                                <div class="analyzer-spinner-ring" style="margin-bottom: 20px;"></div>
+                                <p id="analyzerStatusText" style="font-size: 1.15rem; font-weight: 700; color: var(--clr-base); margin-bottom: 12px; text-align: center;" data-i18n="free_tool.connecting">Etablerer forbindelse...</p>
+                                <div style="width: 100%; max-width: 240px; height: 6px; background: rgba(27, 73, 101, 0.08); border-radius: 10px; overflow: hidden; margin-bottom: 12px;">
+                                    <div id="analyzerProgressBar" style="width: 0%; height: 100%; background: #ff6a1b; transition: width 0.08s linear; border-radius: 10px;"></div>
+                                </div>
+                                <span class="analyzer-loader-sub" style="color: #64748b; font-size: 0.9rem;" data-i18n="free_tool.loader_sub">Analysen tar kun ca. 3 sekunder</span>
+                            </div>
+
+                            <!-- 3. Report Dashboard State -->
+                            <div id="analyzerDashboardState" class="analyzer-result-dashboard" style="width: 100%;">
+                                <h3 style="font-size: 1.2rem; color: var(--clr-base); font-weight: 800; margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fas fa-chart-bar" style="color: #ff6a1b;"></i> <span data-i18n="free_tool.report_for">Rapport for:</span> <span id="reportDomainName" style="color: #62B6CB;">minbedrift.no</span>
+                                </h3>
+                                
+                                <div class="analyzer-metrics-grid">
+                                    <div class="analyzer-metric-card" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                                        <div style="font-size: 1.2rem; color: #ff6a1b;"><i class="fas fa-tachometer-alt"></i></div>
+                                        <div class="analyzer-circle-score score-warn">68</div>
+                                        <span class="analyzer-metric-label" data-i18n="free_tool.metric_performance">Ytelse</span>
+                                    </div>
+                                    <div class="analyzer-metric-card" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                                        <div style="font-size: 1.2rem; color: #ef4444;"><i class="fas fa-search"></i></div>
+                                        <div class="analyzer-circle-score score-danger">55</div>
+                                        <span class="analyzer-metric-label" data-i18n="free_tool.metric_seo">SEO</span>
+                                    </div>
+                                    <div class="analyzer-metric-card" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                                        <div style="font-size: 1.2rem; color: #ff6a1b;"><i class="fas fa-mobile-alt"></i></div>
+                                        <div class="analyzer-circle-score score-warn">72</div>
+                                        <span class="analyzer-metric-label" data-i18n="free_tool.metric_mobile">Mobil</span>
+                                    </div>
+                                </div>
+
+                                <div class="analyzer-points-list">
+                                    <div class="analyzer-point-item">
+                                        <div class="analyzer-point-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                                        <div class="analyzer-point-content">
+                                            <h4 data-i18n="free_tool.report_1_title">Treg responstid på server (TTFB)</h4>
+                                            <p data-i18n="free_tool.report_1_desc">Siden din bruker 1.4s på første byte, som gjør at du taper opptil 30% av besøkende før siden har lastet.</p>
+                                        </div>
+                                    </div>
+                                    <div class="analyzer-point-item">
+                                        <div class="analyzer-point-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                                        <div class="analyzer-point-content">
+                                            <h4 data-i18n="free_tool.report_2_title">Unødvendig tunge bilder (Mangler WebP)</h4>
+                                            <p data-i18n="free_tool.report_2_desc">Store bildefiler øker sidelasten med flere megabytes. Google straffer dette tungt i søkeresultatene.</p>
+                                        </div>
+                                    </div>
+                                    <div class="analyzer-point-item">
+                                        <div class="analyzer-point-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                                        <div class="analyzer-point-content">
+                                            <h4 data-i18n="free_tool.report_3_title">Mangelfull H1-struktur og metadata</h4>
+                                            <p data-i18n="free_tool.report_3_desc">Viktige søkeord mangler i overskriftsstrukturen, som lar konkurrentene dine rangere høyere på Google.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Lead Capture Box -->
+                                <div class="analyzer-save-box">
+                                    <h4 data-i18n="free_tool.report_cta">Vil du ha den komplette rapporten med steg-for-steg løsninger?</h4>
+                                    <p data-i18n="free_tool.pdf_plan">Vi sender deg en skreddersydd PDF-handlingsplan helt gratis.</p>
+                                    <form id="analyzerSaveForm" class="analyzer-save-form" onsubmit="submitAnalyzerLead(event)">
+                                        <input type="hidden" id="analyzerLeadUrl" name="url">
+                                        <input type="email" id="analyzerLeadEmail" placeholder="Din e-postadresse" data-i18n-placeholder="free_tool.email_placeholder" required style="width: 100%;">
+                                        <button type="submit" class="analyzer-save-btn" id="analyzerSaveBtn" style="white-space: nowrap;" data-i18n="free_tool.send_report">Send rapport <i class="fas fa-paper-plane"></i></button>
+                                    </form>
+                                    <div id="analyzerSaveStatus" style="font-size: 0.9rem; font-weight: 700; margin-top: 12px; line-height: 1.4;"></div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div style="position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; background: #62B6CB; filter: blur(90px); opacity: 0.2; z-index: -1;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            function startMiniAnalysis() {
+                const urlInput = document.getElementById('analyzerUrl');
+                if (!urlInput || !urlInput.value || !urlInput.value.trim()) {
+                    alert('Vennligst oppgi en gyldig nettadresse (f.eks. www.minbedrift.no)');
+                    if (urlInput) urlInput.focus();
+                    return;
+                }
+
+                let targetUrl = urlInput.value.trim();
+                if (!/^https?:\/\//i.test(targetUrl)) {
+                    targetUrl = 'https://' + targetUrl;
+                }
+                
+                try {
+                    const parsed = new URL(targetUrl);
+                    if (!parsed.hostname.includes('.')) {
+                        alert('Vennligst oppgi en gyldig nettadresse (f.eks. minbedrift.no)');
+                        urlInput.focus();
+                        return;
+                    }
+                    // Redirect to the real test tool page
+                    window.location.href = `/speed-test?url=${encodeURIComponent(urlInput.value.trim())}`;
+                } catch (e) {
+                    alert('Vennligst oppgi en gyldig nettadresse (f.eks. www.minbedrift.no)');
+                    urlInput.focus();
+                }
+            }
+
+            async function submitAnalyzerLead(event) {
+                event.preventDefault();
+                const emailInput = document.getElementById('analyzerLeadEmail');
+                const urlHidden = document.getElementById('analyzerLeadUrl');
+                const statusDiv = document.getElementById('analyzerSaveStatus');
+                const saveBtn = document.getElementById('analyzerSaveBtn');
+
+                if (!emailInput || !emailInput.value) return;
+
+                saveBtn.disabled = true;
+                const origText = saveBtn.innerHTML;
+                saveBtn.textContent = 'Sender...';
+                statusDiv.className = '';
+                statusDiv.textContent = '';
+
+                // API Discovery Logic (Same as contact-page.js)
+                const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+                const apiUrl = (window.location.protocol === 'file:' || (isLocalHost && window.location.port && window.location.port !== '3000'))
+                    ? 'http://localhost:3000/api/contact'
+                    : '/api/contact';
+
+                const payload = {
+                    name: 'Nettsteds-Sjekker Lead',
+                    email: emailInput.value.trim(),
+                    phone: '',
+                    company: '',
+                    subject: `Mini-analyse forespørsel: ${urlHidden.value}`,
+                    message: `Automatisk forespørsel om full nettsiderapport fra Nettside-Sjekker.\n\nNettside: ${urlHidden.value}\nKunde e-post: ${emailInput.value.trim()}\n\nVennligst generer og send en fullstendig rapport.`,
+                    consent: true,
+                    website: urlHidden.value.trim(),
+                    sourcePage: 'index.html (Nettside-Sjekker)'
+                };
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) throw new Error('API-feil');
+
+                    statusDiv.style.color = '#10b981';
+                    statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Suksess! Rapporten er registrert. Vi kontakter deg med den fulle analysen innen kort tid.';
+                    emailInput.value = '';
+                } catch (err) {
+                    statusDiv.style.color = '#ef4444';
+                    statusDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Kunne ikke sende forespørsel. Sjekk nettforbindelsen og prøv igjen.';
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = origText;
+                }
+            }
+        </script>
+
+        <!-- Blog Section -->
+        <!-- =========================================
+             9. BLOG SECTION
+             ========================================= -->
+        <section id="blog" class="blog-section" data-aos="fade-up">
+            <div class="container">
+                <div class="flex justify-between items-end mb-50 blog-header-flex">
+                    <div>
+                        <span class="section-subtitle-lines" style="margin-bottom: 18px;"
+                            data-i18n="blog.subtitle">Siste innlegg</span>
+                        <h2 style="font-size: 50px;" data-i18n="blog.title">Aktuelt fra TK-design</h2>
+                    </div>
+                    <div>
+                        <a href="/blog" class="award-link">
+                            <span data-i18n="blog_page.all_posts_title">Alle innlegg</span> <i
+                                class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="blog-grid" id="blog-grid">
+                    <!-- Blog posts will be loaded here dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================
+             LEAD MAGNET SECTION
+             ========================================= -->
+        <section class="lead-magnet-section pt_120 pb_120" style="display: none !important;">
+            <div class="container">
+                <div class="lead-magnet-card text-center" data-aos="zoom-in">
+                    <div class="lead-icon-box">
+                        <i class="fas fa-file-download"></i>
+                    </div>
+                    <h2>Gratis 2026 SEO-sjekkliste</h2>
+                    <p style="max-width: 500px; margin: 15px auto 30px; font-weight: 500;">
+                        Lær hvordan du sikrer topposisjon på Google i år. Legg igjen e-posten, så sender vi vår beste mal helt gratis.
+                    </p>
+                    <form class="lead-magnet-form" onsubmit="event.preventDefault(); alert('Sjekklisten er sendt til din e-post!');">
+                        <input type="email" placeholder="Din e-postadresse" required autocomplete="email">
+                        <button type="submit" class="primary-cta glow-cta">Send meg sjekklisten</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
     </main>
 
-    <footer class="site-footer">
-      <p>Modernisert utkast for Familiekirka Mandal. Foto: Yosh3000 / Wikimedia Commons, Samuel Lopez Cruz, Richard Khuptong / Unsplash og Yi Ren / Pexels.</p>
-      <a href="#top">Til toppen</a>
+    <!-- =========================================
+         10. FOOTER SECTION
+         ========================================= -->
+    <footer class="footer pt_120 pb_120" style="border-top: 1px solid var(--clr-border);">
+        <div class="container">
+            <div class="footer-cta">
+                <h2 data-i18n="footer.cta">La oss starte</h2>
+            </div>
+
+            <div class="footer-content">
+                <div class="footer-info">
+                    <p style="font-size: 20px; color: var(--clr-base); margin-bottom: 20px;" data-i18n="footer.intro">
+                        Vi bygger din digitale identitet med skreddersydd webdesign, SEO og SoMe-strategi.</p>
+                    <a href="mailto:thomas@tk-design.no"
+                        style="font-size: 30px; text-decoration: underline; color: var(--clr-base);"
+                        data-i18n="contact.email_val">thomas@tk-design.no</a>
+                </div>
+
+                <div class="footer-links" style="grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                    <a href="https://www.facebook.com/profile.php?id=61574614704737&amp;locale=nb_NO"
+                        class="social-link" target="_blank" rel="nofollow noopener noreferrer">Facebook <i
+                            class="fas fa-arrow-right"></i></a>
+                    <a href="https://www.instagram.com/tkdesign777" class="social-link" target="_blank"
+                        rel="nofollow noopener noreferrer">Instagram <i class="fas fa-arrow-right"></i></a>
+                    <a href="https://www.linkedin.com/in/thomas-knutsen-a6aa2793/" class="social-link" target="_blank"
+                        rel="nofollow noopener noreferrer">LinkedIn <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-between items-center"
+                style="border-top: 1px solid var(--clr-border); padding-top: 30px;">
+                <p><span data-i18n="footer.copyright">Copyright © 2026</span> <a href="/"
+                        style="color: var(--clr-base);">TK-design</a> <span data-i18n="footer.rights">All rights
+                        reserved.</span></p>
+                <div class="flex gap-4">
+                    <a href="/accessibility" style="color: var(--clr-base);"
+                        data-i18n="footer.accessibility">Accessibility
+                        Statement</a>
+                    <a href="/privacy" style="color: var(--clr-base);" data-i18n="footer.privacy">Privacy Policy</a>
+                    <a href="/admin/" class="admin-secret" style="color: #777; font-size: 0.8em;">Admin</a>
+                </div>
+            </div>
+        </div>
     </footer>
-    <script src="script.js"></script>
-  </body>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
+    <script src="translations.js?v=12" defer></script>
+    <script src="script.js?v=3" defer></script>
+    <script src="js/cookies.js?v=3" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof AOS !== 'undefined') {
+                AOS.init({ duration: 800, once: true });
+            }
+        });
+    </script>
+    <script>
+        function slugifyBlogPostTitle(value = '') {
+            return String(value || '')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .replace(/-{2,}/g, '-');
+        }
+
+        function resolveBlogPostUrl(post = {}) {
+            const rawLink = String(post.link || '').trim();
+            const title = String(post.title || post.titleEn || '').trim();
+            const numericId = Number(post.id);
+            const fallbackSlug = Number.isFinite(numericId) && numericId > 0 ? `innlegg-${numericId}` : 'innlegg';
+            const slug = slugifyBlogPostTitle(title) || fallbackSlug;
+
+            if (!rawLink || /(^|\/)blog-details(?:\.html)?(?:\?|$)/i.test(rawLink)) {
+                return Number.isFinite(numericId) && numericId > 0
+                    ? `/blog/${slug}-${numericId}`
+                    : `/blog/${slug}`;
+            }
+
+            if (/^https?:\/\//i.test(rawLink)) {
+                return rawLink;
+            }
+
+            return rawLink.startsWith('/') ? rawLink : `/${rawLink}`;
+        }
+
+        // Dynamic Blog Loading
+        async function loadBlogPosts() {
+            try {
+                // Load local blog data for the homepage cards
+                const response = await fetch('data/posts.json');
+                const posts = await response.json();
+                const container = document.getElementById('blog-grid');
+
+                if (!container) return;
+                container.innerHTML = '';
+
+                posts.slice(0, 3).forEach((post, index) => {
+                    const delay = (index + 1) * 100;
+                    const card = document.createElement('div');
+                    card.className = 'blog-card';
+                    card.setAttribute('data-aos', 'zoom-in');
+                    card.setAttribute('data-aos-delay', delay);
+
+                    card.innerHTML = `
+                        <div class="blog-img"><img src="${post.image}" alt="${post.title}" loading="lazy"></div>
+                        <span class="blog-date">${post.date}</span>
+                        <h3><a href="${resolveBlogPostUrl(post)}">${post.title}</a></h3>
+                        <a href="${resolveBlogPostUrl(post)}" class="award-link" style="justify-content: flex-start;">
+                            <span data-i18n="blog.read_more">Read More</span> <i class="fas fa-arrow-right"></i>
+                        </a>
+                    `;
+                    container.appendChild(card);
+                });
+
+                if (typeof applyLanguage === 'function') {
+                    applyLanguage(currentLang || 'no');
+                }
+            } catch (error) {
+                console.error('Error loading posts:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadBlogPosts);
+    </script>
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+        window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
+</body>
+
 </html>
