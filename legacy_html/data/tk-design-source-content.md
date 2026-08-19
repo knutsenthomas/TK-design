@@ -319,7 +319,7 @@ Denne personvernerklæringen beskriver hvordan TK-design ("vi", "vår" eller "os
 
 Behandlingsansvarlig:
 
-TK-design med registrert kontor i Løkkeveien 3B, 4580 Lyngdal, Norway, sikrer overholdelse av reglene om behandling av personopplysninger ved å gi informasjon om behandlingen av data som mottas, eller uansett samles inn, under besøk på denne nettsiden.
+TK-design med registrert kontor i Augerødlia 48, 1591 Sperrebotn, Norway, sikrer overholdelse av reglene om behandling av personopplysninger ved å gi informasjon om behandlingen av data som mottas, eller uansett samles inn, under besøk på denne nettsiden.
 
 Samtykke:
 
@@ -357,7 +357,7 @@ Dine rettigheter:
 Kontakt for personvern:
 
 - thomas@tk-design.no
-- Tk-design, Løkkeveien 3B, 4580 Lyngdal, Norway
+- Tk-design, Augerødlia 48, 1591 Sperrebotn, Norway
 
 Cookies:
 
