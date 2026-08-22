@@ -621,9 +621,12 @@
 
         function slugifyBlogPostTitle(value = '') {
             return String(value || '')
+                .toLowerCase()
+                .replace(/æ/g, 'ae')
+                .replace(/ø/g, 'o')
+                .replace(/å/g, 'a')
                 .normalize('NFD')
                 .replace(/[\u0300-\u036f]/g, '')
-                .toLowerCase()
                 .replace(/[^a-z0-9]+/g, '-')
                 .replace(/^-+|-+$/g, '')
                 .replace(/-{2,}/g, '-');
@@ -1409,12 +1412,20 @@
             try {
                 blogPosts = await fetchBlogPosts();
                 const post = blogPosts.find((item) => {
-                    if (requestedId && Number(item.id) === requestedId) {
+                    if (!item) return false;
+                    if (requestedId && (Number(item.id) === requestedId || String(item.id) === String(requestedId))) {
                         return true;
                     }
 
-                    return requestedSlug
-                        && slugifyBlogPostTitle(String(item.title || item.titleEn || '')) === requestedSlug;
+                    if (requestedSlug) {
+                        const itemSlug = item.slug || (item.link ? item.link.replace(/^\/blog\//, '').replace(/\?.*$/, '').replace(/-\d+$/, '') : '');
+                        const titleSlug = slugifyBlogPostTitle(String(item.title || item.titleEn || ''));
+                        if (itemSlug === requestedSlug || titleSlug === requestedSlug) return true;
+                        if (itemSlug && (requestedSlug.startsWith(itemSlug) || itemSlug.startsWith(requestedSlug))) return true;
+                        if (titleSlug && (requestedSlug.startsWith(titleSlug) || titleSlug.startsWith(requestedSlug))) return true;
+                        if (item.link && item.link.includes(requestedSlug)) return true;
+                    }
+                    return false;
                 });
 
                 if (!post) {
