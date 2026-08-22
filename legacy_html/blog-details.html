@@ -193,27 +193,28 @@
                                 </ul>
                             </section>
 
-                            <section class="blog-side-card">
+                            <section class="blog-side-card blog-share-sidebar-card">
                                 <h2 data-i18n="blog_details.share_title">Del innlegget</h2>
                                 <div class="blog-share-links">
-                                    <a class="blog-share-link" id="shareFacebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.tk-design.no%2Fblog" target="_blank"
-                                        rel="nofollow noopener noreferrer" aria-label="Facebook" title="Del på Facebook">
+                                    <a class="blog-share-link share-fb" id="shareFacebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.tk-design.no%2Fblog" target="_blank"
+                                        rel="nofollow noopener noreferrer" aria-label="Del på Facebook" title="Del på Facebook">
                                         <i class="fab fa-facebook-f"></i>
                                     </a>
-                                    <a class="blog-share-link" id="shareLinkedIn" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fwww.tk-design.no%2Fblog" target="_blank"
-                                        rel="nofollow noopener noreferrer" aria-label="LinkedIn" title="Del på LinkedIn">
+                                    <a class="blog-share-link share-li" id="shareLinkedIn" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fwww.tk-design.no%2Fblog" target="_blank"
+                                        rel="nofollow noopener noreferrer" aria-label="Del på LinkedIn" title="Del på LinkedIn">
                                         <i class="fab fa-linkedin-in"></i>
                                     </a>
-                                    <button type="button" class="blog-share-link" onclick="copyPublicInstagramText()" aria-label="Instagram" title="Kopier for Instagram" style="border: none; cursor: pointer; color: inherit; background: none;">
+                                    <button type="button" class="blog-share-link share-ig" onclick="copyPublicInstagramText()" aria-label="Kopier for Instagram" title="Kopier for Instagram">
                                         <i class="fab fa-instagram"></i>
                                     </button>
-                                    <button type="button" class="blog-share-link" onclick="copyPublicPageLink()" aria-label="Kopier lenke" title="Kopier lenke" style="border: none; cursor: pointer; color: inherit; background: none;">
+                                    <button type="button" class="blog-share-link share-copy" id="shareCopyBtn" onclick="copyPublicPageLink()" aria-label="Kopier lenke" title="Kopier lenke">
                                         <i class="fas fa-link"></i>
                                     </button>
-                                    <a class="blog-share-link" id="shareMail" href="mailto:?subject=TK-design&body=https%3A%2F%2Fwww.tk-design.no%2Fblog" aria-label="E-post" title="Send e-post">
+                                    <a class="blog-share-link share-email" id="shareMail" href="mailto:?subject=TK-design&body=https%3A%2F%2Fwww.tk-design.no%2Fblog" aria-label="Send på e-post" title="Send e-post">
                                         <i class="fas fa-envelope"></i>
                                     </a>
                                 </div>
+                                <div id="shareToastNotice" class="share-toast-notice" style="display: none;"></div>
                             </section>
 
                             <section class="blog-side-card" id="blogCommentsCard">
@@ -758,6 +759,17 @@
             }
         }
 
+        function showShareToast(message) {
+            const toast = document.getElementById('shareToastNotice');
+            if (!toast) return;
+            toast.textContent = message;
+            toast.style.display = 'block';
+            if (window._shareToastTimeout) clearTimeout(window._shareToastTimeout);
+            window._shareToastTimeout = setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3500);
+        }
+
         function copyPublicInstagramText() {
             if (!activePost) return;
             const localized = getLocalizedPost(activePost);
@@ -768,24 +780,24 @@
             
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(text).then(() => {
-                    alert('Tekst og emneknagger for Instagram er kopiert!');
+                    showShareToast('Tekst og emneknagger for Instagram er kopiert!');
                 }).catch(() => {
-                    alert(text);
+                    showShareToast(text);
                 });
             } else {
-                alert(text);
+                showShareToast(text);
             }
         }
 
         function copyPublicPageLink() {
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(window.location.href).then(() => {
-                    alert('Lenke til artikkelen er kopiert til utklippstavlen!');
+                    showShareToast('Lenke til artikkelen er kopiert til utklippstavlen!');
                 }).catch(() => {
-                    alert(window.location.href);
+                    showShareToast(window.location.href);
                 });
             } else {
-                alert(window.location.href);
+                showShareToast(window.location.href);
             }
         }
 
