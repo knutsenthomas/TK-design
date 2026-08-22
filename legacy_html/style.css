@@ -10996,6 +10996,8 @@ body#home.homepage-refresh .hero-light-showcase::after {
     font-family: var(--font-primary, 'Kanit', sans-serif);
     font-size: 0.85rem;
     color: #64748b;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .subpage-breadcrumb a {
@@ -11003,6 +11005,7 @@ body#home.homepage-refresh .hero-light-showcase::after {
     text-decoration: none;
     font-weight: 500;
     transition: color 200ms ease;
+    flex-shrink: 0;
 }
 
 .subpage-breadcrumb a:hover {
@@ -11012,6 +11015,33 @@ body#home.homepage-refresh .hero-light-showcase::after {
 .subpage-breadcrumb-sep {
     color: #cbd5e1;
     font-size: 0.75rem;
+    flex-shrink: 0;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+}
+
+.subpage-breadcrumb span:last-child,
+#blogDetailBreadcrumb {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 320px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+@media (max-width: 600px) {
+    .subpage-breadcrumb {
+        padding: 5px 12px;
+        font-size: 0.78rem;
+        gap: 6px;
+    }
+
+    .subpage-breadcrumb span:last-child,
+    #blogDetailBreadcrumb {
+        max-width: 130px;
+    }
 }
 
 .subpage-title {
