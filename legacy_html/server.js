@@ -3490,7 +3490,8 @@ async function renderPageWithSeo(req, res, reqFile, matchedBlogPost = null) {
         if (reqFile === 'blog.html') {
             try {
                 const posts = await readSiteDataWithFallback('posts', readBlogPosts);
-                const publishedPosts = (posts || []).filter(p => p && p.status !== 'draft');
+                const sortedPosts = (posts || []).slice().sort((a, b) => parsePostDateTimestamp(b) - parsePostDateTimestamp(a));
+                const publishedPosts = sortedPosts.filter(p => p && p.status !== 'draft');
                 if (publishedPosts.length > 0) {
                     const latest = publishedPosts[0];
                     const latestTitle = (lang === 'en' && latest.titleEn) ? latest.titleEn : (latest.title || '');
@@ -4770,8 +4771,51 @@ function decorateBlogPostWithResolvedLink(post = {}) {
     };
 }
 
+function parsePostDateTimestamp(post) {
+    if (!post) return 0;
+    if (post.publishedAt) {
+        const t = new Date(post.publishedAt).getTime();
+        if (!isNaN(t) && t > 0) return t;
+    }
+    if (post.createdAt) {
+        const t = new Date(post.createdAt).getTime();
+        if (!isNaN(t) && t > 0) return t;
+    }
+    const dateStr = String(post.date || '').toLowerCase();
+    if (!dateStr) return 0;
+
+    const months = {
+        'jan': 0, 'januar': 0,
+        'feb': 1, 'februar': 1,
+        'mar': 2, 'mars': 2,
+        'apr': 3, 'april': 3,
+        'mai': 4, 'may': 4,
+        'jun': 5, 'juni': 5,
+        'jul': 6, 'juli': 6,
+        'aug': 7, 'august': 7,
+        'sep': 8, 'september': 8,
+        'okt': 9, 'oktober': 9, 'oct': 9,
+        'nov': 10, 'november': 10,
+        'des': 11, 'desember': 11, 'dec': 11
+    };
+
+    const match = dateStr.match(/(\d{1,2})\.?\s+([a-zæøå]+)\.?\s+(\d{4})/i);
+    if (match) {
+        const day = parseInt(match[1], 10);
+        const monthName = match[2].toLowerCase();
+        const year = parseInt(match[3], 10);
+        const month = months[monthName] ?? 0;
+        return new Date(year, month, day).getTime();
+    }
+
+    const directDate = new Date(dateStr).getTime();
+    return !isNaN(directDate) ? directDate : 0;
+}
+
 function decorateBlogPostsWithResolvedLinks(posts = []) {
-    return Array.isArray(posts) ? posts.map((post) => decorateBlogPostWithResolvedLink(post)) : posts;
+    if (!Array.isArray(posts)) return posts;
+    const decorated = posts.map((post) => decorateBlogPostWithResolvedLink(post));
+    return decorated.sort((a, b) => parsePostDateTimestamp(b) - parsePostDateTimestamp(a));
 }
 
 function findBlogPostByRouteSegment(posts = [], routeSegment = '') {
