@@ -31,6 +31,9 @@ const translations = {
             title: "Portfolio | TK-design",
             heading: "Our <span class=\"hero-title-highlight\">Portfolio</span>",
             subtitle: "Explore a selection of our tailored websites, web design and digital solutions.",
+            pill_speed: "100/100 Google PageSpeed",
+            pill_unique: "100% Unique Design",
+            pill_seo: "Optimal SEO Structure",
             loading: "Loading graphic portfolio...",
             graphic_eyebrow: "VISUAL IDENTITY",
             graphic_title: "Graphic Design & Branding",
@@ -43,12 +46,16 @@ const translations = {
             portfolio: "Projects",
             pricing: "Pricing",
             testimonial: "Why us",
+            advantages: "Why us",
             blog: "News",
             contact: "Contact",
             sub_webdesign: "Web Design & Dev",
             sub_seo: "SEO Optimization",
             sub_support: "Support & Maintenance",
             sub_analyzer: "Website Test"
+        },
+        contact: {
+            email_val: "thomas@tk-design.no"
         },
         pricing: {
             subtitle: "Predictable Pricing",
@@ -148,6 +155,7 @@ const translations = {
         },
         about: {
             badge: "ABOUT TK-DESIGN",
+            title: "Creating digital experiences that <span class=\"hero-title-highlight\">drive results</span>",
             intro: "TK-design helps your business succeed online. We offer everything from websites and social media to strategic advice and support, so you can reach your goals with a clear digital identity.",
             tabs: {
                 about: "About us",
@@ -156,28 +164,83 @@ const translations = {
                 skills: "Values"
             },
             about_tab: {
+                tag1: "Web & Technology",
                 based_title: "About TK-design",
-                based_desc: "We build websites, content and strategies that make businesses more visible and more distinct online.",
+                based_desc: "We build websites, content and strategies that make businesses more visible, credible, and distinct online.",
+                tag2: "Close Collaboration",
                 exp_title: "A small, dedicated team",
-                exp_desc: "We combine web design, content and strategic advice in one practical delivery.",
+                exp_desc: "We combine web design, content, and strategic advice in one seamless, personal delivery.",
+                tag3: "Measurable Growth",
                 client_title: "Lasting results",
-                client_desc: "A clear focus on creativity, innovation and quality in every solution we deliver."
+                client_desc: "Focus on creativity, lightning-fast performance, and high quality in every solution we deliver."
             },
             experience_tab: {
+                senior_tag: "Managing Director & Developer",
                 senior_role: "Thomas Knutsen",
+                senior_desc: "Fullstack development, UX/UI design, and technical SEO with a focus on conversion-driven websites.",
+                some_tag: "SoMe & Content",
+                some_label: "SoMe & Content",
                 junior_role: "Hilde Karin Knutsen",
-            some_label: "SoMe",
-            some_desc: "Innhold og synlighet"
+                some_desc: "Content strategy, engaging storytelling, and digital visibility in social media."
             },
             education_tab: {
+                mission_tag: "Our Mission",
+                mission_label: "Our Mission",
                 degree: "Helping businesses succeed online",
-                university: "Tailored solutions for small and medium-sized businesses that want to grow digitally."
+                university: "Tailored solutions for small and medium-sized businesses that want to stand out and grow digitally.",
+                future_tag: "Future-proof",
+                future_title: "Technology That Lasts",
+                future_desc: "We build modular, fast, and maintainable websites that deliver stable operation and low total cost of ownership."
             },
             skills_tab: {
-                creativity_desc: "We create unique, visually striking solutions tailored to your profile.",
-                innovation_desc: "We utilize modern tools and methods to give you a head start.",
-                quality_desc: "We deliver well-thought-out code and design that performs optimally over time."
+                design_tag: "Design",
+                creativity_title: "Creativity",
+                creativity_desc: "We create unique, visually striking solutions tailored to your brand profile and target audience.",
+                tech_tag: "Technology",
+                innovation_title: "Innovation",
+                innovation_desc: "We utilize modern frameworks and cutting-edge SEO methods to give you a solid competitive edge.",
+                perf_tag: "Performance",
+                quality_title: "Quality",
+                quality_desc: "We deliver well-thought-out code and design that performs optimally and loads lightning fast over time."
             }
+        },
+        advantages: {
+            tag: "WHY TK-DESIGN",
+            title: "Why choose a <span class=\"hero-title-highlight\">custom website?</span>",
+            intro: "Slow templates and generic theme builders cost businesses valuable clients. We build from scratch focusing on extreme performance, conversions, and long-term business value.",
+            card1_tag: "Extreme Performance",
+            card1_title: "100/100 Google PageSpeed & Core Web Vitals",
+            card1_desc: "Lightning-fast loading speed providing a superior user experience and a solid head start in Google search results. No bloatware or slow theme builders.",
+            lh_performance: "Performance",
+            lh_accessibility: "Accessibility",
+            lh_best_practices: "Best Practices",
+            lh_seo: "SEO",
+            card2_tag: "Craftsmanship",
+            card2_title: "100% Unique Profile",
+            card2_desc: "No pre-made templates or overused themes. We create a tailor-made visual identity that amplifies your brand and builds instant trust.",
+            card3_tag: "Conversions",
+            card3_title: "Built for Sales",
+            card3_desc: "Strategically placed buttons, intuitive navigation, and optimized user journeys turning visitors into paying customers.",
+            card4_tag: "Peace of Mind",
+            card4_title: "Close Partnership",
+            card4_desc: "Direct communication with the developer with no costly middlemen. We manage hosting, security, and updates so you can focus on your business."
+        },
+        workflow: {
+            tag: "OUR PROCESS",
+            title: "From idea to a <span class=\"hero-title-highlight\">converting launch</span>",
+            intro: "A structured, transparent, and efficient process ensuring your website is delivered on time, within budget, and with uncompromising quality.",
+            step1_num: "01",
+            step1_title: "Insight & Strategy",
+            step1_desc: "We map out your business goals, target audience, and competitors to establish a crystal-clear digital strategy and structure.",
+            step2_num: "02",
+            step2_title: "Custom UI/UX",
+            step2_desc: "We design a unique, tailored visual concept with focus on ergonomics, aesthetics, and conversion-optimized user experiences.",
+            step3_num: "03",
+            step3_title: "Custom Development",
+            step3_desc: "The website is coded from scratch with clean semantic code, 100% Core Web Vitals, and optimal responsiveness across all devices.",
+            step4_num: "04",
+            step4_title: "SEO & Launch",
+            step4_desc: "Full technical SEO setup, Google Search Console, structured data, and thorough quality assurance before a successful live launch."
         },
         awards: {
             title: "Why choose TK-design?",
@@ -192,22 +255,37 @@ const translations = {
             award_4_cat: "From idea to launch with guidance and support all the way."
         },
         projects: {
-            title: "Selected projects and deliveries",
-            subtitle: "Our work",
+            title: "Websites that <span class=\"hero-title-highlight\">deliver results</span>",
+            subtitle: "SELECTED CLIENT CASES",
+            kudos_m1: "⚡ 100/100 Performance",
+            kudos_m2: "📍 Askøy & Bergen",
             p1_title: "Kudos Regnskap AS",
+            kudos_desc: "Tailored website for state-authorized accountants in Western Norway with integrated contact system and top SEO rankings.",
             p1_desc: "Accounting",
+            hkm_m1: "🎥 Media Platform",
+            hkm_m2: "📅 Events & Registration",
             p2_title: "His Kingdom Ministry",
+            hkm_desc: "Comprehensive digital platform for an international organization with media archives, events, and multilingual content.",
             p2_desc: "Non-profit organization",
+            mandal_m1: "💼 Consulting",
+            mandal_m2: "📱 100% Responsive",
+            p7_title: "Mandal Regnskapskontor",
+            mandal_desc: "Clear and trustworthy website for an established accounting firm in Southern Norway with seamless customer dialogue.",
+            p7_desc: "Accounting",
+            p3_m1: "🎨 100% Tailored",
             p3_title: "Tailored design from scratch",
             p3_desc: "Web design",
+            p3_summary: "Pixel-perfect UI/UX tailored to your brand identity for optimal conversions.",
+            p4_m1: "📈 Top Ranking",
             p4_title: "Visibility in Google",
             p4_desc: "SEO",
+            p4_summary: "Technical SEO, structured data, and GEO optimization ranking your business on relevant searches.",
             p5_title: "Brand presence in social media",
             p5_desc: "SoMe",
+            p6_m1: "🛡️ Reliable Operation",
             p6_title: "Maintenance and further development",
             p6_desc: "Support",
-            p7_title: "Mandal Regnskapskontor",
-            p7_desc: "Accounting",
+            p6_summary: "Continuous security updates, monitoring, and technical assistance so you can operate worry-free.",
             mandal_subline: "Accounting, Invoicing, Payroll, and operational support",
             see_full: "See full portfolio"
         },
@@ -234,6 +312,7 @@ const translations = {
             email_label: "Email",
             phone_label: "Phone",
             location_label: "Location",
+            location_val: "Augerødlia 48, 1591 Sperrebotn, Norway",
             location_value: "Augerødlia 48, 1591 Sperrebotn, Norway",
             form_tag: "Contact form",
             form_title: "Briefly describe what you need",
@@ -334,10 +413,12 @@ const translations = {
         },
         testimonial: {
             tag: "Why us",
-            title: "Three reasons to choose us",
+            title: "Three reasons why you should choose us",
             t1_text: "\"By using the latest tools, we ensure a lightning-fast and responsive solution that works well for every user. We build your site from scratch, not from generic templates.\"",
+            t1_title: "Future-proof Technology",
             t1_role: "Fast, responsive and unique",
             t2_text: "\"We combine aesthetics with strategy so your website is not just visually strong, but actually helps turn visitors into customers. From idea to launch, you get support all the way.\"",
+            t2_title: "Design That Converts",
             t2_role: "From visitors to customers",
             trusted_text: "Tailored web design, SEO and SoMe strategy"
         },
@@ -604,21 +685,13 @@ const translations = {
             title: "Portefølje | TK-design",
             heading: "Vår <span class=\"hero-title-highlight\">Portefølje</span>",
             subtitle: "Utforsk et utvalg av våre skreddersydde nettsider, webdesign og digitale løsninger.",
+            pill_speed: "100/100 Google PageSpeed",
+            pill_unique: "100% Unikt Design",
+            pill_seo: "Optimal SEO-struktur",
             loading: "Laster inn grafisk portefølje...",
             graphic_eyebrow: "VISUELL IDENTITET",
             graphic_title: "Grafisk Design & Profilering",
             graphic_desc: "Logoer, markedsmateriell, visuelle profiler og grafisk innhold skreddersydd for din merkevare."
-        },
-        contact_page: {
-            opt_1: "Webdesign + SEO (Anbefalt - Mest populær)",
-            opt_2: "SEO (Søkemotoroptimalisering)",
-            opt_3: "Løpende drift og support",
-            tag_modern: "Moderne & Rent",
-            tag_minimal: "Minimalistisk",
-            tag_dark: "Eksklusivt & Mørkt",
-            tag_shop: "Nettbutikk",
-            tag_multilingual: "Flerspråklig",
-            desired_features: "Ønskede funksjoner på nettsiden"
         },
         nav: {
             home: "Hjem",
@@ -627,12 +700,16 @@ const translations = {
             portfolio: "Prosjekter",
             pricing: "Priser",
             testimonial: "Hvorfor oss",
+            advantages: "Hvorfor oss",
             blog: "Aktuelt",
             contact: "Kontakt",
             sub_webdesign: "Webdesign & Utvikling",
             sub_seo: "SEO-optimalisering",
             sub_support: "Support & Drift",
             sub_analyzer: "Nettside-sjekker"
+        },
+        contact: {
+            email_val: "thomas@tk-design.no"
         },
         pricing: {
             subtitle: "Forutsigbare priser",
@@ -678,6 +755,16 @@ const translations = {
             support_subtitle_tag: "Drift & Vedlikehold",
             support_main_title: "Trenger du løpende drift og support?",
             support_main_desc: "Slipp uforutsette utviklerutgifter. Med en fast supportavtale har du alltid en dedikert spesialist som passer på og overvåker nettsiden din.",
+            badge: "Anbefalt",
+            dev_title: "Ansett heltidsutvikler",
+            dev_subtitle: "Egen fast ressurs",
+            dev_price: "60 000,-",
+            dev_period: "kr / mnd (lønn + sosiale kostnader)",
+            dev_feat1: "Høy økonomisk risiko og binding",
+            dev_feat2: "Arbeidsgiveravgift & pensjon",
+            dev_feat3: "Utstyr og kontorplass kreves",
+            dev_feat4: "Sykepenger og administrasjon",
+            dev_action: "Krever høyt budsjett",
             support_title: "TK-design Supportavtale",
             support_subtitle: "Fleksibel månedlig avtale",
             support_price: "Fra 1 000,-",
@@ -722,6 +809,7 @@ const translations = {
         },
         about: {
             badge: "OM TK-DESIGN",
+            title: "Skaper digitale opplevelser som <span class=\"hero-title-highlight\">gir resultater</span>",
             intro: "TK-design hjelper bedrifter å lykkes på nett. Vi kombinerer skreddersydd webdesign, søkemotoroptimalisering og engasjerende innhold for å bygge en sterk og konverterende digital tilstedeværelse.",
             tabs: {
                 about: "Om oss",
@@ -730,27 +818,83 @@ const translations = {
                 skills: "Verdier"
             },
             about_tab: {
+                tag1: "Web & Teknologi",
                 based_title: "Om TK-design",
-                based_desc: "Vi bygger nettsider, innhold og strategier som gjør bedrifter mer synlige og tydelige på nett.",
+                based_desc: "Vi bygger nettsider, innhold og strategier som gjør bedrifter mer synlige, troverdige og tydelige på nett.",
+                tag2: "Tett Samarbeid",
                 exp_title: "Et lite, dedikert team",
-                exp_desc: "Vi kombinerer webdesign, innhold og strategisk rådgivning i én praktisk leveranse.",
+                exp_desc: "Vi kombinerer webdesign, innhold og strategisk rådgivning i én sømløs og personlig leveranse.",
+                tag3: "Målbar Vekst",
                 client_title: "Varige resultater",
-                client_desc: "Fokus på kreativitet, innovasjon og kvalitet i hver løsning vi leverer."
+                client_desc: "Fokus på kreativitet, lynrask ytelse og høy kvalitet i hver eneste løsning vi leverer."
             },
             experience_tab: {
+                senior_tag: "Daglig leder & Utvikler",
                 senior_role: "Thomas Knutsen",
-                junior_role: "Hilde Karin Knutsen"
+                senior_desc: "Fullstack-utvikling, UX/UI-design og teknisk SEO med fokus på konverterende nettsider.",
+                some_tag: "SoMe & Innhold",
+                some_label: "SoMe & Innhold",
+                junior_role: "Hilde Karin Knutsen",
+                some_desc: "Innholdsstrategi, engasjerende historiefortelling og digital synlighet i sosiale medier."
             },
             education_tab: {
+                mission_tag: "Vår misjon",
                 mission_label: "Vår misjon",
-            degree: "Hjelpe bedrifter å lykkes på nett",
-                university: "Skreddersydde løsninger for små og mellomstore bedrifter som ønsker å vokse digitalt."
+                degree: "Hjelpe bedrifter å lykkes på nett",
+                university: "Skreddersydde løsninger for små og mellomstore bedrifter som ønsker å skille seg ut og vokse digitalt.",
+                future_tag: "Fremtidsrettet",
+                future_title: "Teknologi som varer",
+                future_desc: "Vi bygger modulære, raske og vedlikeholdsvennlige nettsider som gir stabil drift og lave totalkostnader."
             },
             skills_tab: {
-                creativity_desc: "Vi skaper unike, visuelt slående løsninger tilpasset din profil.",
-                innovation_desc: "Vi tar i bruk moderne verktøy og metoder for å gi deg et forsprang.",
-                quality_desc: "Vi leverer gjennomtenkt kode og design som yter optimalt over tid."
+                design_tag: "Design",
+                creativity_title: "Kreativitet",
+                creativity_desc: "Vi skaper unike, visuelt slående løsninger tilpasset din profil og målgruppe.",
+                tech_tag: "Teknologi",
+                innovation_title: "Innovasjon",
+                innovation_desc: "Vi tar i bruk moderne rammeverk og SEO-metoder for å gi deg et solid forsprang.",
+                perf_tag: "Ytelse",
+                quality_title: "Kvalitet",
+                quality_desc: "Vi leverer gjennomtenkt kode og design som yter optimalt og laster lynraskt over tid."
             }
+        },
+        advantages: {
+            tag: "HVORFOR TK-DESIGN",
+            title: "Hvorfor velge en <span class=\"hero-title-highlight\">skreddersydd nettside?</span>",
+            intro: "Trege maler og generiske temabyggere koster bedrifter verdifulle kunder. Vi bygger fra bunnen av med fokus på ekstrem ytelse, konvertering og varig forretningsverdi.",
+            card1_tag: "Ekstrem Ytelse",
+            card1_title: "100/100 Google PageSpeed & Core Web Vitals",
+            card1_desc: "Lynrask lastetid som gir en overlegen brukeropplevelse og et solid forsprang i Googles søkeresultater. Ingen unødvendig kode eller trege temabyggere.",
+            lh_performance: "Ytelse",
+            lh_accessibility: "Tilgjengelighet",
+            lh_best_practices: "Beste Praksis",
+            lh_seo: "SEO",
+            card2_tag: "Håndverk",
+            card2_title: "100% Unik Profil",
+            card2_desc: "Ingen ferdigmaler eller oppbrukte malerier. Vi skaper et skreddersydd visuelt uttrykk som forsterker merkevaren din og bygger tillit fra første sekund.",
+            card3_tag: "Konvertering",
+            card3_title: "Bygget for salg",
+            card3_desc: "Strategisk plasserte knapper, intuitiv navigasjon og optimalisert flyt som gjør vanlige besøkende til betalende kunder.",
+            card4_tag: "Trygghet",
+            card4_title: "Tett partnerskap",
+            card4_desc: "Direkte kontakt med utvikleren uten fordyrende mellomledd. Vi håndterer drift, sikkerhet og oppdateringer så du kan fokusere på driften."
+        },
+        workflow: {
+            tag: "SLIK JOBBER VI",
+            title: "Fra idé til en <span class=\"hero-title-highlight\">konverterende lansering</span>",
+            intro: "En strukturert, transparent og effektiv prosess som sikrer at nettsiden din leveres til avtalt tid, budsjett og med kompromissløs kvalitet.",
+            step1_num: "01",
+            step1_title: "Innsikt & Strategi",
+            step1_desc: "Vi kartlegger dine forretningsmål, målgruppe og konkurrenter for å etablere en krystallklar digital strategi og struktur.",
+            step2_num: "02",
+            step2_title: "Skreddersydd UI/UX",
+            step2_desc: "Vi designer et unikt, skreddersydd visuelt konsept med fokus på ergonomi, estetikk og konverteringsoptimaliserte brukeropplevelser.",
+            step3_num: "03",
+            step3_title: "Egenkodet Utvikling",
+            step3_desc: "Nettsiden kodes fra bunnen av med ren semantisk kode, 100% Core Web Vitals og optimal responsivitet på tvers av alle enheter.",
+            step4_num: "04",
+            step4_title: "SEO & Lansering",
+            step4_desc: "Full teknisk SEO-oppsett, Google Search Console, strukturert data og grundig kvalitetssikring før en vellykket live-lansering."
         },
         awards: {
             title: "Hvorfor velge TK-design?",
@@ -765,22 +909,37 @@ const translations = {
             award_4_cat: "Fra ide til lansering med støtte og opplæring hele veien."
         },
         projects: {
-            title: "Utvalgte prosjekter og leveranser",
-            subtitle: "Vårt arbeid",
+            title: "Nettsider som <span class=\"hero-title-highlight\">skaper resultater</span>",
+            subtitle: "UTVALGTE KUNDECASER",
+            kudos_m1: "⚡ 100/100 Ytelse",
+            kudos_m2: "📍 Askøy & Bergen",
             p1_title: "Kudos Regnskap AS",
+            kudos_desc: "Skreddersydd nettside for statsautorisert regnskapsfører i Vestland med integrert kontaktsystem og topp SEO-rangering.",
             p1_desc: "Regnskap",
+            hkm_m1: "🎥 Medieplattform",
+            hkm_m2: "📅 Kurs & Påmelding",
             p2_title: "His Kingdom Ministry",
+            hkm_desc: "Omfattende digital plattform for internasjonal organisasjon med mediearkiv, arrangementer og flerspråklig innhold.",
             p2_desc: "Frivillig organisasjon",
+            mandal_m1: "💼 Rådgivning",
+            mandal_m2: "📱 100% Responsiv",
+            p7_title: "Mandal Regnskapskontor",
+            mandal_desc: "Klar og tillitsvekkende nettside for etablert regnskapskontor på Sørlandet med enkel kundedialog.",
+            p7_desc: "Regnskap",
+            p3_m1: "🎨 100% Skreddersøm",
             p3_title: "Skreddersydd design fra bunnen av",
             p3_desc: "Webdesign",
+            p3_summary: "Pikselperfekt UI/UX tilpasset din bedrifts merkevareidentitet for optimal konvertering.",
+            p4_m1: "📈 Topplassering",
             p4_title: "Synlighet i Google",
             p4_desc: "SEO",
+            p4_summary: "Teknisk SEO, strukturert data og GEO-optimalisering som rangerer din bedrift på relevante søk.",
             p5_title: "Merkevare i sosiale medier",
             p5_desc: "SoMe",
+            p6_m1: "🛡️ Trygg Drift",
             p6_title: "Vedlikehold og videreutvikling",
             p6_desc: "Support",
-            p7_title: "Mandal Regnskapskontor",
-            p7_desc: "Regnskap",
+            p6_summary: "Løpende sikkerhetsoppdateringer, overvåking og teknisk bistand så du slipper bekymringer.",
             mandal_subline: "Regnskap, Fakturering, Lønn og operativ lederstøtte",
             see_full: "Se full portefølje"
         },
@@ -807,6 +966,7 @@ const translations = {
             email_label: "E-post",
             phone_label: "Telefon",
             location_label: "Sted",
+            location_val: "Augerødlia 48, 1591 Sperrebotn",
             location_value: "Augerødlia 48, 1591 Sperrebotn, Norge",
             form_tag: "Kontaktskjema",
             form_title: "Fortell kort hva du trenger",
@@ -909,8 +1069,10 @@ const translations = {
             tag: "Hvorfor oss",
             title: "Tre ting på hvorfor du bør velge oss",
             t1_text: "\"Ved bruk av de nyeste verktøyene sikrer vi en lynrask og responsiv løsning som fungerer godt for alle brukere. Vi bygger nettsiden din fra bunnen av, ikke fra generiske maler.\"",
+            t1_title: "Fremtidsrettet teknologi",
             t1_role: "Raskt, responsivt og unikt",
             t2_text: "\"Vi kombinerer estetikk med strategi slik at nettsiden ikke bare ser sterk ut, men faktisk hjelper deg å gjøre besøkende til kunder. Fra ide til lansering får du støtte hele veien.\"",
+            t2_title: "Design som konverterer",
             t2_role: "Fra besøkende til kunder",
             trusted_text: "Skreddersydd webdesign, SEO og SoMe-strategi"
         },
@@ -1143,13 +1305,6 @@ const translations = {
             tag: "Dokumentert Tap",
             title: "Hvor mye koster en treg side deg?",
             desc: "Visste du at en treg nettside i snitt koster bedrifter 65 % av kundene før siden i det hele tatt har lastet? Ikke la konkurrentene ta de 200 % med organisk trafikk du går glipp av hver måned."
-        },
-        contact_page: {
-            step_start: "Startet (100%)",
-            step_config: "1. Konfigurasjon",
-            step_company: "2. Bedriftsinfo",
-            step_contact: "3. Kontakt",
-            form_submit: "Få mitt skreddersydde forslag"
         }
     }
 };
