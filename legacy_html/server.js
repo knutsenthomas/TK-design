@@ -4699,10 +4699,12 @@ app.post('/api/admin/storage/upload', verifyAdminToken, adminStorageUploadMiddle
         const mimeType = String(file.mimetype || inferMimeTypeFromFileName(file.originalname))
             .trim()
             .toLowerCase();
-        if (!mimeType.startsWith('image/')) {
+        const isImage = mimeType.startsWith('image/');
+        const isPdf = mimeType === 'application/pdf' || file.originalname.toLowerCase().endsWith('.pdf');
+        if (!isImage && !isPdf) {
             return res.status(400).json({
                 error: 'Ugyldig filtype',
-                details: 'Kun bildefiler er tillatt i denne opplastingen.'
+                details: 'Kun bildefiler (JPG, PNG, WebP, SVG) og PDF-dokumenter er tillatt.'
             });
         }
 

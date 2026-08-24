@@ -484,19 +484,23 @@
                 </header>
 
                 <div class="card" style="margin-bottom: 24px;">
-                    <h3>Last opp nytt bilde</h3>
+                    <h3>Last opp nytt grafisk element (Bilde eller PDF)</h3>
                     <form id="graphicUploadForm" style="margin-top: 16px;">
                         <div style="margin-bottom: 16px;">
                             <label>Tittel</label>
-                            <input type="text" id="graphicTitle" required class="sidebar-control" style="width: 100%; max-width: 400px; padding: 8px;">
+                            <input type="text" id="graphicTitle" required class="sidebar-control" style="width: 100%; max-width: 400px; padding: 8px;" placeholder="f.eks. Flyers, Logo, Brosjyre">
                         </div>
                         <div style="margin-bottom: 16px;">
                             <label>Beskrivelse</label>
-                            <input type="text" id="graphicDesc" required class="sidebar-control" style="width: 100%; max-width: 400px; padding: 8px;">
+                            <input type="text" id="graphicDesc" required class="sidebar-control" style="width: 100%; max-width: 400px; padding: 8px;" placeholder="Kort beskrivelse av innholdet">
                         </div>
                         <div style="margin-bottom: 16px;">
-                            <label>Bilde(r)</label>
-                            <input type="file" id="graphicFile" accept="image/*" multiple required style="display: block; margin-top: 8px;">
+                            <label>Kategori (valgfritt)</label>
+                            <input type="text" id="graphicCategory" class="sidebar-control" style="width: 100%; max-width: 400px; padding: 8px;" placeholder="f.eks. Flyer / PDF, Logo & Profil, Plakat">
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <label>Fil(er) (JPG, PNG, WebP, SVG eller PDF)</label>
+                            <input type="file" id="graphicFile" accept="image/*,.pdf,application/pdf" multiple required style="display: block; margin-top: 8px;">
                         </div>
                         <button type="submit" class="save-btn" style="margin-top: 8px; padding: 10px 20px; font-weight: 600;">Last opp & publiser</button>
                         <p id="graphicUploadProgress" style="margin-top: 8px; color: #666;"></p>
@@ -515,17 +519,19 @@
                                 return;
                             }
                             
-                            const title = document.getElementById('graphicTitle').value;
-                            const desc = document.getElementById('graphicDesc').value;
+                            const title = document.getElementById('graphicTitle').value.trim();
+                            const desc = document.getElementById('graphicDesc').value.trim();
+                            const catInput = document.getElementById('graphicCategory');
+                            const customCategory = catInput ? catInput.value.trim() : '';
                             const fileInput = document.getElementById('graphicFile');
                             const files = Array.from(fileInput.files);
                             
-                            if (files.length === 0) return alert('Velg minst ett bilde!');
+                            if (files.length === 0) return alert('Velg minst én fil (bilde eller PDF)!');
                             
                             const btn = form.querySelector('button');
                             btn.disabled = true;
                             btn.innerText = 'Laster opp...';
-                            progress.innerText = \`Laster opp \${files.length} bilde(r)...\`;
+                            progress.innerText = `Laster opp ${files.length} fil(er)...`;
                             progress.style.color = '#666';
                             
                             try {
@@ -535,14 +541,19 @@
                                 }
                                 
                                 const headers = {};
-                                if (token) headers['Authorization'] = \`Bearer \${token}\`;
+                                if (token) headers['Authorization'] = `Bearer ${token}`;
 
                                 const imageUrls = [];
+                                let hasPdf = false;
                                 
                                 for (let i = 0; i < files.length; i++) {
-                                    progress.innerText = \`Laster opp bilde \${i + 1} av \${files.length}...\`;
+                                    const f = files[i];
+                                    if (f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf')) {
+                                        hasPdf = true;
+                                    }
+                                    progress.innerText = `Laster opp fil ${i + 1} av ${files.length}...`;
                                     const formData = new FormData();
-                                    formData.append('file', files[i]);
+                                    formData.append('file', f);
                                     formData.append('folder', 'grafisk');
                                     
                                     const res = await fetch('/api/admin/storage/upload', {
@@ -552,22 +563,27 @@
                                     });
                                     
                                     const payload = await res.json();
-                                    if (!res.ok) throw new Error(payload?.details || payload?.error || \`Opplasting av bilde \${i + 1} feilet\`);
+                                    if (!res.ok) throw new Error(payload?.details || payload?.error || `Opplasting av fil ${i + 1} feilet`);
                                     
                                     imageUrls.push(payload.publicUrl || payload.url);
                                 }
                                 
                                 progress.innerText = 'Lagrer i database...';
                                 
+                                const defaultCategory = hasPdf ? 'Flyer / PDF' : 'Grafisk Design';
+                                const category = customCategory || defaultCategory;
+                                
                                 await window.firebaseDb.collection('graphicDocs').add({
                                     title: title,
                                     description: desc,
+                                    category: category,
+                                    isPdf: hasPdf,
                                     imageUrl: imageUrls[0], // For bakoverkompatibilitet
                                     imageUrls: imageUrls,
                                     createdAt: window.firebase.firestore.FieldValue.serverTimestamp()
                                 });
                                 
-                                progress.innerText = 'Vellykket! Lagret.';
+                                progress.innerText = 'Vellykket! Lagret og publisert.';
                                 progress.style.color = 'green';
                                 form.reset();
                                 if (typeof window.loadGraphicDocuments === 'function') window.loadGraphicDocuments();

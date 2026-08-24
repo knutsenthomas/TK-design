@@ -51,20 +51,38 @@
             snapshot.forEach((documentSnap) => {
                 const data = documentSnap.data();
                 const id = documentSnap.id;
-                const badge = (data.imageUrls && data.imageUrls.length > 1) 
-                    ? \`<div style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold;">📁 \${data.imageUrls.length} bilder</div>\` 
-                    : '';
-                html += \`
-                    <div class="card" style="position: relative; display: flex; flex-direction: column;">
-                        <img src="\${data.imageUrl}" alt="\${data.title}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">
-                        \${badge}
-                        <div style="padding: 16px 0 0 0;">
-                            <h4 style="margin: 0 0 8px 0;">\${data.title}</h4>
-                            <p style="color: #666; font-size: 0.9rem; margin: 0 0 16px 0;">\${data.description}</p>
+                const url = data.imageUrl || (data.imageUrls && data.imageUrls[0]) || '';
+                const isPdf = data.isPdf || (url && url.toLowerCase().includes('.pdf'));
+                const count = (data.imageUrls && data.imageUrls.length) || 1;
+                
+                const badge = count > 1 
+                    ? `<div style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold;">📁 ${count} filer</div>` 
+                    : (isPdf ? `<div style="position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold;">📄 PDF</div>` : '');
+                
+                const mediaPreview = isPdf 
+                    ? `<div style="width: 100%; height: 180px; background: #fef2f2; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid #fee2e2;">
+                         <span style="font-size: 48px;">📄</span>
+                         <span style="font-weight: 700; font-size: 0.8rem; color: #991b1b; margin-top: 6px;">PDF-DOKUMENT</span>
+                       </div>`
+                    : `<div style="width: 100%; height: 180px; background: #f8fafc; display: flex; align-items: center; justify-content: center; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; padding: 8px; box-sizing: border-box;">
+                         <img src="${url}" alt="${data.title || ''}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                       </div>`;
+
+                html += `
+                    <div class="card" style="position: relative; display: flex; flex-direction: column; padding: 14px; background: white; border-radius: 12px; border: 1px solid #e2e8f0;">
+                        ${mediaPreview}
+                        ${badge}
+                        <div style="padding: 12px 0 0 0; flex: 1;">
+                            <span style="display: inline-block; font-size: 0.75rem; font-weight: 700; color: #f97316; text-transform: uppercase; margin-bottom: 4px;">${data.category || (isPdf ? 'Flyer / PDF' : 'Grafisk')}</span>
+                            <h4 style="margin: 0 0 6px 0; font-size: 1.05rem;">${data.title || 'Uten tittel'}</h4>
+                            <p style="color: #666; font-size: 0.88rem; margin: 0 0 12px 0; line-height: 1.4;">${data.description || ''}</p>
                         </div>
-                        <button class="delete-graphic-btn" data-id="\${id}" style="margin-top: auto; background: var(--danger, #ef4444); color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer;">Slett</button>
+                        <div style="display: flex; gap: 8px; margin-top: auto;">
+                            <a href="${url}" target="_blank" rel="noopener noreferrer" style="flex: 1; text-align: center; background: #f1f5f9; color: #1e293b; padding: 8px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 600;">Åpne fil</a>
+                            <button class="delete-graphic-btn" data-id="${id}" style="background: var(--danger, #ef4444); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">Slett</button>
+                        </div>
                     </div>
-                \`;
+                `;
             });
             
             if (html === '') {

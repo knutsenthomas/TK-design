@@ -31,18 +31,23 @@
         if (!doc || !doc.fields) return null;
         const f = doc.fields;
         const getString = (field) => field?.stringValue || '';
+        const getBoolean = (field) => field?.booleanValue ?? false;
         const getArray = (field) => {
             if (!field?.arrayValue?.values) return [];
             return field.arrayValue.values.map((v) => v.stringValue).filter(Boolean);
         };
 
+        const imgUrl = getString(f.imageUrl) || '';
+        const isPdf = getBoolean(f.isPdf) || imgUrl.toLowerCase().includes('.pdf');
+
         return {
             id: doc.name ? doc.name.split('/').pop() : '',
             title: getString(f.title) || 'Uten tittel',
             description: getString(f.description) || '',
-            imageUrl: getString(f.imageUrl) || '',
+            imageUrl: imgUrl,
             imageUrls: getArray(f.imageUrls),
-            category: getString(f.category) || 'Logo & Profil'
+            category: getString(f.category) || (isPdf ? 'Flyer / PDF' : 'Logo & Profil'),
+            isPdf: isPdf
         };
     }
 
@@ -50,22 +55,66 @@
         const title = item.title || 'Grafisk arbeid';
         const description = item.description || '';
         const imageUrl = item.imageUrl || '/img/logo/d.png';
-        const category = item.category || 'Grafisk Design';
         const imageUrls = item.imageUrls || [];
+        const isPdf = item.isPdf || (imageUrl && imageUrl.toLowerCase().includes('.pdf'));
+        const category = item.category || (isPdf ? 'Flyer / PDF' : 'Grafisk Design');
 
         const article = document.createElement('article');
         article.className = 'project-card graphic-card';
         article.setAttribute('data-aos', 'fade-up');
 
+        let mediaBoxHtml = '';
+        let buttonText = 'Åpne fullversjon';
+        let buttonIcon = 'fa-arrow-up-right-from-square';
+
+        if (isPdf) {
+            buttonText = 'Åpne PDF';
+            buttonIcon = 'fa-file-pdf';
+            mediaBoxHtml = `
+                <div class="graphic-img-box" style="position: relative; width: 100%; height: 240px; background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid rgba(239, 68, 68, 0.12); padding: 20px; box-sizing: border-box;">
+                    <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none;">
+                        <i class="fas fa-file-pdf" style="font-size: 56px; color: #e11d48; margin-bottom: 12px; filter: drop-shadow(0 4px 10px rgba(225, 29, 72, 0.2));"></i>
+                        <span style="font-size: 0.8rem; font-weight: 800; color: #9f1239; text-transform: uppercase; letter-spacing: 0.6px;">PDF-DOKUMENT</span>
+                    </a>
+                    <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" class="project-arrow-btn" aria-label="Åpne ${title} PDF i ny fane">
+                        <i class="fas fa-file-pdf"></i>
+                    </a>
+                </div>
+            `;
+        } else {
+            mediaBoxHtml = `
+                <div class="graphic-img-box" style="position: relative; width: 100%; height: 240px; background: #f8fafc; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid rgba(18, 55, 92, 0.06); padding: 20px; box-sizing: border-box;">
+                    <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                        <img src="${imageUrl}" class="project-main-img" alt="${title}" loading="lazy" style="max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
+                    </a>
+                    <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" class="project-arrow-btn" aria-label="Vis ${title} i full størrelse">
+                        <i class="fas fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+            `;
+        }
+
         let galleryHtml = '';
         if (imageUrls && imageUrls.length > 1) {
-            const thumbs = imageUrls.map((url, idx) => `
-                <img src="${url}" 
-                     class="thumb-img" 
-                     onclick="this.closest('.project-card').querySelector('.project-main-img').src = '${url}'; this.closest('.project-card').querySelector('.project-view-link').href = '${url}';"
-                     style="width: 52px; height: 52px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid rgba(18, 55, 92, 0.1); flex-shrink: 0; transition: transform 0.2s ease;"
-                     alt="${title} bilde ${idx + 1}">
-            `).join('');
+            const thumbs = imageUrls.map((url, idx) => {
+                const isThumbPdf = url.toLowerCase().includes('.pdf');
+                if (isThumbPdf) {
+                    return `
+                        <div onclick="this.closest('.project-card').querySelector('.project-view-link, a').href = '${url}';"
+                             style="width: 52px; height: 52px; background: #fee2e2; border-radius: 8px; cursor: pointer; border: 2px solid rgba(239, 68, 68, 0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0;"
+                             title="PDF-side ${idx + 1}">
+                             <i class="fas fa-file-pdf" style="color: #ef4444; font-size: 20px;"></i>
+                        </div>
+                    `;
+                }
+                return `
+                    <img src="${url}" 
+                         class="thumb-img" 
+                         onclick="this.closest('.project-card').querySelector('.project-main-img').src = '${url}'; this.closest('.project-card').querySelector('a').href = '${url}';"
+                         style="width: 52px; height: 52px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid rgba(18, 55, 92, 0.1); flex-shrink: 0; transition: transform 0.2s ease;"
+                         alt="${title} bilde ${idx + 1}">
+                `;
+            }).join('');
 
             galleryHtml = `
                 <div style="display: flex; gap: 8px; padding: 12px 24px 0; overflow-x: auto;">
@@ -75,14 +124,7 @@
         }
 
         article.innerHTML = `
-            <div class="graphic-img-box" style="position: relative; width: 100%; height: 240px; background: #f8fafc; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid rgba(18, 55, 92, 0.06); padding: 20px; box-sizing: border-box;">
-                <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
-                    <img src="${imageUrl}" class="project-main-img" alt="${title}" loading="lazy" style="max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
-                </a>
-                <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" class="project-arrow-btn" aria-label="Vis ${title} i full størrelse">
-                    <i class="fas fa-arrow-up-right-from-square"></i>
-                </a>
-            </div>
+            ${mediaBoxHtml}
             ${galleryHtml}
             <div class="graphic-card-body" style="padding: 24px; display: flex; flex-direction: column; flex: 1;">
                 <div class="project-tags-row" style="margin-bottom: 12px;">
@@ -95,7 +137,7 @@
                     ${description}
                 </p>
                 <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" class="primary-cta" style="width: 100%; text-align: center; justify-content: center; padding: 10px 16px; font-size: 0.9rem; border-radius: 10px;">
-                    <i class="fas fa-arrow-up-right-from-square" style="margin-right: 6px;"></i> Åpne fullversjon
+                    <i class="fas ${buttonIcon}" style="margin-right: 6px;"></i> ${buttonText}
                 </a>
             </div>
         `;
