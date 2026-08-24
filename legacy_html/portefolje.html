@@ -324,11 +324,6 @@
         <section class="subpage-hero-section">
             <div class="container">
                 <div class="subpage-hero-inner">
-                    <div class="subpage-breadcrumb">
-                        <a href="/" data-i18n="nav.home">Hjem</a>
-                        <span class="subpage-breadcrumb-sep">/</span>
-                        <span data-i18n="nav.portfolio">Prosjekter</span>
-                    </div>
                     <div class="hero-eyebrow-badge" style="margin: 0 auto 16px auto;">
                         <span class="hero-badge-dot"></span>
                         <span data-i18n="projects.subtitle">VÅRT ARBEID</span>
@@ -510,91 +505,32 @@
             </div>
         </section>
 
-        <!-- Graphic Design -->
-        <div>
-            <h2 style="font-size: 2rem; margin-bottom: 32px; border-bottom: 2px solid var(--clr-base); display: inline-block; padding-bottom: 8px; color: var(--clr-base);">Grafisk Design</h2>
-            <div class="grid" id="graphic-docs-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 32px;">
-                <p style="text-align: center; width: 100%; color: #666;"><span data-i18n="portfolio_page.loading">Laster inn grafisk portefølje...</span></p>
+        <!-- =========================================
+             GRAFISK DESIGN SEKSJON
+             ========================================= -->
+        <section class="graphic-design-section pt_120 pb_120" style="border-top: 1px solid var(--clr-border, rgba(18, 55, 92, 0.08)); background: #fafcff;">
+            <div class="container">
+                <div class="section-header text-center" style="margin-bottom: 56px;" data-aos="fade-up">
+                    <div class="hero-eyebrow-badge" style="margin: 0 auto 16px auto;">
+                        <span class="hero-badge-dot"></span>
+                        <span data-i18n="portfolio_page.graphic_eyebrow">VISUELL IDENTITET</span>
+                    </div>
+                    <h2 class="subpage-title" style="font-size: clamp(2rem, 4vw, 2.8rem); margin-bottom: 16px;" data-i18n="portfolio_page.graphic_title">
+                        Grafisk Design & Profilering
+                    </h2>
+                    <p class="subpage-lead" style="max-width: 620px; margin: 0 auto;" data-i18n="portfolio_page.graphic_desc">
+                        Logoer, markedsmateriell, visuelle profiler og grafisk innhold skreddersydd for din merkevare.
+                    </p>
+                </div>
+
+                <div class="projects-grid" id="graphic-docs-grid">
+                    <!-- Rendres umiddelbart via documents.js -->
+                </div>
             </div>
-        </div>
+        </section>
     </main>
 
-    <script src="/js/firebase-config.js"></script>
-    <script type="module" src="/js/documents.js"></script>
-    <style>
-        /* Styles for Graphic Design Grid */
-        .grid .card {
-            background: var(--card-bg, #ffffff);
-            border-radius: var(--radius-card, 20px);
-            border: 1px solid var(--border, rgba(0, 0, 0, 0.08));
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-            overflow: hidden;
-            transition: transform 200ms ease-out, box-shadow 200ms ease-out;
-            display: flex;
-            flex-direction: column;
-        }
-        .grid .card:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-        .grid .card-img {
-            width: 100%;
-            height: 250px;
-            background: #e2e8f0;
-            object-fit: cover;
-        }
-        .grid .card-content {
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-        }
-        .grid .card-title {
-            font-size: 1.25rem;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-        .grid .card-desc {
-            color: var(--text-muted, #64748b);
-            margin-bottom: 24px;
-            flex: 1;
-            font-size: 15px;
-            line-height: 1.5;
-        }
-        .grid .tags {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 24px;
-        }
-        .grid .tag {
-            background: #f1f5f9;
-            color: var(--text-muted, #64748b);
-            padding: 4px 12px;
-            border-radius: 100px;
-            font-size: 0.875rem;
-            border: 1px solid var(--border, rgba(0, 0, 0, 0.08));
-        }
-        .grid .btn {
-            display: inline-block;
-            background: var(--primary-color, #f97316);
-            color: white;
-            padding: 12px 24px;
-            border-radius: var(--radius-btn, 12px);
-            text-decoration: none;
-            font-weight: 500;
-            text-align: center;
-        }
-        
-        /* Adjust existing projects layout to fit in new container */
-        #projects {
-            padding-top: 0 !important;
-            padding-bottom: 0 !important;
-        }
-        #projects .section-title, #projects .section-header p {
-            display: none; /* Hide the old title/subtitle since we have the new H2 */
-        }
-    </style>
+    <script src="/js/documents.js"></script>
 
 
     <!-- =========================================

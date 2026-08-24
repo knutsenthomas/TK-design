@@ -31,7 +31,10 @@ const translations = {
             title: "Portfolio | TK-design",
             heading: "Our <span class=\"hero-title-highlight\">Portfolio</span>",
             subtitle: "Explore a selection of our tailored websites, web design and digital solutions.",
-            loading: "Loading graphic portfolio..."
+            loading: "Loading graphic portfolio...",
+            graphic_eyebrow: "VISUAL IDENTITY",
+            graphic_title: "Graphic Design & Branding",
+            graphic_desc: "Logos, marketing materials, brand guidelines and digital visuals designed to elevate your business."
         },
         nav: {
             home: "Home",
@@ -601,7 +604,10 @@ const translations = {
             title: "Portefølje | TK-design",
             heading: "Vår <span class=\"hero-title-highlight\">Portefølje</span>",
             subtitle: "Utforsk et utvalg av våre skreddersydde nettsider, webdesign og digitale løsninger.",
-            loading: "Laster inn grafisk portefølje..."
+            loading: "Laster inn grafisk portefølje...",
+            graphic_eyebrow: "VISUELL IDENTITET",
+            graphic_title: "Grafisk Design & Profilering",
+            graphic_desc: "Logoer, markedsmateriell, visuelle profiler og grafisk innhold skreddersydd for din merkevare."
         },
         contact_page: {
             opt_1: "Webdesign + SEO (Anbefalt - Mest populær)",
