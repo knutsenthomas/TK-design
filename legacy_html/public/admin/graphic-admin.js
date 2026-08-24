@@ -32,6 +32,27 @@
         return payload.publicUrl || payload.url;
     }
 
+    let pdfjsLoadingPromise = null;
+    window.loadPdfJs = function() {
+        if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+        if (pdfjsLoadingPromise) return pdfjsLoadingPromise;
+        pdfjsLoadingPromise = new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+            script.onload = () => {
+                if (window.pdfjsLib) {
+                    window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                    resolve(window.pdfjsLib);
+                } else {
+                    reject(new Error('PDF.js unavailable'));
+                }
+            };
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+        return pdfjsLoadingPromise;
+    };
+
     window.loadGraphicDocuments = async function() {
         if (!graphicPortfolioGrid) return;
         
@@ -53,20 +74,28 @@
                 const id = documentSnap.id;
                 const url = data.imageUrl || (data.imageUrls && data.imageUrls[0]) || '';
                 const isPdf = data.isPdf || (url && url.toLowerCase().includes('.pdf'));
+                const thumb = data.thumbnailUrl || (isPdf ? '' : url);
                 const count = (data.imageUrls && data.imageUrls.length) || 1;
                 
                 const badge = count > 1 
                     ? `<div style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold;">📁 ${count} filer</div>` 
                     : (isPdf ? `<div style="position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold;">📄 PDF</div>` : '');
                 
-                const mediaPreview = isPdf 
-                    ? `<div class="admin-pdf-preview-box" data-pdf-url="${url}" style="width: 100%; height: 180px; background: #fef2f2; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid #fee2e2; overflow: hidden; padding: 10px; box-sizing: border-box;">
+                let mediaPreview = '';
+                if (thumb) {
+                    mediaPreview = `<div style="width: 100%; height: 180px; background: #f8fafc; display: flex; align-items: center; justify-content: center; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; padding: 8px; box-sizing: border-box;">
+                         <img src="${thumb}" alt="${data.title || ''}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                       </div>`;
+                } else if (isPdf) {
+                    mediaPreview = `<div class="admin-pdf-preview-box" data-pdf-url="${url}" style="width: 100%; height: 180px; background: #fef2f2; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid #fee2e2; overflow: hidden; padding: 10px; box-sizing: border-box;">
                          <span style="font-size: 40px;">📄</span>
                          <span style="font-weight: 700; font-size: 0.75rem; color: #991b1b; margin-top: 6px;">PDF-DOKUMENT</span>
-                       </div>`
-                    : `<div style="width: 100%; height: 180px; background: #f8fafc; display: flex; align-items: center; justify-content: center; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; padding: 8px; box-sizing: border-box;">
+                       </div>`;
+                } else {
+                    mediaPreview = `<div style="width: 100%; height: 180px; background: #f8fafc; display: flex; align-items: center; justify-content: center; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; padding: 8px; box-sizing: border-box;">
                          <img src="${url}" alt="${data.title || ''}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
                        </div>`;
+                }
 
                 html += `
                     <div class="card" style="position: relative; display: flex; flex-direction: column; padding: 14px; background: white; border-radius: 12px; border: 1px solid #e2e8f0;">
@@ -90,7 +119,7 @@
             } else {
                 graphicPortfolioGrid.innerHTML = html;
                 
-                // Render PDF thumbnails
+                // Render PDF thumbnails via proxy for existing PDFs
                 const pdfBoxes = graphicPortfolioGrid.querySelectorAll('.admin-pdf-preview-box[data-pdf-url]');
                 pdfBoxes.forEach(box => {
                     const pdfUrl = box.getAttribute('data-pdf-url');
@@ -121,35 +150,18 @@
             console.error("Feil ved lasting av grafisk portefølje:", err);
             graphicPortfolioGrid.innerHTML = '<p style="color: red;">Feil: Kunne ikke hente data fra Firebase. Sjekk konsollen.</p>';
         }
-    }
-
-    let pdfjsLoadingPromise = null;
-    function loadPdfJs() {
-        if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
-        if (pdfjsLoadingPromise) return pdfjsLoadingPromise;
-        pdfjsLoadingPromise = new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-            script.onload = () => {
-                if (window.pdfjsLib) {
-                    window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-                    resolve(window.pdfjsLib);
-                } else {
-                    reject(new Error('PDF.js unavailable'));
-                }
-            };
-            script.onerror = reject;
-            document.head.appendChild(script);
-        });
-        return pdfjsLoadingPromise;
-    }
+    };
 
     async function renderAdminPdfThumbnail(container, pdfUrl) {
         if (!container || !pdfUrl) return;
         try {
-            const pdfjs = await loadPdfJs();
+            const pdfjs = await window.loadPdfJs();
+            const proxyUrl = pdfUrl.startsWith('http') && !pdfUrl.includes('/api/proxy-pdf')
+                ? `/api/proxy-pdf?url=${encodeURIComponent(pdfUrl)}`
+                : pdfUrl;
+
             const loadingTask = pdfjs.getDocument({
-                url: pdfUrl,
+                url: proxyUrl,
                 cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
                 cMapPacked: true
             });
@@ -183,8 +195,6 @@
             console.warn('Kunne ikke generere admin PDF-forhåndsvisning:', e);
         }
     }
-
-    // The submit listener has been moved to an inline script in index.html to guarantee it runs
 
     // Initialize when DOM is ready
     if (document.readyState === 'loading') {

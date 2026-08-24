@@ -38,6 +38,7 @@
         };
 
         const imgUrl = getString(f.imageUrl) || '';
+        const thumbUrl = getString(f.thumbnailUrl) || '';
         const isPdf = getBoolean(f.isPdf) || imgUrl.toLowerCase().includes('.pdf');
 
         return {
@@ -45,6 +46,7 @@
             title: getString(f.title) || 'Uten tittel',
             description: getString(f.description) || '',
             imageUrl: imgUrl,
+            thumbnailUrl: thumbUrl,
             imageUrls: getArray(f.imageUrls),
             category: getString(f.category) || (isPdf ? 'Flyer / PDF' : 'Logo & Profil'),
             isPdf: isPdf
@@ -55,6 +57,7 @@
         const title = item.title || 'Grafisk arbeid';
         const description = item.description || '';
         const imageUrl = item.imageUrl || '/img/logo/d.png';
+        const thumbnailUrl = item.thumbnailUrl || '';
         const imageUrls = item.imageUrls || [];
         const isPdf = item.isPdf || (imageUrl && imageUrl.toLowerCase().includes('.pdf'));
         const category = item.category || (isPdf ? 'Flyer / PDF' : 'Grafisk Design');
@@ -70,17 +73,30 @@
         if (isPdf) {
             buttonText = 'Åpne PDF';
             buttonIcon = 'fa-file-pdf';
-            mediaBoxHtml = `
-                <div class="graphic-img-box pdf-preview-box" data-pdf-url="${imageUrl}" style="position: relative; width: 100%; height: 240px; background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid rgba(239, 68, 68, 0.12); padding: 16px; box-sizing: border-box;">
-                    <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none;">
-                        <i class="fas fa-file-pdf" style="font-size: 56px; color: #e11d48; margin-bottom: 12px; filter: drop-shadow(0 4px 10px rgba(225, 29, 72, 0.2));"></i>
-                        <span style="font-size: 0.8rem; font-weight: 800; color: #9f1239; text-transform: uppercase; letter-spacing: 0.6px;">PDF-DOKUMENT</span>
-                    </a>
-                    <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" class="project-arrow-btn" aria-label="Åpne ${title} PDF i ny fane">
-                        <i class="fas fa-file-pdf"></i>
-                    </a>
-                </div>
-            `;
+            if (thumbnailUrl) {
+                mediaBoxHtml = `
+                    <div class="graphic-img-box" style="position: relative; width: 100%; height: 240px; background: #f8fafc; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid rgba(18, 55, 92, 0.06); padding: 16px; box-sizing: border-box;">
+                        <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                            <img src="${thumbnailUrl}" class="project-main-img" alt="${title}" loading="lazy" style="max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; border-radius: 4px; box-shadow: 0 4px 14px rgba(0,0,0,0.12); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
+                        </a>
+                        <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" class="project-arrow-btn" aria-label="Åpne ${title} PDF i ny fane">
+                            <i class="fas fa-file-pdf"></i>
+                        </a>
+                    </div>
+                `;
+            } else {
+                mediaBoxHtml = `
+                    <div class="graphic-img-box pdf-preview-box" data-pdf-url="${imageUrl}" style="position: relative; width: 100%; height: 240px; background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid rgba(239, 68, 68, 0.12); padding: 16px; box-sizing: border-box;">
+                        <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none;">
+                            <i class="fas fa-file-pdf" style="font-size: 56px; color: #e11d48; margin-bottom: 12px; filter: drop-shadow(0 4px 10px rgba(225, 29, 72, 0.2));"></i>
+                            <span style="font-size: 0.8rem; font-weight: 800; color: #9f1239; text-transform: uppercase; letter-spacing: 0.6px;">PDF-DOKUMENT</span>
+                        </a>
+                        <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" class="project-arrow-btn" aria-label="Åpne ${title} PDF i ny fane">
+                            <i class="fas fa-file-pdf"></i>
+                        </a>
+                    </div>
+                `;
+            }
         } else {
             mediaBoxHtml = `
                 <div class="graphic-img-box" style="position: relative; width: 100%; height: 240px; background: #f8fafc; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid rgba(18, 55, 92, 0.06); padding: 20px; box-sizing: border-box;">
@@ -170,8 +186,12 @@
         if (!container || !pdfUrl) return;
         try {
             const pdfjs = await loadPdfJs();
+            const proxyUrl = pdfUrl.startsWith('http') && !pdfUrl.includes('/api/proxy-pdf')
+                ? `/api/proxy-pdf?url=${encodeURIComponent(pdfUrl)}`
+                : pdfUrl;
+
             const loadingTask = pdfjs.getDocument({
-                url: pdfUrl,
+                url: proxyUrl,
                 cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
                 cMapPacked: true
             });

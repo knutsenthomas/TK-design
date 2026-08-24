@@ -4726,6 +4726,34 @@ app.post('/api/admin/storage/upload', verifyAdminToken, adminStorageUploadMiddle
     }
 });
 
+app.get('/api/proxy-pdf', (req, res) => {
+    try {
+        const rawUrl = req.query.url;
+        if (!rawUrl || typeof rawUrl !== 'string') {
+            return res.status(400).send('Missing url parameter');
+        }
+
+        const parsed = new URL(rawUrl);
+        if (!parsed.hostname.includes('firebasestorage.googleapis.com') && !parsed.hostname.includes('googleapis.com')) {
+            return res.status(403).send('Invalid domain');
+        }
+
+        const https = require('https');
+        https.get(rawUrl, (remoteRes) => {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Cache-Control', 'public, max-age=86400');
+            remoteRes.pipe(res);
+        }).on('error', (err) => {
+            console.error('Proxy PDF error:', err);
+            res.status(500).send('Failed to fetch PDF');
+        });
+    } catch (e) {
+        res.status(500).send(e.message);
+    }
+});
+
 function getSiteBaseUrl(req) {
     const configured = String(process.env.SITE_URL || '').trim().replace(/\/+$/, '');
     if (configured) {
