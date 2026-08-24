@@ -60,9 +60,9 @@
                     : (isPdf ? `<div style="position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold;">📄 PDF</div>` : '');
                 
                 const mediaPreview = isPdf 
-                    ? `<div style="width: 100%; height: 180px; background: #fef2f2; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid #fee2e2;">
-                         <span style="font-size: 48px;">📄</span>
-                         <span style="font-weight: 700; font-size: 0.8rem; color: #991b1b; margin-top: 6px;">PDF-DOKUMENT</span>
+                    ? `<div class="admin-pdf-preview-box" data-pdf-url="${url}" style="width: 100%; height: 180px; background: #fef2f2; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid #fee2e2; overflow: hidden; padding: 10px; box-sizing: border-box;">
+                         <span style="font-size: 40px;">📄</span>
+                         <span style="font-weight: 700; font-size: 0.75rem; color: #991b1b; margin-top: 6px;">PDF-DOKUMENT</span>
                        </div>`
                     : `<div style="width: 100%; height: 180px; background: #f8fafc; display: flex; align-items: center; justify-content: center; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; padding: 8px; box-sizing: border-box;">
                          <img src="${url}" alt="${data.title || ''}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
@@ -90,6 +90,13 @@
             } else {
                 graphicPortfolioGrid.innerHTML = html;
                 
+                // Render PDF thumbnails
+                const pdfBoxes = graphicPortfolioGrid.querySelectorAll('.admin-pdf-preview-box[data-pdf-url]');
+                pdfBoxes.forEach(box => {
+                    const pdfUrl = box.getAttribute('data-pdf-url');
+                    if (pdfUrl) renderAdminPdfThumbnail(box, pdfUrl);
+                });
+
                 // Bind delete buttons
                 document.querySelectorAll('.delete-graphic-btn').forEach(btn => {
                     btn.addEventListener('click', async (e) => {
@@ -113,6 +120,67 @@
         } catch (err) {
             console.error("Feil ved lasting av grafisk portefølje:", err);
             graphicPortfolioGrid.innerHTML = '<p style="color: red;">Feil: Kunne ikke hente data fra Firebase. Sjekk konsollen.</p>';
+        }
+    }
+
+    let pdfjsLoadingPromise = null;
+    function loadPdfJs() {
+        if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+        if (pdfjsLoadingPromise) return pdfjsLoadingPromise;
+        pdfjsLoadingPromise = new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+            script.onload = () => {
+                if (window.pdfjsLib) {
+                    window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                    resolve(window.pdfjsLib);
+                } else {
+                    reject(new Error('PDF.js unavailable'));
+                }
+            };
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+        return pdfjsLoadingPromise;
+    }
+
+    async function renderAdminPdfThumbnail(container, pdfUrl) {
+        if (!container || !pdfUrl) return;
+        try {
+            const pdfjs = await loadPdfJs();
+            const loadingTask = pdfjs.getDocument({
+                url: pdfUrl,
+                cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
+                cMapPacked: true
+            });
+            const pdfDoc = await loadingTask.promise;
+            const page = await pdfDoc.getPage(1);
+
+            const unscaledViewport = page.getViewport({ scale: 1.0 });
+            const targetWidth = container.clientWidth || 250;
+            const targetHeight = container.clientHeight || 180;
+            const scale = Math.min(targetWidth / unscaledViewport.width, targetHeight / unscaledViewport.height) * (window.devicePixelRatio || 1.5);
+            const viewport = page.getViewport({ scale: Math.max(scale, 0.7) });
+
+            const canvas = document.createElement('canvas');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            canvas.style.maxWidth = '100%';
+            canvas.style.maxHeight = '100%';
+            canvas.style.width = 'auto';
+            canvas.style.height = 'auto';
+            canvas.style.objectFit = 'contain';
+            canvas.style.display = 'block';
+            canvas.style.borderRadius = '4px';
+            canvas.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+
+            const ctx = canvas.getContext('2d');
+            await page.render({ canvasContext: ctx, viewport }).promise;
+
+            container.innerHTML = '';
+            container.appendChild(canvas);
+        } catch (e) {
+            console.warn('Kunne ikke generere admin PDF-forhåndsvisning:', e);
         }
     }
 

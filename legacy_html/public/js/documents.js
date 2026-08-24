@@ -71,7 +71,7 @@
             buttonText = 'Åpne PDF';
             buttonIcon = 'fa-file-pdf';
             mediaBoxHtml = `
-                <div class="graphic-img-box" style="position: relative; width: 100%; height: 240px; background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid rgba(239, 68, 68, 0.12); padding: 20px; box-sizing: border-box;">
+                <div class="graphic-img-box pdf-preview-box" data-pdf-url="${imageUrl}" style="position: relative; width: 100%; height: 240px; background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid rgba(239, 68, 68, 0.12); padding: 16px; box-sizing: border-box;">
                     <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none;">
                         <i class="fas fa-file-pdf" style="font-size: 56px; color: #e11d48; margin-bottom: 12px; filter: drop-shadow(0 4px 10px rgba(225, 29, 72, 0.2));"></i>
                         <span style="font-size: 0.8rem; font-weight: 800; color: #9f1239; text-transform: uppercase; letter-spacing: 0.6px;">PDF-DOKUMENT</span>
@@ -145,6 +145,87 @@
         return article;
     }
 
+    let pdfjsLoadingPromise = null;
+    function loadPdfJs() {
+        if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+        if (pdfjsLoadingPromise) return pdfjsLoadingPromise;
+        pdfjsLoadingPromise = new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+            script.onload = () => {
+                if (window.pdfjsLib) {
+                    window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                    resolve(window.pdfjsLib);
+                } else {
+                    reject(new Error('PDF.js unavailable'));
+                }
+            };
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+        return pdfjsLoadingPromise;
+    }
+
+    async function renderPdfThumbnail(container, pdfUrl) {
+        if (!container || !pdfUrl) return;
+        try {
+            const pdfjs = await loadPdfJs();
+            const loadingTask = pdfjs.getDocument({
+                url: pdfUrl,
+                cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
+                cMapPacked: true
+            });
+            const pdfDoc = await loadingTask.promise;
+            const page = await pdfDoc.getPage(1);
+
+            const unscaledViewport = page.getViewport({ scale: 1.0 });
+            const targetWidth = container.clientWidth || 360;
+            const targetHeight = container.clientHeight || 240;
+            const scale = Math.min(targetWidth / unscaledViewport.width, targetHeight / unscaledViewport.height) * (window.devicePixelRatio || 1.5);
+            const viewport = page.getViewport({ scale: Math.max(scale, 0.8) });
+
+            const canvas = document.createElement('canvas');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            canvas.style.maxWidth = '100%';
+            canvas.style.maxHeight = '100%';
+            canvas.style.width = 'auto';
+            canvas.style.height = 'auto';
+            canvas.style.objectFit = 'contain';
+            canvas.style.display = 'block';
+            canvas.style.borderRadius = '6px';
+            canvas.style.boxShadow = '0 6px 18px rgba(0, 0, 0, 0.12)';
+
+            const ctx = canvas.getContext('2d');
+            await page.render({ canvasContext: ctx, viewport }).promise;
+
+            const link = document.createElement('a');
+            link.href = pdfUrl;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.style.display = 'flex';
+            link.style.alignItems = 'center';
+            link.style.justifyContent = 'center';
+            link.style.width = '100%';
+            link.style.height = '100%';
+            link.appendChild(canvas);
+
+            container.innerHTML = '';
+            container.appendChild(link);
+
+            const arrowBtn = document.createElement('a');
+            arrowBtn.href = pdfUrl;
+            arrowBtn.target = '_blank';
+            arrowBtn.rel = 'noopener noreferrer';
+            arrowBtn.className = 'project-arrow-btn';
+            arrowBtn.setAttribute('aria-label', 'Åpne PDF i ny fane');
+            arrowBtn.innerHTML = '<i class="fas fa-file-pdf"></i>';
+            container.appendChild(arrowBtn);
+        } catch (e) {
+            console.warn('Kunne ikke generere PDF-forhåndsvisning:', e);
+        }
+    }
+
     async function loadGraphicDocuments() {
         const graphicGrid = document.getElementById('graphic-docs-grid');
         if (!graphicGrid) return;
@@ -171,6 +252,13 @@
         });
 
         graphicGrid.appendChild(fragment);
+
+        // Render live PDF thumbnails for all PDF cards
+        const pdfContainers = graphicGrid.querySelectorAll('.pdf-preview-box[data-pdf-url]');
+        pdfContainers.forEach((container) => {
+            const url = container.getAttribute('data-pdf-url');
+            if (url) renderPdfThumbnail(container, url);
+        });
     }
 
     if (document.readyState === 'loading') {
