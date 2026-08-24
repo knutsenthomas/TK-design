@@ -75,16 +75,16 @@
         }
 
         article.innerHTML = `
-            <div class="project-img-wrapper" style="position: relative; overflow: hidden; background: #f8fafc; border-bottom: 1px solid rgba(18, 55, 92, 0.06);">
-                <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" class="project-view-link">
-                    <img src="${imageUrl}" class="project-main-img" alt="${title}" loading="lazy" style="width: 100%; height: 260px; object-fit: cover; display: block; transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1);">
+            <div class="graphic-img-box" style="position: relative; width: 100%; height: 240px; background: #f8fafc; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid rgba(18, 55, 92, 0.06); padding: 20px; box-sizing: border-box;">
+                <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                    <img src="${imageUrl}" class="project-main-img" alt="${title}" loading="lazy" style="max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
                 </a>
                 <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" class="project-arrow-btn" aria-label="Vis ${title} i full størrelse">
                     <i class="fas fa-arrow-up-right-from-square"></i>
                 </a>
             </div>
             ${galleryHtml}
-            <div class="project-content" style="padding: 24px; display: flex; flex-direction: column; flex: 1;">
+            <div class="graphic-card-body" style="padding: 24px; display: flex; flex-direction: column; flex: 1;">
                 <div class="project-tags-row" style="margin-bottom: 12px;">
                     <span class="project-category">${category}</span>
                 </div>
@@ -95,7 +95,7 @@
                     ${description}
                 </p>
                 <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" class="primary-cta" style="width: 100%; text-align: center; justify-content: center; padding: 10px 16px; font-size: 0.9rem; border-radius: 10px;">
-                    <i class="fas fa-expand" style="margin-right: 6px;"></i> Åpne fullversjon
+                    <i class="fas fa-arrow-up-right-from-square" style="margin-right: 6px;"></i> Åpne fullversjon
                 </a>
             </div>
         `;
