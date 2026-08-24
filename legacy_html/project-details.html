@@ -12,7 +12,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="/style.css?v=84">
+    <link rel="stylesheet" href="/style.css?v=85">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" href="/img/logo/d.png">
 
@@ -129,10 +129,11 @@
                     <div class="hero-button-group" style="display: flex; justify-content: center; gap: 14px; margin-top: 24px;">
                         <a href="https://www.kudosregnskap.no" class="hero-btn-primary" id="projectActionLink" target="_blank" rel="nofollow noopener noreferrer">
                             <span>Besøk nettsiden</span>
-                            <span class="hero-btn-arrow">↗</span>
+                            <i class="fas fa-arrow-up-right-from-square hero-btn-icon" aria-hidden="true"></i>
                         </a>
-                        <a href="/portefolje" class="hero-btn-secondary" data-i18n="project_details.back_to_projects">
-                            ← Se alle prosjekter
+                        <a href="/portefolje" class="hero-btn-secondary">
+                            <i class="fas fa-arrow-left hero-btn-icon" aria-hidden="true"></i>
+                            <span data-i18n="project_details.back_to_projects">Tilbake til prosjekter</span>
                         </a>
                     </div>
                 </div>
@@ -804,12 +805,12 @@
                 const labels = PROJECT_ACTION_LABELS[lang];
                 if (project.liveUrl) {
                     actionLink.href = project.liveUrl;
-                    actionLink.innerHTML = `<span>${labels.live}</span><span class="hero-btn-arrow">↗</span>`;
+                    actionLink.innerHTML = `<span>${labels.live}</span> <i class="fas fa-arrow-up-right-from-square hero-btn-icon" aria-hidden="true"></i>`;
                     actionLink.target = '_blank';
                     actionLink.rel = 'noopener noreferrer';
                 } else {
                     actionLink.href = '/contact';
-                    actionLink.innerHTML = `<span>${labels.fallback}</span><span class="hero-btn-arrow">→</span>`;
+                    actionLink.innerHTML = `<span>${labels.fallback}</span> <i class="fas fa-arrow-right hero-btn-icon" aria-hidden="true"></i>`;
                     actionLink.removeAttribute('target');
                     actionLink.removeAttribute('rel');
                 }
