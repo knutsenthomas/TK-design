@@ -985,6 +985,22 @@ async function readFirestorePostsCollection() {
     return [];
 }
 
+function getCleanPostSlug(p) {
+    if (!p) return '';
+    if (typeof p.slug === 'string' && p.slug.trim()) {
+        const s = p.slug.trim().toLowerCase();
+        if (s && !s.includes('blog-details')) return s;
+    }
+    if (typeof p.link === 'string' && p.link.startsWith('/blog/')) {
+        const s = p.link.replace(/^\/blog\//, '').replace(/\?.*$/, '').trim().toLowerCase();
+        if (s && !s.includes('blog-details')) return s;
+    }
+    if (typeof p.title === 'string' && p.title.trim()) {
+        return normalizeBlogSlugPart(p.title);
+    }
+    return '';
+}
+
 async function readSiteDataWithFallback(documentId, fallbackReader) {
     if (documentId === 'posts') {
         const firestoreCollectionPosts = await readFirestorePostsCollection();
@@ -999,21 +1015,18 @@ async function readSiteDataWithFallback(documentId, fallbackReader) {
             fallbackPosts = await fallbackReader();
         } catch (err) {}
 
-        // Build admin map, prioritizing complete local fallback content over outdated/short remote drafts
         const adminMap = new Map();
         (firestoreAdminPosts || []).forEach(p => {
             if (!p) return;
             const id = String(p.id || '');
-            const linkSlug = p.link ? p.link.replace(/^\/blog\//, '').replace(/\?.*$/, '') : '';
-            const slug = p.slug || linkSlug;
+            const slug = getCleanPostSlug(p);
             if (id) adminMap.set(id, p);
             if (slug) adminMap.set(slug, p);
         });
         (fallbackPosts || []).forEach(p => {
             if (!p) return;
             const id = String(p.id || '');
-            const linkSlug = p.link ? p.link.replace(/^\/blog\//, '').replace(/\?.*$/, '') : '';
-            const slug = p.slug || linkSlug;
+            const slug = getCleanPostSlug(p);
             const existing = (id && adminMap.get(id)) || (slug && adminMap.get(slug));
             if (!existing) {
                 if (id) adminMap.set(id, p);
@@ -1033,14 +1046,16 @@ async function readSiteDataWithFallback(documentId, fallbackReader) {
 
         const allBasePosts = [...(fallbackPosts || [])];
         (firestoreAdminPosts || []).forEach(p => {
-            const pSlug = p.slug || (p.link ? p.link.replace(/^\/blog\//, '').replace(/\?.*$/, '') : '');
-            if (!allBasePosts.some(lp => String(lp.id) === String(p.id) || (pSlug && (lp.slug === pSlug || lp.link?.includes(pSlug))))) {
+            const pSlug = getCleanPostSlug(p);
+            const pId = String(p.id || '');
+            if (!allBasePosts.some(lp => (pId && String(lp.id) === pId) || (pSlug && getCleanPostSlug(lp) === pSlug))) {
                 allBasePosts.push(p);
             }
         });
 
         const combined = firestoreCollectionPosts.map(sPost => {
-            const matchedAdmin = adminMap.get(sPost.slug) || adminMap.get(String(sPost.id));
+            const sSlug = getCleanPostSlug(sPost);
+            const matchedAdmin = (sSlug && adminMap.get(sSlug)) || (sPost.id && adminMap.get(String(sPost.id)));
             if (matchedAdmin) {
                 return {
                     ...matchedAdmin,
@@ -1061,14 +1076,18 @@ async function readSiteDataWithFallback(documentId, fallbackReader) {
             return sPost;
         });
 
-        const existingIds = new Set(combined.map(p => String(p.id)));
-        const existingSlugs = new Set(combined.map(p => p.slug || (p.link ? p.link.replace(/^\/blog\//, '').replace(/\?.*$/, '') : '')));
+        const existingIds = new Set(combined.map(p => String(p.id)).filter(Boolean));
+        const existingSlugs = new Set(combined.map(getCleanPostSlug).filter(Boolean));
 
         for (const p of allBasePosts) {
-            const pSlug = p.slug || (p.link ? p.link.replace(/^\/blog\//, '').replace(/\?.*$/, '') : '');
-            if (p && !existingIds.has(String(p.id)) && (!pSlug || !existingSlugs.has(pSlug))) {
-                combined.push(adminMap.get(String(p.id)) || adminMap.get(pSlug) || p);
-                existingIds.add(String(p.id));
+            const pSlug = getCleanPostSlug(p);
+            const pId = String(p.id || '');
+            const hasId = pId && existingIds.has(pId);
+            const hasSlug = pSlug && existingSlugs.has(pSlug);
+            if (p && !hasId && !hasSlug) {
+                const resolved = (pId && adminMap.get(pId)) || (pSlug && adminMap.get(pSlug)) || p;
+                combined.push(resolved);
+                if (pId) existingIds.add(pId);
                 if (pSlug) existingSlugs.add(pSlug);
             }
         }
