@@ -69,9 +69,13 @@
                 .get();
             
             let html = '';
+            window.graphicDocsCache = {};
+
             snapshot.forEach((documentSnap) => {
                 const data = documentSnap.data();
                 const id = documentSnap.id;
+                window.graphicDocsCache[id] = { id, ...data };
+
                 const url = data.imageUrl || (data.imageUrls && data.imageUrls[0]) || '';
                 const isPdf = data.isPdf || (url && url.toLowerCase().includes('.pdf'));
                 const thumb = data.thumbnailUrl || (isPdf ? '' : url);
@@ -106,12 +110,13 @@
                             <h4 style="margin: 0 0 6px 0; font-size: 1.05rem;">${data.title || 'Uten tittel'}</h4>
                             <p style="color: #666; font-size: 0.88rem; margin: 0 0 12px 0; line-height: 1.4;">${data.description || ''}</p>
                         </div>
-                        <div style="display: flex; gap: 8px; margin-top: auto;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: auto; padding-top: 8px; border-top: 1px solid #f1f5f9;">
                             ${isPdf 
-                                ? `<button type="button" onclick="window.openPdfModal('${url}', '${(data.title || 'Dokument').replace(/'/g, "\\'")}')" style="flex: 1; text-align: center; background: #f1f5f9; color: #1e293b; padding: 8px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 4px;"><i class="fas fa-eye"></i> Forhåndsvis</button>`
-                                : `<a href="${url}" target="_blank" rel="noopener noreferrer" style="flex: 1; text-align: center; background: #f1f5f9; color: #1e293b; padding: 8px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 600;">Åpne fil</a>`
+                                ? `<button type="button" onclick="window.openPdfModal('${url}', '${(data.title || 'Dokument').replace(/'/g, "\\'")}')" style="background: #f1f5f9; color: #1e293b; padding: 8px 4px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 4px;"><i class="fas fa-eye"></i> Vis</button>`
+                                : `<a href="${url}" target="_blank" rel="noopener noreferrer" style="background: #f1f5f9; color: #1e293b; padding: 8px 4px; border-radius: 6px; text-decoration: none; font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 4px;"><i class="fas fa-arrow-up-right-from-square"></i> Åpne</a>`
                             }
-                            <button class="delete-graphic-btn" data-id="${id}" style="background: var(--danger, #ef4444); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">Slett</button>
+                            <button type="button" class="edit-graphic-btn" data-id="${id}" style="background: #e0f2fe; color: #0284c7; border: none; padding: 8px 4px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 4px;"><i class="fas fa-pen"></i> Endre</button>
+                            <button type="button" class="delete-graphic-btn" data-id="${id}" style="background: #fee2e2; color: #ef4444; border: none; padding: 8px 4px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 4px;"><i class="fas fa-trash"></i> Slett</button>
                         </div>
                     </div>
                 `;
@@ -129,21 +134,31 @@
                     if (pdfUrl) renderAdminPdfThumbnail(box, pdfUrl);
                 });
 
+                // Bind edit buttons
+                document.querySelectorAll('.edit-graphic-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const btnEl = e.target.closest('.edit-graphic-btn');
+                        const id = btnEl.getAttribute('data-id');
+                        window.openEditGraphicModal(id);
+                    });
+                });
+
                 // Bind delete buttons
                 document.querySelectorAll('.delete-graphic-btn').forEach(btn => {
                     btn.addEventListener('click', async (e) => {
                         if (confirm('Er du sikker på at du vil slette dette dokumentet?')) {
-                            const id = e.target.getAttribute('data-id');
+                            const btnEl = e.target.closest('.delete-graphic-btn');
+                            const id = btnEl.getAttribute('data-id');
                             try {
-                                e.target.innerText = 'Sletter...';
-                                e.target.disabled = true;
+                                btnEl.innerText = '...';
+                                btnEl.disabled = true;
                                 await window.firebaseDb.collection("graphicDocs").doc(id).delete();
                                 window.loadGraphicDocuments();
                             } catch (err) {
                                 console.error('Feil ved sletting:', err);
                                 alert('Kunne ikke slette dokumentet. ' + err.message);
-                                e.target.innerText = 'Slett';
-                                e.target.disabled = false;
+                                btnEl.innerText = 'Slett';
+                                btnEl.disabled = false;
                             }
                         }
                     });
@@ -343,6 +358,137 @@
             container.appendChild(canvas);
         }
     }
+
+    function createEditGraphicModalIfNotExists() {
+        if (document.getElementById('tk-edit-graphic-modal')) return;
+
+        const modal = document.createElement('div');
+        modal.id = 'tk-edit-graphic-modal';
+        modal.style.cssText = `
+            position: fixed;
+            inset: 0;
+            z-index: 999999;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        `;
+
+        modal.innerHTML = `
+            <div style="background: white; border-radius: 16px; width: 100%; max-width: 520px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); overflow: hidden; display: flex; flex-direction: column;">
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+                    <h3 style="margin: 0; font-size: 1.15rem; color: #0f172a; font-weight: 700;">Rediger porteføljeelement</h3>
+                    <button id="closeEditGraphicBtn" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #64748b; padding: 4px 8px; border-radius: 6px;">✕</button>
+                </div>
+                
+                <form id="editGraphicForm" style="padding: 24px;">
+                    <input type="hidden" id="editGraphicId">
+                    
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-weight: 600; font-size: 0.85rem; color: #334155; margin-bottom: 6px;">Tittel</label>
+                        <input type="text" id="editGraphicTitle" required style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; box-sizing: border-box;">
+                    </div>
+
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-weight: 600; font-size: 0.85rem; color: #334155; margin-bottom: 6px;">Kategori</label>
+                        <input type="text" id="editGraphicCategory" style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; box-sizing: border-box;" placeholder="f.eks. Flyer / PDF, Logo & Profil, Merkevare">
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: 600; font-size: 0.85rem; color: #334155; margin-bottom: 6px;">Beskrivelse</label>
+                        <textarea id="editGraphicDesc" rows="4" style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; line-height: 1.5; box-sizing: border-box; resize: vertical;"></textarea>
+                    </div>
+
+                    <p id="editGraphicStatus" style="font-size: 0.85rem; margin-bottom: 12px; color: #64748b;"></p>
+
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button type="button" id="cancelEditGraphicBtn" style="background: #f1f5f9; color: #475569; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer;">Avbryt</button>
+                        <button type="submit" id="saveEditGraphicBtn" style="background: #0284c7; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer;">Lagre endringer</button>
+                    </div>
+                </form>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        document.getElementById('closeEditGraphicBtn').addEventListener('click', closeEditGraphicModal);
+        document.getElementById('cancelEditGraphicBtn').addEventListener('click', closeEditGraphicModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeEditGraphicModal();
+        });
+
+        document.getElementById('editGraphicForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editGraphicId').value;
+            const title = document.getElementById('editGraphicTitle').value.trim();
+            const category = document.getElementById('editGraphicCategory').value.trim();
+            const description = document.getElementById('editGraphicDesc').value.trim();
+            const statusEl = document.getElementById('editGraphicStatus');
+            const saveBtn = document.getElementById('saveEditGraphicBtn');
+
+            if (!id || !title) return;
+
+            saveBtn.disabled = true;
+            saveBtn.innerText = 'Lagrer...';
+            statusEl.innerText = 'Oppdaterer i databasen...';
+            statusEl.style.color = '#0284c7';
+
+            try {
+                await window.firebaseDb.collection("graphicDocs").doc(id).update({
+                    title: title,
+                    category: category,
+                    description: description,
+                    updatedAt: window.firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                closeEditGraphicModal();
+                window.loadGraphicDocuments();
+            } catch (err) {
+                console.error('Feil ved oppdatering av dokument:', err);
+                statusEl.innerText = 'Feil ved lagring: ' + err.message;
+                statusEl.style.color = '#ef4444';
+                saveBtn.disabled = false;
+                saveBtn.innerText = 'Lagre endringer';
+            }
+        });
+    }
+
+    function closeEditGraphicModal() {
+        const modal = document.getElementById('tk-edit-graphic-modal');
+        if (!modal) return;
+        modal.style.opacity = '0';
+        modal.style.pointerEvents = 'none';
+        document.body.style.overflow = '';
+    }
+
+    window.openEditGraphicModal = function(id) {
+        const docData = window.graphicDocsCache && window.graphicDocsCache[id];
+        if (!docData) return;
+
+        createEditGraphicModalIfNotExists();
+        const modal = document.getElementById('tk-edit-graphic-modal');
+        document.getElementById('editGraphicId').value = id;
+        document.getElementById('editGraphicTitle').value = docData.title || '';
+        document.getElementById('editGraphicCategory').value = docData.category || '';
+        document.getElementById('editGraphicDesc').value = docData.description || '';
+        document.getElementById('editGraphicStatus').innerText = '';
+        
+        const saveBtn = document.getElementById('saveEditGraphicBtn');
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerText = 'Lagre endringer';
+        }
+
+        modal.style.opacity = '1';
+        modal.style.pointerEvents = 'auto';
+        document.body.style.overflow = 'hidden';
+    };
 
     // Initialize when DOM is ready
     if (document.readyState === 'loading') {
