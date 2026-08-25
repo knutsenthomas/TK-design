@@ -4753,7 +4753,8 @@ app.get('/api/proxy-pdf', (req, res) => {
         }
 
         const parsed = new URL(rawUrl);
-        if (!parsed.hostname.includes('firebasestorage.googleapis.com') && !parsed.hostname.includes('googleapis.com')) {
+        const isGoogleApi = parsed.hostname === 'googleapis.com' || parsed.hostname.endsWith('.googleapis.com');
+        if (!isGoogleApi) {
             return res.status(403).send('Invalid domain');
         }
 
