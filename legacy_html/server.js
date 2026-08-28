@@ -1883,11 +1883,17 @@ function buildSpeedTestReportEmailMarkup(reportPayload, req) {
             </div>
             <div class="content">
                 ${reportsHtml}
-                <div class="cta-panel" style="margin-top: 32px; padding: 22px; border: 1px solid #e5e9ef; border-radius: 22px; background: #fbfcfd;">
-                    <h2 style="margin: 0; font-size: 24px;">Vil du gå fra rapport til tiltak?</h2>
-                    <p style="margin: 12px 0 18px; color: #5b6676; font-size: 15px;">TK-design kan hjelpe med å oversette funnene til en konkret plan for design, kode, SEO og lastetid.</p>
-                    <a class="button" href="${escapeHtml(reportPageUrl)}">Åpne speed-testen</a>
-                    <a class="button button-secondary" href="${escapeHtml(contactPageUrl)}">Book en gjennomgang</a>
+                <div class="cta-panel" style="margin-top: 36px; padding: 28px 24px; border: 2px solid #102033; border-radius: 22px; background: #ffffff; text-align: left;">
+                    <span style="display: inline-block; padding: 4px 12px; border-radius: 999px; background: rgba(255, 106, 27, 0.12); color: #ff6a1b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px;">Løs funnene permanent</span>
+                    <h2 style="margin: 0; font-size: 22px; color: #102033; font-weight: 800;">Vil du at vi fikser disse funnene for deg?</h2>
+                    <p style="margin: 10px 0 18px; color: #4b5563; font-size: 15px; line-height: 1.6;">Med en fast <strong>TK-design Supportavtale (fra kr 1 000,-/mnd)</strong> utbedrer vi bildekomprimering, fjerner render-blokkerende kode, sikrer 100/100 Core Web Vitals og overvåker siden din kontinuerlig – helt uten bindingstid.</p>
+                    <div style="margin-bottom: 18px;">
+                        <a class="button" style="background: #ff6a1b; color: #ffffff !important; border: none; font-size: 15px; font-weight: 700; padding: 14px 26px; border-radius: 999px; text-decoration: none; display: inline-block; margin-right: 10px;" href="${escapeHtml(siteBaseUrl.replace(/\/+$/, ''))}/contact?service=support">Sikre min supportavtale (kr 1 000/mnd) &rarr;</a>
+                        <a class="button button-secondary" style="font-size: 14px; font-weight: 600; padding: 14px 22px; border-radius: 999px; text-decoration: none; display: inline-block;" href="${escapeHtml(siteBaseUrl.replace(/\/+$/, ''))}/support-og-vedlikehold">Les om supportavtalen</a>
+                    </div>
+                    <div style="font-size: 13px; color: #6b7280; line-height: 1.5;">
+                        &check; Ingen bindingstid &nbsp;&bull;&nbsp; &check; Lynrask feilretting &nbsp;&bull;&nbsp; &check; Ukentlige sikkerhetsoppdateringer
+                    </div>
                 </div>
                 <div style="margin-top: 28px; padding-top: 20px; border-top: 1px solid #e5e9ef; color: #7b8794; font-size: 12px; text-align: center;">
                     Automatisk sendt fra speed-testen på tk-design.no.

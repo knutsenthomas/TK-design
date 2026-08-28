@@ -2193,6 +2193,136 @@ export default function App() {
             </div>
           </section>
 
+          <section className="st-support-cta-section" style={{ margin: '40px 0 60px' }}>
+            <div className="st-shell">
+              <div
+                style={{
+                  background: 'linear-gradient(135deg, #102033 0%, #173651 100%)',
+                  borderRadius: '24px',
+                  padding: '36px 32px',
+                  color: '#ffffff',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '24px',
+                  border: '1px solid rgba(255, 255, 255, 0.14)',
+                  boxShadow: '0 20px 50px rgba(16, 32, 51, 0.22)'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px' }}>
+                  <div style={{ maxWidth: '620px' }}>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        padding: '6px 14px',
+                        borderRadius: '999px',
+                        background: 'rgba(255, 106, 27, 0.25)',
+                        color: '#ff8442',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        letterSpacing: '0.12em',
+                        textTransform: 'uppercase',
+                        marginBottom: '12px'
+                      }}
+                    >
+                      Løs problemene permanent
+                    </span>
+                    <h3 style={{ fontSize: '26px', fontWeight: 800, margin: '0 0 12px 0', lineHeight: 1.25, color: '#ffffff' }}>
+                      Vil du at vi fikser disse funnene for deg?
+                    </h3>
+                    <p style={{ fontSize: '15px', color: '#cbd5e1', lineHeight: 1.6, margin: 0 }}>
+                      Med en fast <strong>TK-design Supportavtale</strong> utbedrer vi punktene ovenfor: vi komprimerer bildene, fjerner render-blokkerende skript, sikrer 100/100 Core Web Vitals og overvåker siden din fortløpende. Ingen bindingstid.
+                    </p>
+                  </div>
+                  <div
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.08)',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      borderRadius: '18px',
+                      padding: '18px 24px',
+                      textAlign: 'center',
+                      minWidth: '200px'
+                    }}
+                  >
+                    <span style={{ fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 700, display: 'block' }}>
+                      Fastpris
+                    </span>
+                    <div style={{ fontSize: '30px', fontWeight: 800, color: '#ffffff', margin: '4px 0' }}>
+                      Fra 1 000,-
+                    </div>
+                    <span style={{ fontSize: '12px', color: '#cbd5e1' }}>kr / mnd (eks. mva)</span>
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                    gap: '14px',
+                    borderTop: '1px solid rgba(255, 255, 255, 0.12)',
+                    paddingTop: '20px'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <CheckCircle2 size={18} style={{ color: '#ff8442', flexShrink: 0 }} />
+                    <span style={{ fontSize: '14px', color: '#e2e8f0' }}>Umiddelbar feilretting av testfunn</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <CheckCircle2 size={18} style={{ color: '#ff8442', flexShrink: 0 }} />
+                    <span style={{ fontSize: '14px', color: '#e2e8f0' }}>Ukentlige sikkerhetsoppdateringer</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <CheckCircle2 size={18} style={{ color: '#ff8442', flexShrink: 0 }} />
+                    <span style={{ fontSize: '14px', color: '#e2e8f0' }}>100/100 Core Web Vitals & SEO</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <CheckCircle2 size={18} style={{ color: '#ff8442', flexShrink: 0 }} />
+                    <span style={{ fontSize: '14px', color: '#e2e8f0' }}>Ingen bindingstid – avslutt når du vil</span>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginTop: '6px' }}>
+                  <a
+                    href="/contact?service=support"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      background: '#ff6a1b',
+                      color: '#ffffff',
+                      padding: '14px 26px',
+                      borderRadius: '12px',
+                      fontWeight: 700,
+                      fontSize: '15px',
+                      textDecoration: 'none',
+                      boxShadow: '0 4px 18px rgba(255, 106, 27, 0.4)'
+                    }}
+                  >
+                    <span>Sikre din supportavtale nå</span>
+                    <ArrowRight size={18} />
+                  </a>
+                  <a
+                    href="/support-og-vedlikehold"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      color: '#ffffff',
+                      padding: '14px 22px',
+                      borderRadius: '12px',
+                      fontWeight: 600,
+                      fontSize: '15px',
+                      textDecoration: 'none',
+                      border: '1px solid rgba(255, 255, 255, 0.2)'
+                    }}
+                  >
+                    <span>Les mer om supportavtalen</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+
           <section id="faq" className="st-faq-section">
             <div className="st-shell st-faq-shell">
               <div className="st-section-intro st-section-intro--center">

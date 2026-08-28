@@ -200,10 +200,13 @@
                             </div>
                         </div>
 
-                        <!-- Deliverables -->
+                        <!-- Deliverables & Pricing CTA Block -->
                         <div style="margin-top: 36px; padding: 28px; border-radius: 20px; background: rgba(255, 106, 27, 0.04); border: 1px solid rgba(255, 106, 27, 0.15);">
-                            <h3 style="font-size: 1.25rem; font-weight: 800; color: #11263c; margin: 0 0 16px 0;" id="serviceDeliverablesTitle">Dette inngår i leveransen:</h3>
-                            <div class="deliverables-grid">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                                <h3 style="font-size: 1.25rem; font-weight: 800; color: #11263c; margin: 0;" id="serviceDeliverablesTitle">Dette inngår i leveransen:</h3>
+                                <div id="servicePriceHighlight" style="display: inline-block; padding: 6px 14px; border-radius: 999px; background: #11263c; color: #ffffff; font-size: 0.88rem; font-weight: 700;"></div>
+                            </div>
+                            <div class="deliverables-grid" id="serviceDeliverablesGrid">
                                 <div class="deliverable-item">
                                     <i class="fas fa-check-circle"></i>
                                     <div>
@@ -211,32 +214,11 @@
                                         <p style="font-size: 0.85rem; color: #64748b; margin: 2px 0 0 0;">Struktur og innholdsflyt</p>
                                     </div>
                                 </div>
-                                <div class="deliverable-item">
-                                    <i class="fas fa-check-circle"></i>
-                                    <div>
-                                        <strong style="color: #11263c; font-size: 0.95rem;">Responsivt UI/UX-design</strong>
-                                        <p style="font-size: 0.85rem; color: #64748b; margin: 2px 0 0 0;">Pikselperfekt på mobil og desktop</p>
-                                    </div>
-                                </div>
-                                <div class="deliverable-item">
-                                    <i class="fas fa-check-circle"></i>
-                                    <div>
-                                        <strong style="color: #11263c; font-size: 0.95rem;">Teknisk SEO-grunnoppsett</strong>
-                                        <p style="font-size: 0.85rem; color: #64748b; margin: 2px 0 0 0;">JSON-LD strukturert data og indeksering</p>
-                                    </div>
-                                </div>
-                                <div class="deliverable-item">
-                                    <i class="fas fa-check-circle"></i>
-                                    <div>
-                                        <strong style="color: #11263c; font-size: 0.95rem;">100/100 Ytelse &amp; WCAG</strong>
-                                        <p style="font-size: 0.85rem; color: #64748b; margin: 2px 0 0 0;">Universell utforming og lynrask lastetid</p>
-                                    </div>
-                                </div>
                             </div>
 
-                            <div style="margin-top: 24px; display: flex; justify-content: flex-end;">
-                                <a href="/contact" class="hero-btn-primary">
-                                    <span>Start ditt prosjekt</span>
+                            <div style="margin-top: 24px; display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: 16px;">
+                                <a href="/contact" class="hero-btn-primary" id="servicePrimaryCta">
+                                    <span id="servicePrimaryCtaText">Start ditt prosjekt</span>
                                     <span class="hero-btn-arrow">→</span>
                                 </a>
                             </div>
@@ -303,6 +285,9 @@
                     title: "Design som gir bedre flyt og tydelig kommunikasjon",
                     lead: "Vi planlegger struktur, navigasjon og innhold slik at besøkende raskt finner riktig informasjon og forstår hva du tilbyr.",
                     body: "Arbeidet kombinerer analyse, konsept og visuell retning. Resultatet er en løsning som styrker merkevaren og gir en mer effektiv kundereise.",
+                    priceTag: "Fast pristilbud",
+                    ctaText: "Start ditt prosjekt",
+                    ctaLink: "/contact?service=webdesign",
                     spotlightTitle: "Design som skaper tydelig retning",
                     spotlightText: "Vi bygger tjenester med tydelig struktur, klare prioriteringer og målbar effekt.",
                     spotlightList: ["Brukeropplevelse først", "Konkrete leveranser", "Tilpasset din bedrift"],
@@ -311,82 +296,114 @@
                         { title: "Struktur og flyt", desc: "Tydelig informasjonsarkitektur med fokus på enkel navigasjon." },
                         { title: "Prototyper", desc: "Klikkbare utkast som testes før publisering." }
                     ],
-                    deliverablesTitle: "Typiske leveranser",
-                    deliverables: ["Informasjonsarkitektur", "Interaksjonsdesign", "Designsystem", "Klikkbar prototype"],
+                    deliverablesTitle: "Typiske leveranser:",
+                    deliverables: [
+                        { title: "Informasjonsarkitektur", desc: "Struktur og innholdsflyt tilpasset dine kunders behov" },
+                        { title: "Interaksjonsdesign & Prototyping", desc: "Klikkbare modeller og visuell retning" },
+                        { title: "Designsystem & Komponenter", desc: "Gjenbrukbare moduler og konsistent profil" },
+                        { title: "Kvalitetssikring & Brukertesting", desc: "Testing av flyt og ergonomi på mobil og desktop" }
+                    ],
                     image: "img/project/pro3.png",
                     metaDescription: "UI/UX-design fra TK-design med fokus på struktur, brukerreise og tydelig innhold."
                 },
                 web_dev: {
                     menuLabel: "Webutvikling",
-                    bannerTitle: "Webutvikling",
-                    summary: "Skreddersydd utvikling av raske, stabile og mobilvennlige nettsider bygget for videre vekst.",
-                    tag: "Teknisk kvalitet",
-                    title: "Robust utvikling med fokus på ytelse og drift",
-                    lead: "Vi bygger løsninger med ren kode, god struktur og tydelig oppsett slik at nettstedet er enkelt å videreutvikle over tid.",
-                    body: "Leveransen inkluderer teknisk optimalisering, responsivt oppsett og kvalitetssikring før publisering. Du får en nettside som fungerer godt i praksis, ikke bare i demo.",
-                    spotlightTitle: "Utvikling som tåler hverdagen",
+                    bannerTitle: "Webdesign & Utvikling",
+                    summary: "Skreddersydd utvikling av lynraske, stabile og mobilvennlige nettsider bygget for høy konvertering.",
+                    tag: "Skreddersøm & Ytelse",
+                    title: "Robust utvikling med 100/100 Core Web Vitals",
+                    lead: "Vi bygger løsninger med ren, semantisk kode fra bunnen av – uten trege ferdigmaler eller unødvendig kode.",
+                    body: "Leveransen inkluderer full responsivitet, teknisk SEO, lynrask LCP og kvalitetssikring. Du får en nettside som konverterer besøkende til kunder fra dag én.",
+                    priceTag: "Fast pristilbud",
+                    ctaText: "Start ditt webdesignprosjekt",
+                    ctaLink: "/contact?service=webdesign",
+                    spotlightTitle: "Utvikling som skaper resultater",
                     spotlightText: "Teknisk gjennomføring med fokus på fart, stabilitet og enkel vedlikehold.",
-                    spotlightList: ["Mobil først", "Rask lastetid", "Stabil drift"],
+                    spotlightList: ["Mobil først", "100/100 Core Web Vitals", "100% Egenkodet løsning"],
                     features: [
                         { title: "Responsiv bygging", desc: "Tilpasset desktop, nettbrett og mobil uten kompromiss." },
-                        { title: "Ytelsesoptimalisering", desc: "Optimaliserte filer, bilder og struktur for raskere side." },
-                        { title: "Kvalitetssikring", desc: "Testing av funksjoner, navigasjon og brukerflyt før lansering." }
+                        { title: "Ytelsesoptimalisering", desc: "Optimaliserte filer, bilder og struktur for lynrask lastetid." },
+                        { title: "Kvalitetssikring & Lansering", desc: "Testing av funksjoner, navigasjon og 301-redirects." }
                     ],
-                    deliverablesTitle: "Typiske leveranser",
-                    deliverables: ["Frontend-utvikling", "Responsiv tilpasning", "Teknisk QA", "Lanseringsstøtte"],
+                    deliverablesTitle: "Dette inngår i webdesign-leveransen:",
+                    deliverables: [
+                        { title: "Skreddersydd frontend-utvikling", desc: "100% egenkodet HTML5, CSS3 og responsivt design" },
+                        { title: "100/100 Core Web Vitals & Fart", desc: "Maksimal fart og optimalisert Largest Contentful Paint" },
+                        { title: "Teknisk SEO-grunnoppsett", desc: "JSON-LD strukturerte data, sitemap og kanoniske lenker" },
+                        { title: "Lanseringsstøtte & Opplæring", desc: "Trygg lansering og gjennomgang av løsningen" }
+                    ],
                     image: "img/project/pro1.png",
                     metaDescription: "Webutvikling fra TK-design med responsiv kode, ytelsesfokus og trygg lansering."
                 },
                 seo: {
                     menuLabel: "SEO & Synlighet",
-                    bannerTitle: "SEO & Synlighet",
+                    bannerTitle: "SEO & Søkemotoroptimalisering",
                     summary: "Teknisk SEO, strukturert data og GEO-optimalisering som rangerer din bedrift på relevante søk i Google og AI-motorer.",
                     tag: "Organisk Trafikk",
                     title: "Bli funnet av kundene når de søker etter dine tjenester",
                     lead: "Vi setter opp strukturert data (JSON-LD), søkemotorvennlig arkitektur, metabeskrivelser og Core Web Vitals slik at du klatrer på Google.",
                     body: "SEO er ikke magi, men solid teknisk håndverk. Med riktig semantisk kode, 1-til-1 301 redirects og rask lastetid sikrer vi at nettstedet ditt presterer optimalt.",
+                    priceTag: "Fast pristilbud",
+                    ctaText: "Bestill SEO-grunnoppsett",
+                    ctaLink: "/contact?service=seo",
                     spotlightTitle: "Teknisk SEO som fungerer",
                     spotlightText: "Vi sikrer at Google og AI-søkemotorer forstår og prioriterer innholdet ditt.",
-                    spotlightList: ["100/100 Teknisk SEO", "JSON-LD Strukturert data", "Lokal synlighet"],
+                    spotlightList: ["100/100 Teknisk SEO", "JSON-LD Strukturert data", "Lokal synlighet & GEO"],
                     features: [
                         { title: "Teknisk SEO", desc: "Feilfrie sitemaps, robots.txt og kanoniske URL-er." },
                         { title: "JSON-LD & Schema", desc: "LocalBusiness og FAQPage markup for AI og Google Rich Snippets." },
                         { title: "Hastighet & Vitals", desc: "Optimalisering for 100/100 Core Web Vitals." }
                     ],
                     deliverablesTitle: "Hva inngår i SEO-oppsettet:",
-                    deliverables: ["Teknisk SEO-revisjon", "JSON-LD strukturert data", "Søkeordskartlegging", "301 Redirect kart"],
+                    deliverables: [
+                        { title: "Teknisk SEO-revisjon & Indeksering", desc: "Fjerning av indekseringsfeil, sitemaps og robots.txt" },
+                        { title: "JSON-LD Schema.org Markup", desc: "LocalBusiness, FAQPage og Service for AI og Google" },
+                        { title: "301 Redirect kartlegging", desc: "Sikrer at eksisterende rangeringer bevares 100%" },
+                        { title: "Søkeordsanalyse & Metadata", desc: "Optimaliserte titler, beskrivelser og H1-H3 overskrifter" }
+                    ],
                     image: "img/project/pro2.png",
                     metaDescription: "SEO og søkemotoroptimalisering fra TK-design for topplasseringer på Google."
                 },
                 support: {
                     menuLabel: "Support & Drift",
-                    bannerTitle: "Support & Drift",
-                    summary: "Løpende teknisk oppfølging, sikkerhetsoppdateringer, overvåking og videreutvikling så du slipper bekymringer.",
-                    tag: "Trygg Drift",
-                    title: "Problemfri drift og rask hjelp når du trenger det",
-                    lead: "En nettside trenger jevnlig omsorg for å holde seg rask, trygg og oppdatert mot nye trusler og standarder.",
-                    body: "Vi overvåker oppetid, ruller ut sikkerhetspatcher og bistår med innholdsendringer og tekniske justeringer fortløpende.",
-                    spotlightTitle: "Trygghet i hverdagen",
-                    spotlightText: "Teknisk forvaltning og support slik at du kan fokusere på kjernevirksomheten.",
-                    spotlightList: ["Kontinuerlig overvåking", "Rask bistand", "Sikkerhetskopier"],
+                    bannerTitle: "Drift & Supportavtale for Nettside",
+                    summary: "Løpende teknisk oppfølging, sikkerhetsoppdateringer, overvåking og feilretting. Fra kr 1 000,-/mnd – ingen bindingstid.",
+                    tag: "Trygg Drift & Fastpris",
+                    title: "Problemfri drift, lynrask side og trygghet i hverdagen",
+                    lead: "Slipp uforutsette utviklerregninger. Med en fast supportavtale har du alltid en dedikert spesialist som overvåker og optimaliserer nettsiden din.",
+                    body: "Vi retter opp ytelsesfeil fra nettside-sjekkeren, ruller ut sikkerhetsoppdateringer, optimaliserer for 100/100 Core Web Vitals og gir deg prioritert hjelp når du trenger det.",
+                    priceTag: "Fra kr 1 000,- / mnd (eks. mva) • Ingen bindingstid",
+                    ctaText: "Sikre min supportavtale (kr 1 000/mnd) →",
+                    ctaLink: "/contact?service=support",
+                    spotlightTitle: "Hvorfor velge fast supportavtale?",
+                    spotlightText: "Full teknisk forvaltning og overvåking slik at du kan fokusere på kjernevirksomheten.",
+                    spotlightList: ["Ingen bindingstid – avslutt når som helst", "Lynrask feilretting og prioritert hjelp", "Ukentlige sikkerhetsoppdateringer & backup", "SEO-overvåking & ytelsessjekk"],
                     features: [
-                        { title: "Kontinuerlig overvåking", desc: "Automatisk sjekk av oppetid og sikkerhet." },
-                        { title: "Rask responstid", desc: "Direkte kontakt uten kompliserte ticketsystemer." },
-                        { title: "Videreutvikling", desc: "Småjusteringer og nye funksjoner etter behov." }
+                        { title: "Kontinuerlig overvåking", desc: "Automatisk sjekk av oppetid, sikkerhet og Core Web Vitals." },
+                        { title: "Lynrask feilretting", desc: "Direkte kontakt på telefon og e-post uten trege ticketsystemer." },
+                        { title: "Løpende optimalisering", desc: "Bildekomprimering, fjerne blokkerende skript og holde siden lynrask." }
                     ],
-                    deliverablesTitle: "Hva inngår i driftsavtalen:",
-                    deliverables: ["Månedlig helsesjekk", "Sikkerhetsoppdateringer", "Inkludert support-tid", "Oppetidsovervåking"],
+                    deliverablesTitle: "Dette inngår i din faste driftsavtale:",
+                    deliverables: [
+                        { title: "Umiddelbar utbedring av testfunn", desc: "Fjerning av render-blocking kode, CSS/JS-optimalisering og bildeformater" },
+                        { title: "Ukentlige sikkerhetsoppdateringer & backup", desc: "Automatiske sikkerhetskopier, sårbarhetstesting og oppetidsvakt" },
+                        { title: "100/100 Core Web Vitals & SEO-sjekk", desc: "Sikrer at Google-fart og organisk synlighet forblir på topp" },
+                        { title: "Prioritert spesialistsupport", desc: "Direkte telefon- og e-postkontakt til din faste utvikler" }
+                    ],
                     image: "img/project/pro6.webp",
-                    metaDescription: "Support, vedlikehold og stabil drift av nettsider fra TK-design."
+                    metaDescription: "Support, vedlikehold og stabil drift av nettsider fra TK-design. Fra kr 1 000,-/mnd uten bindingstid."
                 },
                 digital_marketing: {
                     menuLabel: "Digital markedsføring",
-                    bannerTitle: "Digital markedsføring",
+                    bannerTitle: "Digital markedsføring & SoMe",
                     summary: "Målrettet innhold og tiltak som styrker synlighet, trafikk og henvendelser fra riktige kunder.",
-                    tag: "Synlighet",
+                    tag: "Synlighet & Vekst",
                     title: "Konkrete tiltak for bedre rekkevidde og respons",
                     lead: "Vi setter opp en tydelig plan for innhold, kanaler og budskap slik at markedsføringen støtter salgsmålene dine.",
                     body: "Fokuset er praktisk gjennomføring: hva som skal publiseres, hvor ofte og hvordan resultatene følges opp. Du får retning, ikke bare forslag.",
+                    priceTag: "Fast pristilbud",
+                    ctaText: "Få tilbud på SoMe-strategi",
+                    ctaLink: "/contact?service=some",
                     spotlightTitle: "Markedsføring med tydelig retning",
                     spotlightText: "Fra plan til publisering med fokus på målbar effekt.",
                     spotlightList: ["Kanalvalg", "Innholdsplan", "Kontinuerlig oppfølging"],
@@ -395,19 +412,27 @@
                         { title: "Innholdsproduksjon", desc: "Tekst og innhold som bygger tillit og skaper handling." },
                         { title: "Effektmåling", desc: "Enkle målepunkter og løpende forbedring av tiltak." }
                     ],
-                    deliverablesTitle: "Typiske leveranser",
-                    deliverables: ["Markedsplan", "Innholdskalender", "Kampanjeforslag", "Rapportering"],
+                    deliverablesTitle: "Typiske leveranser:",
+                    deliverables: [
+                        { title: "Målrettet innholdsplan", desc: "Faste temaer, formater og publiseringsplan" },
+                        { title: "Kanalstrategi for sosiale medier", desc: "Facebook, Instagram og LinkedIn tilpasset din bransje" },
+                        { title: "Kampanjeutforming & Budskap", desc: "Konverteringsrettede tekster og visuelt materiell" },
+                        { title: "Løpende effektmåling", desc: "Månedlig status og optimalisering av resultater" }
+                    ],
                     image: "img/project/pro2.png",
                     metaDescription: "Digital markedsføring fra TK-design med kanalstrategi, innholdsplan og oppfølging."
                 },
                 branding: {
                     menuLabel: "Merkevarebygging",
-                    bannerTitle: "Merkevarebygging",
+                    bannerTitle: "Merkevarebygging & Identitet",
                     summary: "Et tydelig visuelt og språklig uttrykk som gjør det enklere for kunder å forstå og huske bedriften din.",
-                    tag: "Identitet",
+                    tag: "Identitet & Tillit",
                     title: "Bygg en tydelig merkevare med gjenkjennelig uttrykk",
                     lead: "Vi definerer hvordan bedriften fremstår visuelt og språklig, slik at kommunikasjonen blir mer konsistent i alle kanaler.",
                     body: "Arbeidet gir deg et mer helhetlig uttrykk på nettside, i innhold og i markedsføring. Det styrker tillit og gjør merkevaren lettere å kjenne igjen.",
+                    priceTag: "Fast pristilbud",
+                    ctaText: "Start din merkevareprosess",
+                    ctaLink: "/contact?service=webdesign",
                     spotlightTitle: "En tydelig identitet over tid",
                     spotlightText: "Merkevarebygging som skaper gjenkjenning og troverdighet.",
                     spotlightList: ["Visuell retning", "Tone of voice", "Konsekvent uttrykk"],
@@ -416,8 +441,13 @@
                         { title: "Visuell retning", desc: "Farger, typografi og uttrykk som støtter merkevaren." },
                         { title: "Kommunikasjonsramme", desc: "Prinsipper for innhold som holder uttrykket samlet." }
                     ],
-                    deliverablesTitle: "Typiske leveranser",
-                    deliverables: ["Merkevareplattform", "Visuell retning", "Budskapsrammeverk", "Praktisk guide"],
+                    deliverablesTitle: "Typiske leveranser:",
+                    deliverables: [
+                        { title: "Merkevareplattform & Posisjonering", desc: "Kjernebudskap, målgruppeprofil og verdiforslag" },
+                        { title: "Visuell identitet & Typografi", desc: "Fargepalett, fonter og grafiske retningslinjer" },
+                        { title: "Tone of Voice & Språkprofil", desc: "Retningslinjer for hvordan bedriften kommuniserer" },
+                        { title: "Designguide & Maler", desc: "Praktisk guide for implementering på nett og SoMe" }
+                    ],
                     image: "img/project/pro4.png",
                     metaDescription: "Merkevarebygging fra TK-design med visuell retning, tydelig budskap og helhetlig uttrykk."
                 }
@@ -431,6 +461,9 @@
                     title: "Design that improves flow and clarity",
                     lead: "We plan structure, navigation and content so visitors quickly find relevant information and understand what you offer.",
                     body: "The work combines analysis, concept and visual direction. The result is a solution that strengthens your brand and improves the customer journey.",
+                    priceTag: "Fixed Price Quote",
+                    ctaText: "Start your project",
+                    ctaLink: "/contact?service=webdesign",
                     spotlightTitle: "Design with clear direction",
                     spotlightText: "We build services with clear structure, priorities and measurable impact.",
                     spotlightList: ["User experience first", "Concrete deliverables", "Tailored to your business"],
@@ -439,40 +472,85 @@
                         { title: "Structure and flow", desc: "Clear information architecture focused on simple navigation." },
                         { title: "Prototypes", desc: "Clickable drafts that are tested before launch." }
                     ],
-                    deliverablesTitle: "Typical deliverables",
-                    deliverables: ["Information architecture", "Interaction design", "Design system", "Clickable prototype"],
+                    deliverablesTitle: "Typical Deliverables:",
+                    deliverables: [
+                        { title: "Information Architecture", desc: "Structure and flow tailored to your users" },
+                        { title: "Interaction Design", desc: "Clickable wireframes and visual design" },
+                        { title: "Design System", desc: "Modular components and cohesive branding" },
+                        { title: "User Testing & QA", desc: "Flow verification on desktop and mobile" }
+                    ],
                     image: "img/project/pro3.png",
                     metaDescription: "UI/UX design from TK-design focused on structure, user journeys and clear content."
                 },
                 web_dev: {
                     menuLabel: "Web Development",
-                    bannerTitle: "Web Development",
+                    bannerTitle: "Web Design & Development",
                     summary: "Tailored development of fast, stable and mobile-friendly websites built for long-term growth.",
-                    tag: "Technical quality",
-                    title: "Robust development focused on performance and reliability",
-                    lead: "We build solutions with clean code and clear structure so the website is easy to maintain and improve over time.",
-                    body: "Delivery includes technical optimization, responsive setup and quality assurance before launch. You get a website that works in practice, not only in demos.",
+                    tag: "Performance & Quality",
+                    title: "Robust development with 100/100 Core Web Vitals",
+                    lead: "We build solutions with clean, semantic code from scratch – without slow templates or bloated plugins.",
+                    body: "Delivery includes technical optimization, responsive setup and quality assurance before launch. You get a website that converts visitors into customers.",
+                    priceTag: "Fixed Price Quote",
+                    ctaText: "Start your web project",
+                    ctaLink: "/contact?service=webdesign",
                     spotlightTitle: "Development that handles real usage",
                     spotlightText: "Technical execution with focus on speed, stability and maintainability.",
-                    spotlightList: ["Mobile first", "Fast load time", "Stable operations"],
+                    spotlightList: ["Mobile first", "100/100 Core Web Vitals", "Custom-coded solution"],
                     features: [
                         { title: "Responsive build", desc: "Adapted to desktop, tablet and mobile without compromise." },
                         { title: "Performance optimization", desc: "Optimized assets and structure for a faster site." },
                         { title: "Quality assurance", desc: "Testing of functions, navigation and user flows before release." }
                     ],
-                    deliverablesTitle: "Typical deliverables",
-                    deliverables: ["Frontend development", "Responsive implementation", "Technical QA", "Launch support"],
+                    deliverablesTitle: "Included in Web Development:",
+                    deliverables: [
+                        { title: "Custom Frontend Development", desc: "100% custom HTML5, CSS3 and responsive layout" },
+                        { title: "100/100 Core Web Vitals Speed", desc: "Optimized Largest Contentful Paint and zero layout shifts" },
+                        { title: "Technical SEO Setup", desc: "JSON-LD structured data, sitemap and canonical URLs" },
+                        { title: "Launch & Handover Support", desc: "Safe deployment and client training" }
+                    ],
                     image: "img/project/pro1.png",
                     metaDescription: "Web development from TK-design with responsive code, performance focus and safe launch."
                 },
+                support: {
+                    menuLabel: "Support & Maintenance",
+                    bannerTitle: "Website Maintenance & Support",
+                    summary: "Continuous technical maintenance, security updates, uptime monitoring, and error fixing. From NOK 1,000/mo – no lock-in.",
+                    tag: "Peace of Mind & Fixed Pricing",
+                    title: "Hassle-free operations and fast help whenever you need it",
+                    lead: "Avoid surprise developer bills. With a fixed support agreement, you always have a dedicated specialist managing and monitoring your site.",
+                    body: "We resolve performance issues found in audits, roll out security updates, maintain 100/100 Core Web Vitals, and provide direct priority assistance.",
+                    priceTag: "From NOK 1,000 / month (ex. VAT) • No lock-in period",
+                    ctaText: "Secure your support plan (NOK 1,000/mo) →",
+                    ctaLink: "/contact?service=support",
+                    spotlightTitle: "Why choose our maintenance plan?",
+                    spotlightText: "Full technical management and monitoring so you can focus on growing your business.",
+                    spotlightList: ["No lock-in – cancel anytime", "Rapid bug fixing & direct help", "Weekly security updates & backups", "SEO & Core Web Vitals monitoring"],
+                    features: [
+                        { title: "Continuous Monitoring", desc: "Automated checks for uptime, security and performance." },
+                        { title: "Rapid Response", desc: "Direct phone and email access without slow ticket systems." },
+                        { title: "Ongoing Optimization", desc: "Image compression, script optimization, and ongoing tweaks." }
+                    ],
+                    deliverablesTitle: "Included in Your Support Agreement:",
+                    deliverables: [
+                        { title: "Immediate Audit Issue Resolution", desc: "Removal of render-blocking resources, CSS/JS optimization, and WebP compression" },
+                        { title: "Weekly Security & Backups", desc: "Automated off-site backups, vulnerability scans, and uptime monitoring" },
+                        { title: "100/100 Core Web Vitals & SEO Health", desc: "Ensures Google speed ranking and user experience remain optimal" },
+                        { title: "Dedicated Priority Support", desc: "Direct line to your developer whenever questions arise" }
+                    ],
+                    image: "img/project/pro6.webp",
+                    metaDescription: "Support, maintenance and reliable website operations from TK-design. From NOK 1,000/mo with no lock-in."
+                },
                 digital_marketing: {
                     menuLabel: "Digital Marketing",
-                    bannerTitle: "Digital Marketing",
+                    bannerTitle: "Digital Marketing & Social Media",
                     summary: "Targeted content and actions that improve visibility, traffic and inbound leads from relevant customers.",
-                    tag: "Visibility",
+                    tag: "Visibility & Growth",
                     title: "Concrete actions for better reach and response",
                     lead: "We set a clear plan for content, channels and messaging so marketing supports your business goals.",
                     body: "The focus is practical execution: what to publish, how often and how to follow up results. You get direction, not just ideas.",
+                    priceTag: "Fixed Price Quote",
+                    ctaText: "Get a social media plan",
+                    ctaLink: "/contact?service=some",
                     spotlightTitle: "Marketing with a clear plan",
                     spotlightText: "From planning to publishing with focus on measurable impact.",
                     spotlightList: ["Channel choices", "Content plan", "Continuous follow-up"],
@@ -481,19 +559,27 @@
                         { title: "Content production", desc: "Text and content that build trust and trigger action." },
                         { title: "Impact tracking", desc: "Simple metrics and continuous improvement of activities." }
                     ],
-                    deliverablesTitle: "Typical deliverables",
-                    deliverables: ["Marketing plan", "Content calendar", "Campaign proposals", "Reporting"],
+                    deliverablesTitle: "Typical Deliverables:",
+                    deliverables: [
+                        { title: "Content Calendar & Themes", desc: "Scheduled topics, formats and publishing cadence" },
+                        { title: "Social Channel Strategy", desc: "Optimized presence on Meta, LinkedIn and search" },
+                        { title: "Copywriting & Visuals", desc: "Conversion-focused copy and tailored graphic assets" },
+                        { title: "Monthly Analytics Review", desc: "Regular performance tracking and optimization" }
+                    ],
                     image: "img/project/pro2.png",
                     metaDescription: "Digital marketing from TK-design with channel strategy, content planning and follow-up."
                 },
                 branding: {
                     menuLabel: "Brand Building",
-                    bannerTitle: "Brand Building",
+                    bannerTitle: "Brand Building & Identity",
                     summary: "A clear visual and verbal identity that makes it easier for customers to understand and remember your business.",
-                    tag: "Identity",
+                    tag: "Identity & Trust",
                     title: "Build a clear brand with a recognizable expression",
                     lead: "We define how your business appears visually and verbally so communication stays consistent across channels.",
                     body: "The work gives you a stronger and more coherent expression across website, content and marketing. It builds trust and improves recognition.",
+                    priceTag: "Fixed Price Quote",
+                    ctaText: "Start your branding project",
+                    ctaLink: "/contact?service=webdesign",
                     spotlightTitle: "A clear identity over time",
                     spotlightText: "Brand building that creates recognition and credibility.",
                     spotlightList: ["Visual direction", "Tone of voice", "Consistent expression"],
@@ -502,8 +588,13 @@
                         { title: "Visual direction", desc: "Colors, typography and visual choices aligned to your brand." },
                         { title: "Communication framework", desc: "Practical principles that keep expression consistent." }
                     ],
-                    deliverablesTitle: "Typical deliverables",
-                    deliverables: ["Brand platform", "Visual direction", "Messaging framework", "Practical guide"],
+                    deliverablesTitle: "Typical Deliverables:",
+                    deliverables: [
+                        { title: "Brand Positioning Framework", desc: "Core messaging, value propositions and audience definition" },
+                        { title: "Visual Identity & Styleguide", desc: "Color palettes, typography systems and brand assets" },
+                        { title: "Tone of Voice Guidelines", desc: "Clear rules for verbal and written communication" },
+                        { title: "Implementation Templates", desc: "Ready-to-use layouts for web and social channels" }
+                    ],
                     image: "img/project/pro4.png",
                     metaDescription: "Brand building from TK-design with visual direction, clear messaging and coherent identity."
                 }
@@ -559,7 +650,10 @@
                 feature3Title: "serviceFeature3Title",
                 feature3Desc: "serviceFeature3Desc",
                 deliverablesTitle: "serviceDeliverablesTitle",
-                deliverablesList: "serviceDeliverablesList"
+                deliverablesGrid: "serviceDeliverablesGrid",
+                priceHighlight: "servicePriceHighlight",
+                primaryCta: "servicePrimaryCta",
+                primaryCtaText: "servicePrimaryCtaText"
             };
 
             const setText = (id, value) => {
@@ -579,22 +673,49 @@
             setText(ids.title, data.title);
             setText(ids.lead, data.lead);
             setText(ids.body, data.body);
-            setText(ids.feature1Title, data.features[0].title);
-            setText(ids.feature1Desc, data.features[0].desc);
-            setText(ids.feature2Title, data.features[1].title);
-            setText(ids.feature2Desc, data.features[1].desc);
-            setText(ids.feature3Title, data.features[2].title);
-            setText(ids.feature3Desc, data.features[2].desc);
+            if (data.features && data.features.length >= 3) {
+                setText(ids.feature1Title, data.features[0].title);
+                setText(ids.feature1Desc, data.features[0].desc);
+                setText(ids.feature2Title, data.features[1].title);
+                setText(ids.feature2Desc, data.features[1].desc);
+                setText(ids.feature3Title, data.features[2].title);
+                setText(ids.feature3Desc, data.features[2].desc);
+            }
             setText(ids.deliverablesTitle, data.deliverablesTitle);
 
+            const priceEl = document.getElementById(ids.priceHighlight);
+            if (priceEl) {
+                if (data.priceTag) {
+                    priceEl.textContent = data.priceTag;
+                    priceEl.style.display = 'inline-block';
+                } else {
+                    priceEl.style.display = 'none';
+                }
+            }
+
+            const ctaBtn = document.getElementById(ids.primaryCta);
+            const ctaTextEl = document.getElementById(ids.primaryCtaText);
+            if (ctaBtn && ctaTextEl) {
+                if (data.ctaLink) ctaBtn.href = data.ctaLink;
+                if (data.ctaText) ctaTextEl.textContent = data.ctaText;
+            }
+
             const spotlightList = document.getElementById(ids.spotlightList);
-            if (spotlightList) {
+            if (spotlightList && data.spotlightList) {
                 spotlightList.innerHTML = data.spotlightList.map((item) => `<li>${item}</li>`).join("");
             }
 
-            const deliverablesList = document.getElementById(ids.deliverablesList);
-            if (deliverablesList) {
-                deliverablesList.innerHTML = data.deliverables.map((item) => `<li>${item}</li>`).join("");
+            const deliverablesGrid = document.getElementById(ids.deliverablesGrid);
+            if (deliverablesGrid && data.deliverables) {
+                deliverablesGrid.innerHTML = data.deliverables.map((item) => `
+                    <div class="deliverable-item">
+                        <i class="fas fa-check-circle" style="color: #ff6a1b;"></i>
+                        <div>
+                            <strong style="color: #11263c; font-size: 0.95rem;">${typeof item === 'string' ? item : item.title}</strong>
+                            ${typeof item === 'object' && item.desc ? `<p style="font-size: 0.85rem; color: #64748b; margin: 2px 0 0 0;">${item.desc}</p>` : ''}
+                        </div>
+                    </div>
+                `).join("");
             }
 
             const detailImage = document.getElementById(ids.image);
@@ -603,15 +724,27 @@
                 detailImage.alt = data.bannerTitle;
             }
 
-            document.querySelectorAll(".service-sidebar-link").forEach((link) => {
-                const key = link.getAttribute("data-service");
-                const currentData = localizedSet[key] || localizedSet.uiux;
-                const label = link.querySelector(".service-sidebar-label");
-                if (label && currentData) label.textContent = currentData.menuLabel;
-                link.classList.toggle("is-active", key === serviceKey);
+            document.querySelectorAll(".service-nav-link").forEach((link) => {
+                const href = link.getAttribute("href") || "";
+                const isCurrent = (
+                    (serviceKey === 'support' && href === '/support-og-vedlikehold') ||
+                    (serviceKey === 'seo' && href === '/seo') ||
+                    (serviceKey === 'web_dev' && href === '/webdesign') ||
+                    (serviceKey === 'digital_marketing' && href === '/sosiale-medier')
+                );
+                link.classList.toggle("is-active", isCurrent);
+                if (isCurrent) {
+                    link.style.background = 'rgba(255, 106, 27, 0.08)';
+                    link.style.color = '#ff6a1b';
+                    link.style.fontWeight = '700';
+                } else {
+                    link.style.background = '';
+                    link.style.color = '';
+                    link.style.fontWeight = '';
+                }
             });
 
-            document.title = `${data.bannerTitle} | tk-design`;
+            document.title = `${data.bannerTitle} | TK-design`;
             const metaDescription = document.querySelector('meta[name="description"]');
             if (metaDescription && data.metaDescription) {
                 metaDescription.setAttribute("content", data.metaDescription);

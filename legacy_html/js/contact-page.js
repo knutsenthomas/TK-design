@@ -277,18 +277,24 @@ window.updateCheckboxCardSelection = function(checkbox) {
 
 function selectServiceFromQuery() {
     const params = new URLSearchParams(window.location.search);
-    const service = params.get('service');
+    const service = (params.get('service') || '').toLowerCase().trim();
     if (!service) return;
     
     const select = document.getElementById('contact-service');
     if (!select) return;
     
-    if (service === 'support') {
-        select.value = 'Løpende drift og support';
-    } else if (service === 'webdesign') {
-        select.value = 'Webdesign + SEO (Anbefalt)';
+    if (service === 'support' || service === 'drift' || service === 'vedlikehold') {
+        select.value = 'Support';
+        const formDesc = document.querySelector('[data-i18n="contact_page.form_desc"]');
+        if (formDesc) {
+            formDesc.innerHTML = '<strong>Bestilling av Supportavtale (Fra kr 1 000,-/mnd, ingen bindingstid).</strong> Fyll ut under så klargjør vi oppsettet.';
+        }
+    } else if (service === 'webdesign' || service === 'nettside') {
+        select.value = 'Webdesign + SEO';
+    } else if (service === 'custom_web') {
+        select.value = 'Kun skreddersydd Webdesign';
     } else if (service === 'seo') {
-        select.value = 'SEO Søkemotoroptimalisering';
+        select.value = 'SEO';
     } else if (service === 'some') {
         select.value = 'SoMe Innholdsstrategi';
     }
