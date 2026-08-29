@@ -5419,8 +5419,8 @@ async function postPayloadToSocialWebhook(payload = {}, options = {}) {
 
 // --- Direct Social Media API Integration (Meta Graph API & LinkedIn API) ---
 async function publishToFacebookPageApi({ message, link, imageUrl }) {
-    const pageId = String(process.env.FB_PAGE_ID || '584800868052264').trim();
-    const token = String(process.env.FB_PAGE_ACCESS_TOKEN || 'EAAVx4eTdYBMBSJhgcv9ZCdHIzcQrn0w4TTRM8Ww6Ba48rAhulZC2RmGlZBXW5D9ZBPB13FxfNimkLcLJhtYACMySXcp8q3QWrNtggaZCLmKh786ZChq2UAqFrp9QPKpMQL2lMjtsKb54iIkIYiskuuFOvk91LnL3fC4FRuNYEm0RSZAN82qFbUyzvsFaB1Vq9d7NS7dydmnKorAj1iZA4qGLuyjuuYpbhvGJwckwT93hZATvxfugsRx1ZAwgZDZD').trim();
+    const pageId = String(process.env.FB_PAGE_ID || '').trim();
+    const token = String(process.env.FB_PAGE_ACCESS_TOKEN || '').trim();
 
     if (!pageId || !token) {
         return { ok: false, error: 'FB_PAGE_ID eller FB_PAGE_ACCESS_TOKEN mangler i miljøvariabler.' };
