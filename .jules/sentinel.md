@@ -1,0 +1,4 @@
+## 2024-05-24 - SSRF in Proxy Endpoint
+**Vulnerability:** A Server-Side Request Forgery (SSRF) was identified in the `/api/proxy-pdf` endpoint in `legacy_html/server.js`. The validation code `parsed.hostname.includes('googleapis.com')` was flawed. It allowed bypasses if the domain simply *contained* the string, e.g., `evil-googleapis.com`. It also allowed protocols like `http:` or `file:`.
+**Learning:** Using `.includes()` for domain validation is highly susceptible to bypasses and is a common anti-pattern that leads to SSRF vulnerabilities. Protocol restrictions are also frequently omitted when handling arbitrary URLs.
+**Prevention:** Always validate domains by checking for an exact match (`===`) or a strict suffix match (`.endsWith()`). Always enforce explicit protocols (like `https:`), and avoid `.includes()` or naive Regex patterns for domain authorization checks.
