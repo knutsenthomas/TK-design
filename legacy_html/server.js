@@ -577,19 +577,14 @@ app.post('/api/pagespeed', pagespeedLimiter, async (req, res) => {
 
 function getFirebaseWebConfig() {
     const projectId = process.env.TK_FIREBASE_PROJECT_ID || 'tk-design-f43f6';
-    const defaultWebConfig = {
-        apiKey: 'AIzaSyDLYgqo2E1UiHoydEB6-WfFc119HES2U5c',
-        messagingSenderId: '729667300921',
-        appId: '1:729667300921:web:5061be8d41f10707a727e8'
-    };
 
     return {
-        apiKey: process.env.TK_FIREBASE_WEB_API_KEY || defaultWebConfig.apiKey,
+        apiKey: process.env.TK_FIREBASE_WEB_API_KEY || '',
         authDomain: process.env.TK_FIREBASE_AUTH_DOMAIN || `${projectId}.firebaseapp.com`,
         projectId,
         storageBucket: process.env.TK_FIREBASE_STORAGE_BUCKET || `${projectId}.firebasestorage.app`,
-        messagingSenderId: process.env.TK_FIREBASE_MESSAGING_SENDER_ID || defaultWebConfig.messagingSenderId,
-        appId: process.env.TK_FIREBASE_APP_ID || defaultWebConfig.appId
+        messagingSenderId: process.env.TK_FIREBASE_MESSAGING_SENDER_ID || '',
+        appId: process.env.TK_FIREBASE_APP_ID || ''
     };
 }
 
@@ -5419,8 +5414,8 @@ async function postPayloadToSocialWebhook(payload = {}, options = {}) {
 
 // --- Direct Social Media API Integration (Meta Graph API & LinkedIn API) ---
 async function publishToFacebookPageApi({ message, link, imageUrl }) {
-    const pageId = String(process.env.FB_PAGE_ID || '584800868052264').trim();
-    const token = String(process.env.FB_PAGE_ACCESS_TOKEN || 'EAAVx4eTdYBMBSJhgcv9ZCdHIzcQrn0w4TTRM8Ww6Ba48rAhulZC2RmGlZBXW5D9ZBPB13FxfNimkLcLJhtYACMySXcp8q3QWrNtggaZCLmKh786ZChq2UAqFrp9QPKpMQL2lMjtsKb54iIkIYiskuuFOvk91LnL3fC4FRuNYEm0RSZAN82qFbUyzvsFaB1Vq9d7NS7dydmnKorAj1iZA4qGLuyjuuYpbhvGJwckwT93hZATvxfugsRx1ZAwgZDZD').trim();
+    const pageId = String(process.env.FB_PAGE_ID || '').trim();
+    const token = String(process.env.FB_PAGE_ACCESS_TOKEN || '').trim();
 
     if (!pageId || !token) {
         return { ok: false, error: 'FB_PAGE_ID eller FB_PAGE_ACCESS_TOKEN mangler i miljøvariabler.' };
