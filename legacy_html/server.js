@@ -272,8 +272,11 @@ async function verifyAdminToken(req, res, next) {
         }
     }
 
-    if (!isVercelRuntime() && (req.hostname === 'localhost' || req.hostname === '127.0.0.1')) {
-        return next();
+    if (!isVercelRuntime()) {
+        const ip = req.ip || (req.socket && req.socket.remoteAddress) || '';
+        if (ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1') {
+            return next();
+        }
     }
 
     return res.status(401).json({
@@ -2965,7 +2968,7 @@ function isValidIsoDateString(value = '') {
 
 // API: Get Blog Posts
 // --- Messages API ---
-app.get('/api/analytics', async (req, res) => {
+app.get('/api/analytics', verifyAdminToken, async (req, res) => {
     const propertyId = process.env.GA_PROPERTY_ID;
     const period = normalizeAnalyticsPeriod(req.query.period);
     const startDate = String(req.query.startDate || '').trim();
@@ -4759,7 +4762,7 @@ app.get('/api/proxy-pdf', (req, res) => {
         }
 
         const parsed = new URL(rawUrl);
-        if (!parsed.hostname.includes('firebasestorage.googleapis.com') && !parsed.hostname.includes('googleapis.com')) {
+        if (parsed.hostname !== 'firebasestorage.googleapis.com' && !parsed.hostname.endsWith('.googleapis.com')) {
             return res.status(403).send('Invalid domain');
         }
 
@@ -6643,7 +6646,7 @@ app.post('/api/social-planner/assistant', verifyAdminToken, async (req, res) => 
     }
 });
 
-app.get('/api/social-planner', async (req, res) => {
+app.get('/api/social-planner', verifyAdminToken, async (req, res) => {
     try {
         const state = await getSocialPlannerState();
         const requestedWorkspaceId = String(req.query.workspaceId || '').trim();
@@ -7442,7 +7445,7 @@ app.post('/api/social-planner/scheduler/run', verifyAdminToken, async (req, res)
     }
 });
 
-app.get('/api/social-planner/analytics', async (req, res) => {
+app.get('/api/social-planner/analytics', verifyAdminToken, async (req, res) => {
     try {
         const state = await getSocialPlannerState();
         const workspaceScope = String(req.query.scope || 'workspace').trim().toLowerCase();
