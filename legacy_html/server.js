@@ -577,19 +577,14 @@ app.post('/api/pagespeed', pagespeedLimiter, async (req, res) => {
 
 function getFirebaseWebConfig() {
     const projectId = process.env.TK_FIREBASE_PROJECT_ID || 'tk-design-f43f6';
-    const defaultWebConfig = {
-        apiKey: 'AIzaSyDLYgqo2E1UiHoydEB6-WfFc119HES2U5c',
-        messagingSenderId: '729667300921',
-        appId: '1:729667300921:web:5061be8d41f10707a727e8'
-    };
 
     return {
-        apiKey: process.env.TK_FIREBASE_WEB_API_KEY || defaultWebConfig.apiKey,
+        apiKey: process.env.TK_FIREBASE_WEB_API_KEY || '',
         authDomain: process.env.TK_FIREBASE_AUTH_DOMAIN || `${projectId}.firebaseapp.com`,
         projectId,
         storageBucket: process.env.TK_FIREBASE_STORAGE_BUCKET || `${projectId}.firebasestorage.app`,
-        messagingSenderId: process.env.TK_FIREBASE_MESSAGING_SENDER_ID || defaultWebConfig.messagingSenderId,
-        appId: process.env.TK_FIREBASE_APP_ID || defaultWebConfig.appId
+        messagingSenderId: process.env.TK_FIREBASE_MESSAGING_SENDER_ID || '',
+        appId: process.env.TK_FIREBASE_APP_ID || ''
     };
 }
 
@@ -2965,7 +2960,7 @@ function isValidIsoDateString(value = '') {
 
 // API: Get Blog Posts
 // --- Messages API ---
-app.get('/api/analytics', async (req, res) => {
+app.get('/api/analytics', verifyAdminToken, async (req, res) => {
     const propertyId = process.env.GA_PROPERTY_ID;
     const period = normalizeAnalyticsPeriod(req.query.period);
     const startDate = String(req.query.startDate || '').trim();
@@ -3093,7 +3088,7 @@ app.get('/api/analytics', async (req, res) => {
     }
 });
 
-app.get('/api/messages', async (req, res) => {
+app.get('/api/messages', verifyAdminToken, async (req, res) => {
     try {
         const { projectId, databaseId, collection } = getFirebaseConfig();
         const accessToken = await getFirebaseAccessToken();
@@ -3147,7 +3142,7 @@ app.get('/api/messages', async (req, res) => {
     }
 });
 
-app.patch('/api/messages/:id', async (req, res) => {
+app.patch('/api/messages/:id', verifyAdminToken, async (req, res) => {
     try {
         const { id } = req.params;
         const updateData = req.body;
@@ -3184,7 +3179,7 @@ app.patch('/api/messages/:id', async (req, res) => {
     }
 });
 
-app.delete('/api/messages/:id', async (req, res) => {
+app.delete('/api/messages/:id', verifyAdminToken, async (req, res) => {
     try {
         const { id } = req.params;
         const { projectId, databaseId, collection } = getFirebaseConfig();
@@ -6643,7 +6638,7 @@ app.post('/api/social-planner/assistant', verifyAdminToken, async (req, res) => 
     }
 });
 
-app.get('/api/social-planner', async (req, res) => {
+app.get('/api/social-planner', verifyAdminToken, async (req, res) => {
     try {
         const state = await getSocialPlannerState();
         const requestedWorkspaceId = String(req.query.workspaceId || '').trim();
@@ -6677,7 +6672,7 @@ app.get('/api/social-planner', async (req, res) => {
     }
 });
 
-app.put('/api/social-planner', async (req, res) => {
+app.put('/api/social-planner', verifyAdminToken, async (req, res) => {
     const incoming = req.body;
     if (!incoming || typeof incoming !== 'object' || Array.isArray(incoming)) {
         return res.status(400).json({
@@ -6712,7 +6707,7 @@ app.put('/api/social-planner', async (req, res) => {
     }
 });
 
-app.patch('/api/social-planner/settings', async (req, res) => {
+app.patch('/api/social-planner/settings', verifyAdminToken, async (req, res) => {
     try {
         const state = await getSocialPlannerState();
         const activeWorkspaceId = resolveSocialPlannerWorkspaceId(state, req.body?.activeWorkspaceId);
@@ -6788,7 +6783,7 @@ app.post('/api/social-planner/workspaces', verifyAdminToken, async (req, res) =>
     }
 });
 
-app.patch('/api/social-planner/workspaces/:workspaceId', async (req, res) => {
+app.patch('/api/social-planner/workspaces/:workspaceId', verifyAdminToken, async (req, res) => {
     const workspaceId = String(req.params.workspaceId || '').trim();
     if (!workspaceId) {
         return res.status(400).json({
@@ -6840,7 +6835,7 @@ app.patch('/api/social-planner/workspaces/:workspaceId', async (req, res) => {
     }
 });
 
-app.delete('/api/social-planner/workspaces/:workspaceId', async (req, res) => {
+app.delete('/api/social-planner/workspaces/:workspaceId', verifyAdminToken, async (req, res) => {
     const workspaceId = String(req.params.workspaceId || '').trim();
     if (!workspaceId) {
         return res.status(400).json({
@@ -6951,7 +6946,7 @@ app.post('/api/social-planner/accounts', verifyAdminToken, async (req, res) => {
     }
 });
 
-app.patch('/api/social-planner/accounts/:accountId', async (req, res) => {
+app.patch('/api/social-planner/accounts/:accountId', verifyAdminToken, async (req, res) => {
     const accountId = String(req.params.accountId || '').trim();
     if (!accountId) {
         return res.status(400).json({
@@ -7007,7 +7002,7 @@ app.patch('/api/social-planner/accounts/:accountId', async (req, res) => {
     }
 });
 
-app.delete('/api/social-planner/accounts/:accountId', async (req, res) => {
+app.delete('/api/social-planner/accounts/:accountId', verifyAdminToken, async (req, res) => {
     const accountId = String(req.params.accountId || '').trim();
     if (!accountId) {
         return res.status(400).json({
@@ -7097,7 +7092,7 @@ app.post('/api/social-planner/templates', verifyAdminToken, async (req, res) => 
     }
 });
 
-app.patch('/api/social-planner/templates/:templateId', async (req, res) => {
+app.patch('/api/social-planner/templates/:templateId', verifyAdminToken, async (req, res) => {
     const templateId = String(req.params.templateId || '').trim();
     if (!templateId) {
         return res.status(400).json({
@@ -7146,7 +7141,7 @@ app.patch('/api/social-planner/templates/:templateId', async (req, res) => {
     }
 });
 
-app.delete('/api/social-planner/templates/:templateId', async (req, res) => {
+app.delete('/api/social-planner/templates/:templateId', verifyAdminToken, async (req, res) => {
     const templateId = String(req.params.templateId || '').trim();
     if (!templateId) {
         return res.status(400).json({
@@ -7244,7 +7239,7 @@ app.post('/api/social-planner/entries', verifyAdminToken, async (req, res) => {
     }
 });
 
-app.patch('/api/social-planner/entries/:entryId', async (req, res) => {
+app.patch('/api/social-planner/entries/:entryId', verifyAdminToken, async (req, res) => {
     const entryId = String(req.params.entryId || '').trim();
     if (!entryId) {
         return res.status(400).json({
@@ -7324,7 +7319,7 @@ app.patch('/api/social-planner/entries/:entryId', async (req, res) => {
     }
 });
 
-app.delete('/api/social-planner/entries/:entryId', async (req, res) => {
+app.delete('/api/social-planner/entries/:entryId', verifyAdminToken, async (req, res) => {
     const entryId = String(req.params.entryId || '').trim();
     if (!entryId) {
         return res.status(400).json({
@@ -7442,7 +7437,7 @@ app.post('/api/social-planner/scheduler/run', verifyAdminToken, async (req, res)
     }
 });
 
-app.get('/api/social-planner/analytics', async (req, res) => {
+app.get('/api/social-planner/analytics', verifyAdminToken, async (req, res) => {
     try {
         const state = await getSocialPlannerState();
         const workspaceScope = String(req.query.scope || 'workspace').trim().toLowerCase();
