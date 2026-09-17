@@ -272,7 +272,9 @@ async function verifyAdminToken(req, res, next) {
         }
     }
 
-    if (!isVercelRuntime() && (req.hostname === 'localhost' || req.hostname === '127.0.0.1')) {
+    const clientIp = req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress;
+    const isLocalIp = clientIp === '127.0.0.1' || clientIp === '::1' || clientIp === '::ffff:127.0.0.1';
+    if (!isVercelRuntime() && isLocalIp) {
         return next();
     }
 
