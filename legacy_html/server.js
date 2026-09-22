@@ -4759,7 +4759,16 @@ app.get('/api/proxy-pdf', (req, res) => {
         }
 
         const parsed = new URL(rawUrl);
-        if (!parsed.hostname.includes('firebasestorage.googleapis.com') && !parsed.hostname.includes('googleapis.com')) {
+
+        // Security Fix: Prevent SSRF by strictly validating protocol and domain
+        if (parsed.protocol !== 'https:') {
+            return res.status(403).send('Invalid protocol');
+        }
+
+        const isFirebaseStorage = parsed.hostname === 'firebasestorage.googleapis.com' || parsed.hostname.endsWith('.firebasestorage.googleapis.com');
+        const isGoogleApis = parsed.hostname === 'googleapis.com' || parsed.hostname.endsWith('.googleapis.com');
+
+        if (!isFirebaseStorage && !isGoogleApis) {
             return res.status(403).send('Invalid domain');
         }
 
