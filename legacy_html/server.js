@@ -61,10 +61,10 @@ const PAGE_ROUTE_MAP = {
     '/speed-test': 'speed-test/index.html',
     '/nettside-sjekker': 'speed-test/index.html',
     '/portefolje': 'portefolje.html',
-    '/visittkort': 'visittkort/index.html',
     '/visittkort/': 'visittkort/index.html'
 };
 const LEGACY_REDIRECT_MAP = {
+    '/visittkort': '/visittkort/',
     '/index.html': '/',
     '/blog.html': '/blog',
     '/project-details.html': '/project-details',
