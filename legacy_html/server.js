@@ -60,7 +60,9 @@ const PAGE_ROUTE_MAP = {
     '/accessibility': 'accessibility.html',
     '/speed-test': 'speed-test/index.html',
     '/nettside-sjekker': 'speed-test/index.html',
-    '/portefolje': 'portefolje.html'
+    '/portefolje': 'portefolje.html',
+    '/visittkort': 'visittkort/index.html',
+    '/visittkort/': 'visittkort/index.html'
 };
 const LEGACY_REDIRECT_MAP = {
     '/index.html': '/',
@@ -71,6 +73,7 @@ const LEGACY_REDIRECT_MAP = {
     '/service-details.html': '/webdesign',
     '/privacy.html': '/privacy',
     '/accessibility.html': '/accessibility',
+    '/visittkort.html': '/visittkort/',
     // 301 Redirects for Legacy URLs reported in Google Search Console
     '/en': '/',
     '/tjenester': '/webdesign',
@@ -157,6 +160,11 @@ const SEO_PAGE_DEFAULTS = {
         title: 'Nettside test',
         description: 'Test hastigheten og kvaliteten på nettsiden din. Få en gratis SEO- og ytelsessjekk drevet av Google PageSpeed Insights.',
         keywords: 'nettside test, pagespeed, lighthouse, nettside hastighet, seo sjekk, tk-design'
+    },
+    'visittkort/index.html': {
+        title: 'Thomas Knutsen | Digitalt Visittkort | TK-design',
+        description: 'Digitalt visittkort for Thomas Knutsen – Daglig leder og fullstack-utvikler i TK-design. Skreddersydd webdesign, SEO og lynrask ytelse.',
+        keywords: 'Thomas Knutsen, TK-design, digitalt visittkort, fullstack-utvikler, webutvikler'
     }
 };
 const PUBLIC_HOSTNAME_REGEX = /^(?=.{1,253}$)(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i;
@@ -7993,6 +8001,9 @@ app.get('/sw.js', (req, res) => {
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.sendFile(path.join(__dirname, 'sw.js'));
 });
+
+// Visittkort static assets
+app.use('/visittkort', express.static(path.join(__dirname, 'visittkort')));
 
 // Static Files (as fallback)
 app.use(express.static(path.join(__dirname)));
