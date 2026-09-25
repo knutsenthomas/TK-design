@@ -8009,6 +8009,12 @@ app.get(['/visittkort/TK-design.pkpass', '/visittkort/visittkort.pkpass'], (req,
     res.sendFile(path.join(__dirname, 'visittkort', 'TK-design.pkpass'));
 });
 
+// Visittkort assets root fallback
+app.get(['/assets/thomas-knutsen.jpg', '/assets/logo.png', '/assets/logo.webp'], (req, res) => {
+    const filename = path.basename(req.path);
+    res.sendFile(path.join(__dirname, 'visittkort', 'assets', filename));
+});
+
 // Visittkort static assets
 app.use('/visittkort', express.static(path.join(__dirname, 'visittkort')));
 
