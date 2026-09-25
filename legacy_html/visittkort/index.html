@@ -885,7 +885,7 @@
        ========================================================================= */
     @media (min-width: 900px) {
       body {
-        padding: 36px 24px 48px;
+        padding: 24px 20px 32px;
         align-items: center;
       }
       body::before {
@@ -896,7 +896,7 @@
 
       .page-container {
         max-width: 1120px;
-        gap: 18px;
+        gap: 14px;
       }
 
       /* Desktop Topbar / Merkevare-anker */
@@ -905,13 +905,13 @@
         align-items: center;
         justify-content: space-between;
         width: 100%;
-        padding: 12px 24px;
+        padding: 10px 22px;
         background: rgba(17, 38, 60, 0.72);
         backdrop-filter: blur(24px);
         -webkit-backdrop-filter: blur(24px);
         border: 1px solid var(--border-glass);
         border-radius: var(--radius-card);
-        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.4);
       }
       .desktop-topbar-brand {
         display: flex;
@@ -920,7 +920,7 @@
         text-decoration: none;
         color: #ffffff;
         font-weight: 700;
-        font-size: 16px;
+        font-size: 15.5px;
         letter-spacing: -0.01em;
         transition: opacity var(--transition);
       }
@@ -937,7 +937,7 @@
       .desktop-topbar-actions {
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 14px;
       }
       .desktop-status-tag {
         display: flex;
@@ -945,7 +945,7 @@
         gap: 8px;
         font-size: 12px;
         color: var(--color-cream-dim);
-        padding: 6px 14px;
+        padding: 5px 12px;
         background: rgba(255, 255, 255, 0.04);
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: var(--radius-pill);
@@ -961,11 +961,11 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        font-size: 12.5px;
+        font-size: 12px;
         font-weight: 600;
         color: var(--color-cream);
         text-decoration: none;
-        padding: 6px 14px;
+        padding: 6px 13px;
         background: rgba(255, 106, 27, 0.15);
         border: 1px solid rgba(255, 106, 27, 0.35);
         border-radius: var(--radius-pill);
@@ -980,7 +980,7 @@
       .card {
         max-width: 100%;
         display: grid;
-        grid-template-columns: 440px 1fr;
+        grid-template-columns: 430px 1fr;
         border-radius: 28px;
         box-shadow:
           0 1px 0 rgba(255, 255, 255, 0.12) inset,
@@ -990,15 +990,15 @@
 
       .portrait-stage {
         height: 100%;
-        min-height: 720px;
+        min-height: 640px;
         border-right: 1px solid rgba(255, 255, 255, 0.08);
       }
       .portrait-img {
-        object-position: 50% 16%;
+        object-position: 50% 0%;
       }
 
       .card-body {
-        padding: 38px 44px 32px;
+        padding: 28px 36px 22px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -1010,14 +1010,14 @@
       }
       .desktop-header {
         display: block;
-        margin-bottom: 22px;
+        margin-bottom: 14px;
       }
       .desktop-header-top {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
       }
       .desktop-tag {
         font-size: 11px;
@@ -1033,7 +1033,7 @@
         font-size: 11px;
         font-weight: 600;
         color: #34d399;
-        padding: 4px 10px;
+        padding: 3px 9px;
         background: rgba(16, 185, 129, 0.12);
         border: 1px solid rgba(16, 185, 129, 0.25);
         border-radius: var(--radius-pill);
@@ -1052,25 +1052,25 @@
       }
       .desktop-title {
         font-family: var(--font-serif);
-        font-size: 34px;
+        font-size: 30px;
         line-height: 1.15;
         font-weight: 700;
         color: #ffffff;
-        margin-bottom: 6px;
+        margin-bottom: 4px;
       }
       .desktop-subtitle {
-        font-size: 14.5px;
+        font-size: 13.5px;
         color: var(--color-cream-dim);
-        margin-bottom: 10px;
-        line-height: 1.4;
+        margin-bottom: 6px;
+        line-height: 1.35;
       }
       .desktop-subtitle b {
         color: #ffffff;
         font-weight: 650;
       }
       .desktop-bio-text {
-        font-size: 13.5px;
-        line-height: 1.55;
+        font-size: 12.5px;
+        line-height: 1.5;
         color: var(--color-muted);
         max-width: 58ch;
       }
@@ -1079,7 +1079,7 @@
       .action-grid {
         display: grid;
         grid-template-columns: 1.15fr 1fr;
-        gap: 12px;
+        gap: 10px;
         margin-bottom: 8px;
       }
       .wallet-btn {
@@ -1088,31 +1088,36 @@
 
       /* Hurtigvalg på Desktop */
       .quick-row {
-        gap: 12px;
-        margin-top: 10px;
-        margin-bottom: 20px;
+        gap: 10px;
+        margin-top: 6px;
+        margin-bottom: 14px;
       }
       .quick-item {
-        min-height: 68px;
-        padding: 12px 10px;
-        gap: 4px;
+        min-height: 60px;
+        padding: 10px 8px;
+        gap: 2px;
       }
       .quick-sub {
         display: block;
-        font-size: 11px;
+        font-size: 10.5px;
         color: var(--color-muted);
         font-weight: 400;
       }
 
       /* Skillelinje */
       .section-sep {
-        margin: 16px 0 12px;
+        margin: 12px 0 10px;
       }
 
       /* Lenkeliste på Desktop (2x2 Grid) */
       .link-list {
         display: grid;
         grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .link-card {
+        min-height: 52px;
+        padding: 10px 14px;
         gap: 12px;
       }
 
@@ -1120,9 +1125,9 @@
       .desktop-qr-widget {
         display: flex !important;
         align-items: center;
-        gap: 18px;
-        padding: 14px 18px;
-        margin-top: 16px;
+        gap: 14px;
+        padding: 10px 14px;
+        margin-top: 12px;
         background: rgba(255, 255, 255, 0.035);
         border: 1px dashed rgba(255, 106, 27, 0.4);
         border-radius: var(--radius-btn);
@@ -1133,11 +1138,11 @@
         border-color: var(--color-orange);
       }
       .desktop-qr-box {
-        width: 76px;
-        height: 76px;
-        padding: 6px;
+        width: 62px;
+        height: 62px;
+        padding: 5px;
         background: #ffffff;
-        border-radius: 10px;
+        border-radius: 8px;
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
         flex-shrink: 0;
         display: grid;
@@ -1156,52 +1161,52 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        margin-bottom: 3px;
+        margin-bottom: 2px;
       }
       .desktop-qr-badge {
-        font-size: 10px;
+        font-size: 9.5px;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.08em;
         background: rgba(255, 106, 27, 0.2);
         color: var(--color-orange);
-        padding: 2px 7px;
+        padding: 2px 6px;
         border-radius: 4px;
       }
       .desktop-qr-title {
-        font-size: 13.5px;
+        font-size: 13px;
         font-weight: 650;
         color: #ffffff;
       }
       .desktop-qr-desc {
-        font-size: 12px;
-        line-height: 1.4;
+        font-size: 11.5px;
+        line-height: 1.35;
         color: var(--color-muted);
       }
 
       /* Desktop Footer */
       footer {
-        margin-top: 18px;
-        padding-top: 16px;
+        margin-top: 12px;
+        padding-top: 10px;
         border-top: 1px solid rgba(255, 255, 255, 0.08);
         display: flex;
         justify-content: space-between;
         align-items: center;
         text-align: left;
-        font-size: 12px;
+        font-size: 11.5px;
       }
     }
 
     /* Ekstra widescreen-optimalisering (>= 1150px) */
     @media (min-width: 1150px) {
       .page-container {
-        max-width: 1160px;
+        max-width: 1140px;
       }
       .card {
-        grid-template-columns: 470px 1fr;
+        grid-template-columns: 450px 1fr;
       }
       .card-body {
-        padding: 42px 50px 34px;
+        padding: 32px 42px 26px;
       }
     }
   </style>
