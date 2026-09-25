@@ -2,7 +2,6 @@
 <html lang="no" prefix="og: https://ogp.me/ns#">
 <head>
   <meta charset="utf-8" />
-  <base href="/visittkort/" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Thomas Knutsen | Digitalt Visittkort | TK-design</title>
   <meta name="description" content="Digitalt visittkort for Thomas Knutsen – Daglig leder og fullstack-utvikler i TK-design. Skreddersydd webdesign, SEO og lynrask ytelse." />
@@ -574,6 +573,46 @@
       flex-shrink: 0;
     }
 
+    .wallet-btn {
+      width: 100%;
+      min-height: 48px;
+      text-decoration: none;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 13px 18px;
+      border-radius: var(--radius-btn);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+      transition: transform var(--transition), background var(--transition), border-color var(--transition), box-shadow var(--transition);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .wallet-btn:hover {
+      transform: scale(1.02);
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 106, 27, 0.5);
+      box-shadow: 0 8px 24px rgba(255, 106, 27, 0.2);
+    }
+    .wallet-btn:active {
+      transform: scale(0.98);
+    }
+    .wallet-btn svg {
+      width: 19px;
+      height: 19px;
+      color: var(--color-orange);
+      flex-shrink: 0;
+    }
+
     /* =========================================================================
        HURTIGVALG (3 KOLONNER: WHATSAPP, RING, E-POST)
        ========================================================================= */
@@ -912,6 +951,16 @@
         </svg>
         <span id="saveLabel">Lagre kontakt</span>
       </button>
+
+      <!-- Lommebok pass (.pkpass) -->
+      <a class="wallet-btn reveal" href="TK-design.pkpass" download="TK-design.pkpass" aria-label="Last ned Lommebok-pass (.pkpass)" style="margin-top: 8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="3"></rect>
+          <path d="M16 12h4"></path>
+          <path d="M2 10h20"></path>
+        </svg>
+        <span>Lommebok-kort (.pkpass)</span>
+      </a>
 
       <!-- Hurtigvalg: WhatsApp, Ring, E-post -->
       <div class="quick-row reveal" id="quickRow">

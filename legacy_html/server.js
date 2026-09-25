@@ -8002,6 +8002,13 @@ app.get('/sw.js', (req, res) => {
     res.sendFile(path.join(__dirname, 'sw.js'));
 });
 
+// Visittkort PKPass download
+app.get(['/visittkort/TK-design.pkpass', '/visittkort/visittkort.pkpass'], (req, res) => {
+    res.setHeader('Content-Type', 'application/vnd.apple.pkpass');
+    res.setHeader('Content-Disposition', 'attachment; filename="TK-design.pkpass"');
+    res.sendFile(path.join(__dirname, 'visittkort', 'TK-design.pkpass'));
+});
+
 // Visittkort static assets
 app.use('/visittkort', express.static(path.join(__dirname, 'visittkort')));
 
