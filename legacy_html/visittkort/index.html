@@ -873,11 +873,6 @@
     .desktop-qr-widget {
       display: none !important;
     }
-    .action-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
 
     /* =========================================================================
        RESPONSIVE UTVIDELSER: DESKTOP / PC FULLBREDDE (>= 900px)
@@ -1075,15 +1070,11 @@
         max-width: 58ch;
       }
 
-      /* Desktop Handlingsknapper (2 kolonner) */
-      .action-grid {
-        display: grid;
-        grid-template-columns: 1.15fr 1fr;
-        gap: 10px;
-        margin-bottom: 8px;
-      }
-      .wallet-btn {
-        margin-top: 0 !important;
+      /* Desktop Lagre kontakt knapp */
+      .save-btn {
+        width: 100%;
+        min-height: 52px;
+        margin-bottom: 2px;
       }
 
       /* Hurtigvalg på Desktop */
@@ -1335,26 +1326,13 @@
         <b style="color: #ffffff;">Daglig leder & Fullstack-utvikler</b> · TK-design
       </p>
 
-      <!-- Handlingsknapper (1 kolonne på mobil, 2 kolonner på desktop) -->
-      <div class="action-grid reveal">
-        <!-- Primærhandling: Lagre kontakt -->
-        <button class="save-btn" id="saveBtn" type="button" aria-label="Lagre kontakt til telefon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-          </svg>
-          <span id="saveLabel">Lagre kontakt</span>
-        </button>
-
-        <!-- Lommebok pass (.pkpass) -->
-        <a class="wallet-btn" href="/visittkort/TK-design.pkpass" aria-label="Legg til i Apple Wallet / Google Wallet">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="4" width="20" height="16" rx="3"></rect>
-            <path d="M16 12h4"></path>
-            <path d="M2 10h20"></path>
-          </svg>
-          <span>Lommebok-kort (.pkpass)</span>
-        </a>
-      </div>
+      <!-- Primærhandling: Lagre kontakt -->
+      <button class="save-btn reveal" id="saveBtn" type="button" aria-label="Lagre kontakt til telefon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span id="saveLabel">Lagre kontakt</span>
+      </button>
 
       <!-- Hurtigvalg: WhatsApp, Ring, E-post -->
       <div class="quick-row reveal" id="quickRow">
