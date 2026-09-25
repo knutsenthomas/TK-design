@@ -851,6 +851,359 @@
       outline-offset: 3px;
       border-radius: 8px;
     }
+
+    /* =========================================================================
+       RESPONSIVE UTVIDELSER: MOBIL BASIS (< 900px)
+       ========================================================================= */
+    .page-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .desktop-topbar {
+      display: none;
+    }
+    .desktop-header {
+      display: none;
+    }
+    .quick-sub {
+      display: none;
+    }
+    .desktop-qr-widget {
+      display: none !important;
+    }
+    .action-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* =========================================================================
+       RESPONSIVE UTVIDELSER: DESKTOP / PC FULLBREDDE (>= 900px)
+       Følger 8px-grid, 16-24px radier, diffuse skygger og subtile glass-kanter.
+       ========================================================================= */
+    @media (min-width: 900px) {
+      body {
+        padding: 36px 24px 48px;
+        align-items: center;
+      }
+      body::before {
+        width: 1100px;
+        height: 1100px;
+        top: -10%;
+      }
+
+      .page-container {
+        max-width: 1120px;
+        gap: 18px;
+      }
+
+      /* Desktop Topbar / Merkevare-anker */
+      .desktop-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 12px 24px;
+        background: rgba(17, 38, 60, 0.72);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid var(--border-glass);
+        border-radius: var(--radius-card);
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4);
+      }
+      .desktop-topbar-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 16px;
+        letter-spacing: -0.01em;
+        transition: opacity var(--transition);
+      }
+      .desktop-topbar-brand:hover {
+        opacity: 0.88;
+      }
+      .brand-badge-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--color-orange);
+        box-shadow: 0 0 10px var(--color-orange);
+      }
+      .desktop-topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .desktop-status-tag {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--color-cream-dim);
+        padding: 6px 14px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: var(--radius-pill);
+      }
+      .status-indicator {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #10b981;
+        box-shadow: 0 0 8px #10b981;
+      }
+      .desktop-topbar-link {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--color-cream);
+        text-decoration: none;
+        padding: 6px 14px;
+        background: rgba(255, 106, 27, 0.15);
+        border: 1px solid rgba(255, 106, 27, 0.35);
+        border-radius: var(--radius-pill);
+        transition: background var(--transition), transform var(--transition);
+      }
+      .desktop-topbar-link:hover {
+        background: rgba(255, 106, 27, 0.28);
+        transform: scale(1.02);
+      }
+
+      /* Desktop 2-Kolonners Kort */
+      .card {
+        max-width: 100%;
+        display: grid;
+        grid-template-columns: 440px 1fr;
+        border-radius: 28px;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.12) inset,
+          0 35px 85px -20px rgba(0, 0, 0, 0.85),
+          0 0 60px -10px rgba(255, 106, 27, 0.12);
+      }
+
+      .portrait-stage {
+        height: 100%;
+        min-height: 720px;
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .portrait-img {
+        object-position: 50% 16%;
+      }
+
+      .card-body {
+        padding: 38px 44px 32px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      /* Desktop Header vs Mobil Rollelinje */
+      .role-line {
+        display: none;
+      }
+      .desktop-header {
+        display: block;
+        margin-bottom: 22px;
+      }
+      .desktop-header-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+      .desktop-tag {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--color-orange);
+      }
+      .desktop-status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #34d399;
+        padding: 4px 10px;
+        background: rgba(16, 185, 129, 0.12);
+        border: 1px solid rgba(16, 185, 129, 0.25);
+        border-radius: var(--radius-pill);
+      }
+      .pulse-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #10b981;
+        box-shadow: 0 0 6px #10b981;
+        animation: statusPulse 2s infinite ease-in-out;
+      }
+      @keyframes statusPulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.3); opacity: 0.6; }
+      }
+      .desktop-title {
+        font-family: var(--font-serif);
+        font-size: 34px;
+        line-height: 1.15;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 6px;
+      }
+      .desktop-subtitle {
+        font-size: 14.5px;
+        color: var(--color-cream-dim);
+        margin-bottom: 10px;
+        line-height: 1.4;
+      }
+      .desktop-subtitle b {
+        color: #ffffff;
+        font-weight: 650;
+      }
+      .desktop-bio-text {
+        font-size: 13.5px;
+        line-height: 1.55;
+        color: var(--color-muted);
+        max-width: 58ch;
+      }
+
+      /* Desktop Handlingsknapper (2 kolonner) */
+      .action-grid {
+        display: grid;
+        grid-template-columns: 1.15fr 1fr;
+        gap: 12px;
+        margin-bottom: 8px;
+      }
+      .wallet-btn {
+        margin-top: 0 !important;
+      }
+
+      /* Hurtigvalg på Desktop */
+      .quick-row {
+        gap: 12px;
+        margin-top: 10px;
+        margin-bottom: 20px;
+      }
+      .quick-item {
+        min-height: 68px;
+        padding: 12px 10px;
+        gap: 4px;
+      }
+      .quick-sub {
+        display: block;
+        font-size: 11px;
+        color: var(--color-muted);
+        font-weight: 400;
+      }
+
+      /* Skillelinje */
+      .section-sep {
+        margin: 16px 0 12px;
+      }
+
+      /* Lenkeliste på Desktop (2x2 Grid) */
+      .link-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      /* Desktop QR Code Widget */
+      .desktop-qr-widget {
+        display: flex !important;
+        align-items: center;
+        gap: 18px;
+        padding: 14px 18px;
+        margin-top: 16px;
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px dashed rgba(255, 106, 27, 0.4);
+        border-radius: var(--radius-btn);
+        transition: background var(--transition), border-color var(--transition);
+      }
+      .desktop-qr-widget:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: var(--color-orange);
+      }
+      .desktop-qr-box {
+        width: 76px;
+        height: 76px;
+        padding: 6px;
+        background: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+        flex-shrink: 0;
+        display: grid;
+        place-items: center;
+      }
+      .desktop-qr-box svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .desktop-qr-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .desktop-qr-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 3px;
+      }
+      .desktop-qr-badge {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        background: rgba(255, 106, 27, 0.2);
+        color: var(--color-orange);
+        padding: 2px 7px;
+        border-radius: 4px;
+      }
+      .desktop-qr-title {
+        font-size: 13.5px;
+        font-weight: 650;
+        color: #ffffff;
+      }
+      .desktop-qr-desc {
+        font-size: 12px;
+        line-height: 1.4;
+        color: var(--color-muted);
+      }
+
+      /* Desktop Footer */
+      footer {
+        margin-top: 18px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: left;
+        font-size: 12px;
+      }
+    }
+
+    /* Ekstra widescreen-optimalisering (>= 1150px) */
+    @media (min-width: 1150px) {
+      .page-container {
+        max-width: 1160px;
+      }
+      .card {
+        grid-template-columns: 470px 1fr;
+      }
+      .card-body {
+        padding: 42px 50px 34px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -870,7 +1223,26 @@
     </div>
   </div>
 
-  <main class="card" id="card">
+  <div class="page-container">
+    <!-- Desktop Topbar (vises på PC / widescreen) -->
+    <header class="desktop-topbar">
+      <a href="https://www.tk-design.no/" class="desktop-topbar-brand" target="_blank" rel="noopener">
+        <span class="brand-badge-dot"></span>
+        <span>TK-design</span>
+      </a>
+      <div class="desktop-topbar-actions">
+        <span class="desktop-status-tag">
+          <span class="status-indicator"></span>
+          <span>Lindås, Norge</span> · <span id="desktopClock">--:--</span>
+        </span>
+        <a href="https://www.tk-design.no/" class="desktop-topbar-link" target="_blank" rel="noopener">
+          <span>Besøk tk-design.no</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M7 17L17 7"></path><path d="M7 7h10v10"></path></svg>
+        </a>
+      </div>
+    </header>
+
+    <main class="card" id="card">
 
     <!-- TOP SECTION: 3D FLIP PORTRAIT -->
     <div class="portrait-stage reveal" id="portraitStage">
@@ -943,27 +1315,41 @@
 
     <!-- BODY CONTENT -->
     <div class="card-body">
+      <!-- Desktop Header (kun synlig på PC) -->
+      <div class="desktop-header reveal">
+        <div class="desktop-header-top">
+          <span class="desktop-tag">Fullstack-utvikler & UX/UI</span>
+          <span class="desktop-status-pill"><span class="pulse-dot"></span>Tilgjengelig for oppdrag</span>
+        </div>
+        <h2 class="desktop-title">Thomas Knutsen</h2>
+        <p class="desktop-subtitle">Daglig leder & Utvikler i <b>TK-design</b> · Lindås / Bergen</p>
+        <p class="desktop-bio-text">Jeg bygger skreddersydde, lynraske og egenkodede nettsider optimalisert for konvertering, teknisk SEO og kompromissløs kvalitet.</p>
+      </div>
+
       <p class="role-line reveal" id="roleLine">
         <b style="color: #ffffff;">Daglig leder & Fullstack-utvikler</b> · TK-design
       </p>
 
-      <!-- Primærhandling: Lagre kontakt -->
-      <button class="save-btn reveal" id="saveBtn" type="button" aria-label="Lagre kontakt til telefon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-        </svg>
-        <span id="saveLabel">Lagre kontakt</span>
-      </button>
+      <!-- Handlingsknapper (1 kolonne på mobil, 2 kolonner på desktop) -->
+      <div class="action-grid reveal">
+        <!-- Primærhandling: Lagre kontakt -->
+        <button class="save-btn" id="saveBtn" type="button" aria-label="Lagre kontakt til telefon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span id="saveLabel">Lagre kontakt</span>
+        </button>
 
-      <!-- Lommebok pass (.pkpass) -->
-      <a class="wallet-btn reveal" href="/visittkort/TK-design.pkpass" aria-label="Legg til i Apple Wallet / Google Wallet" style="margin-top: 8px;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="4" width="20" height="16" rx="3"></rect>
-          <path d="M16 12h4"></path>
-          <path d="M2 10h20"></path>
-        </svg>
-        <span>Lommebok-kort (.pkpass)</span>
-      </a>
+        <!-- Lommebok pass (.pkpass) -->
+        <a class="wallet-btn" href="/visittkort/TK-design.pkpass" aria-label="Legg til i Apple Wallet / Google Wallet">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="3"></rect>
+            <path d="M16 12h4"></path>
+            <path d="M2 10h20"></path>
+          </svg>
+          <span>Lommebok-kort (.pkpass)</span>
+        </a>
+      </div>
 
       <!-- Hurtigvalg: WhatsApp, Ring, E-post -->
       <div class="quick-row reveal" id="quickRow">
@@ -972,6 +1358,7 @@
             <path d="M12.04 2c-5.5 0-9.96 4.46-9.96 9.96 0 1.76.46 3.48 1.34 5L2 22l5.18-1.36a9.9 9.9 0 0 0 4.85 1.24h.01c5.5 0 9.96-4.46 9.96-9.96 0-2.66-1.04-5.16-2.92-7.04A9.9 9.9 0 0 0 12.04 2Zm0 1.82c2.18 0 4.23.85 5.77 2.39a8.1 8.1 0 0 1 2.39 5.76c0 4.5-3.66 8.14-8.16 8.14a8.2 8.2 0 0 1-4.16-1.14l-.3-.18-3.07.8.82-3-.2-.31a8.07 8.07 0 0 1-1.25-4.31c0-4.5 3.66-8.14 8.16-8.14Zm-2.6 4.38c-.14 0-.36.05-.56.27-.19.21-.73.71-.73 1.74s.75 2.02.85 2.16c.11.14 1.45 2.3 3.58 3.16 1.77.72 2.13.58 2.52.54.39-.03 1.24-.5 1.42-1 .18-.49.18-.9.12-1-.05-.09-.19-.14-.4-.25-.21-.1-1.24-.61-1.43-.68-.19-.07-.33-.1-.47.11-.14.21-.54.68-.66.82-.12.14-.24.16-.45.05-.21-.11-.88-.32-1.68-1.04-.62-.55-1.04-1.23-1.16-1.44-.12-.21-.01-.32.09-.43.09-.09.21-.24.32-.36.1-.12.14-.21.21-.35.07-.14.03-.27-.02-.38-.05-.1-.46-1.13-.64-1.55-.17-.41-.34-.35-.47-.36l-.4-.01Z"></path>
           </svg>
           <span>WhatsApp</span>
+          <span class="quick-sub">Direktemelding</span>
         </a>
 
         <a class="quick-item" href="tel:+4793094615" aria-label="Ring Thomas">
@@ -979,6 +1366,7 @@
             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
           </svg>
           <span>Ring</span>
+          <span class="quick-sub">+47 930 94 615</span>
         </a>
 
         <a class="quick-item" href="mailto:thomas@tk-design.no" aria-label="Send e-post">
@@ -987,6 +1375,7 @@
             <polyline points="22,6 12,13 2,6"></polyline>
           </svg>
           <span>E-post</span>
+          <span class="quick-sub">thomas@tk-design.no</span>
         </a>
       </div>
 
@@ -1048,6 +1437,18 @@
         </a>
       </nav>
 
+      <!-- Desktop QR-widget (kun synlig på PC) -->
+      <div class="desktop-qr-widget reveal">
+        <div class="desktop-qr-box" id="desktopQrBox"></div>
+        <div class="desktop-qr-info">
+          <div class="desktop-qr-header">
+            <span class="desktop-qr-badge">Åpne på mobil</span>
+            <span class="desktop-qr-title">Skann for å ta med på farten</span>
+          </div>
+          <p class="desktop-qr-desc">Hold mobilkameraet mot QR-koden for å åpne visittkortet direkte på telefonen, lagre kontakten eller hente lommebok-kortet.</p>
+        </div>
+      </div>
+
       <!-- Footer -->
       <footer class="reveal">
         <p>TK-design © 2026 · Egenkodet med kompromissløs kvalitet.</p>
@@ -1055,6 +1456,7 @@
       </footer>
     </div>
   </main>
+</div>
 
   <!-- Toast beskjed -->
   <div id="toast" role="status" aria-live="polite"></div>
@@ -3398,11 +3800,12 @@ const CONFIG = {
    DYNAMISK KLOKKE FOR LOKAL TID (NORSK TIDSFORMAT)
    ========================================================================= */
 function updateClock() {
-  const clockEl = document.getElementById('liveClock');
-  if (!clockEl) return;
   const now = new Date();
   const timeStr = now.toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit', hour12: false });
-  clockEl.textContent = timeStr;
+  const clockEl = document.getElementById('liveClock');
+  const desktopClockEl = document.getElementById('desktopClock');
+  if (clockEl) clockEl.textContent = timeStr;
+  if (desktopClockEl) desktopClockEl.textContent = timeStr;
 }
 updateClock();
 setInterval(updateClock, 30000);
@@ -3510,7 +3913,7 @@ document.getElementById('saveBtn').addEventListener('click', () => {
   });
 
   function renderQR() {
-    if (!scanQrBox.dataset.rendered && typeof qrcode === 'function') {
+    if (typeof qrcode === 'function') {
       try {
         const qr = qrcode(0, 'M');
         qr.addData(location.href);
@@ -3518,12 +3921,24 @@ document.getElementById('saveBtn').addEventListener('click', () => {
         let svg = qr.createSvgTag({ cellSize: 8, margin: 4, scalable: true });
         svg = svg.replace(/fill="white"/g, 'fill="#FFFFFF"')
                  .replace(/fill="black"/g, 'fill="#11263c"');
-        scanQrBox.innerHTML = svg;
-        scanQrBox.dataset.rendered = '1';
+        if (scanQrBox && !scanQrBox.dataset.rendered) {
+          scanQrBox.innerHTML = svg;
+          scanQrBox.dataset.rendered = '1';
+        }
+        const desktopBox = document.getElementById('desktopQrBox');
+        if (desktopBox && !desktopBox.dataset.rendered) {
+          desktopBox.innerHTML = svg;
+          desktopBox.dataset.rendered = '1';
+        }
       } catch (err) {
-        scanQrBox.innerHTML = '<p style="color:#ef4444;font-size:12px;">Kunne ikke generere QR-kode.</p>';
+        if (scanQrBox) scanQrBox.innerHTML = '<p style="color:#ef4444;font-size:12px;">Kunne ikke generere QR-kode.</p>';
       }
     }
+  }
+
+  // Pre-render desktop QR umiddelbart ved innlasting
+  if (document.getElementById('desktopQrBox')) {
+    setTimeout(renderQR, 50);
   }
 
   qrBtn.addEventListener('click', (e) => {
