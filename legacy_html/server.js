@@ -280,7 +280,8 @@ async function verifyAdminToken(req, res, next) {
         }
     }
 
-    if (!isVercelRuntime() && (req.hostname === 'localhost' || req.hostname === '127.0.0.1')) {
+    const ip = req.socket?.remoteAddress || req.ip || '';
+    if (!isVercelRuntime() && (ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1')) {
         return next();
     }
 
@@ -4767,7 +4768,10 @@ app.get('/api/proxy-pdf', (req, res) => {
         }
 
         const parsed = new URL(rawUrl);
-        if (!parsed.hostname.includes('firebasestorage.googleapis.com') && !parsed.hostname.includes('googleapis.com')) {
+        if (parsed.protocol !== 'https:') {
+            return res.status(400).send('Invalid protocol');
+        }
+        if (parsed.hostname !== 'firebasestorage.googleapis.com' && !parsed.hostname.endsWith('.googleapis.com')) {
             return res.status(403).send('Invalid domain');
         }
 
