@@ -4767,7 +4767,18 @@ app.get('/api/proxy-pdf', (req, res) => {
         }
 
         const parsed = new URL(rawUrl);
-        if (!parsed.hostname.includes('firebasestorage.googleapis.com') && !parsed.hostname.includes('googleapis.com')) {
+
+        // Protocol and strict domain validation to prevent SSRF
+        if (parsed.protocol !== 'https:') {
+            return res.status(403).send('Invalid protocol');
+        }
+
+        const validDomains = ['firebasestorage.googleapis.com', 'googleapis.com'];
+        const isValidDomain = validDomains.some(domain =>
+            parsed.hostname === domain || parsed.hostname.endsWith(`.${domain}`)
+        );
+
+        if (!isValidDomain) {
             return res.status(403).send('Invalid domain');
         }
 
