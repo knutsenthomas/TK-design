@@ -280,8 +280,12 @@ async function verifyAdminToken(req, res, next) {
         }
     }
 
-    if (!isVercelRuntime() && (req.hostname === 'localhost' || req.hostname === '127.0.0.1')) {
-        return next();
+    if (!isVercelRuntime()) {
+        const clientIp = req.ip || (req.socket && req.socket.remoteAddress) || '';
+        const isLocalIp = clientIp === '127.0.0.1' || clientIp === '::1' || clientIp === '::ffff:127.0.0.1';
+        if (isLocalIp) {
+            return next();
+        }
     }
 
     return res.status(401).json({
