@@ -481,7 +481,7 @@ function getFirebaseConfig() {
 }
 
 // Diagnostic API (Safe for production, only shows presence of keys)
-app.get('/api/debug-env', (req, res) => {
+app.get('/api/debug-env', verifyAdminToken, (req, res) => {
     res.json({
         firebase: {
             projectId: !!process.env.TK_FIREBASE_PROJECT_ID,
@@ -2973,7 +2973,7 @@ function isValidIsoDateString(value = '') {
 
 // API: Get Blog Posts
 // --- Messages API ---
-app.get('/api/analytics', async (req, res) => {
+app.get('/api/analytics', verifyAdminToken, async (req, res) => {
     const propertyId = process.env.GA_PROPERTY_ID;
     const period = normalizeAnalyticsPeriod(req.query.period);
     const startDate = String(req.query.startDate || '').trim();
@@ -3101,7 +3101,7 @@ app.get('/api/analytics', async (req, res) => {
     }
 });
 
-app.get('/api/messages', async (req, res) => {
+app.get('/api/messages', verifyAdminToken, async (req, res) => {
     try {
         const { projectId, databaseId, collection } = getFirebaseConfig();
         const accessToken = await getFirebaseAccessToken();
@@ -4610,7 +4610,7 @@ async function fetchUnsplashSearchPage({ fetchImpl, accessKey, query, page, perP
 }
 
 // API: Search Unsplash Images
-app.get('/api/unsplash/search', async (req, res) => {
+app.get('/api/unsplash/search', verifyAdminToken, async (req, res) => {
     console.log(`[Unsplash] Mottok søkeforespørsel: "${req.query.query}" (Page: ${req.query.page})`);
     try {
         const query = normalizeUnsplashQuery(req.query.query || '');
@@ -6651,7 +6651,7 @@ app.post('/api/social-planner/assistant', verifyAdminToken, async (req, res) => 
     }
 });
 
-app.get('/api/social-planner', async (req, res) => {
+app.get('/api/social-planner', verifyAdminToken, async (req, res) => {
     try {
         const state = await getSocialPlannerState();
         const requestedWorkspaceId = String(req.query.workspaceId || '').trim();
@@ -7450,7 +7450,7 @@ app.post('/api/social-planner/scheduler/run', verifyAdminToken, async (req, res)
     }
 });
 
-app.get('/api/social-planner/analytics', async (req, res) => {
+app.get('/api/social-planner/analytics', verifyAdminToken, async (req, res) => {
     try {
         const state = await getSocialPlannerState();
         const workspaceScope = String(req.query.scope || 'workspace').trim().toLowerCase();
