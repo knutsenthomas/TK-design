@@ -354,7 +354,7 @@
                 bannerTitleEl.textContent = data.bannerTitle;
                 if (serviceKey === 'regnskap') {
                     const accent = document.createElement('span');
-                    accent.className = 'text-gradient-orange';
+                    accent.className = 'hero-title-highlight';
                     accent.textContent = lang === 'en' ? 'accounting firms' : 'regnskapsbyråer';
                     bannerTitleEl.replaceChildren(document.createTextNode(lang === 'en' ? 'Websites for ' : 'Nettsider for '), accent);
                 }
