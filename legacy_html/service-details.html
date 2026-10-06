@@ -352,6 +352,12 @@
             const bannerTitleEl = document.getElementById(ids.bannerTitle);
             if (bannerTitleEl && data.bannerTitle) {
                 bannerTitleEl.textContent = data.bannerTitle;
+                if (serviceKey === 'regnskap') {
+                    const accent = document.createElement('span');
+                    accent.className = 'text-gradient-orange';
+                    accent.textContent = lang === 'en' ? 'accounting firms' : 'regnskapsbyråer';
+                    bannerTitleEl.replaceChildren(document.createTextNode(lang === 'en' ? 'Websites for ' : 'Nettsider for '), accent);
+                }
             }
             setText(ids.bannerSummary, data.summary);
             const pills = document.querySelectorAll(".subpage-stat-pill span");
