@@ -11612,3 +11612,45 @@ body.homepage-refresh a:focus-visible, body.homepage-refresh button:focus-visibl
 /* Use sentence case for the homepage headline, including CMS text. */
 .hero-light-showcase .hero-title-row { text-transform: lowercase; }
 .hero-light-showcase .hero-title-row:first-child::first-letter { text-transform: uppercase; }
+
+/* Quiet, editorial service pages: clear type, real work, fewer containers. */
+body.service-details-page-refresh{background:#fff!important}
+body.service-details-page-refresh .subpage-hero-section{background:#fff;padding:88px 0 56px;border-bottom:1px solid #e1e5e9;margin-bottom:56px}
+body.service-details-page-refresh .subpage-hero-section::before,body.service-details-page-refresh .subpage-hero-section::after{display:none}
+body.service-details-page-refresh .subpage-hero-inner{text-align:left;max-width:1120px;margin:0 auto;padding:0}
+body.service-details-page-refresh .subpage-hero-inner>.hero-eyebrow-badge{display:block;width:auto;margin:0 0 24px!important;background:none;border:0;box-shadow:none;padding:0;font-size:12px;font-weight:500;letter-spacing:.12em;color:#637181}
+body.service-details-page-refresh .hero-badge-dot,body.service-details-page-refresh .subpage-stat-pills{display:none}
+body.service-details-page-refresh .subpage-title{font-size:clamp(38px,5vw,68px);font-weight:600;letter-spacing:-.045em;line-height:1.08;max-width:850px;margin:0 0 24px}
+body.service-details-page-refresh .subpage-lead{font-size:20px;font-weight:400;line-height:1.6;max-width:680px;margin:0;color:#506071}
+body.service-details-page-refresh .service-details-layout{grid-template-columns:220px minmax(0,1fr);gap:64px;max-width:1120px;margin:auto;align-items:start}
+body.service-details-page-refresh .subpage-card{background:transparent;border:0;border-radius:0;padding:0;box-shadow:none;transform:none}
+body.service-details-page-refresh .subpage-card:hover{box-shadow:none;transform:none}
+body.service-details-page-refresh .service-nav-card>.hero-eyebrow-badge{background:none;border:0;box-shadow:none;border-radius:0;padding:0 0 16px;font-weight:500;font-size:12px;color:#687582;letter-spacing:.1em}
+body.service-details-page-refresh .service-nav-link{border-radius:0;padding:14px 0;border-bottom:1px solid #e9ecef;font-size:14px;line-height:1.5;font-weight:500;background:transparent;box-shadow:none}
+body.service-details-page-refresh .service-nav-link.active{background:transparent;color:#d65a0b}
+body.service-details-page-refresh .service-nav-card>div:last-child{display:none}
+body.service-details-page-refresh #serviceDetailTag{display:none}
+body.service-details-page-refresh #serviceDetailTitle{font-size:28px!important;font-weight:600!important;line-height:1.3;letter-spacing:-.025em;margin:0 0 20px!important}
+body.service-details-page-refresh #serviceDetailLead{font-size:18px!important;font-weight:400!important;line-height:1.75!important}
+body.service-details-page-refresh #serviceDetailBody{font-size:16px!important;line-height:1.75!important;color:#556271!important;margin-top:16px}
+body.service-details-page-refresh #accountingCases{margin:40px 0 48px}
+body.service-details-page-refresh #accountingCasesTitle{font-size:22px;font-weight:600;line-height:1.4;margin-bottom:24px}
+body.service-details-page-refresh #accountingCases .deliverables-grid{gap:24px}
+body.service-details-page-refresh #accountingCases img{border-radius:0!important;aspect-ratio:8/5;object-fit:cover;display:block}
+body.service-details-page-refresh #accountingCases h3{font-size:16px;font-weight:500;margin:12px 0 0}
+body.service-details-page-refresh .case-study-pillars{gap:28px;margin:36px 0 48px}
+body.service-details-page-refresh .case-pillar-card{padding:20px 0 0;background:none;border:0;border-top:1px solid #dfe4e9;border-radius:0;box-shadow:none}
+body.service-details-page-refresh .case-pillar-card h3{font-size:17px;font-weight:600;line-height:1.45}
+body.service-details-page-refresh .case-pillar-card h3 i{display:none}
+body.service-details-page-refresh .case-pillar-card p{font-size:15px;line-height:1.7;color:#556271}
+body.service-details-page-refresh .service-delivery-section{margin-top:0!important;padding:32px 0 0!important;border:0!important;border-top:1px solid #dfe4e9!important;border-radius:0!important;background:none!important}
+body.service-details-page-refresh #serviceDeliverablesTitle{font-size:22px!important;font-weight:600!important}
+body.service-details-page-refresh #servicePriceHighlight{background:none!important;color:#556271!important;border-radius:0!important;padding:0!important;font-weight:400!important}
+body.service-details-page-refresh .deliverable-item{background:none;border:0;border-radius:0;padding:12px 0;align-items:flex-start;box-shadow:none}
+body.service-details-page-refresh .deliverable-item i{display:none}
+body.service-details-page-refresh .deliverable-item strong{font-size:16px!important;font-weight:500}
+body.service-details-page-refresh .deliverable-item p{font-size:15px!important;line-height:1.65;margin-top:6px!important}
+body.service-details-page-refresh .hero-btn-primary{background:#153047;border:1px solid #153047;border-radius:4px;box-shadow:none;font-weight:500;padding:14px 22px}
+body.service-details-page-refresh .hero-btn-primary:hover{background:#244961;box-shadow:none;transform:none}
+@media(max-width:900px){body.service-details-page-refresh .service-details-layout{grid-template-columns:1fr;gap:32px}body.service-details-page-refresh .service-nav-card{display:none}body.service-details-page-refresh .subpage-hero-section{padding:56px 0 36px;margin-bottom:36px}}
+@media(max-width:600px){body.service-details-page-refresh .subpage-lead{font-size:18px}body.service-details-page-refresh #serviceDetailTitle{font-size:24px!important}body.service-details-page-refresh .case-study-pillars{grid-template-columns:1fr;gap:8px}body.service-details-page-refresh #accountingCases .deliverables-grid,body.service-details-page-refresh #serviceDeliverablesGrid{grid-template-columns:1fr}body.service-details-page-refresh .subpage-title{font-size:40px}}
