@@ -11608,3 +11608,7 @@ body.homepage-refresh a:focus-visible, body.homepage-refresh button:focus-visibl
  body.homepage-refresh .hero-btn-primary, body.homepage-refresh .hero-btn-secondary, body.homepage-refresh .menu-trigger, body.homepage-refresh .lang-btn { min-height: 44px; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto !important; } body.homepage-refresh *, body.homepage-refresh *::before, body.homepage-refresh *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+
+/* Use sentence case for the homepage headline, including CMS text. */
+.hero-light-showcase .hero-title-row { text-transform: lowercase; }
+.hero-light-showcase .hero-title-row:first-child::first-letter { text-transform: uppercase; }
