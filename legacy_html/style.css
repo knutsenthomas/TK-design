@@ -11654,3 +11654,7 @@ body.service-details-page-refresh .hero-btn-primary{background:#153047;border:1p
 body.service-details-page-refresh .hero-btn-primary:hover{background:#244961;box-shadow:none;transform:none}
 @media(max-width:900px){body.service-details-page-refresh .service-details-layout{grid-template-columns:1fr;gap:32px}body.service-details-page-refresh .service-nav-card{display:none}body.service-details-page-refresh .subpage-hero-section{padding:56px 0 36px;margin-bottom:36px}}
 @media(max-width:600px){body.service-details-page-refresh .subpage-lead{font-size:18px}body.service-details-page-refresh #serviceDetailTitle{font-size:24px!important}body.service-details-page-refresh .case-study-pillars{grid-template-columns:1fr;gap:8px}body.service-details-page-refresh #accountingCases .deliverables-grid,body.service-details-page-refresh #serviceDeliverablesGrid{grid-template-columns:1fr}body.service-details-page-refresh .subpage-title{font-size:40px}}
+
+body.service-details-page-refresh .subpage-hero-inner{display:block;align-items:flex-start}
+body.service-details-page-refresh .subpage-hero-inner .hero-eyebrow-badge,body.service-details-page-refresh .subpage-title,body.service-details-page-refresh .subpage-lead{text-align:left!important;margin-left:0!important;margin-right:0!important}
+body.service-details-page-refresh .service-nav-link.is-active{background:transparent!important}
