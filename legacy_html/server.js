@@ -177,6 +177,15 @@ const SEO_PAGE_DEFAULTS = {
 };
 const PUBLIC_HOSTNAME_REGEX = /^(?=.{1,253}$)(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i;
 
+// Use one public hostname; preserve write requests and local/preview hosts.
+app.use((req, res, next) => {
+    const host = String(req.get('host') || '').toLowerCase().split(':')[0];
+    if (host === 'tk-design.no' && ['GET', 'HEAD'].includes(req.method) && !req.path.startsWith('/api/')) {
+        return res.redirect(301, 'https://www.tk-design.no' + req.originalUrl);
+    }
+    next();
+});
+
 // Middleware
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
@@ -3404,7 +3413,7 @@ app.get('/sitemap.xml', async (req, res) => {
     try {
         const seoConfig = normalizeSeoData(await readSiteDataWithFallback('seo', readSeoData));
         const posts = await readSiteDataWithFallback('posts', readBlogPosts);
-        const baseUrl = 'https://tk-design.no';
+        const baseUrl = 'https://www.tk-design.no';
 
         let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -4837,6 +4846,8 @@ app.get('/api/proxy-pdf', (req, res) => {
 });
 
 function getSiteBaseUrl(req) {
+    const publicHost = String(req.get('host') || '').toLowerCase().split(':')[0];
+    if (['tk-design.no', 'www.tk-design.no'].includes(publicHost)) return 'https://www.tk-design.no';
     const configured = String(process.env.SITE_URL || '').trim().replace(/\/+$/, '');
     if (configured) {
         return configured;

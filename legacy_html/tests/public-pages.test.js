@@ -1,12 +1,32 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const app = require('../server');
+const http = require('node:http');
+function requestWithHost(url, host) {
+    return new Promise((resolve, reject) => {
+        http.get(url, { headers: { Host: host } }, response => {
+            let body = ''; response.setEncoding('utf8');
+            response.on('data', chunk => body += chunk);
+            response.on('end', () => resolve({ status: response.statusCode, headers: response.headers, body }));
+        }).on('error', reject);
+    });
+}
 
 test('public pages serve distinct content before JavaScript runs', async () => {
     const server = app.listen(0);
     await new Promise(resolve => server.once('listening', resolve));
     const base = `http://127.0.0.1:${server.address().port}`;
     try {
+        for (const path of ['/', '/webdesign', '/project-details?project=kudos', '/sitemap.xml']) {
+            const redirect = await requestWithHost(base + path, 'tk-design.no');
+            assert.equal(redirect.status, 301);
+            assert.equal(redirect.headers.location, 'https://www.tk-design.no' + path);
+        }
+        const canonicalHome = (await requestWithHost(base + '/', 'www.tk-design.no')).body;
+        assert.match(canonicalHome, /rel="canonical" href="https:\/\/www\.tk-design\.no\/"/);
+        const sitemap = await (await fetch(base + '/sitemap.xml')).text();
+        assert.doesNotMatch(sitemap, /https:\/\/tk-design\.no/);
+        assert.match(await (await fetch(base + '/robots.txt')).text(), /Sitemap: https:\/\/www\.tk-design\.no/);
         const expected = {
             '/': /NETTSIDER[\s\S]*FOR DIN[\s\S]*BEDRIFT/,
             '/nettside-for-regnskapsbyra': /Nettsider for regnskapsbyråer/,

@@ -10,7 +10,7 @@ Disallow: /reference_blog.html
 Disallow: /test-hosting.html
 
 # Sitemap
-Sitemap: https://tk-design.no/sitemap.xml
+Sitemap: https://www.tk-design.no/sitemap.xml
 
 # LLM guidance
-# https://tk-design.no/llms.txt
+# https://www.tk-design.no/llms.txt
