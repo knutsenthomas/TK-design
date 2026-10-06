@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function toggleMenu(forceClose = false) {
         const isOpen = mobileMenuOverlay.classList.contains('active');
         const shouldClose = forceClose || isOpen;
+        if (menuTrigger) menuTrigger.setAttribute('aria-expanded', String(!shouldClose));
 
         if (shouldClose) {
             mobileMenuOverlay.classList.remove('active');
@@ -66,7 +67,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (menuTrigger && mobileMenuOverlay) {
+        menuTrigger.setAttribute('aria-expanded', 'false');
         menuTrigger.addEventListener('click', () => toggleMenu());
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && mobileMenuOverlay.classList.contains('active')) {
+                toggleMenu(true);
+                menuTrigger.focus();
+            }
+        });
     }
 
     // Close menu when clicking a link (Exclude links that have submenus on mobile)

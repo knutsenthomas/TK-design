@@ -50,174 +50,170 @@
 
     <!-- ===================== JSON-LD STRUKTURERTE DATA (GEO) ===================== -->
     <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
     {
-      "@context": "https://schema.org",
-      "@graph": [
+      "@type": "WebSite",
+      "@id": "https://tk-design.no/#website",
+      "url": "https://tk-design.no/",
+      "name": "TK-design",
+      "description": "Profesjonell webdesign og digitale løsninger for bedrifter i Norge",
+      "inLanguage": [
+        "nb-NO",
+        "en"
+      ],
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://tk-design.no/blog?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": [
+        "LocalBusiness",
+        "ProfessionalService"
+      ],
+      "@id": "https://tk-design.no/#business",
+      "name": "TK-design",
+      "legalName": "TK-design",
+      "url": "https://tk-design.no/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://tk-design.no/img/logo/d.png",
+        "width": 200,
+        "height": 200
+      },
+      "image": "https://tk-design.no/img/logo/og-image.png",
+      "description": "TK-design tilbyr profesjonell webdesign, nettside-utvikling, SEO og SoMe-strategi for bedrifter på Østlandet og i hele Norge.",
+      "telephone": "+4793094615",
+      "email": "thomas@tk-design.no",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Augerødlia 48",
+        "postalCode": "1591",
+        "addressLocality": "Sperrebotn",
+        "addressRegion": "Østfold",
+        "addressCountry": "NO"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "59.4360",
+        "longitude": "10.8160"
+      },
+      "areaServed": [
         {
-          "@type": "WebSite",
-          "@id": "https://tk-design.no/#website",
-          "url": "https://tk-design.no/",
-          "name": "TK-design",
-          "description": "Profesjonell webdesign og digitale løsninger for bedrifter i Norge",
-          "inLanguage": ["nb-NO", "en"],
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": {
-              "@type": "EntryPoint",
-              "urlTemplate": "https://tk-design.no/blog?q={search_term_string}"
-            },
-            "query-input": "required name=search_term_string"
-          }
+          "@type": "Country",
+          "name": "Norway"
         },
         {
-          "@type": ["LocalBusiness", "ProfessionalService"],
-          "@id": "https://tk-design.no/#business",
-          "name": "TK-design",
-          "legalName": "TK-design",
-          "url": "https://tk-design.no/",
-          "logo": {
-            "@type": "ImageObject",
-            "url": "https://tk-design.no/img/logo/d.png",
-            "width": 200,
-            "height": 200
-          },
-          "image": "https://tk-design.no/img/logo/og-image.png",
-          "description": "TK-design tilbyr profesjonell webdesign, nettside-utvikling, SEO og SoMe-strategi for bedrifter på Østlandet og i hele Norge.",
-          "telephone": "+4793094615",
-          "email": "thomas@tk-design.no",
-          "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "Augerødlia 48",
-            "postalCode": "1591",
-            "addressLocality": "Sperrebotn",
-            "addressRegion": "Østfold",
-            "addressCountry": "NO"
-          },
-          "geo": {
-            "@type": "GeoCoordinates",
-            "latitude": "59.4360",
-            "longitude": "10.8160"
-          },
-          "areaServed": [
-            {
-              "@type": "Country",
-              "name": "Norway"
-            },
-            {
-              "@type": "AdministrativeArea",
-              "name": "Østfold"
-            },
-            {
-              "@type": "AdministrativeArea",
-              "name": "Østlandet"
-            },
-            {
-              "@type": "AdministrativeArea",
-              "name": "Oslo og Akershus"
-            },
-            {
-              "@type": "AdministrativeArea",
-              "name": "Vestfold"
-            }
-          ],
-          "priceRange": "$$",
-          "openingHours": "Mo-Fr 08:00-17:00",
-          "sameAs": [
-            "https://www.facebook.com/profile.php?id=61574614704737",
-            "https://www.instagram.com/tkdesign777"
-          ],
-          "serviceType": ["Webdesign", "Nettside-utvikling", "SEO", "Support og Vedlikehold", "SoMe-strategi"]
+          "@type": "AdministrativeArea",
+          "name": "Østfold"
         },
         {
-          "@type": "Person",
-          "@id": "https://tk-design.no/#person",
-          "name": "Thomas Knutsen",
-          "url": "https://tk-design.no/",
-          "jobTitle": "Webdesigner og digitalt strateg",
-          "worksFor": {"@id": "https://tk-design.no/#business"},
-          "email": "thomas@tk-design.no",
-          "telephone": "+4793094615",
-          "sameAs": [
-            "https://www.instagram.com/tkdesign777"
-          ]
+          "@type": "AdministrativeArea",
+          "name": "Østlandet"
         },
         {
-          "@type": "Service",
-          "@id": "https://tk-design.no/webdesign",
-          "name": "Skreddersydd Webdesign og Nettside-utvikling",
-          "url": "https://tk-design.no/webdesign",
-          "provider": {"@id": "https://tk-design.no/#business"},
-          "areaServed": {"@type": "Country", "name": "Norway"},
-          "description": "Profesjonelle nettsider for norske bedrifter. Vi lager moderne, raske, og konverteringsoptimaliserte nettsider."
+          "@type": "AdministrativeArea",
+          "name": "Oslo og Akershus"
         },
         {
-          "@type": "Service",
-          "@id": "https://tk-design.no/seo",
-          "name": "Søkemotoroptimalisering (SEO)",
-          "url": "https://tk-design.no/seo",
-          "provider": {"@id": "https://tk-design.no/#business"},
-          "areaServed": {"@type": "Country", "name": "Norway"},
-          "description": "Få din bedrift øverst i Google-søk. Vi øker organisk synlighet, trafikk og konverteringer med datadrevet SEO."
-        },
-        {
-          "@type": "Service",
-          "@id": "https://tk-design.no/support-og-vedlikehold",
-          "name": "Support, Drift og Vedlikehold av Nettside",
-          "url": "https://tk-design.no/support-og-vedlikehold",
-          "provider": {"@id": "https://tk-design.no/#business"},
-          "areaServed": {"@type": "Country", "name": "Norway"},
-          "description": "Drift, sikkerhetsoppdateringer og overvåking av nettsider for små bedrifter."
-        },
-        {
-          "@type": "Service",
-          "@id": "https://tk-design.no/sosiale-medier",
-          "name": "SoMe-strategi og Markedsføring",
-          "url": "https://tk-design.no/sosiale-medier",
-          "provider": {"@id": "https://tk-design.no/#business"},
-          "areaServed": {"@type": "Country", "name": "Norway"},
-          "description": "Strategisk innhold og målrettet markedsføring i sosiale medier for å bygge din merkevare."
-        },
-        {
-          "@type": "FAQPage",
-          "@id": "https://tk-design.no/#faq",
-          "mainEntity": [
-            {
-              "@type": "Question",
-              "name": "Hva koster en profesjonell nettside hos TK-design?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Prisen for en skreddersydd nettside varierer avhengig av omfang og funksjonalitet. Vi tilbyr fleksible pakker tilpasset både små og mellomstore bedrifter, med fokus på høy konvertering og SEO."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "Hvor lang tid tar det å få lansert en ny nettside?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Normal leveringstid for en komplett nettside er vanligvis mellom 1 til 3 uker, avhengig av prosjektets kompleksitet og hvor raskt innhold avklares."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "Hjelper TK-design med søkemotoroptimalisering (SEO)?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Ja, teknisk SEO, lynrask innlasting (Core Web Vitals), semantisk HTML5 og strukturert data (JSON-LD) er alltid inkludert i alle våre nettsideleveranser."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "Kan jeg oppdatere nettsiden selv i etterkant?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Ja, vi bygger brukervennlige løsninger og publiseringsverktøy slik at du enkelt kan oppdatere tekst, bilder og blogginnlegg selv når siden er lansert."
-              }
-            }
-          ]
+          "@type": "AdministrativeArea",
+          "name": "Vestfold"
         }
+      ],
+      "priceRange": "$$",
+      "openingHours": "Mo-Fr 08:00-17:00",
+      "sameAs": [
+        "https://www.facebook.com/profile.php?id=61574614704737",
+        "https://www.instagram.com/tkdesign777"
+      ],
+      "serviceType": [
+        "Webdesign",
+        "Nettside-utvikling",
+        "SEO",
+        "Support og Vedlikehold",
+        "SoMe-strategi"
       ]
+    },
+    {
+      "@type": "Person",
+      "@id": "https://tk-design.no/#person",
+      "name": "Thomas Knutsen",
+      "url": "https://tk-design.no/",
+      "jobTitle": "Webdesigner og digitalt strateg",
+      "worksFor": {
+        "@id": "https://tk-design.no/#business"
+      },
+      "email": "thomas@tk-design.no",
+      "telephone": "+4793094615",
+      "sameAs": [
+        "https://www.instagram.com/tkdesign777"
+      ]
+    },
+    {
+      "@type": "Service",
+      "@id": "https://tk-design.no/webdesign",
+      "name": "Skreddersydd Webdesign og Nettside-utvikling",
+      "url": "https://tk-design.no/webdesign",
+      "provider": {
+        "@id": "https://tk-design.no/#business"
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "Norway"
+      },
+      "description": "Profesjonelle nettsider for norske bedrifter. Vi lager moderne, raske, og konverteringsoptimaliserte nettsider."
+    },
+    {
+      "@type": "Service",
+      "@id": "https://tk-design.no/seo",
+      "name": "Søkemotoroptimalisering (SEO)",
+      "url": "https://tk-design.no/seo",
+      "provider": {
+        "@id": "https://tk-design.no/#business"
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "Norway"
+      },
+      "description": "Få din bedrift øverst i Google-søk. Vi øker organisk synlighet, trafikk og konverteringer med datadrevet SEO."
+    },
+    {
+      "@type": "Service",
+      "@id": "https://tk-design.no/support-og-vedlikehold",
+      "name": "Support, Drift og Vedlikehold av Nettside",
+      "url": "https://tk-design.no/support-og-vedlikehold",
+      "provider": {
+        "@id": "https://tk-design.no/#business"
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "Norway"
+      },
+      "description": "Drift, sikkerhetsoppdateringer og overvåking av nettsider for små bedrifter."
+    },
+    {
+      "@type": "Service",
+      "@id": "https://tk-design.no/sosiale-medier",
+      "name": "SoMe-strategi og Markedsføring",
+      "url": "https://tk-design.no/sosiale-medier",
+      "provider": {
+        "@id": "https://tk-design.no/#business"
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "Norway"
+      },
+      "description": "Strategisk innhold og målrettet markedsføring i sosiale medier for å bygge din merkevare."
     }
-    </script>
+  ]
+}
+</script>
 
     <!-- ===================== PRELOAD KRITISK LCP ===================== -->
     <link rel="preload" as="image" href="/img/banner/hero-light-waves.jpg" fetchpriority="high">
@@ -231,7 +227,7 @@
     <link rel="preload" href="/assets/fonts/kanit-400.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/kanit-700.woff2" as="font" type="font/woff2" crossorigin>
 
-    <link rel="stylesheet" href="/style.css?v=83">
+    <link rel="stylesheet" href="/style.css?v=84">
 
     <!-- Ikoner og rammeverk -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -255,6 +251,7 @@
 </head>
 
 <body id="home" class="homepage-refresh">
+    <a class="skip-link" href="#main-content">Hopp til innhold</a>
 
     <!-- =========================================
          HEADER SECTION
@@ -282,7 +279,7 @@
                     </li>
                     <li><a href="/#pricing" data-i18n="nav.pricing">Priser</a></li>
                     <li><a href="/portefolje" data-i18n="nav.portfolio">Portfolio</a></li>
-                    <li><a href="/?section=testimonial" data-i18n="nav.testimonial">Testimonial</a></li>
+                    <li><a href="/#advantages" data-i18n="nav.testimonial">Testimonial</a></li>
                     <li><a href="/blog" data-i18n="nav.blog">Aktuelt</a></li>
                     <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
                 </ul>
@@ -315,7 +312,7 @@
                 </li>
                 <li><a href="/#pricing" data-i18n="nav.pricing">Priser</a></li>
                 <li><a href="/portefolje" class="is-current" data-i18n="nav.portfolio">Portfolio</a></li>
-                <li><a href="/?section=testimonial" class="is-current" data-i18n="nav.testimonial">Testimonial</a></li>
+                <li><a href="/#advantages" class="is-current" data-i18n="nav.testimonial">Testimonial</a></li>
                 <li><a href="/blog" data-i18n="nav.blog">Aktuelt</a></li>
                 <li><a href="/contact" data-i18n="nav.contact">Contact</a></li>
             </ul>
@@ -335,7 +332,7 @@
         </nav>
     </div>
 
-    <main>
+    <main id="main-content">
         <!-- =========================================
              HERO SECTION / BANNER
              ========================================= -->
@@ -567,48 +564,6 @@
                                 Lynrask lastetid som gir en overlegen brukeropplevelse og et solid forsprang i Googles søkeresultater. Ingen unødvendig kode eller trege temabyggere.
                             </p>
                         </div>
-                        <div class="lighthouse-score-showcase">
-                            <div class="lighthouse-metric">
-                                <div class="lighthouse-circle">
-                                    <svg viewBox="0 0 36 36" class="circular-chart green">
-                                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                                        <path class="circle" stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                                        <text x="18" y="20.35" class="percentage">100</text>
-                                    </svg>
-                                </div>
-                                <span class="lighthouse-label" data-i18n="advantages.lh_performance">Ytelse</span>
-                            </div>
-                            <div class="lighthouse-metric">
-                                <div class="lighthouse-circle">
-                                    <svg viewBox="0 0 36 36" class="circular-chart green">
-                                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                                        <path class="circle" stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                                        <text x="18" y="20.35" class="percentage">100</text>
-                                    </svg>
-                                </div>
-                                <span class="lighthouse-label" data-i18n="advantages.lh_accessibility">Tilgjengelighet</span>
-                            </div>
-                            <div class="lighthouse-metric">
-                                <div class="lighthouse-circle">
-                                    <svg viewBox="0 0 36 36" class="circular-chart green">
-                                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                                        <path class="circle" stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                                        <text x="18" y="20.35" class="percentage">100</text>
-                                    </svg>
-                                </div>
-                                <span class="lighthouse-label" data-i18n="advantages.lh_best_practices">Beste Praksis</span>
-                            </div>
-                            <div class="lighthouse-metric">
-                                <div class="lighthouse-circle">
-                                    <svg viewBox="0 0 36 36" class="circular-chart green">
-                                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                                        <path class="circle" stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                                        <text x="18" y="20.35" class="percentage">100</text>
-                                    </svg>
-                                </div>
-                                <span class="lighthouse-label" data-i18n="advantages.lh_seo">SEO</span>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Bento Item 2: Unik Skreddersøm -->
@@ -794,78 +749,6 @@
                         </div>
                     </div>
 
-                    <!-- Project 4 -->
-                    <div class="project-card project-card-identikon" data-aos="fade-up" data-aos-delay="400">
-                        <div class="project-img-wrapper">
-                            <a href="/project-details?project=custom-design">
-                                <img src="/img/project/pro5.webp" alt="Project 3" loading="lazy">
-                            </a>
-                            <a href="/project-details?project=custom-design" class="project-arrow-btn"
-                                aria-label="Se prosjektdetaljer for Skreddersydd design fra bunnen av">
-                                <i class="fas fa-arrow-right"></i>
-                            </a>
-                        </div>
-                        <div class="project-content">
-                            <span class="project-category" data-i18n="projects.p3_desc">Webdesign</span>
-                            <h3 class="project-title"><a href="/project-details?project=custom-design"
-                                    data-i18n="projects.p3_title">Skreddersydd design fra bunnen av</a></h3>
-                        </div>
-                    </div>
-
-                    <!-- Project 5 -->
-                    <div class="project-card" data-aos="fade-up" data-aos-delay="500">
-                        <div class="project-img-wrapper">
-                            <a href="/project-details?project=seo">
-                                <img src="/img/project/pro2.webp" alt="Project 4" loading="lazy">
-                            </a>
-                            <a href="/project-details?project=seo" class="project-arrow-btn"
-                                aria-label="Se prosjektdetaljer for Synlighet i Google">
-                                <i class="fas fa-arrow-right"></i>
-                            </a>
-                        </div>
-                        <div class="project-content">
-                            <span class="project-category" data-i18n="projects.p4_desc">SEO</span>
-                            <h3 class="project-title"><a href="/project-details?project=seo"
-                                    data-i18n="projects.p4_title">Synlighet i Google</a></h3>
-                        </div>
-                    </div>
-
-                    <!-- Project 6 -->
-                    <div class="project-card" data-aos="fade-up" data-aos-delay="600">
-                        <div class="project-img-wrapper">
-                            <a href="/project-details?project=social-media">
-                                <img src="/img/project/pro4.webp" alt="Project 5" loading="lazy">
-                            </a>
-                            <a href="/project-details?project=social-media" class="project-arrow-btn"
-                                aria-label="Se prosjektdetaljer for Merkevare i sosiale medier">
-                                <i class="fas fa-arrow-right"></i>
-                            </a>
-                        </div>
-                        <div class="project-content">
-                            <span class="project-category" data-i18n="projects.p5_desc">SoMe</span>
-                            <h3 class="project-title"><a href="/project-details?project=social-media"
-                                    data-i18n="projects.p5_title">Merkevare i sosiale medier</a></h3>
-                        </div>
-                    </div>
-
-                    <!-- Project 7 -->
-                    <div class="project-card" data-aos="fade-up" data-aos-delay="700">
-                        <div class="project-img-wrapper">
-                            <a href="/project-details?project=support">
-                                <img src="/img/project/pro6.webp" alt="Project 6" loading="lazy">
-                            </a>
-                            <a href="/project-details?project=support" class="project-arrow-btn"
-                                aria-label="Se prosjektdetaljer for Vedlikehold og videreutvikling">
-                                <i class="fas fa-arrow-right"></i>
-                            </a>
-                        </div>
-                        <div class="project-content">
-                            <span class="project-category" data-i18n="projects.p6_desc">Support</span>
-                            <h3 class="project-title"><a href="/project-details?project=support"
-                                    data-i18n="projects.p6_title">Vedlikehold og videreutvikling</a></h3>
-                        </div>
-                    </div>
-
                 </div>
 
                 <div style="text-align: center; margin-top: 64px;">
@@ -900,7 +783,7 @@
                                     </div>
                                 </div>
                                 <div class="meeting-contact-item" style="border-bottom: none;">
-                                    <div class="meeting-icon"><i class="fas fa-map-marker-alt"></i></div>
+                                    <div class="meeting-icon"><i class="fas fa-phone"></i></div>
                                     <div>
                                         <span style="display: block; color: var(--clr-common-text);"
                                             data-i18n="meeting.location_label">Telefon</span>
@@ -1143,26 +1026,6 @@
                 </div>
 
                 <div class="pricing-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); max-width: 900px; margin: 0 auto;">
-                    <!-- Option 1: In-house Dev (Anchor) -->
-                    <div class="pricing-card">
-                        <div class="pricing-header">
-                            <h3 data-i18n="pricing.dev_title">Ansette fulltids utvikler</h3>
-                            <p data-i18n="pricing.dev_subtitle">Internt i bedriften</p>
-                        </div>
-                        <div class="pricing-price-box">
-                            <span class="pricing-price-value" data-i18n="pricing.dev_price">60 000,-</span>
-                            <span class="pricing-price-period" data-i18n="pricing.dev_period">kr / mnd (snittlønn + avg.)</span>
-                        </div>
-                        <div class="pricing-divider"></div>
-                        <ul class="pricing-features-list">
-                            <li><i class="fas fa-times-circle"></i> <span data-i18n="pricing.dev_feat1">Høy økonomisk risiko & binding</span></li>
-                            <li><i class="fas fa-times-circle"></i> <span data-i18n="pricing.dev_feat2">Arbeidsgiveravgift & feriepenger</span></li>
-                            <li><i class="fas fa-times-circle"></i> <span data-i18n="pricing.dev_feat3">Opplæring & utstyr kreves</span></li>
-                            <li><i class="fas fa-times-circle"></i> <span data-i18n="pricing.dev_feat4">Sykefravær & administrasjon</span></li>
-                        </ul>
-                        <button class="pricing-action-btn btn-outline" style="cursor: not-allowed;" disabled data-i18n="pricing.dev_action">Krever høyt budsjett</button>
-                    </div>
-
                     <!-- Option 2: Support Agreement (Highlighted Choice) -->
                     <div class="pricing-card premium-highlight">
                         <div class="pricing-card-badge" data-i18n="pricing.badge">Anbefalt</div>
@@ -1190,131 +1053,13 @@
         <!-- =========================================
              7. PROCESS SECTION
              ========================================= -->
-        <section class="container pt_120 pb_120" data-aos="fade-up">
-            <div class="process-section">
-                <div class="flex justify-center">
-                    <span class="section-subtitle-lines" style="margin-bottom: 18px;" data-i18n="hero.work_process">Se
-                        prosessen</span>
-                </div>
-                <h2 class="text-center" style="margin-bottom: 60px;" data-i18n="process.title">Prosessen</h2>
-                <div class="process-grid">
-                    <div class="process-card" data-aos="fade-up" data-aos-delay="100">
-                        <h3 style="font-size: 24px; margin-bottom: 20px;" data-i18n="process.c1_title">Kartlegging</h3>
-                        <p style="margin-bottom: 20px;" data-i18n="process.c1_desc">Vi starter med en samtale for å forstå mål, målgruppe og visjon.</p>
-                        <ul style="color: var(--clr-common-text); list-style: disc; padding-left: 20px; font-size: 0.95rem;">
-                            <li data-i18n="process.c1_li1">Mål</li>
-                            <li data-i18n="process.c1_li2">Målgruppe</li>
-                            <li data-i18n="process.c1_li3">Visjon</li>
-                        </ul>
-                    </div>
-                    <div class="process-card" data-aos="fade-up" data-aos-delay="200">
-                        <h3 style="font-size: 24px; margin-bottom: 20px;" data-i18n="process.c2_title">Konsept & Design</h3>
-                        <p style="margin-bottom: 20px;" data-i18n="process.c2_desc">Vi utvikler en løsning som fanger merkevaren din og setter en tydelig retning.</p>
-                        <ul style="color: var(--clr-common-text); list-style: disc; padding-left: 20px; font-size: 0.95rem;">
-                            <li data-i18n="process.c2_li1">Struktur</li>
-                            <li data-i18n="process.c2_li2">Visuell retning</li>
-                            <li data-i18n="process.c2_li3">Tilpasning</li>
-                        </ul>
-                    </div>
-                    <div class="process-card" data-aos="fade-up" data-aos-delay="300">
-                        <h3 style="font-size: 24px; margin-bottom: 20px;" data-i18n="process.c3_title">Utvikling & Testing</h3>
-                        <p style="margin-bottom: 20px;" data-i18n="process.c3_desc">Vi bygger løsningen, setter opp funksjoner og tester at alt fungerer før lansering.</p>
-                        <ul style="color: var(--clr-common-text); list-style: disc; padding-left: 20px; font-size: 0.95rem;">
-                            <li data-i18n="process.c3_li1">Sider og funksjoner</li>
-                            <li data-i18n="process.c3_li2">Integrasjoner</li>
-                            <li data-i18n="process.c3_li3">Testing og kvalitetssikring</li>
-                        </ul>
-                    </div>
-                    <div class="process-card" data-aos="fade-up" data-aos-delay="400">
-                        <h3 style="font-size: 24px; margin-bottom: 20px;" data-i18n="process.c4_title">Lansering & Oppfølging</h3>
-                        <p style="margin-bottom: 20px;" data-i18n="process.c4_desc">Når alt er klart publiserer vi siden, gir opplæring ved behov og følger opp etter lansering.</p>
-                        <ul style="color: var(--clr-common-text); list-style: disc; padding-left: 20px; font-size: 0.95rem;">
-                            <li data-i18n="process.c4_li1">Publisering</li>
-                            <li data-i18n="process.c4_li2">Opplæring</li>
-                            <li data-i18n="process.c4_li3">Oppfølging etter lansering</li>
-                        </ul>
-                    </div>
-                    <div class="process-card" data-aos="fade-up" data-aos-delay="500">
-                        <h3 style="font-size: 24px; margin-bottom: 20px;" data-i18n="process.c5_title">Analyse & Vekst</h3>
-                        <p style="margin-bottom: 20px;" data-i18n="process.c5_desc">Vi analyserer resultater og optimaliserer for å sikre maksimal utbytte.</p>
-                        <ul style="color: var(--clr-common-text); list-style: disc; padding-left: 20px; font-size: 0.95rem;">
-                            <li data-i18n="process.c5_li1">Datainnsikt</li>
-                            <li data-i18n="process.c5_li2">Optimalisering</li>
-                            <li data-i18n="process.c5_li3">Videreutvikling</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
+
 
         <!-- Testimonial Section -->
         <!-- =========================================
              8. TESTIMONIALS SECTION
              ========================================= -->
-        <section id="testimonial" class="testimonial-section" data-aos="fade-up">
-            <div class="container">
-                <div class="text-center mb-30">
-                    <div class="flex justify-center">
-                        <span class="section-subtitle-lines" style="margin-bottom: 24px;"
-                            data-i18n="testimonial.tag">Hvorfor oss</span>
-                    </div>
-                    <h2 style="font-size: 50px;" data-i18n="testimonial.title">Tre ting på hvorfor du bør velge oss</h2>
-                </div>
 
-                <div class="testimonial-bg">
-                    <div class="testimonial-slider">
-                        <!-- Custom JS Slider -->
-                        <div class="testimonial-slide active">
-                            <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i
-                                    class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                            </div>
-                            <p class="testimonial-text" data-i18n="testimonial.t1_text">"Ved bruk av de nyeste
-                                verktøyene sikrer vi en lynrask og responsiv løsning som fungerer optimalt for alle
-                                brukere. Glem kjedelige maler - vi bygger nettsiden fra bunnen av."
-                            </p>
-                            <div class="client-info">
-                                <h3 data-i18n="testimonial.t1_title">Fremtidsrettet teknologi</h3>
-                                <span data-i18n="testimonial.t1_role">Raskt, responsivt og unikt</span>
-                            </div>
-                        </div>
-                        <div class="testimonial-slide">
-                            <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i
-                                    class="fas fa-star"></i><i class="fas fa-star"></i><i
-                                    class="fas fa-star-half-alt"></i>
-                            </div>
-                            <p class="testimonial-text" data-i18n="testimonial.t2_text">"Vi kombinerer estetikk med
-                                strategi for å sikre at nettsiden ikke bare er pen, men faktisk gjør besøkende til
-                                kunder. Fra ide til lansering får du støtte hele veien."</p>
-                            <div class="client-info">
-                                <h3 data-i18n="testimonial.t2_title">Design som konverterer</h3>
-                                <span data-i18n="testimonial.t2_role">Fra besøkende til kunder</span>
-                            </div>
-                        </div>
-
-                        <div class="testimonial-dots">
-                            <!-- Dots filled by JS -->
-                        </div>
-                    </div>
-                    <!-- Decorative Images -->
-                    <img src="/img/testimonial/quote.png" alt="quote"
-                        style="position: absolute; top: 100px; left: 200px; width: 60px; opacity: 0.5;"
-                        class="hidden-mobile">
-                </div>
-
-                <!-- Partner Slider -->
-                <div class="partner-slider-container">
-                    <p style="color: var(--clr-base); margin-bottom: 40px; font-size: 24px;"
-                        data-i18n="testimonial.trusted_text">
-                        Skreddersydd webdesign, SEO og SoMe-strategi</p>
-                    <div class="partner-track">
-                        <span class="partner-chip" data-i18n="marquee.top_1">Skreddersydd webdesign</span>
-                        <span class="partner-chip" data-i18n="marquee.top_2">SEO-strategi</span>
-                        <span class="partner-chip" data-i18n="marquee.top_3">SoMe-innhold</span>
-                        <span class="partner-chip" data-i18n="marquee.top_4">Support</span>
-                    </div>
-                </div>
-            </div>
-        </section>
 
         <!-- Speed Test CTA Section (Reciprocity Mini-Analyzer) -->
         <section id="speed-test-cta" class="speed-test-cta-section" data-aos="fade-up" style="padding: 100px 0; background: #fff; border-top: 1px solid var(--clr-border); border-bottom: 1px solid var(--clr-border);">
@@ -1324,11 +1069,11 @@
                         <span class="section-subtitle-lines" style="color: #62B6CB; margin-bottom: 24px;" data-i18n="free_tool.subtitle">Gratis verktøy</span>
                         <h2 style="font-size: clamp(32px, 5vw, 48px); color: var(--clr-base); margin-bottom: 24px; line-height: 1.1; font-weight: 700;" data-i18n="free_tool.heading">Er nettsiden din rask og synlig nok?</h2>
                         <p style="color: var(--clr-common-text); font-size: 18px; margin-bottom: 30px; max-width: 520px; line-height: 1.6;" data-i18n="free_tool.intro">
-                            Visste du at en treg nettside i snitt koster bedrifter 65 % av kundene før siden i det hele tatt har lastet? Tast inn din nettadresse under for en umiddelbar mini-analyse og konkrete forbedringspunkter.
+                            Test nettsidens hastighet og tekniske SEO. Du får målinger og konkrete forslag til forbedringer.
                         </p>
                         
                         <div class="analyzer-input-group" style="max-width: 500px;">
-                            <input type="url" id="analyzerUrl" placeholder="F.eks. www.minbedrift.no" data-i18n-placeholder="free_tool.placeholder" required autocomplete="url" onkeydown="if(event.key === 'Enter') startMiniAnalysis()">
+                            <input type="url" id="analyzerUrl" aria-label="Nettsidens adresse" placeholder="F.eks. www.minbedrift.no" data-i18n-placeholder="free_tool.placeholder" required autocomplete="url" onkeydown="if(event.key === 'Enter') startMiniAnalysis()">
                             <button type="button" class="analyzer-btn" onclick="startMiniAnalysis()" data-i18n="free_tool.btn">Analyser nå <i class="fas fa-bolt"></i></button>
                         </div>
                     </div>
@@ -1354,66 +1099,6 @@
                             </div>
 
                             <!-- 3. Report Dashboard State -->
-                            <div id="analyzerDashboardState" class="analyzer-result-dashboard" style="width: 100%;">
-                                <h3 style="font-size: 1.2rem; color: var(--clr-base); font-weight: 800; margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
-                                    <i class="fas fa-chart-bar" style="color: #ff6a1b;"></i> <span data-i18n="free_tool.report_for">Rapport for:</span> <span id="reportDomainName" style="color: #62B6CB;">minbedrift.no</span>
-                                </h3>
-                                
-                                <div class="analyzer-metrics-grid">
-                                    <div class="analyzer-metric-card" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-                                        <div style="font-size: 1.2rem; color: #ff6a1b;"><i class="fas fa-tachometer-alt"></i></div>
-                                        <div class="analyzer-circle-score score-warn">68</div>
-                                        <span class="analyzer-metric-label" data-i18n="free_tool.metric_performance">Ytelse</span>
-                                    </div>
-                                    <div class="analyzer-metric-card" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-                                        <div style="font-size: 1.2rem; color: #ef4444;"><i class="fas fa-search"></i></div>
-                                        <div class="analyzer-circle-score score-danger">55</div>
-                                        <span class="analyzer-metric-label" data-i18n="free_tool.metric_seo">SEO</span>
-                                    </div>
-                                    <div class="analyzer-metric-card" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-                                        <div style="font-size: 1.2rem; color: #ff6a1b;"><i class="fas fa-mobile-alt"></i></div>
-                                        <div class="analyzer-circle-score score-warn">72</div>
-                                        <span class="analyzer-metric-label" data-i18n="free_tool.metric_mobile">Mobil</span>
-                                    </div>
-                                </div>
-
-                                <div class="analyzer-points-list">
-                                    <div class="analyzer-point-item">
-                                        <div class="analyzer-point-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                                        <div class="analyzer-point-content">
-                                            <h4 data-i18n="free_tool.report_1_title">Treg responstid på server (TTFB)</h4>
-                                            <p data-i18n="free_tool.report_1_desc">Siden din bruker 1.4s på første byte, som gjør at du taper opptil 30% av besøkende før siden har lastet.</p>
-                                        </div>
-                                    </div>
-                                    <div class="analyzer-point-item">
-                                        <div class="analyzer-point-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                                        <div class="analyzer-point-content">
-                                            <h4 data-i18n="free_tool.report_2_title">Unødvendig tunge bilder (Mangler WebP)</h4>
-                                            <p data-i18n="free_tool.report_2_desc">Store bildefiler øker sidelasten med flere megabytes. Google straffer dette tungt i søkeresultatene.</p>
-                                        </div>
-                                    </div>
-                                    <div class="analyzer-point-item">
-                                        <div class="analyzer-point-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                                        <div class="analyzer-point-content">
-                                            <h4 data-i18n="free_tool.report_3_title">Mangelfull H1-struktur og metadata</h4>
-                                            <p data-i18n="free_tool.report_3_desc">Viktige søkeord mangler i overskriftsstrukturen, som lar konkurrentene dine rangere høyere på Google.</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Lead Capture Box -->
-                                <div class="analyzer-save-box">
-                                    <h4 data-i18n="free_tool.report_cta">Vil du ha den komplette rapporten med steg-for-steg løsninger?</h4>
-                                    <p data-i18n="free_tool.pdf_plan">Vi sender deg en skreddersydd PDF-handlingsplan helt gratis.</p>
-                                    <form id="analyzerSaveForm" class="analyzer-save-form" onsubmit="submitAnalyzerLead(event)">
-                                        <input type="hidden" id="analyzerLeadUrl" name="url">
-                                        <input type="email" id="analyzerLeadEmail" placeholder="Din e-postadresse" data-i18n-placeholder="free_tool.email_placeholder" required style="width: 100%;">
-                                        <button type="submit" class="analyzer-save-btn" id="analyzerSaveBtn" style="white-space: nowrap;" data-i18n="free_tool.send_report">Send rapport <i class="fas fa-paper-plane"></i></button>
-                                    </form>
-                                    <div id="analyzerSaveStatus" style="font-size: 0.9rem; font-weight: 700; margin-top: 12px; line-height: 1.4;"></div>
-                                </div>
-                            </div>
-
                         </div>
                         <div style="position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; background: #62B6CB; filter: blur(90px); opacity: 0.2; z-index: -1;"></div>
                     </div>
@@ -1450,60 +1135,6 @@
                 }
             }
 
-            async function submitAnalyzerLead(event) {
-                event.preventDefault();
-                const emailInput = document.getElementById('analyzerLeadEmail');
-                const urlHidden = document.getElementById('analyzerLeadUrl');
-                const statusDiv = document.getElementById('analyzerSaveStatus');
-                const saveBtn = document.getElementById('analyzerSaveBtn');
-
-                if (!emailInput || !emailInput.value) return;
-
-                saveBtn.disabled = true;
-                const origText = saveBtn.innerHTML;
-                saveBtn.textContent = 'Sender...';
-                statusDiv.className = '';
-                statusDiv.textContent = '';
-
-                // API Discovery Logic (Same as contact-page.js)
-                const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-                const apiUrl = (window.location.protocol === 'file:' || (isLocalHost && window.location.port && window.location.port !== '3000'))
-                    ? 'http://localhost:3000/api/contact'
-                    : '/api/contact';
-
-                const payload = {
-                    name: 'Nettsteds-Sjekker Lead',
-                    email: emailInput.value.trim(),
-                    phone: '',
-                    company: '',
-                    subject: `Mini-analyse forespørsel: ${urlHidden.value}`,
-                    message: `Automatisk forespørsel om full nettsiderapport fra Nettside-Sjekker.\n\nNettside: ${urlHidden.value}\nKunde e-post: ${emailInput.value.trim()}\n\nVennligst generer og send en fullstendig rapport.`,
-                    consent: true,
-                    website: urlHidden.value.trim(),
-                    sourcePage: 'index.html (Nettside-Sjekker)'
-                };
-
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) throw new Error('API-feil');
-
-                    statusDiv.style.color = '#10b981';
-                    statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Suksess! Rapporten er registrert. Vi kontakter deg med den fulle analysen innen kort tid.';
-                    emailInput.value = '';
-                } catch (err) {
-                    statusDiv.style.color = '#ef4444';
-                    statusDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Kunne ikke sende forespørsel. Sjekk nettforbindelsen og prøv igjen.';
-                    saveBtn.disabled = false;
-                    saveBtn.innerHTML = origText;
-                }
-            }
         </script>
 
         <!-- Blog Section -->
@@ -1535,23 +1166,7 @@
         <!-- =========================================
              LEAD MAGNET SECTION
              ========================================= -->
-        <section class="lead-magnet-section pt_120 pb_120" style="display: none !important;">
-            <div class="container">
-                <div class="lead-magnet-card text-center" data-aos="zoom-in">
-                    <div class="lead-icon-box">
-                        <i class="fas fa-file-download"></i>
-                    </div>
-                    <h2>Gratis 2026 SEO-sjekkliste</h2>
-                    <p style="max-width: 500px; margin: 15px auto 30px; font-weight: 500;">
-                        Lær hvordan du sikrer topposisjon på Google i år. Legg igjen e-posten, så sender vi vår beste mal helt gratis.
-                    </p>
-                    <form class="lead-magnet-form" onsubmit="event.preventDefault(); alert('Sjekklisten er sendt til din e-post!');">
-                        <input type="email" placeholder="Din e-postadresse" required autocomplete="email">
-                        <button type="submit" class="primary-cta glow-cta">Send meg sjekklisten</button>
-                    </form>
-                </div>
-            </div>
-        </section>
+
 
     </main>
 
@@ -1601,8 +1216,8 @@
     </footer>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
-    <script src="translations.js?v=13" defer></script>
-    <script src="script.js?v=3" defer></script>
+    <script src="translations.js?v=14" defer></script>
+    <script src="script.js?v=4" defer></script>
     <script src="js/cookies.js?v=3" defer></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {

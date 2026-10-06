@@ -45,6 +45,8 @@ const firebaseWebConfigCache = {
     inflight: null
 };
 const FIREBASE_WEB_CONFIG_CACHE_MS = 10 * 60 * 1000;
+const SERVICE_DETAILS_CONTENT = require('./js/service-content');
+const SERVICE_ROUTE_KEYS = { '/webdesign': 'web_dev', '/seo': 'seo', '/support-og-vedlikehold': 'support', '/sosiale-medier': 'digital_marketing' };
 const PAGE_ROUTE_MAP = {
     '/': 'index.html',
     '/blog': 'blog.html',
@@ -92,7 +94,7 @@ const SEO_GLOBAL_DEFAULTS = {
 };
 const SEO_PAGE_DEFAULTS = {
     'index.html': {
-        title: 'Webdesign og SEO for små bedrifter',
+        title: 'Nettsider og webdesign i Moss og Østfold',
         description: 'Skreddersydd webdesign, søkemotoroptimalisering (SEO) og løpende drift for små og mellomstore bedrifter i Norge. Raske, konverterende nettsider.',
         keywords: 'webdesign små bedrifter, seo for bedrifter, ny nettside, tk-design, webdesigner norge'
     },
@@ -123,7 +125,7 @@ const SEO_PAGE_DEFAULTS = {
     },
     '/seo': {
         title: 'SEO & Søkemotoroptimalisering for Bedrifter',
-        description: 'Bli synlig øverst på Google. Vi optimaliserer struktur, innhold og teknisk SEO slik at potensielle kunder finner deg.',
+        description: 'SEO for små og mellomstore bedrifter: innhold, søkeordsanalyse og teknisk gjennomgang. TK-design hjelper deg å forbedre synligheten i søk.',
         keywords: 'seo, søkemotoroptimalisering, rangere høyere på google, økt organisk trafikk'
     },
     '/support-og-vedlikehold': {
@@ -1894,7 +1896,7 @@ function buildSpeedTestReportEmailMarkup(reportPayload, req) {
                 <div class="cta-panel" style="margin-top: 36px; padding: 28px 24px; border: 2px solid #102033; border-radius: 22px; background: #ffffff; text-align: left;">
                     <span style="display: inline-block; padding: 4px 12px; border-radius: 999px; background: rgba(255, 106, 27, 0.12); color: #ff6a1b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px;">Løs funnene permanent</span>
                     <h2 style="margin: 0; font-size: 22px; color: #102033; font-weight: 800;">Vil du at vi fikser disse funnene for deg?</h2>
-                    <p style="margin: 10px 0 18px; color: #4b5563; font-size: 15px; line-height: 1.6;">Med en fast <strong>TK-design Supportavtale (fra kr 1 000,-/mnd)</strong> utbedrer vi bildekomprimering, fjerner render-blokkerende kode, sikrer 100/100 Core Web Vitals og overvåker siden din kontinuerlig – helt uten bindingstid.</p>
+                    <p style="margin: 10px 0 18px; color: #4b5563; font-size: 15px; line-height: 1.6;">Med en fast <strong>TK-design Supportavtale (fra kr 1 000,-/mnd)</strong> utbedrer vi bildekomprimering, fjerner render-blokkerende kode, forbedrer lastetid og mobilvennlighet og overvåker siden din kontinuerlig – helt uten bindingstid.</p>
                     <div style="margin-bottom: 18px;">
                         <a class="button" style="background: #ff6a1b; color: #ffffff !important; border: none; font-size: 15px; font-weight: 700; padding: 14px 26px; border-radius: 999px; text-decoration: none; display: inline-block; margin-right: 10px;" href="${escapeHtml(siteBaseUrl.replace(/\/+$/, ''))}/contact?service=support">Sikre min supportavtale (kr 1 000/mnd) &rarr;</a>
                         <a class="button button-secondary" style="font-size: 14px; font-weight: 600; padding: 14px 22px; border-radius: 999px; text-decoration: none; display: inline-block;" href="${escapeHtml(siteBaseUrl.replace(/\/+$/, ''))}/support-og-vedlikehold">Les om supportavtalen</a>
@@ -2792,6 +2794,13 @@ function normalizeSeoData(seoData) {
         };
     }
 
+
+    // Upgrade only generic legacy homepage titles; preserve custom admin titles.
+    if (/^(Hjem|Home|Profesjonell Webdesign & SEO i Norge|Webdesign og SEO for små bedrifter)$/i.test(normalizedPages['index.html'].title)) {
+        normalizedPages['index.html'].title = SEO_PAGE_DEFAULTS['index.html'].title;
+        normalizedPages['index.html'].description = 'TK-design lager nettsider for små og mellomstore bedrifter i Moss, Østfold og resten av Norge. Webdesign, SEO og personlig oppfølging.';
+    }
+
     return {
         global: {
             ...SEO_GLOBAL_DEFAULTS,
@@ -3441,6 +3450,34 @@ app.get('/sitemap.xml', async (req, res) => {
     }
 });
 
+
+function renderServiceContent(html, requestPath, lang) {
+    const key = SERVICE_ROUTE_KEYS[requestPath] || 'web_dev';
+    const data = SERVICE_DETAILS_CONTENT[lang]?.[key] || SERVICE_DETAILS_CONTENT.no[key];
+    const values = {
+        serviceBannerTitle: data.bannerTitle, serviceBannerSummary: data.summary,
+        serviceDetailTag: data.tag, serviceDetailTitle: data.title,
+        serviceDetailLead: data.lead, serviceDetailBody: data.body,
+        serviceDeliverablesTitle: data.deliverablesTitle, servicePriceHighlight: data.priceTag,
+        servicePrimaryCtaText: data.ctaText
+    };
+    data.features.forEach((feature, index) => {
+        values['serviceFeature' + (index + 1) + 'Title'] = feature.title;
+        values['serviceFeature' + (index + 1) + 'Desc'] = feature.desc;
+    });
+    for (const [id, value] of Object.entries(values)) {
+        const pattern = new RegExp('(<([a-z][a-z0-9]*)\\b[^>]*\\bid="' + id + '"[^>]*>)[\\s\\S]*?(</\\2>)', 'i');
+        html = html.replace(pattern, (_, open, tag, close) => open + escapeHtml(value || '') + close);
+    }
+    let pillIndex = 0;
+    html = html.replace(/(<div class="subpage-stat-pill">[\s\S]*?<span>)[\s\S]*?(<\/span>)/g,
+        (_, open, close) => open + escapeHtml(data.spotlightList[pillIndex++] || '') + close);
+    html = html.replace(/(<a\b[^>]*id="servicePrimaryCta"[^>]*>)/, open => open.replace(/href="[^"]*"/, 'href="' + escapeHtml(data.ctaLink) + '"'));
+    const deliverables = data.deliverables.map(item => '<div class="deliverable-item"><i class="fas fa-check-circle" aria-hidden="true"></i><div><strong>' + escapeHtml(item.title || item) + '</strong><p>' + escapeHtml(item.desc || '') + '</p></div></div>').join('');
+    html = html.replace(/(<div class="deliverables-grid" id="serviceDeliverablesGrid">)[\s\S]*?(?=\s*<div style="margin-top: 24px; display: flex; justify-content: flex-end;)/, '$1' + deliverables + '</div>\n');
+    return html;
+}
+
 async function renderPageWithSeo(req, res, reqFile, matchedBlogPost = null) {
     let lang = 'no';
     const cookies = req.headers.cookie || '';
@@ -3542,6 +3579,9 @@ async function renderPageWithSeo(req, res, reqFile, matchedBlogPost = null) {
         } catch (e) {
             console.error('Error during server-side translation:', e);
         }
+
+        translatedHtml = translatedHtml.replace(/<html\b[^>]*>/i, '<html lang="' + lang + '" prefix="og: https://ogp.me/ns#">');
+        if (reqFile === 'service-details.html') translatedHtml = renderServiceContent(translatedHtml, req.path, lang);
 
         // SSR Pre-rendering for blog.html listing so search engines see all blog posts on initial HTML load
         if (reqFile === 'blog.html') {

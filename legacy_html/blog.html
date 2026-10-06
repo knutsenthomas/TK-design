@@ -40,6 +40,7 @@
 </head>
 
 <body class="homepage-refresh blog-list-page-refresh">
+    <a class="skip-link" href="#main-content">Hopp til innhold</a>
 
     <header class="header">
         <div class="container nav-container">
@@ -117,7 +118,7 @@
         </nav>
     </div>
 
-    <main>
+    <main id="main-content">
         <!-- Modern Subpage Hero Banner -->
         <section class="subpage-hero-section">
             <div class="container">
@@ -238,8 +239,8 @@
         </div>
     </footer>
 
-    <script src="translations.js?v=13"></script>
-    <script src="script.js?v=3"></script>
+    <script src="translations.js?v=14"></script>
+    <script src="script.js?v=4"></script>
     <script src="js/cookies.js?v=3"></script>
     <script>
         let blogListPosts = [];
@@ -646,7 +647,7 @@
                 return `
                     <article class="blog-list-card">
                         <a href="${url}" class="blog-list-image">
-                            <img src="${localizedPost.image || '/img/blog/bblog1.png'}" alt="${localizedPost.title}" onerror="this.onerror=null; this.src='/img/blog/bblog1.png';">
+                            <img loading="lazy" decoding="async" src="${localizedPost.image || '/img/blog/bblog1.png'}" alt="${localizedPost.title}" onerror="this.onerror=null; this.src='/img/blog/bblog1.png';">
                         </a>
                         <div class="blog-list-card-body">
                             <div class="blog-list-card-meta">

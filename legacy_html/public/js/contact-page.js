@@ -6,7 +6,7 @@ const CONTACT_API_MESSAGES = {
         successEmailOnly: 'Meldingen er sendt på e-post, men kunne ikke lagres i systemet.',
         validation: 'Fyll ut navn, e-post og en melding på minst 10 tegn, og godkjenn lagring.',
         network: 'Noe gikk galt. Prøv igjen om litt.',
-        backendMissing: 'Backend svarer ikke. Start `node server.js` hvis du kjører lokalt.'
+        backendMissing: 'Kunne ikke sende meldingen. Prøv igjen, eller kontakt oss på thomas@tk-design.no.'
     },
     en: {
         sending: 'Sending your message...',
@@ -15,7 +15,7 @@ const CONTACT_API_MESSAGES = {
         successEmailOnly: 'Your message was sent by email, but could not be stored in the system.',
         validation: 'Please fill in name, email and a message with at least 10 characters, and confirm consent.',
         network: 'Something went wrong. Please try again shortly.',
-        backendMissing: 'The backend did not respond. Start `node server.js` when running locally.'
+        backendMissing: 'Could not send your message. Try again or email thomas@tk-design.no.'
     }
 };
 

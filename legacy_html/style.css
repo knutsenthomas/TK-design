@@ -11594,3 +11594,17 @@ body#home.homepage-refresh .hero-light-showcase::after {
 }
 
 
+
+/* Public-site usability improvements */
+.skip-link { position: fixed; top: -100px; left: 16px; z-index: 10000; background: #11263c; color: #fff; padding: 12px 20px; border-radius: 8px; }
+.skip-link:focus { top: 12px; }
+body.homepage-refresh a:focus-visible, body.homepage-refresh button:focus-visible, body.homepage-refresh input:focus-visible { outline: 3px solid #d97706; outline-offset: 4px; }
+.hero-light-showcase .hero-display-title { line-height: 1.08 !important; }
+.pricing-contrast-section .pricing-grid { max-width: 520px !important; grid-template-columns: minmax(0, 1fr) !important; }
+@media (max-width: 600px) {
+ body.homepage-refresh .subpage-title { font-size: clamp(2rem, 8vw, 3rem); overflow-wrap: anywhere; }
+ #speed-test-cta .flex > div { min-width: 0 !important; width: 100%; flex-basis: 100% !important; }
+ #speed-test-cta { overflow: hidden; }
+ body.homepage-refresh .hero-btn-primary, body.homepage-refresh .hero-btn-secondary, body.homepage-refresh .menu-trigger, body.homepage-refresh .lang-btn { min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto !important; } body.homepage-refresh *, body.homepage-refresh *::before, body.homepage-refresh *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }

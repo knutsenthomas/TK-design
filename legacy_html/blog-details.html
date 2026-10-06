@@ -26,6 +26,7 @@
 </head>
 
 <body class="homepage-refresh blog-page-refresh">
+    <a class="skip-link" href="#main-content">Hopp til innhold</a>
 
     <header class="header">
         <div class="container nav-container">
@@ -103,7 +104,7 @@
         </nav>
     </div>
 
-    <main>
+    <main id="main-content">
         <!-- Modern Subpage Hero Banner -->
         <section class="subpage-hero-section">
             <div class="container">
@@ -165,7 +166,7 @@
                     <div class="blog-detail-grid">
                         <article class="blog-article-shell">
                             <div class="blog-article-media">
-                                <img id="blogDetailImage" src="/img/blog/bblog1.png" alt="Bloggbilde">
+                                <img loading="lazy" decoding="async" id="blogDetailImage" src="/img/blog/bblog1.png" alt="Bloggbilde">
                             </div>
 
                             <div class="blog-article-head">
@@ -318,8 +319,8 @@
         </div>
     </footer>
 
-    <script src="/translations.js?v=13"></script>
-    <script src="/script.js?v=3"></script>
+    <script src="/translations.js?v=14"></script>
+    <script src="/script.js?v=4"></script>
     <script src="/js/cookies.js?v=3"></script>
     <script>
         const BLOG_DETAIL_RUNTIME = {
