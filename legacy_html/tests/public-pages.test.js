@@ -9,6 +9,7 @@ test('public pages serve distinct content before JavaScript runs', async () => {
     try {
         const expected = {
             '/': /NETTSIDER[\s\S]*FOR DIN[\s\S]*BEDRIFT/,
+            '/nettside-for-regnskapsbyra': /Nettsider for regnskapsbyråer/,
             '/webdesign': /Nettsider og webdesign for bedrifter/,
             '/seo': /SEO &amp; Søkemotoroptimalisering/,
             '/support-og-vedlikehold': /Drift &amp; Supportavtale for Nettside/,
@@ -28,6 +29,13 @@ test('public pages serve distinct content before JavaScript runs', async () => {
         for (const route of ['/portefolje', '/blog', '/contact', '/privacy', '/accessibility', '/nettside-sjekker', '/sitemap.xml', '/robots.txt', '/js/service-content.js']) {
             assert.equal((await fetch(base + route)).status, 200, route);
         }
+        const accounting = await (await fetch(base + '/nettside-for-regnskapsbyra')).text();
+        assert.match(accounting, /<section id="accountingCases">/);
+        assert.match(accounting, /project=kudos/);
+        assert.match(accounting, /project=mandal/);
+        assert.match(await (await fetch(base + '/sitemap.xml')).text(), /nettside-for-regnskapsbyra/);
+        const accountingEnglish = await (await fetch(base + '/nettside-for-regnskapsbyra', { headers: { cookie: 'site_lang=en' } })).text();
+        assert.match(accountingEnglish, /Websites for accounting firms/);
         const seo = await (await fetch(base + '/seo')).text();
         assert.match(seo, /Google Search Console/);
         assert.match(seo, /Teknisk SEO-revisjon/);

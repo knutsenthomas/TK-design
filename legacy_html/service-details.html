@@ -145,6 +145,7 @@
                             <span class="hero-badge-dot"></span>
                             <span data-i18n="service_details.sidebar_title">ALLE TJENESTER</span>
                         </div>
+                        <a href="/nettside-for-regnskapsbyra" class="service-nav-link" data-service="regnskap"><span>Nettsider for regnskapsbyråer</span><i class="fas fa-arrow-right"></i></a>
                         <nav style="display: flex; flex-direction: column; gap: 6px;">
                             <a href="/webdesign" class="service-nav-link" data-service="web_dev">
                                 <span>Webdesign &amp; Utvikling</span>
@@ -224,6 +225,13 @@
                                 </a>
                             </div>
                         </div>
+                        <section id="accountingCases" hidden>
+                            <h2 id="accountingCasesTitle">Se nettsider vi har laget for regnskapsbyråer</h2>
+                            <div class="deliverables-grid">
+                                <a href="/project-details?project=kudos"><img src="/img/project/real_kudos_desktop.jpg" alt="Kudos Regnskap AS" loading="lazy" width="640" height="400" style="width:100%;height:auto;border-radius:12px;"><h3>Kudos Regnskap AS</h3></a>
+                                <a href="/project-details?project=mandal"><img src="/img/project/real_mandal_desktop.jpg" alt="Mandal Regnskapskontor" loading="lazy" width="640" height="400" style="width:100%;height:auto;border-radius:12px;"><h3>Mandal Regnskapskontor</h3></a>
+                            </div>
+                        </section>
                     </article>
                 </div>
             </div>
@@ -275,11 +283,12 @@
     <script src="translations.js?v=14"></script>
     <script src="script.js?v=4"></script>
     <script src="js/cookies.js?v=3"></script>
-    <script src="/js/service-content.js?v=1"></script>
+    <script src="/js/service-content.js?v=2"></script>
     <script>
 
         function getSelectedServiceKey() {
             const pathname = window.location.pathname;
+            if (pathname === '/nettside-for-regnskapsbyra') return 'regnskap';
             if (pathname === '/seo') return 'seo';
             if (pathname === '/webdesign') return 'web_dev';
             if (pathname === '/support-og-vedlikehold') return 'support';
@@ -397,6 +406,9 @@
                 `).join("");
             }
 
+            const cases = document.getElementById('accountingCases');
+            if (cases) cases.hidden = serviceKey !== 'regnskap';
+            if (data.casesTitle) setText('accountingCasesTitle', data.casesTitle);
             const detailImage = document.getElementById(ids.image);
             if (detailImage) {
                 detailImage.src = data.image;
@@ -406,6 +418,7 @@
             document.querySelectorAll(".service-nav-link").forEach((link) => {
                 const href = link.getAttribute("href") || "";
                 const isCurrent = (
+                    (serviceKey === 'regnskap' && href === '/nettside-for-regnskapsbyra') ||
                     (serviceKey === 'support' && href === '/support-og-vedlikehold') ||
                     (serviceKey === 'seo' && href === '/seo') ||
                     (serviceKey === 'web_dev' && href === '/webdesign') ||

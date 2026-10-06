@@ -46,7 +46,7 @@ const firebaseWebConfigCache = {
 };
 const FIREBASE_WEB_CONFIG_CACHE_MS = 10 * 60 * 1000;
 const SERVICE_DETAILS_CONTENT = require('./js/service-content');
-const SERVICE_ROUTE_KEYS = { '/webdesign': 'web_dev', '/seo': 'seo', '/support-og-vedlikehold': 'support', '/sosiale-medier': 'digital_marketing' };
+const SERVICE_ROUTE_KEYS = { '/nettside-for-regnskapsbyra': 'regnskap', '/webdesign': 'web_dev', '/seo': 'seo', '/support-og-vedlikehold': 'support', '/sosiale-medier': 'digital_marketing' };
 const PAGE_ROUTE_MAP = {
     '/': 'index.html',
     '/blog': 'blog.html',
@@ -54,6 +54,7 @@ const PAGE_ROUTE_MAP = {
     '/blog-details': 'blog-details.html',
     '/contact': 'contact.html',
     '/service-details': 'service-details.html',
+    '/nettside-for-regnskapsbyra': 'service-details.html',
     '/webdesign': 'service-details.html',
     '/seo': 'service-details.html',
     '/support-og-vedlikehold': 'service-details.html',
@@ -117,6 +118,11 @@ const SEO_PAGE_DEFAULTS = {
         title: 'Tjenester innen Webdesign, SEO og Drift',
         description: 'Skreddersydd webdesign, søkemotoroptimalisering (SEO), SoMe-innholdsstrategi og løpende drift/support for bedrifter.',
         keywords: 'webdesign tjenester, seo søkemotoroptimalisering, nettside support, some strategi'
+    },
+    '/nettside-for-regnskapsbyra': {
+        title: 'Nettsider for regnskapsbyråer',
+        description: 'TK-design lager mobilvennlige nettsider for regnskapsbyråer. Se Kudos Regnskap og Mandal Regnskapskontor, og be om et uforpliktende tilbud.',
+        keywords: 'nettside regnskapsbyrå, webdesign regnskapskontor'
     },
     '/webdesign': {
         title: 'Skreddersydd Webdesign for Bedrifter',
@@ -3407,6 +3413,7 @@ app.get('/sitemap.xml', async (req, res) => {
         // Clean static canonical pages list
         const canonicalPages = [
             { path: '', priority: '1.0', changefreq: 'weekly' },
+            { path: '/nettside-for-regnskapsbyra', priority: '0.8', changefreq: 'monthly' },
             { path: '/webdesign', priority: '0.9', changefreq: 'weekly' },
             { path: '/seo', priority: '0.9', changefreq: 'weekly' },
             { path: '/support-og-vedlikehold', priority: '0.8', changefreq: 'weekly' },
@@ -3475,6 +3482,8 @@ function renderServiceContent(html, requestPath, lang) {
     html = html.replace(/(<a\b[^>]*id="servicePrimaryCta"[^>]*>)/, open => open.replace(/href="[^"]*"/, 'href="' + escapeHtml(data.ctaLink) + '"'));
     const deliverables = data.deliverables.map(item => '<div class="deliverable-item"><i class="fas fa-check-circle" aria-hidden="true"></i><div><strong>' + escapeHtml(item.title || item) + '</strong><p>' + escapeHtml(item.desc || '') + '</p></div></div>').join('');
     html = html.replace(/(<div class="deliverables-grid" id="serviceDeliverablesGrid">)[\s\S]*?(?=\s*<div style="margin-top: 24px; display: flex; justify-content: flex-end;)/, '$1' + deliverables + '</div>\n');
+    html = html.replace('<section id="accountingCases" hidden>', '<section id="accountingCases"' + (key === 'regnskap' ? '' : ' hidden') + '>');
+    html = html.replace(/(<h2 id="accountingCasesTitle">)[\s\S]*?(<\/h2>)/, '$1' + escapeHtml(data.casesTitle || '') + '$2');
     return html;
 }
 

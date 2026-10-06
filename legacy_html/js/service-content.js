@@ -323,6 +323,61 @@ const SERVICE_DETAILS_CONTENT = {
             ],
             "image": "img/project/pro4.png",
             "metaDescription": "Merkevarebygging fra TK-design med visuell retning, tydelig budskap og helhetlig uttrykk."
+        },
+        "regnskap": {
+            "menuLabel": "Nettsider for regnskapsbyråer",
+            "bannerTitle": "Nettsider for regnskapsbyråer",
+            "summary": "Gjør det enkelt for nye kunder å forstå regnskapstjenestene dine og ta kontakt.",
+            "tag": "Regnskap & rådgivning",
+            "title": "En nettside som presenterer regnskapsbyrået ditt tydelig",
+            "lead": "TK-design har laget nettsider for Kudos Regnskap AS og Mandal Regnskapskontor. Vi bruker denne erfaringen til å planlegge en nettside som passer ditt byrå, dine tjenester og kundene du ønsker å nå.",
+            "body": "Vi avklarer målgruppe, innhold, funksjoner og pris før oppstart. Tjenester som regnskap, lønn og rådgivning får en tydelig plass der de er relevante for byrået ditt. Mobiltilpasning og en enkel vei til kontakt prioriteres gjennom hele arbeidet.",
+            "priceTag": "Fast pristilbud",
+            "ctaText": "Be om tilbud til ditt regnskapsbyrå",
+            "ctaLink": "/contact?service=webdesign",
+            "spotlightTitle": "Utvikling som skaper resultater",
+            "spotlightText": "Teknisk gjennomføring med fokus på fart, stabilitet og enkel vedlikehold.",
+            "spotlightList": [
+                "Tydelige tjenester",
+                "Enkel kontakt",
+                "Erfaring med regnskapsbyråer"
+            ],
+            "features": [
+                {
+                    "title": "Tjenester kundene forstår",
+                    "desc": "Vi organiserer regnskap, lønn og rådgivning etter det byrået faktisk tilbyr."
+                },
+                {
+                    "title": "Menneskene bak byrået",
+                    "desc": "Presentasjon av team, arbeidsmåte og kontaktpersoner bygger et tydelig førsteinntrykk."
+                },
+                {
+                    "title": "Kontakt på mobil",
+                    "desc": "Synlige kontaktvalg gjør det enkelt å ringe eller sende en forespørsel."
+                }
+            ],
+            "deliverablesTitle": "Vi tilpasser leveransen til byrået ditt:",
+            "deliverables": [
+                {
+                    "title": "Struktur og innhold",
+                    "desc": "Forside, tjenestesider og presentasjon av byrået etter avtalt omfang."
+                },
+                {
+                    "title": "Design og mobiltilpasning",
+                    "desc": "Uttrykk tilpasset profilen din og testing på mobil og datamaskin."
+                },
+                {
+                    "title": "Grunnoppsett for søk",
+                    "desc": "Beskrivende sidetitler, internlenker og teknisk oppsett for indeksering."
+                },
+                {
+                    "title": "Lansering og oppfølging",
+                    "desc": "Gjennomgang før publisering og avtale om eventuell videre drift."
+                }
+            ],
+            "image": "img/project/real_kudos_desktop.jpg",
+            "metaDescription": "TK-design lager mobilvennlige nettsider for regnskapsbyråer. Se prosjektene for Kudos Regnskap og Mandal Regnskapskontor, og be om et uforpliktende tilbud.",
+            "casesTitle": "Se nettsider vi har laget for regnskapsbyråer"
         }
     },
     "en": {
@@ -649,6 +704,61 @@ const SERVICE_DETAILS_CONTENT = {
             ],
             "image": "img/project/pro2.png",
             "metaDescription": "SEO from TK-design: keyword research, content, technical reviews and visibility tracking for small and medium-sized businesses."
+        },
+        "regnskap": {
+            "menuLabel": "Websites for accounting firms",
+            "bannerTitle": "Websites for accounting firms",
+            "summary": "Help potential clients understand your accounting services and get in touch.",
+            "tag": "Accounting & advisory",
+            "title": "A clear introduction to your accounting firm",
+            "lead": "TK-design has built websites for Kudos Regnskap AS and Mandal Regnskapskontor. We use this experience to plan a website around your firm, its services and the clients you want to reach.",
+            "body": "We agree on the audience, content, features and price before starting. Accounting, payroll and advisory services receive a clear place where relevant to your firm. Mobile usability and simple contact options guide the work.",
+            "priceTag": "Fixed Price Quote",
+            "ctaText": "Request a quote for your firm",
+            "ctaLink": "/contact?service=webdesign",
+            "spotlightTitle": "Development that handles real usage",
+            "spotlightText": "Technical execution with focus on speed, stability and maintainability.",
+            "spotlightList": [
+                "Clear services",
+                "Easy contact",
+                "Accounting firm experience"
+            ],
+            "features": [
+                {
+                    "title": "Services clients understand",
+                    "desc": "Accounting, payroll and advisory content reflects the services you actually offer."
+                },
+                {
+                    "title": "People behind the firm",
+                    "desc": "Introduce your team, working methods and contact people."
+                },
+                {
+                    "title": "Contact on mobile",
+                    "desc": "Clear contact options make calling or sending an enquiry simple."
+                }
+            ],
+            "deliverablesTitle": "A scope tailored to your firm:",
+            "deliverables": [
+                {
+                    "title": "Structure and content",
+                    "desc": "Homepage, service pages and firm introduction within the agreed scope."
+                },
+                {
+                    "title": "Design and mobile usability",
+                    "desc": "Your visual identity with checks on phones and desktop."
+                },
+                {
+                    "title": "Search foundations",
+                    "desc": "Descriptive titles, internal links and technical indexing setup."
+                },
+                {
+                    "title": "Launch and follow-up",
+                    "desc": "Pre-launch review and an optional maintenance agreement."
+                }
+            ],
+            "image": "img/project/real_kudos_desktop.jpg",
+            "metaDescription": "TK-design builds mobile-friendly websites for accounting firms. Explore Kudos Regnskap and Mandal Regnskapskontor and request a quote.",
+            "casesTitle": "Websites we have built for accounting firms"
         }
     }
 };
