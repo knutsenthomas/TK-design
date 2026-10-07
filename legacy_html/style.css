@@ -1097,8 +1097,10 @@ body.blog-page-refresh .blog-page-title {
     font-size: clamp(2.6rem, 6.6vw, 6.4rem) !important;
     line-height: 0.96;
     letter-spacing: -0.04em;
-    overflow-wrap: anywhere !important;
-    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    -webkit-hyphens: none;
+    hyphens: none;
     text-wrap: balance;
 }
 
@@ -1733,8 +1735,8 @@ body.blog-page-refresh .blog-post-nav-link strong {
     display: block;
     line-height: 1.45;
     max-width: 100%;
-    overflow-wrap: anywhere;
-    word-break: break-word;
+    overflow-wrap: break-word;
+    word-break: normal;
 }
 
 body.blog-page-refresh .blog-post-nav-link:hover,
@@ -1845,7 +1847,7 @@ body.blog-page-refresh .blog-grid-view i {
 
     body.blog-page-refresh .blog-overview-value {
         font-size: 1rem;
-        overflow-wrap: anywhere;
+        overflow-wrap: break-word;
     }
 
     body.blog-page-refresh .blog-detail-grid {
@@ -1907,8 +1909,10 @@ body.blog-page-refresh .blog-grid-view i {
     }
 
     body.blog-page-refresh .blog-page-title {
-        overflow-wrap: anywhere !important;
-        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        word-break: normal !important;
+        -webkit-hyphens: none;
+        hyphens: none;
         font-size: clamp(1.8rem, 8vw, 2.5rem) !important;
     }
 
@@ -2805,12 +2809,13 @@ body.legal-page-refresh .legal-page-copy {
 body.legal-page-refresh .legal-page-title {
     margin-top: 18px;
     margin-bottom: 18px;
-    max-width: 11ch;
+    max-width: 100%;
     font-size: clamp(2.25rem, 5.6vw, 4.2rem) !important;
     line-height: 0.98;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-    hyphens: auto;
+    overflow-wrap: break-word;
+    word-break: normal;
+    -webkit-hyphens: none;
+    hyphens: none;
     text-wrap: balance;
 }
 
@@ -2932,12 +2937,13 @@ body.legal-page-refresh .legal-page-spotlight h2 {
     z-index: 1;
     margin: 22px 0 18px;
     color: #fff;
-    max-width: 10ch;
+    max-width: 100%;
     font-size: clamp(1.65rem, 3.3vw, 2.5rem);
     line-height: 1.04;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-    hyphens: auto;
+    overflow-wrap: break-word;
+    word-break: normal;
+    -webkit-hyphens: none;
+    hyphens: none;
     text-wrap: balance;
 }
 
@@ -3041,9 +3047,10 @@ body.legal-page-refresh .legal-note-card h2 {
     color: var(--refresh-heading);
     font-size: clamp(1.5rem, 2.6vw, 2.2rem);
     line-height: 1.08;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-    hyphens: auto;
+    overflow-wrap: break-word;
+    word-break: normal;
+    -webkit-hyphens: none;
+    hyphens: none;
     text-wrap: balance;
 }
 
@@ -3388,18 +3395,19 @@ body.legal-page-refresh .legal-note-card .primary-cta {
     box-sizing: border-box;
 }
 
+html,
+body {
+    overflow-x: clip;
+    width: 100%;
+    -webkit-hyphens: manual;
+    hyphens: manual;
+}
+
 body {
     background-color: var(--theme-bg);
     color: var(--clr-common-text);
     font-family: var(--font-primary);
     line-height: 1.5;
-    overflow-x: clip;
-    width: 100%;
-}
-
-html {
-    overflow-x: clip;
-    width: 100%;
 }
 
 h1,
@@ -3412,9 +3420,18 @@ h6 {
     color: var(--clr-base);
     font-weight: 700;
     line-height: 1.2;
-    word-break: break-word;
-    /* Hindrer at lange ord går utenfor boksen */
-    hyphens: auto;
+    overflow-wrap: break-word;
+    word-break: normal;
+    -webkit-hyphens: none;
+    hyphens: none;
+    text-wrap: balance;
+}
+
+p,
+span,
+li,
+a {
+    overflow-wrap: break-word;
 }
 
 a {
@@ -4697,7 +4714,7 @@ img {
     text-align: left;
     vertical-align: top;
     border-bottom: 1px solid rgba(17, 38, 60, 0.1);
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
 }
 
 .blog-table th {
@@ -10684,6 +10701,10 @@ body#home.homepage-refresh .hero-light-showcase::after {
     -webkit-text-fill-color: transparent;
     color: #ff6a1b !important;
     display: inline-block;
+    overflow-wrap: break-word;
+    word-break: normal;
+    -webkit-hyphens: none;
+    hyphens: none;
 }
 
 .hero-light-showcase .hero-sublead-text {
@@ -11160,6 +11181,11 @@ body#home.homepage-refresh .hero-light-showcase::after {
     color: #11263c;
     margin: 16px 0 20px 0;
     letter-spacing: -0.02em;
+    overflow-wrap: break-word;
+    word-break: normal;
+    -webkit-hyphens: none;
+    hyphens: none;
+    text-wrap: balance;
 }
 
 .subpage-lead {
@@ -11602,7 +11628,7 @@ body.homepage-refresh a:focus-visible, body.homepage-refresh button:focus-visibl
 .hero-light-showcase .hero-display-title { line-height: 1.08 !important; }
 .pricing-contrast-section .pricing-grid { max-width: 520px !important; grid-template-columns: minmax(0, 1fr) !important; }
 @media (max-width: 600px) {
- body.homepage-refresh .subpage-title { font-size: clamp(2rem, 8vw, 3rem); overflow-wrap: anywhere; }
+ body.homepage-refresh .subpage-title { font-size: clamp(2rem, 8vw, 3rem); overflow-wrap: break-word; }
  #speed-test-cta .flex > div { min-width: 0 !important; width: 100%; flex-basis: 100% !important; }
  #speed-test-cta { overflow: hidden; }
  body.homepage-refresh .hero-btn-primary, body.homepage-refresh .hero-btn-secondary, body.homepage-refresh .menu-trigger, body.homepage-refresh .lang-btn { min-height: 44px; }
@@ -11612,8 +11638,6 @@ body.homepage-refresh a:focus-visible, body.homepage-refresh button:focus-visibl
 /* Use sentence case for the homepage headline, including CMS text. */
 .hero-light-showcase .hero-title-row { text-transform: lowercase; }
 .hero-light-showcase .hero-title-row:first-child::first-letter { text-transform: uppercase; }
-
-
 /* Service pages share the portfolio typography, colours and project presentation. */
 body.service-details-page-refresh .service-details-layout{grid-template-columns:minmax(0,1fr);max-width:1200px;margin:0 auto}
 body.service-details-page-refresh .service-nav-card{display:none}

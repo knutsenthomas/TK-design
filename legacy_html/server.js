@@ -37,7 +37,7 @@ try {
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const firebaseAccessTokenCache = new Map();
 const firebaseWebConfigCache = {
     value: null,

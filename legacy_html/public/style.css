@@ -1097,8 +1097,10 @@ body.blog-page-refresh .blog-page-title {
     font-size: clamp(2.6rem, 6.6vw, 6.4rem) !important;
     line-height: 0.96;
     letter-spacing: -0.04em;
-    overflow-wrap: anywhere !important;
-    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    -webkit-hyphens: none;
+    hyphens: none;
     text-wrap: balance;
 }
 
@@ -1733,8 +1735,8 @@ body.blog-page-refresh .blog-post-nav-link strong {
     display: block;
     line-height: 1.45;
     max-width: 100%;
-    overflow-wrap: anywhere;
-    word-break: break-word;
+    overflow-wrap: break-word;
+    word-break: normal;
 }
 
 body.blog-page-refresh .blog-post-nav-link:hover,
@@ -1845,7 +1847,7 @@ body.blog-page-refresh .blog-grid-view i {
 
     body.blog-page-refresh .blog-overview-value {
         font-size: 1rem;
-        overflow-wrap: anywhere;
+        overflow-wrap: break-word;
     }
 
     body.blog-page-refresh .blog-detail-grid {
@@ -1907,8 +1909,10 @@ body.blog-page-refresh .blog-grid-view i {
     }
 
     body.blog-page-refresh .blog-page-title {
-        overflow-wrap: anywhere !important;
-        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        word-break: normal !important;
+        -webkit-hyphens: none;
+        hyphens: none;
         font-size: clamp(1.8rem, 8vw, 2.5rem) !important;
     }
 
@@ -2805,12 +2809,13 @@ body.legal-page-refresh .legal-page-copy {
 body.legal-page-refresh .legal-page-title {
     margin-top: 18px;
     margin-bottom: 18px;
-    max-width: 11ch;
+    max-width: 100%;
     font-size: clamp(2.25rem, 5.6vw, 4.2rem) !important;
     line-height: 0.98;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-    hyphens: auto;
+    overflow-wrap: break-word;
+    word-break: normal;
+    -webkit-hyphens: none;
+    hyphens: none;
     text-wrap: balance;
 }
 
@@ -2932,12 +2937,13 @@ body.legal-page-refresh .legal-page-spotlight h2 {
     z-index: 1;
     margin: 22px 0 18px;
     color: #fff;
-    max-width: 10ch;
+    max-width: 100%;
     font-size: clamp(1.65rem, 3.3vw, 2.5rem);
     line-height: 1.04;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-    hyphens: auto;
+    overflow-wrap: break-word;
+    word-break: normal;
+    -webkit-hyphens: none;
+    hyphens: none;
     text-wrap: balance;
 }
 
@@ -3041,9 +3047,10 @@ body.legal-page-refresh .legal-note-card h2 {
     color: var(--refresh-heading);
     font-size: clamp(1.5rem, 2.6vw, 2.2rem);
     line-height: 1.08;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-    hyphens: auto;
+    overflow-wrap: break-word;
+    word-break: normal;
+    -webkit-hyphens: none;
+    hyphens: none;
     text-wrap: balance;
 }
 
@@ -3388,18 +3395,19 @@ body.legal-page-refresh .legal-note-card .primary-cta {
     box-sizing: border-box;
 }
 
+html,
+body {
+    overflow-x: clip;
+    width: 100%;
+    -webkit-hyphens: manual;
+    hyphens: manual;
+}
+
 body {
     background-color: var(--theme-bg);
     color: var(--clr-common-text);
     font-family: var(--font-primary);
     line-height: 1.5;
-    overflow-x: clip;
-    width: 100%;
-}
-
-html {
-    overflow-x: clip;
-    width: 100%;
 }
 
 h1,
@@ -3412,9 +3420,18 @@ h6 {
     color: var(--clr-base);
     font-weight: 700;
     line-height: 1.2;
-    word-break: break-word;
-    /* Hindrer at lange ord går utenfor boksen */
-    hyphens: auto;
+    overflow-wrap: break-word;
+    word-break: normal;
+    -webkit-hyphens: none;
+    hyphens: none;
+    text-wrap: balance;
+}
+
+p,
+span,
+li,
+a {
+    overflow-wrap: break-word;
 }
 
 a {
@@ -4697,7 +4714,7 @@ img {
     text-align: left;
     vertical-align: top;
     border-bottom: 1px solid rgba(17, 38, 60, 0.1);
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
 }
 
 .blog-table th {
@@ -10684,6 +10701,10 @@ body#home.homepage-refresh .hero-light-showcase::after {
     -webkit-text-fill-color: transparent;
     color: #ff6a1b !important;
     display: inline-block;
+    overflow-wrap: break-word;
+    word-break: normal;
+    -webkit-hyphens: none;
+    hyphens: none;
 }
 
 .hero-light-showcase .hero-sublead-text {
@@ -11160,6 +11181,11 @@ body#home.homepage-refresh .hero-light-showcase::after {
     color: #11263c;
     margin: 16px 0 20px 0;
     letter-spacing: -0.02em;
+    overflow-wrap: break-word;
+    word-break: normal;
+    -webkit-hyphens: none;
+    hyphens: none;
+    text-wrap: balance;
 }
 
 .subpage-lead {
@@ -11593,4 +11619,42 @@ body#home.homepage-refresh .hero-light-showcase::after {
     }
 }
 
+/* Public-site usability improvements */
+.skip-link { position: fixed; top: -100px; left: 16px; z-index: 10000; background: #11263c; color: #fff; padding: 12px 20px; border-radius: 8px; }
+.skip-link:focus { top: 12px; }
+body.homepage-refresh a:focus-visible, body.homepage-refresh button:focus-visible, body.homepage-refresh input:focus-visible { outline: 3px solid #d97706; outline-offset: 4px; }
+.hero-light-showcase .hero-display-title { line-height: 1.08 !important; }
+.pricing-contrast-section .pricing-grid { max-width: 520px !important; grid-template-columns: minmax(0, 1fr) !important; }
+@media (max-width: 600px) {
+ body.homepage-refresh .subpage-title { font-size: clamp(2rem, 8vw, 3rem); overflow-wrap: break-word; }
+ #speed-test-cta .flex > div { min-width: 0 !important; width: 100%; flex-basis: 100% !important; }
+ #speed-test-cta { overflow: hidden; }
+ body.homepage-refresh .hero-btn-primary, body.homepage-refresh .hero-btn-secondary, body.homepage-refresh .menu-trigger, body.homepage-refresh .lang-btn { min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto !important; } body.homepage-refresh *, body.homepage-refresh *::before, body.homepage-refresh *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
 
+/* Use sentence case for the homepage headline, including CMS text. */
+.hero-light-showcase .hero-title-row { text-transform: lowercase; }
+.hero-light-showcase .hero-title-row:first-child::first-letter { text-transform: uppercase; }
+
+/* Service pages share the portfolio typography, colours and project presentation. */
+body.service-details-page-refresh .service-details-layout{grid-template-columns:minmax(0,1fr);max-width:1200px;margin:0 auto}
+body.service-details-page-refresh .service-nav-card{display:none}
+body.service-details-page-refresh article.subpage-card{padding:0;background:transparent;border:0;box-shadow:none;border-radius:0}
+body.service-details-page-refresh .subpage-stat-pills{display:none}
+body.service-details-page-refresh #serviceDetailTag{display:none}
+body.service-details-page-refresh article.subpage-card>div:first-child{max-width:820px;margin:0 auto 48px;text-align:center}
+body.service-details-page-refresh #serviceDetailTitle{font-size:clamp(26px,3vw,38px)!important;line-height:1.25}
+body.service-details-page-refresh #serviceDetailLead{font-size:18px!important;line-height:1.75!important;font-weight:500!important}
+body.service-details-page-refresh #serviceDetailBody{font-size:16px!important;line-height:1.75!important}
+body.service-details-page-refresh #accountingCases{margin:0 0 56px}
+body.service-details-page-refresh #accountingCasesTitle{text-align:center;font-size:28px;margin-bottom:32px}
+body.service-details-page-refresh #accountingCases .deliverables-grid{gap:32px}
+body.service-details-page-refresh #accountingCases .deliverables-grid>a{display:block;padding:24px;background:#fff;border-radius:32px;border:1px solid rgba(17,38,60,.06);box-shadow:0 12px 36px rgba(17,38,60,.04)}
+body.service-details-page-refresh #accountingCases img{display:block;width:100%;aspect-ratio:8/5;object-fit:cover;border-radius:20px!important}
+body.service-details-page-refresh #accountingCases h3{font-size:22px;margin:20px 0 4px}
+body.service-details-page-refresh .case-study-pillars{gap:24px;margin:0 0 40px}
+body.service-details-page-refresh .case-pillar-card{padding:28px;background:#fff;border-radius:24px}
+body.service-details-page-refresh .service-delivery-section{background:rgba(255,255,255,.8)!important;border:1px solid rgba(17,38,60,.08)!important;border-radius:24px!important;padding:32px!important}
+body.service-details-page-refresh .service-delivery-section .deliverable-item{background:transparent;border:0;padding:12px 0}
+@media(max-width:640px){body.service-details-page-refresh #accountingCases .deliverables-grid{grid-template-columns:1fr;gap:24px}body.service-details-page-refresh #accountingCases .deliverables-grid>a{padding:16px;border-radius:24px}body.service-details-page-refresh #accountingCases h3{font-size:20px}body.service-details-page-refresh .service-delivery-section{padding:22px!important}body.service-details-page-refresh #serviceDeliverablesGrid{grid-template-columns:1fr}body.service-details-page-refresh article.subpage-card>div:first-child{text-align:left;margin-bottom:32px}}

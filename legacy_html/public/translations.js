@@ -300,7 +300,7 @@ const translations = {
         },
         contact_page: {
             eyebrow: "Contact",
-            title: "Let's build something that actually works",
+            title: "Let's build something that <span class=\"hero-title-highlight\">actually works</span>",
             lead: "Send a message about web design, SEO, social media or further development. You will get a clear reply with concrete next steps.",
             meta_1_label: "Response time",
             meta_1_value: "Usually within 1 business day",
@@ -954,7 +954,7 @@ const translations = {
         },
         contact_page: {
             eyebrow: "Kontakt",
-            title: "La oss bygge noe som faktisk virker",
+            title: "La oss bygge noe som <span class=\"hero-title-highlight\">faktisk virker</span>",
             lead: "Send en melding om nettside, SEO, SoMe eller videreutvikling. Du får et konkret svar med tydelige neste steg.",
             meta_1_label: "Svartid",
             meta_1_value: "Vanligvis innen 1 virkedag",
