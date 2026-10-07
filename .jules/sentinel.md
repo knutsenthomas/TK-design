@@ -1,0 +1,4 @@
+## 2025-05-18 - 🛡️ Sentinel: [CRITICAL] Fix SSRF in PDF proxy
+**Vulnerability:** The `/api/proxy-pdf` endpoint in `legacy_html/server.js` used a loose validation method (`parsed.hostname.includes('firebasestorage.googleapis.com')`) that allowed SSRF (Server-Side Request Forgery) by loading arbitrary hostnames that merely contained the string (e.g. `http://firebasestorage.googleapis.com.evil.com/file.pdf`). It also did not enforce the HTTPS protocol.
+**Learning:** Proxy endpoints taking a user-controlled URL (`url` query parameter) must strictly validate the hostname rather than checking if it merely includes a substring. `includes()` is not a secure domain validation strategy.
+**Prevention:** Always enforce the `https:` protocol for outgoing proxy requests. Validate hostnames using exact matching (`===`) or strict suffix matching (`.endsWith('.domain.com')`) with a leading dot to ensure malicious subdomains or suffixed domains cannot bypass the check.
