@@ -1,0 +1,4 @@
+## 2024-10-02 - Host Header Injection Auth Bypass
+**Vulnerability:** The `verifyAdminToken` middleware in `legacy_html/server.js` was using `req.hostname` to allow unauthenticated access for local development (`req.hostname === 'localhost'`). An attacker could bypass authentication on public-facing servers by setting the HTTP `Host` header to `localhost`.
+**Learning:** `req.hostname` is derived directly from the client-provided `Host` header (or `X-Forwarded-Host` if trust proxy is configured in a certain way), which is entirely controlled by the client and cannot be trusted for security or access control decisions.
+**Prevention:** Never use `req.hostname` or the `Host` header for authentication, authorization, or access control. When identifying local requests, securely check the actual network connection address via `req.ip` and `req.socket.remoteAddress` against strict loopback IPs (`127.0.0.1`, `::1`, `::ffff:127.0.0.1`).
