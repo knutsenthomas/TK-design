@@ -1,0 +1,4 @@
+## 2024-05-18 - SSRF Vulnerability in proxy-pdf
+**Vulnerability:** The `/api/proxy-pdf` endpoint in `legacy_html/server.js` used a loose validation for the `rawUrl` parameter to restrict domains: `.includes('firebasestorage.googleapis.com')` and `.includes('googleapis.com')`. Also no check of scheme (http/https) was present. This allows for Server-Side Request Forgery (SSRF) because an attacker can pass a URL like `http://example.com/file.pdf?q=googleapis.com` or `http://googleapis.com.evil.com` to bypass the check.
+**Learning:** Checking for allowed domains with `.includes()` in user-supplied URLs is inherently unsafe because it matches anywhere in the hostname or path (if not properly parsed) and ignores subdomains/TLD variations.
+**Prevention:** Always use strict domain matching (`===` or `.endsWith()` with a leading dot or complete domain matching) and restrict URL protocol to `https:` when proxying user-controlled URLs.
