@@ -1,0 +1,4 @@
+## 2024-05-15 - [CRITICAL] Fix missing authentication on admin endpoints
+**Vulnerability:** Several administrative API endpoints (GET, PUT, PATCH, DELETE) such as `/api/debug-env`, `/api/analytics`, `/api/messages`, `/api/unsplash/search`, and `/api/social-planner/*` were missing the `verifyAdminToken` middleware, allowing unauthorized access to sensitive data and functionality.
+**Learning:** Only POST methods were previously using the `verifyAdminToken` middleware consistently. It is a critical pattern in this codebase to remember that ALL methods (GET, POST, PUT, PATCH, DELETE) for administrative endpoints must use `verifyAdminToken`.
+**Prevention:** Ensure that any new administrative API endpoint or modification to an existing one includes the `verifyAdminToken` middleware, regardless of the HTTP method used.
