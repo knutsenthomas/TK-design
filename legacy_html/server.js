@@ -5326,7 +5326,7 @@ async function postPayloadToSocialWebhook(payload = {}, options = {}) {
     if (!webhookUrl) {
         if (allowSimulatedWithoutConfig) {
             return {
-                sent: true,
+                sent: false,
                 simulated: true,
                 code: 'social_webhook_simulated',
                 details: 'Publisert lokalt uten webhook (SOCIAL_WEBHOOK_URL mangler).',
@@ -5385,7 +5385,7 @@ async function postPayloadToSocialWebhook(payload = {}, options = {}) {
 
             if (allowSimulatedOnFailure) {
                 return {
-                    sent: true,
+                    sent: false,
                     simulated: true,
                     code: 'social_webhook_simulated',
                     details: `Publisert lokalt fordi webhook svarte med ${response.status}${hostHint}.`,
@@ -5440,8 +5440,8 @@ async function postPayloadToSocialWebhook(payload = {}, options = {}) {
         );
         const deliveryMeta = extractSocialWebhookDeliveryMeta(parsedPayload);
         return {
-            sent: true,
-            details: acceptedHint || 'Webhook aksepterte publisering.',
+            sent: !!(deliveryMeta.externalPostId || deliveryMeta.externalMediaId),
+            details: (deliveryMeta.externalPostId || deliveryMeta.externalMediaId) ? (acceptedHint || 'Publisering bekreftet av webhook.') : 'Webhook svarte uten bekreftet innleggs-ID. Kontroller kanalen før et nytt forsøk.',
             httpStatus: 200,
             ...deliveryMeta
         };
@@ -5449,7 +5449,7 @@ async function postPayloadToSocialWebhook(payload = {}, options = {}) {
         if (error?.name === 'AbortError') {
             if (allowSimulatedOnFailure) {
                 return {
-                    sent: true,
+                    sent: false,
                     simulated: true,
                     code: 'social_webhook_simulated',
                     details: 'Publisert lokalt fordi webhook fikk timeout.',
@@ -5467,7 +5467,7 @@ async function postPayloadToSocialWebhook(payload = {}, options = {}) {
 
         if (allowSimulatedOnFailure) {
             return {
-                sent: true,
+                sent: false,
                 simulated: true,
                 code: 'social_webhook_simulated',
                 details: `Publisert lokalt fordi webhook feilet: ${error.message || 'Ukjent feil'}.`,
@@ -5487,8 +5487,8 @@ async function postPayloadToSocialWebhook(payload = {}, options = {}) {
 
 // --- Direct Social Media API Integration (Meta Graph API & LinkedIn API) ---
 async function publishToFacebookPageApi({ message, link, imageUrl }) {
-    const pageId = String(process.env.FB_PAGE_ID || '584800868052264').trim();
-    const token = String(process.env.FB_PAGE_ACCESS_TOKEN || 'EAAVx4eTdYBMBSJhgcv9ZCdHIzcQrn0w4TTRM8Ww6Ba48rAhulZC2RmGlZBXW5D9ZBPB13FxfNimkLcLJhtYACMySXcp8q3QWrNtggaZCLmKh786ZChq2UAqFrp9QPKpMQL2lMjtsKb54iIkIYiskuuFOvk91LnL3fC4FRuNYEm0RSZAN82qFbUyzvsFaB1Vq9d7NS7dydmnKorAj1iZA4qGLuyjuuYpbhvGJwckwT93hZATvxfugsRx1ZAwgZDZD').trim();
+    const pageId = String(process.env.FB_PAGE_ID || '').trim();
+    const token = String(process.env.FB_PAGE_ACCESS_TOKEN || '').trim();
 
     if (!pageId || !token) {
         return { ok: false, error: 'FB_PAGE_ID eller FB_PAGE_ACCESS_TOKEN mangler i miljøvariabler.' };
@@ -5499,14 +5499,14 @@ async function publishToFacebookPageApi({ message, link, imageUrl }) {
         let url, body;
 
         if (imageUrl) {
-            url = `https://graph.facebook.com/v19.0/${pageId}/photos`;
+            url = `https://graph.facebook.com/${/^v\d+\.\d+$/.test(process.env.META_GRAPH_API_VERSION || '') ? process.env.META_GRAPH_API_VERSION : 'v25.0'}/${pageId}/photos`;
             body = new URLSearchParams({
                 url: imageUrl,
                 caption: message || '',
                 access_token: token
             });
         } else {
-            url = `https://graph.facebook.com/v19.0/${pageId}/feed`;
+            url = `https://graph.facebook.com/${/^v\d+\.\d+$/.test(process.env.META_GRAPH_API_VERSION || '') ? process.env.META_GRAPH_API_VERSION : 'v25.0'}/${pageId}/feed`;
             body = new URLSearchParams({
                 message: message || '',
                 link: link || '',
@@ -5517,8 +5517,8 @@ async function publishToFacebookPageApi({ message, link, imageUrl }) {
         const response = await fetch(url, { method: 'POST', body });
         const data = await response.json();
 
-        if (data.error) {
-            return { ok: false, error: data.error.message || 'Facebook Graph API feilet.' };
+        if (!response.ok || data.error || !(data.id || data.post_id)) {
+            return { ok: false, error: data.error?.message || 'Facebook Graph API feilet.' };
         }
 
         return { ok: true, id: data.id || data.post_id, url: `https://facebook.com/${data.id || data.post_id}` };
@@ -5543,7 +5543,7 @@ async function publishToInstagramApi({ caption, imageUrl }) {
         const fetch = await getFetch();
 
         // Step 1: Create Container
-        const containerRes = await fetch(`https://graph.facebook.com/v19.0/${igId}/media`, {
+        const containerRes = await fetch(`https://graph.facebook.com/${/^v\d+\.\d+$/.test(process.env.META_GRAPH_API_VERSION || '') ? process.env.META_GRAPH_API_VERSION : 'v25.0'}/${igId}/media`, {
             method: 'POST',
             body: new URLSearchParams({
                 image_url: imageUrl,
@@ -5553,14 +5553,14 @@ async function publishToInstagramApi({ caption, imageUrl }) {
         });
         const containerData = await containerRes.json();
 
-        if (containerData.error) {
-            return { ok: false, error: containerData.error.message || 'Instagram Container API feilet.' };
+        if (!containerRes.ok || containerData.error || !containerData.id) {
+            return { ok: false, error: containerData.error?.message || 'Instagram Container API feilet.' };
         }
 
         const creationId = containerData.id;
 
         // Step 2: Publish Container
-        const publishRes = await fetch(`https://graph.facebook.com/v19.0/${igId}/media_publish`, {
+        const publishRes = await fetch(`https://graph.facebook.com/${/^v\d+\.\d+$/.test(process.env.META_GRAPH_API_VERSION || '') ? process.env.META_GRAPH_API_VERSION : 'v25.0'}/${igId}/media_publish`, {
             method: 'POST',
             body: new URLSearchParams({
                 creation_id: creationId,
@@ -5569,8 +5569,8 @@ async function publishToInstagramApi({ caption, imageUrl }) {
         });
         const publishData = await publishRes.json();
 
-        if (publishData.error) {
-            return { ok: false, error: publishData.error.message || 'Instagram Publish API feilet.' };
+        if (!publishRes.ok || publishData.error || !publishData.id) {
+            return { ok: false, error: publishData.error?.message || 'Instagram Publish API feilet.' };
         }
 
         return { ok: true, id: publishData.id };
@@ -5591,29 +5591,21 @@ async function publishToLinkedInCompanyApi({ text, title, url }) {
         const fetch = await getFetch();
         const payload = {
             author: `urn:li:organization:${orgId}`,
+            commentary: text || '',
+            visibility: 'PUBLIC',
+            distribution: { feedDistribution: 'MAIN_FEED', targetEntities: [], thirdPartyDistributionChannels: [] },
             lifecycleState: 'PUBLISHED',
-            specificContent: {
-                'com.linkedin.ugc.ShareContent': {
-                    shareCommentary: { text: text || '' },
-                    shareMediaCategory: url ? 'ARTICLE' : 'NONE',
-                    media: url ? [{
-                        status: 'READY',
-                        originalUrl: url,
-                        title: { text: title || 'TK-design' }
-                    }] : []
-                }
-            },
-            visibility: {
-                'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC'
-            }
+            isReshareDisabledByAuthor: false,
+            ...(url ? { content: { article: { source: url, title: title || 'TK-design' } } } : {})
         };
 
-        const response = await fetch('https://api.linkedin.com/v2/ugcPosts', {
+        const response = await fetch('https://api.linkedin.com/rest/posts', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
-                'X-Restli-Protocol-Version': '2.0.0'
+                'X-Restli-Protocol-Version': '2.0.0',
+                'LinkedIn-Version': /^\d{6}$/.test(process.env.LINKEDIN_API_VERSION || '') ? process.env.LINKEDIN_API_VERSION : '202609'
             },
             body: JSON.stringify(payload)
         });
@@ -5624,7 +5616,9 @@ async function publishToLinkedInCompanyApi({ text, title, url }) {
         }
 
         const data = await response.json().catch(() => ({}));
-        return { ok: true, id: data.id };
+        const id = data.id || response.headers?.get?.('x-restli-id');
+        if (!id) return { ok: false, error: 'LinkedIn bekreftet ikke en innleggs-ID.' };
+        return { ok: true, id };
     } catch (err) {
         return { ok: false, error: err.message };
     }
@@ -5874,43 +5868,11 @@ async function publishSocialPlannerEntryById(entryId, req, options = {}) {
     const publishLog = Array.isArray(entry.publishLog) ? entry.publishLog.slice(-50) : [];
     const allowLocalPublishFallback = parseBooleanFlag(
         process.env.SOCIAL_PLANNER_ALLOW_LOCAL_PUBLISH_FALLBACK,
-        true
+        false
     );
 
     if (targetAccounts.length === 0) {
-        if (allowLocalPublishFallback) {
-            entry.status = 'published';
-            entry.publishedAt = new Date().toISOString();
-            entry.lastError = '';
-            entry.updatedAt = new Date().toISOString();
-            publishLog.push({
-                at: new Date().toISOString(),
-                accountId: '',
-                platform: 'custom',
-                status: 'published',
-                details: 'Publisert lokalt uten koblet konto.'
-            });
-            entry.publishLog = publishLog.slice(-50);
-            entries[entryIndex] = normalizeSocialPlannerEntry(
-                entry,
-                new Set(state.workspaces.map((w) => w.id)),
-                new Set(accounts.map((a) => a.id))
-            );
-            await saveSocialPlannerState(state);
-            return {
-                ok: true,
-                httpStatus: 200,
-                entry: entries[entryIndex],
-                details: 'Publisert lokalt uten koblet konto.',
-                delivery: [{
-                    accountId: '',
-                    platform: 'custom',
-                    sent: true,
-                    code: 'local_publish_without_account',
-                    details: 'Publisert lokalt uten koblet konto.'
-                }]
-            };
-        }
+
 
         entry.status = 'failed';
         entry.lastError = 'Ingen aktive kontoer er valgt for publisering.';
@@ -6020,7 +5982,7 @@ async function publishSocialPlannerEntryById(entryId, req, options = {}) {
         // Oppdater status for hver enkelt konto basert på det felles resultatet
         for (const account of activeTargetAccounts) {
             const platform = normalizePlannerPlatform(account.platform || '');
-            if (webhookResult.sent) {
+            if (webhookResult.sent && !webhookResult.simulated && (webhookResult.externalPostId || webhookResult.externalMediaId)) {
                 successCount += 1;
                 const successDetails = webhookResult.simulated
                     ? (webhookResult.details || 'Publisert lokalt (simulert).')
@@ -7429,6 +7391,15 @@ app.delete('/api/social-planner/entries/:entryId', async (req, res) => {
     }
 });
 
+require('./js/marketing-agent').installMarketingAgentRoutes(app, {
+    getAdminInstance, hasFirebaseServerCredentials,
+    publishers: {
+        facebook: input => publishToFacebookPageApi({ message: input.imageUrl && input.link && !input.text.includes(input.link) ? input.text + '\n\n' + input.link : input.text, link: input.link, imageUrl: input.imageUrl }),
+        instagram: input => publishToInstagramApi({ caption: input.text, imageUrl: input.imageUrl }),
+        linkedin: input => publishToLinkedInCompanyApi({ text: input.text, title: input.title, url: input.link })
+    }
+});
+
 app.post('/api/social/publish-direct', verifyAdminToken, async (req, res) => {
     try {
         const { title, text, link, imageUrl, targets = ['facebook', 'instagram', 'linkedin'] } = req.body || {};
@@ -8101,3 +8072,4 @@ if (require.main === module) {
 
 module.exports = app;
 module.exports.api = functions.https.onRequest(app);
+
