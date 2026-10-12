@@ -602,19 +602,14 @@ app.post('/api/pagespeed', pagespeedLimiter, async (req, res) => {
 
 function getFirebaseWebConfig() {
     const projectId = process.env.TK_FIREBASE_PROJECT_ID || 'tk-design-f43f6';
-    const defaultWebConfig = {
-        apiKey: 'AIzaSyDLYgqo2E1UiHoydEB6-WfFc119HES2U5c',
-        messagingSenderId: '729667300921',
-        appId: '1:729667300921:web:5061be8d41f10707a727e8'
-    };
 
     return {
-        apiKey: process.env.TK_FIREBASE_WEB_API_KEY || defaultWebConfig.apiKey,
+        apiKey: process.env.TK_FIREBASE_WEB_API_KEY || '',
         authDomain: process.env.TK_FIREBASE_AUTH_DOMAIN || `${projectId}.firebaseapp.com`,
         projectId,
         storageBucket: process.env.TK_FIREBASE_STORAGE_BUCKET || `${projectId}.firebasestorage.app`,
-        messagingSenderId: process.env.TK_FIREBASE_MESSAGING_SENDER_ID || defaultWebConfig.messagingSenderId,
-        appId: process.env.TK_FIREBASE_APP_ID || defaultWebConfig.appId
+        messagingSenderId: process.env.TK_FIREBASE_MESSAGING_SENDER_ID || '',
+        appId: process.env.TK_FIREBASE_APP_ID || ''
     };
 }
 
