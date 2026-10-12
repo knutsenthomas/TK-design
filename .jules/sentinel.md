@@ -1,0 +1,4 @@
+## 2024-09-09 - Fix SSRF Vulnerability in Proxy Endpoint
+**Vulnerability:** The `/api/proxy-pdf` endpoint in `legacy_html/server.js` used a loose validation for external domains via `hostname.includes('googleapis.com')`. This left the server vulnerable to Server-Side Request Forgery (SSRF) as it would allow arbitrary domains that contain the string (e.g. `evil-googleapis.com`). Additionally, the protocol wasn't restricted to HTTPS.
+**Learning:** Using `.includes()` on URLs or hostnames is insufficient and highly dangerous, since it matches substrings instead of strict domains or exact suffixes, allowing SSRF bypasses.
+**Prevention:** Always validate protocols strictly (e.g., `https:` only) and use exact domain matching (e.g., `hostname === 'firebasestorage.googleapis.com'`) or strict suffix matching (`hostname.endsWith('.googleapis.com')`) for validation.
