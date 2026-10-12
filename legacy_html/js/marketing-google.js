@@ -16,7 +16,16 @@ async function googleJson(fetcher, url, options = {}) {
     // All callers use fixed Google API origins. Never follow redirects with tokens.
     const response = await fetcher(url, { ...options, redirect: 'manual', signal: AbortSignal.timeout(10000) });
     if (!response.ok) {
-        const error = Error(response.status === 401 || response.status === 403 ? 'access_denied' : response.status === 429 ? 'rate_limited' : 'google_unavailable');
+        let apiDisabled = false;
+        if (response.status === 403) {
+            // Read only the documented reason; never expose Google's raw error
+            // body, request options, key or assertion in diagnostics.
+            try {
+                const data = await response.json();
+                apiDisabled = data.error?.details?.some(d => d.reason === 'SERVICE_DISABLED') || data.error?.errors?.some(d => d.reason === 'accessNotConfigured') || false;
+            } catch {}
+        }
+        const error = Error(apiDisabled ? 'api_disabled' : response.status === 401 || response.status === 403 ? 'access_denied' : response.status === 429 ? 'rate_limited' : 'google_unavailable');
         throw error;
     }
     return response.json();
@@ -84,11 +93,11 @@ async function readGoogleSources({ env = process.env, fetcher = globalThis.fetch
     let credentials;
     try { credentials = credentialsFromEnv(env); }
     catch { return { checkedAt: new Date().toISOString(), analytics: { status: 'unconfigured', message: 'Google-tjenestekontoen mangler eller er ugyldig i serveroppsettet.' }, searchConsole: { status: 'unconfigured', message: 'Google-tjenestekontoen mangler eller er ugyldig i serveroppsettet.' } }; }
-    const safeRead = async action => {
+    const safeRead = async (action, apiName) => {
         try { return await action(); }
-        catch (e) { return { status: 'error', message: e.message === 'access_denied' ? 'Google nektet tilgang. Kontroller lesetilgang og at API-et er aktivert.' : e.message === 'rate_limited' ? 'Google begrenser forespørslene. Prøv igjen senere.' : 'Google-data kunne ikke hentes. Prøv igjen eller kontroller serveroppsettet.' }; }
+        catch (e) { return { status: 'error', code: ['api_disabled', 'access_denied', 'rate_limited'].includes(e.message) ? e.message : 'google_unavailable', message: e.message === 'api_disabled' ? `Aktiver ${apiName} i Google Cloud-prosjektet til tjenestekontoen, og hent data på nytt.` : e.message === 'access_denied' ? 'Google nektet tilgang. Kontroller lesetilgang og at API-et er aktivert.' : e.message === 'rate_limited' ? 'Google begrenser forespørslene. Prøv igjen senere.' : 'Google-data kunne ikke hentes. Prøv igjen eller kontroller serveroppsettet.' }; }
     };
-    const [ga, sc] = await Promise.all([safeRead(() => analytics(env, credentials, fetcher)), safeRead(() => searchConsole(env, credentials, fetcher))]);
+    const [ga, sc] = await Promise.all([safeRead(() => analytics(env, credentials, fetcher), 'Google Analytics Data API'), safeRead(() => searchConsole(env, credentials, fetcher), 'Google Search Console API')]);
     return { checkedAt: new Date().toISOString(), serviceAccountEmail: credentials.email, analytics: ga, searchConsole: sc };
 }
 

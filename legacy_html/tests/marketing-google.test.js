@@ -6,7 +6,7 @@ const { readGoogleSources } = require('../js/marketing-google');
 const { installMarketingAgentRoutes } = require('../js/marketing-agent');
 const key = crypto.generateKeyPairSync('rsa', { modulusLength: 2048 }).privateKey.export({ type: 'pkcs8', format: 'pem' });
 const env = { GOOGLE_SERVICE_ACCOUNT_JSON: JSON.stringify({ client_email: 'unit@test.iam.gserviceaccount.com', private_key: key }), GA_PROPERTY_ID: '123' };
-function fixture({ deniedSearch = false, noRows = false } = {}) {
+function fixture({ deniedSearch = false, disabledSearch = false, noRows = false } = {}) {
  const calls = [];
  const fetcher = async (url, options) => {
   calls.push({ url, options });
@@ -19,6 +19,7 @@ function fixture({ deniedSearch = false, noRows = false } = {}) {
    assert.equal(payload.sub, undefined); // Never impersonate a mailbox user.
    data = { access_token: 'unit-only-token' };
   } else if (url.endsWith('/sites')) {
+   if (disabledSearch) return { ok: false, status: 403, json: async () => ({ error: { message: 'Provider raw content must never escape', details: [{ reason: 'SERVICE_DISABLED' }] } }) };
    if (deniedSearch) return { ok: false, status: 403 };
    data = { siteEntry: [{ siteUrl: 'sc-domain:another-site.no', permissionLevel: 'siteOwner' }, { siteUrl: 'sc-domain:tk-design.no', permissionLevel: 'siteRestrictedUser' }] };
   } else if (url.includes('searchAnalytics')) {
@@ -55,6 +56,11 @@ test('Search Console denial retains confirmed Analytics and does not manufacture
 test('confirmed empty Google reports are distinct from denied or unconfigured reports', async () => {
  const f = fixture({ noRows: true }); const result = await readGoogleSources({ env, fetcher: f.fetcher });
  assert.equal(result.analytics.status, 'active'); assert.equal(result.analytics.data.sessions, 0); assert.deepEqual(result.searchConsole.data.queries, []);
+});
+test('a disabled API produces a precise activation step without exposing the Google error body', async () => {
+ const f = fixture({ disabledSearch: true }); const result = await readGoogleSources({ env, fetcher: f.fetcher });
+ assert.equal(result.analytics.status, 'active'); assert.equal(result.searchConsole.code, 'api_disabled');
+ assert.ok(result.searchConsole.message.includes('Google Search Console API')); assert.ok(!JSON.stringify(result).includes('Provider raw content'));
 });
 test('a foreign Search Console property is refused before accessing its Google API', async () => {
  const f = fixture(); const result = await readGoogleSources({ env: { ...env, GSC_SITE_URL: 'https://other.no/' }, fetcher: f.fetcher });
