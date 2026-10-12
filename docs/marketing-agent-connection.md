@@ -57,3 +57,19 @@ Verifisering: `node --test legacy_html/tests/marketing-agent.test.js legacy_html
 ## E-postgrense
 
 Markedsagenten kan forberede utkast og åpne dem via `mailto:` i brukerens e-postprogram. Mottakeren velges fra kunder med lagret e-postadresse; Ikke kontakt, Avsluttet og eksisterende Kudos/Mandal-kunder utelates. Dette sender ingen e-post og gir ingen innbokstilgang. TK-designs eksisterende Gmail-kobling i ChatGPT er separat. Direkte Sites/Gmail-integrasjon ble ikke aktivert fordi Sites-plugin-eligibility ikke var tilgjengelig i verktøyene; ingen ukjente connector-ID-er ble deklarert.
+
+## Automatisk overføring til TK-design-hub
+
+Hubben er `https://hub.tk-design.no/admin`, repository `knutsenthomas/HUB-TK-design`, Firebase-prosjekt `hub-tk-design`. Koblingen bruker bare `users/thomas@tk-design.no/data/hub_state` i standarddatabasen. Den bruker TK-designs eksisterende servercredential og krever eksplisitt datatilgang til dette prosjektet. Nettleseren mottar ingen servernøkkel. Google/Gmail-innloggingen i hubben flyttes ikke.
+
+`GET /api/marketing-agent/hub` kontrollerer tilgang og returnerer en begrenset kundeliste. `POST` med `leads` overfører opp til 100 kandidater. Begge krever samme `MARKETING_AGENT_SECRET`. Målprosjekt, dokument og konto er faste på serveren. Hub-dokumentet må allerede eksistere; koblingen oppretter ikke et nytt eller alternativt kontoarkiv.
+
+Kandidater legges automatisk inn som Lead med kilde/notater, tomt ubekreftet kontaktpersonfelt og ingen kjøpsinteressepåstand. Ikke kontakt, Avsluttet, Vunnet, Kudos Regnskap og Mandal Regnskapskontor utelates. Navn, e-post, nettadresse og stabile kilde-ID-er kontrolleres mot eksisterende kunder. Eksisterende kunder oppdateres ikke av en ny kandidat.
+
+Firestore-oppdateringen bruker `currentDocument.updateTime` og maskerer bare `clients` og `marketingAgentReceipts`. Uendrede klientverdier beholdes i sin originale Firestore-representasjon; andre felt i hubben endres ikke. Ved samtidighetskonflikt leses dokumentet på nytt, maksimalt tre forsøk. Overføring meldes bare som bekreftet etter GET av lagringen. Varige kvitteringer gjør gjentatt synkronisering idempotent.
+
+Markedsagenten synkroniserer etter lagret kundejakt og lagring av kunder. Feil hindrer ikke lokal lagring; siste kundesnapshot og ventende status beholdes. Neste lagring/kundejakt prøver på nytt. Status og manuell ny kontroll finnes i Agent-fanen. Hub-kunder inngår også i kundejaktens eksklusjonsliste. Ingen e-post eller innlegg sendes av overføringen.
+
+Hub-frontenden beholder kvitteringsfelt og nylig importerte kandidater som en gammel nettleservisning ikke har lastet ennå, ved vanlig lagring. Begge sidene har menylenker til hverandre; hubbens innboks åpnes i sin egen innloggede visning.
+
+Verifisering: `node --test legacy_html/tests/marketing-hub.test.js legacy_html/tests/marketing-agent.test.js legacy_html/tests/marketing-google.test.js`. IAM-tilgang og produksjonsoverføring må bekreftes separat med den publiserte koblingen.
