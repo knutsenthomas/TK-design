@@ -58,6 +58,15 @@ function installMarketingAgentRoutes(app, dependencies) {
         if (!hasFirebaseServerCredentials()) throw Error('storage_unavailable');
         return getAdminInstance().firestore().collection('marketingAgentRuns');
     }
+    const images = require('./marketing-images').createImageLibrary();
+    app.get('/api/marketing-agent/images', authenticate, async (req, res) => {
+        try { res.json(await images.search(req.query.query, Number(req.query.page || 1))); }
+        catch(e) { res.status(503).json({ success:false, error:e.message }); }
+    });
+    app.post('/api/marketing-agent/images', authenticate, async (req, res) => {
+        try { res.json(await images.select(req.body?.id)); }
+        catch(e) { res.status(503).json({ success:false, error:e.message }); }
+    });
     const hub = require('./marketing-hub').createHubConnection({ getAdminInstance });
     app.get('/api/marketing-agent/hub', authenticate, async (req, res) => res.json(await hub.read()));
     app.post('/api/marketing-agent/hub', authenticate, async (req, res) => res.json(await hub.sync(req.body?.leads)));
