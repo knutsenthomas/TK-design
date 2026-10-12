@@ -59,6 +59,7 @@ function installMarketingAgentRoutes(app, dependencies) {
         return getAdminInstance().firestore().collection('marketingAgentRuns');
     }
     require('./marketing-generated-images').installGeneratedImageRoutes(app, { authenticate, getAdminInstance });
+    require('./marketing-blog').install(app, { authenticate, getAdminInstance, hasFirebaseServerCredentials });
     const images = require('./marketing-images').createImageLibrary();
     app.get('/api/marketing-agent/images', authenticate, async (req, res) => {
         try { res.json(await images.search(req.query.query, Number(req.query.page || 1))); }
