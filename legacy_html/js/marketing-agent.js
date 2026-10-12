@@ -58,6 +58,10 @@ function installMarketingAgentRoutes(app, dependencies) {
         if (!hasFirebaseServerCredentials()) throw Error('storage_unavailable');
         return getAdminInstance().firestore().collection('marketingAgentRuns');
     }
+    app.get('/api/marketing-agent/google', authenticate, async (req, res) => {
+        try { return res.json({ success: true, ...await require('./marketing-google').readGoogleSources() }); }
+        catch { return res.status(503).json({ success: false, error: 'Google-data er utilgjengelige. Prøv igjen.' }); }
+    });
     app.get('/api/marketing-agent', authenticate, async (req, res) => {
         if (req.query.requestId) {
             if (typeof req.query.requestId !== 'string' || !idPattern.test(req.query.requestId)) return res.status(400).json({ success: false, error: 'Ugyldig kjørings-ID.' });

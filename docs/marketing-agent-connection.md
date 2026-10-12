@@ -43,3 +43,17 @@ LinkedIn støtter tekst/lenke i denne versjonen; bildepublisering gjelder Facebo
 Testene dekker autentisering, input, atomiske duplikatkrav, per-kanal-resultat, manglende lagring, provider-ID-kontroller og at simulering ikke blir publiseringssuksess. Ingen ekte kontonøkler brukes i testene.
 
 Vercel-forbindelsen avviste tilgangen til TK-designs team under utviklingen. Runtime-innstillinger, gammel nøkkels tilbakekalling og levende kontotilgang må derfor bekreftes før publisering aktiveres.
+
+## Google-rapporter i Markedsagent
+
+Den private agenten leser `GET /api/marketing-agent/google` med den samme serverhemmeligheten. Endepunktet gjenbruker `GOOGLE_SERVICE_ACCOUNT_JSON` og `GA_PROPERTY_ID` fra TK-designs Vercel-oppsett. Det oppretter kortvarige Google-token i minnet med kun `analytics.readonly` og `webmasters.readonly`, uten Gmail eller brukerimpersonering. Ingen ekstra npm-avhengigheter.
+
+Gi den eksisterende tjenestekontoen rollen Leser i riktig GA4-egenskap og begrenset lesetilgang i Search Console. Aktiver Google Analytics Data API og Google Search Console API i Google Cloud-prosjektet. Agenten finner bare eksisterende Search Console-egenskaper for `tk-design.no`; ingen nye egenskaper opprettes. Ved flere egenskaper velges domeneegenskapen først. Valgfri `GSC_SITE_URL` kan velge `sc-domain:tk-design.no`, `https://www.tk-design.no/` eller `https://tk-design.no/`. Ingen andre domener godtas.
+
+Analytics filtreres til bare `tk-design.no` og `www.tk-design.no`. Begge kildene bruker 28 dager; Analytics til og med i går, Search Console til og med tre dager tilbake og kun ferdigbehandlede data. Kildene kan feile uavhengig. Søkeord og sider viser høyst åtte rader, og søkeordlisten er ikke et komplett uttrekk. Bare bekreftet Google-svar gir status Aktiv.
+
+Verifisering: `node --test legacy_html/tests/marketing-agent.test.js legacy_html/tests/marketing-google.test.js`. Tester bruker genererte engangsnøkler og fiktive svar, ikke produksjonsdata.
+
+## E-postgrense
+
+Markedsagenten kan forberede utkast og åpne dem via `mailto:` i brukerens e-postprogram. Mottakeren velges fra kunder med lagret e-postadresse; Ikke kontakt, Avsluttet og eksisterende Kudos/Mandal-kunder utelates. Dette sender ingen e-post og gir ingen innbokstilgang. TK-designs eksisterende Gmail-kobling i ChatGPT er separat. Direkte Sites/Gmail-integrasjon ble ikke aktivert fordi Sites-plugin-eligibility ikke var tilgjengelig i verktøyene; ingen ukjente connector-ID-er ble deklarert.
