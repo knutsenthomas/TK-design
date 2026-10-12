@@ -3125,7 +3125,7 @@ app.get('/api/analytics', async (req, res) => {
     }
 });
 
-app.get('/api/messages', async (req, res) => {
+app.get('/api/messages', verifyAdminToken, async (req, res) => {
     try {
         const { projectId, databaseId, collection } = getFirebaseConfig();
         const accessToken = await getFirebaseAccessToken();
@@ -3179,7 +3179,7 @@ app.get('/api/messages', async (req, res) => {
     }
 });
 
-app.patch('/api/messages/:id', async (req, res) => {
+app.patch('/api/messages/:id', verifyAdminToken, async (req, res) => {
     try {
         const { id } = req.params;
         const updateData = req.body;
@@ -3216,7 +3216,7 @@ app.patch('/api/messages/:id', async (req, res) => {
     }
 });
 
-app.delete('/api/messages/:id', async (req, res) => {
+app.delete('/api/messages/:id', verifyAdminToken, async (req, res) => {
     try {
         const { id } = req.params;
         const { projectId, databaseId, collection } = getFirebaseConfig();
