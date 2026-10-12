@@ -1,0 +1,7 @@
+const test=require('node:test'),assert=require('node:assert/strict');
+const {createGeneratedImageStore}=require('../js/marketing-generated-images');
+function fixture(){const docs=new Map();let creates=0;const store=createGeneratedImageStore({getAdminInstance:()=>({firestore:()=>({collection:()=>({doc:id=>({create:async data=>{creates++;if(docs.has(id))throw {code:6};docs.set(id,data);},get:async()=>({exists:docs.has(id),data:()=>docs.get(id)})})})})})});return {store,creates:()=>creates};}
+const id='12345678-1234-4234-8234-123456789012',base64=Buffer.from([255,216,255,0,1,2]).toString('base64');
+test('public read accepts only an opaque image ID and exposes image bytes',async()=>{const f=fixture();assert.equal(await f.store.read('../anything'),null);await f.store.save({id,base64});assert.deepEqual(await f.store.read(id),Buffer.from(base64,'base64'));});
+test('a retry confirms the same image without replacing it',async()=>{const f=fixture();const first=await f.store.save({id,base64});assert.deepEqual(await f.store.save({id,base64}),first);await assert.rejects(f.store.save({id,base64:Buffer.from([255,216,255,9]).toString('base64')}),/allerede brukt/);});
+test('invalid or oversized images cannot write to Firestore',async()=>{const f=fixture();await assert.rejects(f.store.save({id,base64:'not-an-image'}));await assert.rejects(f.store.save({id,base64:'a'.repeat(750001)}));assert.equal(f.creates(),0);});

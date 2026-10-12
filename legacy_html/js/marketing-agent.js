@@ -58,6 +58,7 @@ function installMarketingAgentRoutes(app, dependencies) {
         if (!hasFirebaseServerCredentials()) throw Error('storage_unavailable');
         return getAdminInstance().firestore().collection('marketingAgentRuns');
     }
+    require('./marketing-generated-images').installGeneratedImageRoutes(app, { authenticate, getAdminInstance });
     const images = require('./marketing-images').createImageLibrary();
     app.get('/api/marketing-agent/images', authenticate, async (req, res) => {
         try { res.json(await images.search(req.query.query, Number(req.query.page || 1))); }
