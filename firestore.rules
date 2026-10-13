@@ -1,35 +1,27 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Funksjon for å sjekke om brukeren er pålogget
-    function isSignedIn() {
-      return request.auth != null;
+    function isAdministrator() {
+      return request.auth != null
+        && request.auth.token.get(['firebase', 'sign_in_provider'], '') != 'anonymous'
+        && (request.auth.token.get('admin', false) == true
+          || (request.auth.token.get('email_verified', false) == true
+            && request.auth.token.get('email', '').lower() in ['thomas@tk-design.no', 'knutsenthomas@gmail.com']));
     }
-
-    // Regler for adminProfiles samlingen (brukerprofiler)
-    // Tillater brukere å lese og skrive sin egen profil
     match /adminProfiles/{userId} {
-      allow read, write: if isSignedIn() && request.auth.uid == userId;
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
-
     match /graphicDocs/{docId} {
       allow read: if true;
-      allow write: if isSignedIn();
+      allow write: if isAdministrator();
     }
-
-    // Standard fallback-regel (valgfritt)
-    // Siden backend API-et kjører med admin-rettigheter, trenger vi ikke 
-    // åpne opp andre samlinger for klientskriving her.
     match /posts/{postId} {
       allow read: if true;
-      allow write: if isSignedIn();
+      allow write: if isAdministrator();
     }
-
+    // Private inbox, scheduler state and administrative documents are server-only.
     match /{document=**} {
-      allow read: if true;
-      allow write: if false;
+      allow read, write: if isAdministrator();
     }
   }
 }

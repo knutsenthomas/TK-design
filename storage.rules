@@ -1,39 +1,35 @@
 rules_version = '2';
-
 service firebase.storage {
   match /b/{bucket}/o {
-    function isSignedIn() {
-      return request.auth != null;
+    function isAdministrator() {
+      return request.auth != null
+        && request.auth.token.get(['firebase', 'sign_in_provider'], '') != 'anonymous'
+        && (request.auth.token.get('admin', false) == true
+          || (request.auth.token.get('email_verified', false) == true
+            && request.auth.token.get('email', '').lower() in ['thomas@tk-design.no', 'knutsenthomas@gmail.com']));
     }
-
     function isImageUpload() {
       return request.resource != null
         && request.resource.size < 10 * 1024 * 1024
         && request.resource.contentType != null
         && request.resource.contentType.matches('image/.*');
     }
-
-    // Regler for mediebibliotek og bloggbilder (uploads/)
     match /uploads/{allPaths=**} {
       allow read: if true;
-      allow write: if isSignedIn();
+      allow write: if isAdministrator();
     }
-
-    // Regler for profilbilder og avatarer (avatars/ og images/)
     match /avatars/{allPaths=**} {
       allow read: if true;
-      allow write: if isSignedIn() && isImageUpload();
+      allow write: if isAdministrator() && isImageUpload();
     }
-
     match /images/{allPaths=**} {
       allow read: if true;
-      allow write: if isSignedIn() && isImageUpload();
+      allow write: if isAdministrator() && isImageUpload();
     }
-
-    // Standard fallback-regel
+    // Existing portfolio/media downloads remain public; writes require an admin.
     match /{allPaths=**} {
       allow read: if true;
-      allow write: if isSignedIn();
+      allow write: if isAdministrator();
     }
   }
 }

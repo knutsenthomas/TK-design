@@ -1,32 +1,24 @@
-// --- Fetch Interceptor for Firebase Auth ---
+// Attach the Firebase token only to this admin panel's own API origin.
 (function() {
     const originalFetch = window.fetch;
     window.fetch = async function(resource, options = {}) {
-        const urlStr = typeof resource === 'string' ? resource : (resource?.url || '');
-        const isApiRequest = urlStr.includes('/api/') || urlStr.startsWith('/api/');
-
-        if (isApiRequest) {
+        const raw = typeof resource === 'string' ? resource : resource instanceof URL ? resource.href : resource?.url;
+        let isApiRequest = false;
+        try {
+            const target = new URL(raw, window.location.href);
+            const backend = new URL(getAdminApiUrl(), window.location.href);
+            isApiRequest = target.origin === backend.origin && target.pathname.startsWith('/api/');
+        } catch {}
+        if (isApiRequest && window.firebaseAuth?.currentUser) {
             try {
-                if (window.firebaseAuth && window.firebaseAuth.currentUser) {
-                    const token = await window.firebaseAuth.currentUser.getIdToken();
-                    if (token) {
-                        options.headers = options.headers || {};
-                        if (options.headers instanceof Headers) {
-                            options.headers.set('Authorization', `Bearer ${token}`);
-                        } else if (Array.isArray(options.headers)) {
-                            const authIdx = options.headers.findIndex(h => h[0]?.toLowerCase() === 'authorization');
-                            if (authIdx !== -1) {
-                                options.headers[authIdx] = ['Authorization', `Bearer ${token}`];
-                            } else {
-                                options.headers.push(['Authorization', `Bearer ${token}`]);
-                            }
-                        } else {
-                            options.headers['Authorization'] = `Bearer ${token}`;
-                        }
-                    }
+                const token = await window.firebaseAuth.currentUser.getIdToken();
+                if (token) {
+                    const headers = new Headers(options.headers || (resource instanceof Request ? resource.headers : undefined));
+                    headers.set('Authorization', 'Bearer ' + token);
+                    options = { ...options, headers };
                 }
             } catch (error) {
-                console.error('Error attaching auth token to fetch request:', error);
+                console.error('Could not attach administrator token:', error.name);
             }
         }
         return originalFetch(resource, options);
@@ -9501,3 +9493,4 @@ async function saveUserProfile() {
         saveBtn.disabled = false;
     }
 }
+

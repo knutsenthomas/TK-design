@@ -272,40 +272,18 @@ function getAdminInstance() {
     return adminInstance;
 }
 
+const adminSecurity = require('./js/admin-security');
+const adminGuard = adminSecurity.createAdminGuard({ getAdminInstance, hasFirebaseServerCredentials });
 async function verifyAdminToken(req, res, next) {
-    const authHeader = req.headers.authorization || '';
-    const adminSecretHeader = req.headers['x-admin-secret'] || req.headers['x-tk-admin-secret'] || '';
-    const expectedSecret = process.env.ADMIN_SECRET || process.env.TK_ADMIN_SECRET || '';
-
-    if (expectedSecret && adminSecretHeader === expectedSecret) {
-        return next();
-    }
-
-    if (authHeader.startsWith('Bearer ')) {
-        const idToken = authHeader.split('Bearer ')[1].trim();
-        if (hasFirebaseServerCredentials()) {
-            try {
-                const decodedToken = await getAdminInstance().auth().verifyIdToken(idToken);
-                req.user = decodedToken;
-                return next();
-            } catch (error) {
-                console.error('[verifyAdminToken] Verification error:', error.message, error.stack);
-                return res.status(401).json({ success: false, error: 'Ugyldig eller utløpt autentiseringstoken.' });
-            }
-        } else if (expectedSecret && idToken === expectedSecret) {
-            return next();
-        }
-    }
-
-    if (!isVercelRuntime() && (req.hostname === 'localhost' || req.hostname === '127.0.0.1')) {
-        return next();
-    }
-
-    return res.status(401).json({
-        success: false,
-        error: 'Adgang nektet. Autentisering er påkrevd for denne operasjonen.'
-    });
+    return adminGuard(req, res, next);
 }
+
+// One shared boundary protects every method, including future sibling routes.
+app.use(['/api/debug-env', '/api/analytics', '/api/messages', '/api/unsplash/search', '/api/social-planner', '/api/social/autopost'], verifyAdminToken);
+app.use((req, res, next) => {
+    if (adminSecurity.privatePlannerFile(req.path)) return res.status(403).send('Denne filen er ikke offentlig.');
+    next();
+});
 
 async function getFetch() {
     if (typeof globalThis.fetch === 'function') {
@@ -4817,33 +4795,9 @@ app.post('/api/admin/storage/upload', verifyAdminToken, adminStorageUploadMiddle
     }
 });
 
-app.get('/api/proxy-pdf', (req, res) => {
-    try {
-        const rawUrl = req.query.url;
-        if (!rawUrl || typeof rawUrl !== 'string') {
-            return res.status(400).send('Missing url parameter');
-        }
-
-        const parsed = new URL(rawUrl);
-        if (!parsed.hostname.includes('firebasestorage.googleapis.com') && !parsed.hostname.includes('googleapis.com')) {
-            return res.status(403).send('Invalid domain');
-        }
-
-        const https = require('https');
-        https.get(rawUrl, (remoteRes) => {
-            res.setHeader('Access-Control-Allow-Origin', '*');
-            res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-            res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Cache-Control', 'public, max-age=86400');
-            remoteRes.pipe(res);
-        }).on('error', (err) => {
-            console.error('Proxy PDF error:', err);
-            res.status(500).send('Failed to fetch PDF');
-        });
-    } catch (e) {
-        res.status(500).send(e.message);
-    }
-});
+app.get('/api/proxy-pdf', require('./js/pdf-proxy').createPdfProxy({
+    getBucket: () => getFirebaseWebConfig().storageBucket
+}));
 
 function getSiteBaseUrl(req) {
     const publicHost = String(req.get('host') || '').toLowerCase().split(':')[0];
