@@ -1,0 +1,4 @@
+## 2024-05-18 - SSRF vulnerability in `/api/proxy-pdf` endpoint
+**Vulnerability:** The `/api/proxy-pdf` endpoint allowed any URL to be fetched and returned as long as it contained `firebasestorage.googleapis.com` or `googleapis.com` anywhere in the hostname (e.g., `https://attacker-googleapis.com.example.com`). It also allowed non-HTTPS protocols (like `http:`). This could be exploited to bypass domain restrictions and potentially fetch internal resources or leak credentials to attacker-controlled servers.
+**Learning:** The URL validation used `.includes()` instead of strict domain matching (exact match or `.endsWith()` for subdomains), and it did not check the protocol, allowing for SSRF.
+**Prevention:** Always enforce the `https:` protocol and use strict, trailing match checks (`.endsWith()` or exact match) against a whitelist of allowed domains for server-side requests.
