@@ -2,7 +2,7 @@
 const crypto = require('node:crypto');
 const projectId = 'hub-tk-design';
 const ownerEmail = 'thomas@tk-design.no';
-const documentUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/users/${encodeURIComponent(ownerEmail)}/data/hub_state`;
+const workspacePath = 'workspaces/tk-design';
 const segments = ['Regnskap', 'Menigheter', 'Bygg og håndverk', 'Andre små og mellomstore bedrifter'];
 const normalize = value => String(value || '').normalize('NFKC').trim().toLowerCase().replace(/\s+/g, ' ');
 const normalizeUrl = value => { try { const u = new URL(value); return u.hostname.replace(/^www\./, '') + u.pathname.replace(/\/+$/, ''); } catch { return ''; } };
@@ -47,55 +47,89 @@ function planTransfer(existing, receipts, candidates, now) {
  }
  return { clients, receipts: nextReceipts, results };
 }
-function createHubConnection({ getAdminInstance, env = process.env, fetcher = globalThis.fetch }) {
- async function token() {
+function createHubConnection({ getAdminInstance, env = process.env, getHubDb }) {
+ let database = null;
+ function db() {
+  if (getHubDb) return getHubDb();
+  if (database) return database;
   const credential = getAdminInstance()?.options?.credential;
   if (!credential?.getAccessToken) throw Error('credentials_missing');
-  const value = await credential.getAccessToken();
-  if (typeof value?.access_token !== 'string') throw Error('credentials_missing');
-  return value.access_token;
+  const admin = require('firebase-admin');
+  const app = admin.apps.find(a => a.name === 'tk-marketing-hub-workspace') ||
+   admin.initializeApp({ projectId, credential }, 'tk-marketing-hub-workspace');
+  database = admin.firestore(app);
+  return database;
  }
- async function call(accessToken, url, options = {}) {
-  const response = await fetcher(url, { ...options, headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + accessToken }, redirect: 'manual', signal: AbortSignal.timeout(15000) });
-  if (!response.ok) {
-   const error = Error(response.status === 403 ? 'permission_denied' : response.status === 404 ? 'hub_account_missing' : [409, 412].includes(response.status) ? 'conflict' : 'hub_unavailable');
-   throw error;
-  }
-  return response.json();
- }
+ const workspace = database => database.collection('workspaces').doc('tk-design');
+ const sourceKey = id => crypto.createHash('sha256').update('tk-markedsagent:' + id).digest('hex');
  function statusFailure(error) {
-  const code = ['permission_denied', 'hub_account_missing', 'credentials_missing'].includes(error.message) ? error.message : 'hub_unavailable';
-  return { success: false, connected: false, code, projectId, ownerEmail, serviceAccountEmail: String(env.TK_FIREBASE_CLIENT_EMAIL || ''), error: code === 'permission_denied' ? 'Serverkontoen mangler tilgang til hubbens Firebase-prosjekt.' : code === 'hub_account_missing' ? 'Fant ikke hubbens lagrede kundedata for thomas@tk-design.no.' : code === 'credentials_missing' ? 'Serverkontoen for Firebase er ikke konfigurert.' : 'Hubben er utilgjengelig. Kandidatene beholdes i markedsagenten.' };
+  const permission = [7, 'permission-denied'].includes(error.code) || error.message === 'permission_denied';
+  const code = permission ? 'permission_denied' : ['hub_workspace_missing', 'credentials_missing', 'hub_capacity'].includes(error.message) ? error.message : 'hub_unavailable';
+  return { success: false, connected: false, code, projectId, ownerEmail, workspacePath,
+   serviceAccountEmail: String(env.TK_FIREBASE_CLIENT_EMAIL || ''),
+   error: code === 'permission_denied' ? 'Serverkontoen mangler tilgang til hubbens Firebase-prosjekt.'
+    : code === 'hub_workspace_missing' ? 'Fant ikke det eksisterende TK-design-arbeidsområdet. Ingen alternativ kundedatabase er opprettet.'
+    : code === 'credentials_missing' ? 'Serverkontoen for Firebase er ikke konfigurert.'
+    : code === 'hub_capacity' ? 'Hubben har nådd kundegrensen. Kandidatene beholdes i Markedsagenten.'
+    : 'Hubben er utilgjengelig. Kandidatene beholdes i Markedsagenten.' };
  }
- const project = document => {
-  const clients = decode(document.fields?.clients) || [];
-  if (!Array.isArray(clients)) throw Error('hub_unavailable');
-  return { clients, receipts: decode(document.fields?.marketingAgentReceipts) || {} };
- };
+ function customers(clients) {
+  return clients.map(c => ({ id: String(c.id || ''), title: String(c.name || '').slice(0,160),
+   email: String(c.email || '').slice(0,160), url: String(c.website || '').slice(0,500), status: String(c.status || '') }));
+ }
+ async function snapshot(database) {
+  const ws = workspace(database);
+  return database.runTransaction(async tx => {
+   const meta = await tx.get(ws);
+   if (!meta.exists || !Number.isInteger(meta.data()?.revision)) throw Error('hub_workspace_missing');
+   const list = await tx.get(ws.collection('clients'));
+   return { revision: meta.data().revision, clients: list.docs.map(d => ({ ...d.data(), id: d.id })) };
+  });
+ }
  async function read() {
   try {
-   const document = await call(await token(), documentUrl); const { clients } = project(document);
-   return { success: true, connected: true, projectId, ownerEmail, checkedAt: new Date().toISOString(), customers: clients.map(c => ({ id: String(c.id || ''), title: String(c.name || '').slice(0, 160), email: String(c.email || '').slice(0, 160), url: String(c.website || '').slice(0, 500), status: String(c.status || '') })), total: clients.length };
+   const state = await snapshot(db());
+   return { success: true, connected: true, projectId, ownerEmail, workspacePath,
+    checkedAt: new Date().toISOString(), revision: state.revision,
+    customers: customers(state.clients), total: state.clients.length };
   } catch (error) { return statusFailure(error); }
  }
  async function sync(input) {
-  let candidates; try { candidates = validateCandidates(input); } catch { return { success: false, connected: false, code: 'invalid_candidates', error: 'Ugyldige kandidater.' }; }
+  let candidates;
+  try { candidates = validateCandidates(input); }
+  catch { return { success: false, connected: false, code: 'invalid_candidates', error: 'Ugyldige kandidater.' }; }
   try {
-   const accessToken = await token();
-   for (let attempt = 0; attempt < 3; attempt++) {
-    const document = await call(accessToken, documentUrl); const { clients, receipts } = project(document);
-    const checkedAt = new Date().toISOString(); const plan = planTransfer(clients, receipts, candidates, checkedAt);
-    if (JSON.stringify(plan.clients) !== JSON.stringify(clients) || JSON.stringify(plan.receipts) !== JSON.stringify(receipts)) {
-     if (typeof document.updateTime !== 'string') throw Error('hub_unavailable');
-     const url = new URL(documentUrl); url.searchParams.append('updateMask.fieldPaths', 'clients'); url.searchParams.append('updateMask.fieldPaths', 'marketingAgentReceipts'); url.searchParams.set('currentDocument.updateTime', document.updateTime);
-     try { await call(accessToken, url.href, { method: 'PATCH', body: JSON.stringify({ fields: { clients: { arrayValue: { values: [...(document.fields?.clients?.arrayValue?.values || []), ...plan.clients.slice(clients.length).map(encode)] } }, marketingAgentReceipts: encode(plan.receipts) } }) }); }
-     catch (error) { if (error.message === 'conflict' && attempt < 2) continue; throw error; }
+   const database = db(), ws = workspace(database);
+   const result = await database.runTransaction(async tx => {
+    const meta = await tx.get(ws);
+    if (!meta.exists || !Number.isInteger(meta.data()?.revision)) throw Error('hub_workspace_missing');
+    const list = await tx.get(ws.collection('clients'));
+    const receiptRefs = candidates.map(c => ws.collection('marketingAgentReceipts').doc(sourceKey(c.id)));
+    const receiptDocs = await Promise.all(receiptRefs.map(ref => tx.get(ref)));
+    const receipts = Object.fromEntries(receiptDocs.filter(d => d.exists).map(d => [d.id, d.data()]));
+    const existing = list.docs.map(d => ({ ...d.data(), id: d.id }));
+    const checkedAt = new Date().toISOString(), plan = planTransfer(existing, receipts, candidates, checkedAt);
+    if (plan.clients.length > 400) throw Error('hub_capacity');
+    const additions = plan.clients.slice(existing.length);
+    // Existing client documents are never written. A concurrent Hub save sees a new revision.
+    for (const client of additions) tx.set(ws.collection('clients').doc(client.id), client);
+    for (const [key, receipt] of Object.entries(plan.receipts)) {
+     if (!receipts[key]) tx.set(ws.collection('marketingAgentReceipts').doc(key), receipt);
     }
-    // Confirm persisted IDs before reporting any successful transfer.
-    const verified = project(await call(accessToken, documentUrl));
-    if (plan.results.some(r => r.status === 'imported' && (!verified.receipts[crypto.createHash('sha256').update('tk-markedsagent:' + r.sourceId).digest('hex')] || !verified.clients.some(c => c.id === r.clientId)))) throw Error('hub_unavailable');
-    return { success: true, connected: true, checkedAt, projectId, ownerEmail, added: plan.clients.length - clients.length, results: plan.results, customers: verified.clients.map(c => ({ id: String(c.id || ''), title: String(c.name || '').slice(0, 160), email: String(c.email || '').slice(0, 160), url: String(c.website || '').slice(0, 500), status: String(c.status || '') })), total: verified.clients.length };
-   }
+    if (additions.length) tx.update(ws, { revision: meta.data().revision + 1, updatedAt: checkedAt, updatedBy: 'TK-design Markedsagent' });
+    return { checkedAt, added: additions.length, results: plan.results, original: list.docs.map(d => ({id:d.id, data:d.data()})) };
+   });
+   const verified = await snapshot(database);
+   const verifiedReceipts = await Promise.all(candidates.map(c => ws.collection('marketingAgentReceipts').doc(sourceKey(c.id)).get()));
+   const receiptMap = new Map(verifiedReceipts.filter(d => d.exists).map(d => [d.id, d.data()]));
+   if (result.results.some(r => ['imported','already_imported'].includes(r.status) &&
+    (!receiptMap.has(sourceKey(r.sourceId)) || !verified.clients.some(c => c.id === r.clientId)))) throw Error('hub_unavailable');
+   // Report whether the original clients remain unchanged, without restoring/overwriting concurrent user edits.
+   const originalAfter = await Promise.all(result.original.map(c => ws.collection('clients').doc(c.id).get()));
+   const preserved = result.original.every((c,i) => originalAfter[i].exists && JSON.stringify(originalAfter[i].data()) === JSON.stringify(c.data));
+   return { success: true, connected: true, checkedAt: result.checkedAt, projectId, ownerEmail, workspacePath,
+    revision: verified.revision, added: result.added, results: result.results, existingPreserved: preserved,
+    customers: customers(verified.clients), total: verified.clients.length };
   } catch (error) { return statusFailure(error); }
  }
  return { read, sync };
