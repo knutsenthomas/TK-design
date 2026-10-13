@@ -3407,6 +3407,7 @@ app.get('/sitemap.xml', async (req, res) => {
             { path: '/sosiale-medier', priority: '0.8', changefreq: 'weekly' },
             { path: '/portefolje', priority: '0.9', changefreq: 'weekly' },
             { path: '/blog', priority: '0.9', changefreq: 'weekly' },
+            { path: '/ki-forordninger', priority: '0.7', changefreq: 'monthly' },
             { path: '/contact', priority: '0.8', changefreq: 'monthly' },
             { path: '/privacy', priority: '0.3', changefreq: 'yearly' },
             { path: '/accessibility', priority: '0.3', changefreq: 'yearly' }
@@ -7923,6 +7924,7 @@ app.get('/index.html', (req, res) => {
 });
 const htmlPages = [
     'blog',
+    'ki-forordninger',
     'blog-details',
     'contact',
     'project-details',

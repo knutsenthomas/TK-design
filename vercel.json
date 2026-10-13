@@ -8,6 +8,7 @@
         "maxDuration": 60,
         "includeFiles": [
           "legacy_html/index.html",
+          "legacy_html/ki-forordninger.html",
           "legacy_html/blog.html",
           "legacy_html/blog-details.html",
           "legacy_html/contact.html",
