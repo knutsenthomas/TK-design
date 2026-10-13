@@ -1,0 +1,4 @@
+## 2024-05-24 - Host Header Injection Vulnerability
+**Vulnerability:** The `verifyAdminToken` middleware allowed local authentication bypass by checking `req.hostname === 'localhost'`.
+**Learning:** `req.hostname` is derived from the HTTP `Host` header, which can be easily spoofed by attackers to bypass authentication and execute administrative actions.
+**Prevention:** Rely on securely derived connection properties like `req.ip` or `req.socket.remoteAddress` for IP-based authentication, and avoid using headers like `Host` or `X-Forwarded-For` unless operating behind a trusted reverse proxy with proper `trust proxy` configuration.
