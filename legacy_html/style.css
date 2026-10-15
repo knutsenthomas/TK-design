@@ -11660,3 +11660,9 @@ body.service-details-page-refresh .service-delivery-section{background:rgba(255,
 body.service-details-page-refresh .service-delivery-section .deliverable-item{background:transparent;border:0;padding:12px 0}
 @media(max-width:640px){body.service-details-page-refresh #accountingCases .deliverables-grid{grid-template-columns:1fr;gap:24px}body.service-details-page-refresh #accountingCases .deliverables-grid>a{padding:16px;border-radius:24px}body.service-details-page-refresh #accountingCases h3{font-size:20px}body.service-details-page-refresh .service-delivery-section{padding:22px!important}body.service-details-page-refresh #serviceDeliverablesGrid{grid-template-columns:1fr}body.service-details-page-refresh article.subpage-card>div:first-child{text-align:left;margin-bottom:32px}}
 .ki-guide-teaser .ki-guide-teaser-button{display:inline-flex;align-items:center;justify-content:center;gap:14px}.ki-guide-teaser-button i{font-size:18px;line-height:1}
+
+/* AI guide belongs with the latest articles, before the article grid. */
+.blog-section .ki-guide-teaser{display:flex;align-items:center;justify-content:space-between;gap:32px;margin:0 0 32px;padding:32px;background:#fff;border:1px solid #e1e8ef;border-radius:24px}
+.ki-guide-teaser-copy{flex:1;min-width:0}.ki-guide-teaser-copy .ki-guide-teaser-label{margin:0 0 16px;color:var(--clr-primary,#ff6a1b);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase}.ki-guide-teaser-copy h3{margin:0 0 18px;font-size:clamp(24px,2.6vw,32px);line-height:1.25;color:#11263c}.ki-guide-teaser-copy>p:last-child{margin:0;color:#5a697d;line-height:1.7}
+.blog-section .ki-guide-teaser-button{flex-shrink:0;align-self:center;white-space:nowrap}
+@media(max-width:900px){.blog-section .ki-guide-teaser{flex-direction:column;align-items:flex-start;gap:24px;padding:24px}.blog-section .ki-guide-teaser-button{align-self:flex-start}}
