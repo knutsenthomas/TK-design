@@ -30,7 +30,7 @@ function fixture({ deniedSearch = false, disabledSearch = false, noRows = false 
   } else {
    assert.ok(url.startsWith('https://analyticsdata.googleapis.com/v1beta/properties/123:runReport'));
    const body = JSON.parse(options.body);
-   assert.deepEqual(body.dimensionFilter.filter.inListFilter.values, ['tk-design.no', 'www.tk-design.no']);
+   if(body.dimensionFilter.andGroup){assert.deepEqual(body.dimensionFilter.andGroup.expressions[0].filter.inListFilter.values,['tk-design.no','www.tk-design.no']);assert.equal(body.dimensionFilter.andGroup.expressions[1].filter.stringFilter.value,'/(blog|blogg)/.+');assert.equal(body.limit,'100');}else assert.deepEqual(body.dimensionFilter.filter.inListFilter.values, ['tk-design.no', 'www.tk-design.no']);
    data = { rows: noRows ? [] : [{ dimensionValues: [{ value: '/' }], metricValues: [{ value: '5' }, { value: '7' }, { value: '9' }] }] };
   }
   return { ok: true, status: 200, json: async () => data };
@@ -47,7 +47,7 @@ test('Google success uses read-only scopes, fixed TK-design targets and independ
  assert.equal(result.analytics.status, 'active'); assert.equal(result.searchConsole.status, 'active');
  assert.equal(result.analytics.data.sessions, 7); assert.equal(result.searchConsole.data.clicks, 3);
  assert.ok(!JSON.stringify(result).includes('unit-only-token')); assert.ok(!JSON.stringify(result).includes('PRIVATE KEY'));
- assert.equal(f.calls.length, 9);
+ assert.equal(f.calls.length, 10);
 });
 test('Search Console denial retains confirmed Analytics and does not manufacture search measurements', async () => {
  const f = fixture({ deniedSearch: true }); const result = await readGoogleSources({ env, fetcher: f.fetcher });
