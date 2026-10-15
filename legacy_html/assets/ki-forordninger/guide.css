@@ -81,3 +81,9 @@ body.ki-guide-page .ki-content :is(.button, #reset):hover {
   body.ki-guide-page .ki-content .actions { align-items: stretch; }
   body.ki-guide-page .ki-content .button { justify-content: center; }
 }
+/* Translate text without changing the guide's layout or icon weight. */
+.ki-guide-page .ki-content [data-i18n]{display:contents}
+.ki-guide-page .ki-content .core>[data-i18n]{font:inherit;color:inherit;position:static}
+.ki-guide-page .ki-content a i,.ki-guide-page .ki-content button i{font-size:1em;line-height:1;flex-shrink:0}
+.ki-guide-page .ki-content .button,.ki-guide-page .ki-content .text-link{display:inline-flex;align-items:center;gap:12px}
+.ki-guide-page .ki-content .button i{font-size:18px}.ki-guide-page .ki-content #reset i{font-size:16px}
