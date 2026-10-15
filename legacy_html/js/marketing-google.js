@@ -57,14 +57,15 @@ async function analytics(env, credentials, fetcher) {
             dateRanges: [range], dimensionFilter: { filter: { fieldName: 'hostName', inListFilter: { values: ['tk-design.no', 'www.tk-design.no'] } } }, ...body
         })
     });
-    const [summary, pages, sources] = await Promise.all([
+    const [summary, pages, sources, blog] = await Promise.all([
         query({ metrics: [{ name: 'activeUsers' }, { name: 'sessions' }, { name: 'screenPageViews' }] }),
         query({ dimensions: [{ name: 'pagePath' }], metrics: [{ name: 'screenPageViews' }], limit: '8', orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }] }),
-        query({ dimensions: [{ name: 'sessionDefaultChannelGroup' }], metrics: [{ name: 'sessions' }], limit: '8', orderBys: [{ metric: { metricName: 'sessions' }, desc: true }] })
+        query({ dimensions: [{ name: 'sessionDefaultChannelGroup' }], metrics: [{ name: 'sessions' }], limit: '8', orderBys: [{ metric: { metricName: 'sessions' }, desc: true }] }),
+        query({ dimensions: [{ name: 'pagePath' }], metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }], dimensionFilter: { andGroup: { expressions: [{ filter: { fieldName: 'hostName', inListFilter: { values: ['tk-design.no', 'www.tk-design.no'] } } }, { filter: { fieldName: 'pagePath', stringFilter: { matchType: 'FULL_REGEXP', value: '/(blog|blogg)/.+' } } }] } }, limit: '100', orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }] }).then(report => ({ status: 'active', pages: (report.rows || []).map(r => ({ path: String(r.dimensionValues?.[0]?.value || '').slice(0,300), views: number(r.metricValues?.[0]?.value), users: number(r.metricValues?.[1]?.value) })), rowCount: report.rowCount || 0, limited: Number(report.rowCount || 0) > 100, thresholded: report.metadata?.subjectToThresholding === true })).catch(() => ({ status: 'error', message: 'Bloggrapporten kunne ikke hentes. Prøv igjen.' }))
     ]);
     const values = summary.rows?.[0]?.metricValues || [];
     return { status: 'active', range, data: {
-        activeUsers: number(values[0]?.value), sessions: number(values[1]?.value), pageViews: number(values[2]?.value),
+        blog, activeUsers: number(values[0]?.value), sessions: number(values[1]?.value), pageViews: number(values[2]?.value),
         pages: (pages.rows || []).slice(0, 8).map(r => ({ title: String(r.dimensionValues?.[0]?.value || '').slice(0, 300), value: number(r.metricValues?.[0]?.value) })),
         sources: (sources.rows || []).slice(0, 8).map(r => ({ title: String(r.dimensionValues?.[0]?.value || '').slice(0, 150), value: number(r.metricValues?.[0]?.value) }))
     } };
