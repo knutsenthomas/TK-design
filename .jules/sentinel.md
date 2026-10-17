@@ -1,0 +1,4 @@
+## 2024-05-15 - Missing Authentication Middleware on Non-POST Routes
+**Vulnerability:** Several sensitive administrative endpoints (GET, PUT, PATCH, DELETE methods for /api/social-planner, /api/messages, /api/analytics, etc.) were lacking the `verifyAdminToken` middleware, while the POST routes were protected. This led to a Broken Access Control vulnerability.
+**Learning:** In legacy systems or rapidly developed Express apps, developers sometimes remember to secure data-creating (POST) routes but forget to apply the same middleware to data-reading or data-modifying (GET, PUT, PATCH, DELETE) routes.
+**Prevention:** When adding or reviewing administrative API endpoints, ensure that *all* HTTP methods for a sensitive resource implement the required authentication middleware. Grouping routes or applying middleware at the router level can prevent omissions.
