@@ -215,8 +215,7 @@ function createRateLimiter(options = {}) {
     const message = options.message || 'For mange forespørsler. Vennligst prøv igjen senere.';
 
     return (req, res, next) => {
-        const rawIp = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '';
-        const ip = String(rawIp).split(',')[0].trim() || 'unknown';
+        const ip = req.ip || req.socket?.remoteAddress || 'unknown';
         const key = `${req.path}_${ip}`;
         const now = Date.now();
 
@@ -7782,7 +7781,7 @@ app.post('/api/contact', contactFormLimiter, async (req, res) => {
             consent: true,
             source_page: cleanSourcePage,
             status: 'new',
-            ip_address: (req.headers['x-forwarded-for'] || (req.socket && req.socket.remoteAddress) || '').toString().split(',')[0].trim() || null,
+            ip_address: req.ip || (req.socket && req.socket.remoteAddress) || null,
             user_agent: req.get('user-agent') || null
         };
 
