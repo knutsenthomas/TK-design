@@ -45,7 +45,7 @@
     <link rel="preload" href="/assets/fonts/kanit-400.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/kanit-700.woff2" as="font" type="font/woff2" crossorigin>
 
-    <link rel="stylesheet" href="/style.css?v=84">
+    <link rel="stylesheet" href="/style.css?v=logo20261022b">
 
     <!-- Non-blocking FontAwesome icon stylesheet -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -53,13 +53,9 @@
     <link rel="icon" type="image/png" href="/img/logo/d.png">
 
     <!-- Google Analytics GA4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5RZVDEBBYM"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'G-5RZVDEBBYM', { anonymize_ip: true });
-    </script>
+
+
+<script src="/js/privacy-consent.js?v=1" data-key="tk-privacy-v1" data-ga="G-5RZVDEBBYM" data-privacy="/privacy"></script>
 </head>
 
 <body class="homepage-refresh contact-page-refresh">
@@ -68,10 +64,7 @@
     <header class="header">
         <div class="container nav-container">
             <a href="/" class="logo" aria-label="tk-design">
-                <span class="logo-icon">
-                    <img src="/img/logo/d.png" alt="tk-design logo">
-                </span>
-                <span class="logo-text">tk-design</span>
+                <img class="tk-brand-svg" src="/img/logo/tk-design-logo.svg" alt="tk-design" width="350" height="94">
             </a>
             <nav class="nav-desktop">
                 <ul>
@@ -341,7 +334,7 @@
                             <p style="font-size: 0.95rem; color: #94a3b8; line-height: 1.55; margin-bottom: 24px;" data-i18n="contact_page.panel_desc">
                                 Foretrekker du en direkte samtale eller e-post? Ta kontakt når som helst for en uformell prat.
                             </p>
-                            
+
                             <div class="contact-info-item">
                                 <div class="contact-step-badge"><i class="fas fa-envelope"></i></div>
                                 <div>
@@ -374,7 +367,7 @@
                                 <span data-i18n="contact_page.process_tag">VIDERE PROSESS</span>
                             </div>
                             <h3 style="font-size: 1.4rem; font-weight: 800; color: #11263c; margin: 0 0 16px 0;" data-i18n="contact_page.process_title">Slik følger jeg opp</h3>
-                            
+
                             <div style="display: flex; flex-direction: column; gap: 16px;">
                                 <div style="display: flex; gap: 14px; align-items: flex-start;">
                                     <div class="contact-step-badge">01</div>
@@ -451,14 +444,14 @@
 
     <script defer src="translations.js?v=14"></script>
     <script defer src="script.js?v=4"></script>
-    <script defer src="js/cookies.js?v=3"></script>
+
     <script defer src="js/contact-page.js?v=2"></script>
     <script>
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
         window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
     </script>
-    <script defer src="/_vercel/insights/script.js"></script>
-    <script defer src="/_vercel/speed-insights/script.js"></script>
+
+
 </body>
 
 </html>

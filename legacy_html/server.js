@@ -3677,18 +3677,9 @@ async function renderPageWithSeo(req, res, reqFile, matchedBlogPost = null) {
             injectedHtml = injectedHtml.replace('</head>', `${brandingScript}\n</head>`);
         }
 
-        // Inject Google Analytics if ID exists and NOT already in the HTML
-        if (globalSeo.googleAnalyticsId && !html.includes(globalSeo.googleAnalyticsId)) {
-            const gaScript = `
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=${globalSeo.googleAnalyticsId}"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', '${globalSeo.googleAnalyticsId}');
-    </script>`;
-            injectedHtml = injectedHtml.replace('</head>', `${gaScript}\n</head>`);
+        // Configure the first-party consent loader; never inject an eager Google tag.
+        if (/^G-[A-Z0-9]+$/.test(globalSeo.googleAnalyticsId || '')) {
+            injectedHtml = injectedHtml.replace(/data-ga="G-[A-Z0-9]+"/g, `data-ga="${globalSeo.googleAnalyticsId}"`);
         }
 
         res.send(injectedHtml);

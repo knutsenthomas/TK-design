@@ -231,12 +231,12 @@
     <link rel="preload" href="/assets/fonts/kanit-400.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/kanit-700.woff2" as="font" type="font/woff2" crossorigin>
 
-    <link rel="stylesheet" href="/style.css?v=83">
+    <link rel="stylesheet" href="/style.css?v=logo20261022b">
 
     <!-- Ikoner og rammeverk -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-    
+
     <link rel="preload" href="https://unpkg.com/aos@2.3.1/dist/aos.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css"></noscript>
 
@@ -245,13 +245,9 @@
     <noscript><link rel="stylesheet" href="/admin/custom-style.css?v=62"></noscript>
     <link rel="icon" type="image/png" href="/img/logo/d.png">
     <!-- Google Analytics GA4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5RZVDEBBYM"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'G-5RZVDEBBYM', { anonymize_ip: true });
-    </script>
+
+
+<script src="/js/privacy-consent.js?v=1" data-key="tk-privacy-v1" data-ga="G-5RZVDEBBYM" data-privacy="/privacy"></script>
 </head>
 
 <body id="home" class="homepage-refresh">
@@ -262,10 +258,7 @@
     <header class="header">
         <div class="container nav-container">
             <a href="/" class="logo" aria-label="tk-design">
-                <span class="logo-icon">
-                    <img src="/img/logo/d.webp" alt="tk-design logo">
-                </span>
-                <span class="logo-text">tk-design</span>
+                <img class="tk-brand-svg" src="/img/logo/tk-design-logo.svg" alt="tk-design" width="350" height="94">
             </a>
             <nav class="nav-desktop">
                 <ul>
@@ -1326,16 +1319,16 @@
                         <p style="color: var(--clr-common-text); font-size: 18px; margin-bottom: 30px; max-width: 520px; line-height: 1.6;" data-i18n="free_tool.intro">
                             Visste du at en treg nettside i snitt koster bedrifter 65 % av kundene før siden i det hele tatt har lastet? Tast inn din nettadresse under for en umiddelbar mini-analyse og konkrete forbedringspunkter.
                         </p>
-                        
+
                         <div class="analyzer-input-group" style="max-width: 500px;">
                             <input type="url" id="analyzerUrl" placeholder="F.eks. www.minbedrift.no" data-i18n-placeholder="free_tool.placeholder" required autocomplete="url" onkeydown="if(event.key === 'Enter') startMiniAnalysis()">
                             <button type="button" class="analyzer-btn" onclick="startMiniAnalysis()" data-i18n="free_tool.btn">Analyser nå <i class="fas fa-bolt"></i></button>
                         </div>
                     </div>
-                    
+
                     <div style="flex: 1; min-width: 300px; position: relative;">
                         <div id="analyzerWidgetContainer" style="background: #f8fafc; border: 1px solid var(--clr-border); border-radius: 40px; padding: 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.04); min-height: 320px; display: flex; align-items: center; justify-content: center;">
-                            
+
                             <!-- 1. Default Scanner State -->
                             <div id="analyzerDefaultState" style="text-align: center; width: 100%;">
                                 <div style="font-size: 56px; color: var(--clr-base); margin-bottom: 20px; opacity: 0.85;"><i class="fas fa-laptop-code"></i></div>
@@ -1358,7 +1351,7 @@
                                 <h3 style="font-size: 1.2rem; color: var(--clr-base); font-weight: 800; margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
                                     <i class="fas fa-chart-bar" style="color: #ff6a1b;"></i> <span data-i18n="free_tool.report_for">Rapport for:</span> <span id="reportDomainName" style="color: #62B6CB;">minbedrift.no</span>
                                 </h3>
-                                
+
                                 <div class="analyzer-metrics-grid">
                                     <div class="analyzer-metric-card" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
                                         <div style="font-size: 1.2rem; color: #ff6a1b;"><i class="fas fa-tachometer-alt"></i></div>
@@ -1434,7 +1427,7 @@
                 if (!/^https?:\/\//i.test(targetUrl)) {
                     targetUrl = 'https://' + targetUrl;
                 }
-                
+
                 try {
                     const parsed = new URL(targetUrl);
                     if (!parsed.hostname.includes('.')) {
@@ -1603,7 +1596,7 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
     <script src="translations.js?v=13" defer></script>
     <script src="script.js?v=3" defer></script>
-    <script src="js/cookies.js?v=3" defer></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             if (typeof AOS !== 'undefined') {
@@ -1688,8 +1681,8 @@
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
         window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
     </script>
-    <script defer src="/_vercel/insights/script.js"></script>
-    <script defer src="/_vercel/speed-insights/script.js"></script>
+
+
 </body>
 
 </html>

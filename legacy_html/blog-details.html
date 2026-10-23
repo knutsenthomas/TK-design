@@ -11,18 +11,14 @@
     <link rel="preload" href="/assets/fonts/kanit-400.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/kanit-500.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/kanit-700.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="/style.css?v=84">
+    <link rel="stylesheet" href="/style.css?v=logo20261022b">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" href="/img/logo/d.png">
 
     <!-- Google Analytics GA4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5RZVDEBBYM"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-5RZVDEBBYM', { anonymize_ip: true });
-    </script>
+
+
+<script src="/js/privacy-consent.js?v=1" data-key="tk-privacy-v1" data-ga="G-5RZVDEBBYM" data-privacy="/privacy"></script>
 </head>
 
 <body class="homepage-refresh blog-page-refresh">
@@ -31,10 +27,7 @@
     <header class="header">
         <div class="container nav-container">
             <a href="/" class="logo" aria-label="tk-design">
-                <span class="logo-icon">
-                    <img src="/img/logo/d.png" alt="tk-design logo">
-                </span>
-                <span class="logo-text">tk-design</span>
+                <img class="tk-brand-svg" src="/img/logo/tk-design-logo.svg" alt="tk-design" width="350" height="94">
             </a>
             <nav class="nav-desktop">
                 <ul>
@@ -300,7 +293,7 @@
                         rel="nofollow noopener noreferrer">Instagram <i class="fas fa-arrow-right"></i></a>
                     <a href="https://www.linkedin.com/in/thomas-knutsen-a6aa2793/" class="social-link" target="_blank"
                         rel="nofollow noopener noreferrer">LinkedIn <i class="fas fa-arrow-right"></i></a>
-                    
+
                 </div>
             </div>
 
@@ -321,7 +314,7 @@
 
     <script src="/translations.js?v=14"></script>
     <script src="/script.js?v=4"></script>
-    <script src="/js/cookies.js?v=3"></script>
+
     <script>
         const BLOG_DETAIL_RUNTIME = {
             no: {
@@ -420,7 +413,7 @@
             const slug = getVal(fields.slug) || docId;
             const author = getVal(fields.author) || 'TK-design';
             const publishedAt = getVal(fields.publishedAt) || getVal(fields.createdAt) || doc.createTime || '';
-            
+
             let image = getVal(fields.image) || getVal(fields.imageUrl);
             if (!image || image.includes('b-1.png')) {
                 image = getFallbackBlogImage(slug || docId);
@@ -778,7 +771,7 @@
             const summary = localized.summary || localized.seoDesc || '';
             const pageUrl = window.location.href;
             const text = `${title}\n\n${summary}\n\nLes hele artikkelen her: ${pageUrl}\n\n#webdesign #seo #tkdesign #norskebedrifter #nettside #bedrift`;
-            
+
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(text).then(() => {
                     showShareToast('Tekst og emneknagger for Instagram er kopiert!');
@@ -1454,8 +1447,8 @@
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
         window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
     </script>
-    <script defer src="/_vercel/insights/script.js"></script>
-    <script defer src="/_vercel/speed-insights/script.js"></script>
+
+
 </body>
 
 </html>

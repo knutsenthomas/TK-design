@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tkdesign-v1';
+const CACHE_NAME = 'tkdesign-consent-v2';
 const STATIC_ASSETS = [
     '/',
     '/style.css',
