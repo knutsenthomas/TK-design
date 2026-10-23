@@ -1,0 +1,55 @@
+/* =========================================
+   MOBILE PAGE WIDTH CONSISTENCY
+   -----------------------------------------
+   Keeps identical horizontal content width
+   across homepage, contact, project, service,
+   legal, blog list, and blog details.
+   ========================================= */
+@media (max-width: 768px) {
+    body.homepage-refresh {
+        --mobile-page-gutter: 18px;
+    }
+
+    body.homepage-refresh .container {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding-left: var(--mobile-page-gutter) !important;
+        padding-right: var(--mobile-page-gutter) !important;
+        box-sizing: border-box !important;
+    }
+
+    body.homepage-refresh .banner,
+    body.homepage-refresh .page-banner,
+    body.homepage-refresh .blog-list-page-banner,
+    body.homepage-refresh .blog-page-banner,
+    body.homepage-refresh .contact-page-banner,
+    body.homepage-refresh .project-page-banner,
+    body.homepage-refresh .legal-page-banner {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    body.homepage-refresh.blog-list-page-refresh .blog-list-page-banner .container,
+    body.homepage-refresh.blog-page-refresh .blog-page-banner .container,
+    body.homepage-refresh.blog-page-refresh .blog-page-main .container {
+        padding-left: var(--mobile-page-gutter) !important;
+        padding-right: var(--mobile-page-gutter) !important;
+        max-width: 100% !important;
+    }
+
+    body.homepage-refresh.blog-list-page-refresh .blog-list-hero,
+    body.homepage-refresh.blog-page-refresh .blog-page-hero,
+    body.homepage-refresh.blog-page-refresh .blog-overview-card,
+    body.homepage-refresh.blog-page-refresh .blog-article-shell,
+    body.homepage-refresh.blog-page-refresh .blog-side-card,
+    body.homepage-refresh.blog-page-refresh .blog-post-nav-link {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        justify-self: stretch !important;
+    }
+}
+

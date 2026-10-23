@@ -1,0 +1,67 @@
+/* =========================================
+   5. SERVICES SECTION
+   ========================================= */
+.service-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 40px 0;
+    border-top: 1px solid #262525;
+    transition: 0.3s;
+    cursor: pointer;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.service-item:hover {
+    border-top-color: var(--clr-base);
+}
+
+.service-item:last-child {
+    border-bottom: 1px solid #262525;
+}
+
+.service-id {
+    font-size: 20px;
+    color: var(--clr-base);
+    width: 50px;
+}
+
+.service-content {
+    flex: 1;
+}
+
+.service-content h3 {
+    font-size: 40px;
+    margin-bottom: 10px;
+    transition: 0.3s;
+}
+
+.service-item:hover .service-content h3 {
+    color: var(--clr-base);
+    transform: translateX(10px);
+}
+
+.service-arrow {
+    width: 60px;
+    height: 60px;
+    background: #ffffff;
+    color: var(--clr-base);
+    border: 1px solid var(--clr-border);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+}
+
+.service-arrow i {
+    transform: rotate(-45deg);
+    transition: 0.3s;
+}
+
+.service-item:hover .service-arrow {
+    background: var(--clr-base);
+    color: #fff;
+}
+

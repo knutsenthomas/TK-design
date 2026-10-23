@@ -5,7 +5,10 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "build:styles": "node scripts/build-styles.cjs",
+    "vercel-build": "npm run build:styles",
+    "prestart": "npm run build:styles"
   },
   "dependencies": {
     "@firebase/app": "^0.16.0",

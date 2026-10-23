@@ -1,0 +1,32 @@
+/* =========================================
+   MOBILE MARGIN FIX (FORCE NARROWER LOOK)
+   Matches Homepage Hero (18px card inset)
+   ========================================= */
+@media (max-width: 768px) {
+    body.homepage-refresh.blog-list-page-refresh .blog-list-page-banner,
+    body.homepage-refresh.blog-page-refresh .blog-page-banner {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    body.homepage-refresh.blog-list-page-refresh .blog-list-hero {
+        margin-left: 18px !important;
+        margin-right: 18px !important;
+        padding-left: 18px !important;
+        padding-right: 18px !important;
+    }
+
+    /* Ensure container doesn't add extra side padding in the banner */
+    body.blog-list-page-refresh .blog-list-page-banner .container {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        max-width: none !important;
+    }
+
+    body.homepage-refresh.blog-page-refresh .blog-page-banner .container {
+        padding-left: 18px !important;
+        padding-right: 18px !important;
+        max-width: 100% !important;
+    }
+}
+

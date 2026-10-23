@@ -1,0 +1,115 @@
+/* =========================================
+   MOBILE OVERRIDES (SERVICES, BANNER, ETC.)
+   ========================================= */
+@media (max-width: 900px) {
+
+    /* --- TYPOGRAPHY (EDIT HERE FOR MOBILE) --- */
+    h1 {
+        font-size: 40px !important;
+    }
+
+    h2 {
+        font-size: 30px !important;
+    }
+
+    h3 {
+        font-size: 24px !important;
+    }
+
+    /* Keep dashboard-managed project titles readable on smaller screens */
+    .project-title,
+    .project-title a {
+        font-size: clamp(1.2rem, 4.4vw, 1.65rem) !important;
+        line-height: 1.12 !important;
+        letter-spacing: -0.03em !important;
+        text-wrap: balance;
+    }
+
+    /* Service Item Overrides */
+    .service-item .service-content h3,
+    .service-item .service-content h3 a {
+        font-size: 40px !important;
+        line-height: 1.1 !important;
+    }
+
+    .service-content p {
+        font-size: 18px !important;
+    }
+
+    .service-item {
+        flex-wrap: nowrap;
+        align-items: center !important;
+    }
+
+    .service-arrow i {
+        font-size: 24px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1 !important;
+        display: block !important;
+    }
+
+    .service-arrow {
+        margin-left: auto;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .banner-content {
+        margin-bottom: 48px;
+    }
+
+    .banner {
+        padding-top: 40px !important;
+    }
+
+    .banner-content h1 {
+        margin-bottom: 64px !important;
+    }
+
+    .banner h1,
+    .banner .banner-title {
+        margin-bottom: 48px !important;
+    }
+
+    .banner {
+        margin-top: 96px;
+    }
+
+    .logo-icon {
+        width: 50px;
+        height: 50px;
+        flex-basis: 50px;
+    }
+
+    .logo-text {
+        font-size: 1.15rem;
+    }
+}
+
+.nav-desktop ul {
+    display: flex;
+    gap: 40px;
+}
+
+.nav-desktop a {
+    color: var(--clr-base);
+    font-size: 16px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.nav-desktop a:hover {
+    color: var(--clr-base);
+}
+
+.menu-trigger {
+    display: none;
+    font-size: 24px;
+    color: var(--clr-base);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+

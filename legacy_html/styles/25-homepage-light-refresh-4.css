@@ -1,0 +1,589 @@
+@media (max-width: 1100px) {
+    body.homepage-refresh .hero-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    body.homepage-refresh .hero-spotlight {
+        right: 18px;
+        bottom: 24px;
+    }
+
+    body.homepage-refresh .kudos-nav {
+        gap: 12px;
+        font-size: 0.72rem;
+    }
+
+    body.homepage-refresh .tab-content.active,
+    body.homepage-refresh .process-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    body.homepage-refresh .nav-container {
+        min-height: 80px;
+    }
+
+    body.homepage-refresh .logo {
+        gap: 10px;
+    }
+
+    body.homepage-refresh .logo-icon {
+        width: 44px;
+        height: 44px;
+        flex-basis: 44px;
+    }
+
+    body.homepage-refresh .logo-text {
+        font-size: 1.2rem;
+    }
+
+    /* Gruppere språkvelger med hamburgermeny til høyre på små skjermer */
+    body.homepage-refresh .nav-container {
+        position: relative;
+    }
+
+    body.homepage-refresh .lang-switch-desktop {
+        position: relative;
+        left: auto;
+        top: auto;
+        transform: none;
+        margin: 0 16px 0 auto !important;
+    }
+
+    body.homepage-refresh .banner {
+        padding: clamp(40px, 6vw, 70px) clamp(24px, 5vw, 60px) 60px !important;
+        /* Samme luft og avstander som på desktop */
+    }
+
+    body.homepage-refresh .banner::before {
+        inset: 12px 18px 0;
+        /* Matcher dekstop nøyaktig */
+        border-radius: 28px;
+    }
+
+    body.homepage-refresh .kudos-browser-bar {
+        gap: 10px;
+        padding: 12px 14px;
+    }
+
+    body.homepage-refresh .kudos-project-visual {
+        min-height: 260px;
+        padding: 14px;
+    }
+
+    body.homepage-refresh .kudos-laptop-screen {
+        border-width: 8px;
+        min-height: 214px;
+    }
+
+    body.homepage-refresh .kudos-laptop-base {
+        width: calc(100% + 18px);
+        height: 14px;
+    }
+
+    body.homepage-refresh .kudos-nav,
+    body.homepage-refresh .kudos-cta-chip {
+        display: none;
+    }
+
+    body.homepage-refresh .kudos-hero-copy {
+        top: 60px;
+        right: 24%;
+        bottom: 18px;
+    }
+
+    body.homepage-refresh .kudos-headline {
+        max-width: none;
+        font-size: clamp(1.12rem, 6vw, 1.65rem);
+    }
+
+    body.homepage-refresh .kudos-subline {
+        max-width: 14ch;
+        font-size: 0.82rem;
+    }
+
+    body.homepage-refresh .kudos-figure {
+        right: 4%;
+        width: 56px;
+        height: 118px;
+        opacity: 0.45;
+    }
+
+    body.homepage-refresh .kudos-photo-visual {
+        min-height: 260px;
+        padding: 14px;
+    }
+
+    body.homepage-refresh .kudos-photo-card {
+        width: min(90%, 340px);
+        padding: 16px;
+        transform: rotate(-0.6deg) translateY(-4px);
+    }
+
+    body.homepage-refresh .kudos-photo-frame::before {
+        width: 88px;
+        height: 126px;
+        bottom: 3%;
+    }
+
+    body.homepage-refresh .kudos-photo-hand {
+        width: 62px;
+        height: 94px;
+        bottom: 1%;
+    }
+
+    body.homepage-refresh .kudos-photo-mark {
+        font-size: clamp(2.7rem, 11vw, 4rem);
+    }
+
+    body.homepage-refresh .kudos-photo-copy strong {
+        font-size: clamp(1.22rem, 5.8vw, 2rem);
+    }
+
+    body.homepage-refresh .kudos-photo-copy span {
+        font-size: clamp(0.9rem, 4.4vw, 1.35rem);
+    }
+
+    body.homepage-refresh .hkm-project-visual {
+        min-height: 260px;
+        padding: 14px;
+    }
+
+    body.homepage-refresh .hkm-browser {
+        padding: 8px;
+        transform: none;
+    }
+
+    body.homepage-refresh .hkm-screen {
+        min-height: 214px;
+    }
+
+    body.homepage-refresh .hkm-topnav {
+        min-height: 42px;
+        padding: 6px 10px;
+    }
+
+    body.homepage-refresh .hkm-nav,
+    body.homepage-refresh .hkm-give {
+        display: none;
+    }
+
+    body.homepage-refresh .hkm-brand-text {
+        font-size: 0.72rem;
+    }
+
+    body.homepage-refresh .hkm-copy {
+        top: auto;
+        left: 18px;
+        right: 18px;
+        bottom: 18px;
+        transform: none;
+    }
+
+    body.homepage-refresh .hkm-headline {
+        max-width: none;
+        font-size: clamp(1.32rem, 7vw, 1.95rem);
+    }
+
+    body.homepage-refresh .hkm-subline {
+        max-width: 24ch;
+        font-size: 0.76rem;
+    }
+
+    body.homepage-refresh .mandal-project-visual {
+        min-height: 260px;
+        padding: 14px;
+    }
+
+    body.homepage-refresh .mandal-panel {
+        min-height: 214px;
+    }
+
+    body.homepage-refresh .mandal-copy {
+        left: 18px;
+        right: 18px;
+    }
+
+    body.homepage-refresh .mandal-headline {
+        font-size: clamp(1.45rem, 7vw, 2.15rem);
+    }
+
+    body.homepage-refresh .mandal-subline {
+        max-width: 24ch;
+        font-size: 0.8rem;
+    }
+
+    body.homepage-refresh .mandal-button {
+        min-height: 36px;
+        padding: 0 16px;
+        font-size: 0.82rem;
+    }
+
+    body.homepage-refresh .hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    body.homepage-refresh .primary-cta,
+    body.homepage-refresh .hero-proof {
+        width: 100%;
+        justify-content: center;
+    }
+
+    body.homepage-refresh .hero-proof-label {
+        max-width: none;
+    }
+
+    body.homepage-refresh .hero-metrics,
+    body.homepage-refresh .tab-content.active,
+    body.homepage-refresh .process-grid {
+        grid-template-columns: 1fr;
+    }
+
+    body.homepage-refresh .banner-image {
+        align-self: auto;
+        margin-top: 28px;
+        padding: 18px 0 0;
+    }
+
+    body.homepage-refresh .hero-design-visual {
+        min-height: 320px;
+        padding: 14px;
+    }
+
+    body.homepage-refresh .hero-design-visual::after {
+        top: 16px;
+        right: 16px;
+        width: 92px;
+        height: 92px;
+        border-radius: 22px;
+    }
+
+    body.homepage-refresh .hero-design-canvas {
+        grid-template-columns: 64px 1fr;
+        min-height: 260px;
+    }
+
+    body.homepage-refresh .hero-design-sidebar {
+        padding: 16px 12px;
+        gap: 10px;
+    }
+
+    body.homepage-refresh .hero-design-wireframe {
+        width: calc(100% - 74px);
+        max-width: 250px;
+        padding: 12px;
+    }
+
+    body.homepage-refresh .hero-design-wireframe-header {
+        height: 96px;
+    }
+
+    body.homepage-refresh .hero-design-palette {
+        top: 16px;
+        right: 16px;
+        width: 88px;
+        gap: 8px;
+        padding: 10px;
+    }
+
+    body.homepage-refresh .hero-design-mobile {
+        right: 16px;
+        bottom: 16px;
+        width: 94px;
+        min-height: 190px;
+        padding: 12px 10px;
+    }
+
+    body.homepage-refresh .hero-spotlight {
+        position: static;
+        max-width: none;
+        margin-top: 20px;
+    }
+
+    body.homepage-refresh .marquee-wrapper {
+        margin: 0 16px;
+    }
+
+    body.homepage-refresh .about-intro,
+    body.homepage-refresh .tab-content-area,
+    body.homepage-refresh .awards-table,
+    body.homepage-refresh .meeting-bg,
+    body.homepage-refresh .services-list,
+    body.homepage-refresh .process-section,
+    body.homepage-refresh .testimonial-bg,
+    body.homepage-refresh footer .container {
+        border-radius: 24px;
+    }
+
+    body.homepage-refresh .about-intro,
+    body.homepage-refresh .meeting-bg,
+    body.homepage-refresh .process-section,
+    body.homepage-refresh .testimonial-bg,
+    body.homepage-refresh footer .container {
+        padding: 24px;
+    }
+
+    body.homepage-refresh .tab-buttons,
+    body#home.homepage-refresh .tab-buttons {
+        display: inline-flex !important;
+        width: auto;
+        max-width: 100%;
+        flex-wrap: nowrap;
+        justify-content: center;
+        gap: 3px !important;
+        padding: 5px !important;
+        border-radius: 9999px !important;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    body.homepage-refresh .tab-btn,
+    body#home.homepage-refresh .tab-btn {
+        -webkit-appearance: none;
+        appearance: none;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border: 0 !important;
+        border-radius: 9999px !important;
+        padding: 9px clamp(10px, 3.5vw, 15px) !important;
+        margin: 0 !important;
+        height: auto !important;
+        box-sizing: border-box !important;
+        text-align: center;
+        flex: 0 0 auto;
+        font-size: clamp(0.78rem, 3.2vw, 0.88rem);
+        font-weight: 600 !important;
+        line-height: 1 !important;
+    }
+
+    body.homepage-refresh .awards-table,
+    body.homepage-refresh .awards-table tbody {
+        display: block;
+        width: 100%;
+        border: none !important;
+    }
+
+    body.homepage-refresh .awards-table tr {
+        display: flex;
+        flex-direction: column;
+        width: auto;
+        margin: 0 20px;
+        border-top: 1px solid rgba(17, 38, 60, 0.06);
+        border-bottom: none !important;
+    }
+
+    body.homepage-refresh .awards-table tr:first-child {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        padding: 24px 0px;
+        border-top: none;
+    }
+
+    body.homepage-refresh .awards-table tr:first-child td {
+        padding: 0 !important;
+        width: auto !important;
+        display: block;
+        border: none !important;
+    }
+
+    body.homepage-refresh .awards-table tr:not(:first-child) td {
+        display: block;
+        width: 100%;
+        padding: 4px 0px;
+        text-align: left !important;
+        border: none !important;
+    }
+
+    body.homepage-refresh .awards-table tr:not(:first-child) td:first-child {
+        padding-top: 20px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--refresh-heading);
+    }
+
+    body.homepage-refresh .awards-table tr:not(:first-child) td:nth-child(2) {
+        color: #6a7a90;
+        padding-bottom: 8px;
+        line-height: 1.6;
+    }
+
+
+
+    body.homepage-refresh .service-item {
+        padding: 22px 18px;
+        gap: 16px;
+    }
+
+    body.homepage-refresh .service-content h3,
+    body.homepage-refresh .service-content h3 a {
+        font-size: clamp(1.05rem, 4.5vw, 1.3rem) !important;
+        line-height: 1.25;
+        letter-spacing: -0.01em;
+    }
+
+    body.homepage-refresh .service-arrow {
+        width: 48px !important;
+        height: 48px !important;
+        min-width: 48px !important;
+        border-radius: 14px !important;
+        font-size: 0.9rem !important;
+    }
+
+    body.homepage-refresh .footer-links {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+    }
+
+    body.homepage-refresh .social-link {
+        padding: 18px 24px !important;
+    }
+
+    body.homepage-refresh .hidden-mobile {
+        display: none !important;
+    }
+
+    /* Footer Bottom Optimization */
+    .footer .flex.flex-wrap.justify-between.items-center {
+        flex-direction: column !important;
+        gap: 30px !important;
+        text-align: center !important;
+        padding-top: 40px !important;
+        padding-bottom: 40px !important;
+    }
+
+    /* Footer Bottom Optimization - Balanced v30 */
+    footer .flex.flex-wrap.justify-between.items-center {
+        flex-direction: column !important;
+        gap: 20px !important;
+        text-align: center !important;
+        padding-top: 35px !important;
+        padding-bottom: 35px !important;
+    }
+
+    footer .flex.flex-wrap.justify-between.items-center .flex.gap-4 {
+        flex-direction: column !important;
+        gap: 10px !important;
+        width: 100% !important;
+        align-items: center !important;
+        margin-top: 5px !important;
+    }
+
+    .admin-secret {
+        opacity: 0 !important;
+        cursor: default !important;
+        pointer-events: auto !important;
+        user-select: none !important;
+    }
+
+    footer .flex.flex-wrap.justify-between.items-center p {
+        margin-bottom: 2px !important;
+        font-size: 0.95rem !important;
+        opacity: 0.8;
+        word-spacing: 4px !important;
+        /* Økt ordavstand for bedre lesbarhet */
+    }
+
+    /* v31 Optimeringer - Midtstilt footer & Prosjektsider */
+    body.homepage-refresh .footer-content {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        gap: 40px !important;
+    }
+
+    body.homepage-refresh .footer-info {
+        max-width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+
+    body.homepage-refresh .footer-links {
+        grid-template-columns: 1fr !important;
+        width: 100% !important;
+        max-width: 380px !important;
+        margin: 0 auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+
+    body.homepage-refresh .footer-links a.social-link {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    /* Breadcrumb & Project Hero Mobil - v31 */
+    @media (max-width: 768px) {
+        .breadcrumb {
+            justify-content: center !important;
+            gap: 8px !important;
+            margin-top: 15px !important;
+            flex-wrap: wrap !important;
+        }
+
+        .breadcrumb li {
+            font-size: 13px !important;
+        }
+
+        body.project-page-refresh .project-page-banner {
+            padding-top: 90px !important;
+            padding-bottom: 40px !important;
+        }
+
+        body.project-page-refresh .project-page-title {
+            font-size: 2.1rem !important;
+            /* Redusert fra 2.5rem for bedre plass */
+            margin-top: 10px !important;
+            margin-bottom: 12px !important;
+            line-height: 1.1 !important;
+        }
+
+        body.project-page-refresh .project-page-summary {
+            font-size: 0.95rem !important;
+            margin-bottom: 20px !important;
+            line-height: 1.5 !important;
+        }
+
+        body.project-page-refresh .project-page-actions {
+            gap: 12px !important;
+            /* Sikre gap mellom stablede knapper */
+        }
+
+        body.project-page-refresh .project-page-hero {
+            padding: 24px 20px !important;
+        }
+
+        .breadcrumb {
+            justify-content: center !important;
+            gap: 6px !important;
+            margin-top: 25px !important;
+            /* Økt fra 15px for å unngå tetthet */
+            flex-wrap: wrap !important;
+            opacity: 0.9;
+        }
+    }
+}
+
+/* Blog Header Mobile Optimization */
+.blog-header-flex {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 20px !important;
+}
+
+.blog-header-flex h2 {
+    font-size: 38px !important;
+    line-height: 1.2 !important;
+}
+
+.blog-header-flex .award-link {
+    margin-top: 10px !important;
+}
+

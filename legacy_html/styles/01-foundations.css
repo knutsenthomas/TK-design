@@ -1,0 +1,175 @@
+/* =========================================
+   TABLE OF CONTENTS
+   -----------------------------------------
+   1.  BASE & TYPOGRAPHY
+   2.  HEADER & NAVIGATION
+   3.  HERO SECTION / BANNER
+   4.  ABOUT SECTION
+   5.  SERVICES SECTION
+   6.  PORTFOLIO SECTION
+   7.  PROCESS SECTION
+   8.  MEETING & CONTACT SECTION
+   9.  TESTIMONIALS SECTION
+   10. BLOG SECTION
+   11. FOOTER SECTION
+   ========================================= */
+
+/* =========================================
+   1. BASE & TYPOGRAPHY
+
+   ========================================= */
+/* Local font definitions */
+@font-face {
+  font-family: 'Caveat';
+  font-style: normal;
+  font-weight: 400;
+  font-display: optional;
+  src: url('/assets/fonts/caveat-400.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Caveat';
+  font-style: normal;
+  font-weight: 500;
+  font-display: optional;
+  src: url('/assets/fonts/caveat-500.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Caveat';
+  font-style: normal;
+  font-weight: 600;
+  font-display: optional;
+  src: url('/assets/fonts/caveat-600.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Caveat';
+  font-style: normal;
+  font-weight: 700;
+  font-display: optional;
+  src: url('/assets/fonts/caveat-700.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Kanit';
+  font-style: normal;
+  font-weight: 300;
+  font-display: optional;
+  src: url('/assets/fonts/kanit-300.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Kanit';
+  font-style: normal;
+  font-weight: 400;
+  font-display: optional;
+  src: url('/assets/fonts/kanit-400.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Kanit';
+  font-style: normal;
+  font-weight: 500;
+  font-display: optional;
+  src: url('/assets/fonts/kanit-500.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Kanit';
+  font-style: normal;
+  font-weight: 600;
+  font-display: optional;
+  src: url('/assets/fonts/kanit-600.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Kanit';
+  font-style: normal;
+  font-weight: 700;
+  font-display: optional;
+  src: url('/assets/fonts/kanit-700.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+:root {
+    --theme-bg: #F9FAFB;
+    --clr-base: #1B4965;
+    --clr-white: #ffffff;
+    --clr-common-text: #4B5563;
+    --clr-border: #E5E7EB;
+    --font-primary: 'Kanit', sans-serif;
+    --font-secondary: 'Caveat', cursive;
+    --container-width: 1350px;
+
+    /* Mobile Design Guidelines */
+    --mobile-font-size: 16px;
+    --mobile-header-size: 30px;
+    --mobile-line-height: 1.5;
+    --mobile-touch-target: 44px;
+    --mobile-spacing: 20px;
+}
+
+.back-to-top-btn {
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    z-index: 1200;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border: none;
+    border-radius: 18px;
+    background: var(--refresh-accent, #ff6a1b);
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 18px 36px rgba(255, 106, 27, 0.24);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(14px);
+    transition:
+        opacity 0.22s ease,
+        transform 0.22s ease,
+        box-shadow 0.22s ease,
+        visibility 0.22s ease;
+}
+
+.back-to-top-btn:hover {
+    transform: translateY(10px);
+    box-shadow: 0 22px 40px rgba(255, 106, 27, 0.3);
+}
+
+.back-to-top-btn:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 4px rgba(255, 106, 27, 0.16),
+        0 18px 36px rgba(255, 106, 27, 0.24);
+}
+
+.back-to-top-btn.visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+    .back-to-top-btn {
+        right: 16px;
+        bottom: 16px;
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+    }
+}
+

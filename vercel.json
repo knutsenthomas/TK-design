@@ -30,7 +30,8 @@
           "legacy_html/public/**",
           "legacy_html/speed-test/**",
           "legacy_html/nettside-sjekker-dist/**",
-          "legacy_html/visittkort/**"
+          "legacy_html/visittkort/**",
+          "legacy_html/server/**"
         ]
       }
     }

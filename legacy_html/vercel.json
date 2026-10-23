@@ -30,7 +30,8 @@
           "img/**",
           "js/**",
           "visittkort/**",
-          "assets/**"
+          "assets/**",
+          "server/**"
         ]
       }
     }

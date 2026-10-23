@@ -1,0 +1,244 @@
+/* =========================================
+   7. PROCESS SECTION
+   ========================================= */
+.process-section {
+    background: linear-gradient(145deg, #ffffff, #f1f5f9);
+    border: 1px solid var(--clr-border);
+    border-radius: 20px;
+    padding: 80px 40px;
+}
+
+.process-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* Tvinger 5 kolonner på desktop */
+    gap: 20px; /* Litt mindre gap for å få bedre plass */
+}
+
+.process-card {
+    background: #ffffff;
+    border: 1px solid var(--clr-border);
+    padding: 30px 25px; /* Redusert padding for å passe bedre i 4 kolonner */
+    border-radius: 15px;
+    position: relative;
+    transition: 0.3s;
+    box-shadow: 0 10px 30px rgba(27, 73, 101, 0.05);
+}
+
+.process-card:hover {
+    border-color: var(--clr-base);
+}
+
+.process-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 0 50px 50px;
+    border-color: transparent transparent var(--theme-bg) transparent;
+    transition: 0.3s;
+}
+
+.process-card:hover::after {
+    border-color: transparent transparent var(--clr-base) transparent;
+}
+
+/* Language Switcher */
+.lang-btn {
+    background: none;
+    border: none;
+    color: var(--clr-common-text);
+    cursor: pointer;
+    padding: 5px 10px;
+    font-size: 14px;
+    position: relative;
+}
+
+.lang-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 10px;
+    right: 10px;
+    height: 2px;
+    background: var(--clr-base);
+}
+
+/* Awards Table Styling */
+.awards-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 40px;
+}
+
+.awards-table td {
+    padding: 25px 0;
+    border-bottom: 1px solid var(--clr-border);
+    color: var(--clr-white);
+}
+
+.awards-table td:last-child {
+    color: var(--clr-base);
+    font-weight: 600;
+}
+
+.award-link {
+    color: var(--clr-base);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+}
+
+.award-link:hover {
+    color: var(--clr-white);
+}
+
+/* Fix Star Icon Color */
+.about-intro img[alt="Star"] {
+    filter: invert(56%) sepia(90%) saturate(1636%) hue-rotate(352deg) brightness(101%) contrast(106%);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .banner-content h1 {
+        font-size: 50px;
+    }
+
+    .portfolio-grid,
+    .process-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .nav-desktop {
+        display: none;
+    }
+
+    .menu-trigger {
+        display: block;
+    }
+}
+
+/* Tidlig aktivering av mobilmeny pga stor desktopmeny */
+@media (max-width: 1200px) {
+
+    .nav-desktop,
+    body.homepage-refresh .nav-desktop {
+        display: none !important;
+    }
+
+    .menu-trigger,
+    body.homepage-refresh .menu-trigger {
+        display: inline-flex !important;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Marquee */
+.marquee-wrapper {
+    background-color: var(--clr-base);
+    padding: 12px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    display: flex;
+}
+
+.marquee-content {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    animation: marquee 20s linear infinite;
+}
+
+.marquee-item {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    padding-right: 40px;
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.marquee-item::after {
+    content: '*';
+    margin-left: 40px;
+    opacity: 0.55;
+}
+
+.marquee-content img {
+    height: 30px;
+    /* Adjust based on image size */
+    width: auto;
+    max-width: none;
+}
+
+.marquee-content.reverse {
+    animation-direction: reverse;
+}
+
+@keyframes marquee {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+/* Awards Section */
+.awards-section {
+    padding: 100px 0;
+}
+
+@media (max-width: 768px) {
+    .awards-section {
+        padding: 50px 0;
+    }
+}
+
+.awards-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.awards-table tr {
+    border-bottom: 1px solid #2c3030;
+}
+
+.awards-table td {
+    padding: 30px 0;
+    color: var(--clr-white);
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.awards-table tr:hover td {
+    color: var(--clr-base);
+}
+
+.award-link {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    color: var(--clr-base);
+    font-size: 16px;
+}
+

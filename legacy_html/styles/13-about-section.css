@@ -1,0 +1,86 @@
+/* =========================================
+   4. ABOUT SECTION
+   ========================================= */
+.about-section {
+    text-align: center;
+}
+
+.about-intro {
+    max-width: 800px;
+    margin: 0 auto 60px;
+}
+
+.about-intro p {
+    font-size: 28px;
+    color: var(--clr-base);
+    line-height: 1.4;
+}
+
+.tab-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 60px;
+}
+
+.tab-btn {
+    background: #ffffff;
+    color: var(--clr-base);
+    border: 1px solid var(--clr-border);
+    padding: 15px 30px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.tab-btn.active,
+.tab-btn:hover {
+    background: var(--clr-base);
+    color: #fff;
+}
+
+.tab-content {
+    display: none;
+    text-align: left;
+}
+
+.tab-content.active {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: 30px;
+    animation: fadeIn 0.5s ease;
+}
+
+.info-card {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid var(--clr-border);
+    box-shadow: 0 10px 30px rgba(27, 73, 101, 0.05);
+    transition: 0.3s;
+}
+
+.info-card:hover {
+    border-color: var(--clr-base);
+}
+
+.info-card h4,
+.info-card .info-card-label {
+    color: var(--clr-base) !important;
+    font-size: 14px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.info-card h3 {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.info-card p {
+    font-size: 14px;
+}
+

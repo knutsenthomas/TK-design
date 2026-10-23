@@ -1,0 +1,107 @@
+/* ========== Blog Content Elements ========== */
+/* Alert Boxes in Blog Posts */
+.alert {
+    padding: 20px 24px;
+    border-radius: 12px;
+    margin: 24px 0;
+    border-left: 5px solid;
+    font-size: 16px;
+    line-height: 1.7;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.alert-info {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+    color: #93c5fd;
+}
+
+.alert-tip {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: #10b981;
+    color: #6ee7b7;
+}
+
+.alert-warning {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: #f59e0b;
+    color: #fcd34d;
+}
+
+.alert-danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: #ef4444;
+    color: #fca5a5;
+}
+
+/* Tables in Blog Posts */
+.blog-table-scroll {
+    width: 100%;
+    margin: 30px 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.blog-table {
+    width: max-content;
+    min-width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+    background: transparent;
+    border-radius: 0;
+    overflow: visible;
+    display: table;
+}
+
+.blog-table th,
+.blog-table td {
+    padding: 16px 20px;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid rgba(17, 38, 60, 0.1);
+    overflow-wrap: break-word;
+}
+
+.blog-table th {
+    background: rgba(249, 115, 22, 0.1);
+    font-weight: 600;
+    color: var(--clr-base);
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+
+.blog-table td {
+    color: var(--refresh-text);
+}
+
+@media (max-width: 768px) {
+    .blog-table-scroll {
+        margin: 24px 0;
+    }
+
+    .blog-table th,
+    .blog-table td {
+        padding: 12px 14px;
+        font-size: 13px;
+        min-width: 140px;
+    }
+}
+
+.blog-table tr:last-child td {
+    border-bottom: none;
+}
+
+.blog-table tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Video Embeds in Blog Posts */
+.video-embed {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 12px;
+    margin: 30px 0;
+    border: 2px solid rgba(249, 115, 22, 0.2);
+}
+

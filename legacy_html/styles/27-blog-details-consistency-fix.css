@@ -1,0 +1,19 @@
+/* =========================================
+   BLOG DETAILS CONSISTENCY FIX
+   Matches Blog List rounded corners and margins
+   ========================================= */
+@media (max-width: 768px) {
+    body.homepage-refresh.blog-page-refresh .blog-page-hero,
+    body.homepage-refresh.blog-page-refresh .blog-article-shell,
+    body.homepage-refresh.blog-page-refresh .blog-side-card {
+        border-radius: 28px !important; /* Identisk med oversikten */
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    /* Spesifikk fix for toppen av blog-details hero */
+    body.homepage-refresh.blog-page-refresh .blog-page-hero {
+        margin-top: 12px !important;
+    }
+}
+

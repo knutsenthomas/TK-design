@@ -1,0 +1,87 @@
+/* =========================================
+   SOCIAL PROOF SECTION
+   ========================================= */
+.social-proof-section {
+    background-color: var(--theme-bg);
+}
+.social-proof-section h2.section-title {
+    color: #ffffff !important;
+}
+.proof-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+}
+.proof-card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(27, 73, 101, 0.05);
+    text-align: center;
+    border: 1px solid var(--clr-border);
+}
+.proof-card h3 {
+    font-size: 1.4rem;
+    color: var(--clr-base);
+    margin-bottom: 30px;
+    font-family: var(--font-primary);
+}
+.chart-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 20px;
+    height: 180px;
+    padding-bottom: 30px;
+    position: relative;
+    border-bottom: 2px solid var(--clr-border);
+}
+.chart-bar {
+    width: 60px;
+    height: 0; /* Animated later */
+    background: #E5E7EB;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    position: relative;
+}
+.social-proof-section.animated .chart-bar {
+    animation: growBar 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+.highlight-bar {
+    background: linear-gradient(180deg, #ff9b5c, var(--refresh-accent));
+}
+.highlight-bar-reverse {
+    background: #9CA3AF; 
+}
+.highlight-bar-green {
+    background: linear-gradient(180deg, #ff9b5c, var(--refresh-accent));
+}
+.chart-label {
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--clr-common-text);
+    font-weight: 500;
+}
+.chart-value {
+    position: absolute;
+    top: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: 800;
+    color: var(--clr-base);
+    font-size: 1.2rem;
+    opacity: 0;
+}
+.social-proof-section.animated .chart-value {
+    animation: fadeIn 0.5s ease 1s forwards;
+}
+@keyframes growBar {
+    from { height: 0; }
+    to { height: var(--bar-height); }
+}
+@keyframes fadeIn {
+    to { opacity: 1; }
+}
+

@@ -1,0 +1,93 @@
+/* =========================================
+   9. TESTIMONIALS SECTION
+   ========================================= */
+.testimonial-section {
+    padding: 120px 0;
+    text-align: center;
+    overflow: hidden;
+}
+
+.testimonial-bg {
+    background: #ffffff;
+    border: 1px solid var(--clr-border);
+    box-shadow: 0 10px 40px rgba(27, 73, 101, 0.05);
+    border-radius: 10px;
+    padding: 100px 60px;
+    position: relative;
+    margin-top: 50px;
+}
+
+.testimonial-slider {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+}
+
+.testimonial-slide {
+    display: none;
+    animation: fadeIn 0.5s;
+}
+
+.testimonial-slide.active {
+    display: block;
+}
+
+.testimonial-text {
+    font-size: 24px;
+    color: var(--clr-base);
+    font-style: italic;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.stars {
+    color: #FFD700;
+    margin-bottom: 20px;
+}
+
+.client-info h4,
+.client-info h3 {
+    color: var(--clr-base);
+    font-size: 20px;
+}
+
+.client-info span {
+    color: var(--clr-common-text);
+}
+
+.testimonial-dots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    background: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    opacity: 0.5;
+}
+
+.dot.active {
+    opacity: 1;
+    background: var(--clr-base);
+}
+
+/* Partner Slider */
+.partner-slider-container {
+    padding-top: 80px;
+    overflow: hidden;
+}
+
+.partner-track {
+    display: flex;
+    gap: 50px;
+    align-items: center;
+    animation: marquee 15s linear infinite;
+    width: max-content;
+}
+

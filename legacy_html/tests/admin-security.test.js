@@ -43,7 +43,7 @@ test('private planner representations are blocked while public posts and SEO fil
 });
 test('actual Express prefix boundary blocks every admin method before its handler', async () => {
   const app=express(),source=fs.readFileSync(require.resolve('../server.js'),'utf8');
-  const registration=source.match(/app\.use\(\['\/api\/debug-env'[\s\S]*?\], verifyAdminToken\);/)[0];
+  const registration=source.match(/app\.use\(\s*\[\s*["']\/api\/debug-env["'][\s\S]*?\]\s*,\s*verifyAdminToken\s*,?\s*\);/)[0];
   vm.runInNewContext(registration,{app,verifyAdminToken:guardFor(owner)});
   let mutations=0;
   for (const route of ['/api/messages/item','/api/social-planner/settings','/api/social/autopost','/api/analytics','/api/debug-env','/api/unsplash/search']) app.all(route,(_req,res)=>{mutations++;res.json({ok:true});});

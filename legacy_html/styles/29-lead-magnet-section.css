@@ -1,0 +1,54 @@
+/* =========================================
+   LEAD MAGNET SECTION
+   ========================================= */
+.lead-magnet-section {
+    background-color: var(--theme-bg);
+}
+.lead-magnet-card {
+    background: linear-gradient(135deg, rgba(27, 73, 101, 0.03), rgba(59, 130, 246, 0.08));
+    padding: 60px 30px;
+    border-radius: 30px;
+    border: 1px solid rgba(59, 130, 246, 0.15);
+    box-shadow: 0 10px 40px rgba(27, 73, 101, 0.04);
+}
+.lead-icon-box {
+    width: 80px;
+    height: 80px;
+    background: #fff;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    color: var(--clr-base);
+    box-shadow: 0 10px 20px rgba(27, 73, 101, 0.1);
+    margin-bottom: 24px;
+}
+.lead-magnet-card h2 {
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    color: var(--clr-base);
+}
+.lead-magnet-form {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    max-width: 600px;
+    margin: 0 auto;
+}
+.lead-magnet-form input[type="email"] {
+    flex: 1;
+    min-width: 250px;
+    padding: 16px 24px;
+    border-radius: 16px;
+    border: 1px solid var(--clr-border);
+    font-size: 1rem;
+    outline: none;
+    transition: 0.3s;
+    background: #fff;
+}
+.lead-magnet-form input[type="email"]:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+

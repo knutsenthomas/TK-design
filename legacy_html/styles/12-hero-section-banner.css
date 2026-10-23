@@ -1,0 +1,71 @@
+/* =========================================
+   3. HERO SECTION / BANNER
+   ========================================= */
+.banner {
+    padding-top: 180px;
+    padding-bottom: 120px;
+    position: relative;
+    overflow: hidden;
+}
+
+.banner-content h1 {
+    font-size: 80px;
+    line-height: 1.1;
+    margin-bottom: 30px;
+}
+
+.banner-content .subtitle {
+    display: inline-block;
+    color: var(--clr-base);
+    border-bottom: 1px solid var(--clr-base);
+    margin-bottom: 30px;
+    padding-bottom: 10px;
+    text-transform: capitalize;
+    font-size: 18px;
+}
+
+.play-video-btn {
+    width: 80px;
+    height: 80px;
+    border: 1px solid var(--clr-base);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--clr-base);
+    font-size: 30px;
+    position: relative;
+    cursor: pointer;
+}
+
+.banner-image {
+    position: relative;
+}
+
+.banner-image img {
+    border-radius: 20px;
+}
+
+@media (max-width: 480px) {
+    .banner {
+        padding-top: 120px;
+        padding-bottom: 60px;
+    }
+
+    .banner-content h1 {
+        font-size: 40px;
+        line-height: 1.1;
+    }
+
+    .banner-content .subtitle {
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+    .play-video-btn {
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+    }
+}
+

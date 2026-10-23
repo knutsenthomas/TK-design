@@ -1,0 +1,50 @@
+/* =========================================
+   9. BLOG SECTION
+   ========================================= */
+.blog-section {
+    padding: 120px 0;
+}
+
+.blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr));
+    gap: 40px;
+}
+
+.blog-card {
+    border-bottom: 1px solid var(--clr-border);
+    padding-bottom: 30px;
+}
+
+.blog-card:hover h3 a {
+    color: var(--clr-base);
+}
+
+.blog-date {
+    border: 1px solid var(--clr-border);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.blog-card h3 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.blog-img {
+    margin-bottom: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.blog-img img {
+    transition: 0.5s;
+}
+
+.blog-card:hover .blog-img img {
+    transform: scale(1.05);
+}
+

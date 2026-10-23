@@ -1,0 +1,72 @@
+/* =========================================
+   WORKFLOW / PROCESS SECTION ("SLIK JOBBER VI")
+   ========================================= */
+.workflow-section {
+    position: relative;
+    padding-top: 100px;
+    padding-bottom: 100px;
+    background: rgba(255, 255, 255, 0.4);
+    border-top: 1px solid rgba(18, 55, 92, 0.05);
+    border-bottom: 1px solid rgba(18, 55, 92, 0.05);
+}
+
+.workflow-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 20px !important;
+    margin-top: 48px;
+    position: relative;
+}
+
+.workflow-card {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(18, 55, 92, 0.08);
+    border-radius: 24px;
+    padding: 32px 20px;
+    box-shadow: 0 8px 24px rgba(18, 55, 92, 0.04);
+    transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 250ms ease, border-color 250ms ease;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.workflow-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 36px rgba(18, 55, 92, 0.08);
+    border-color: rgba(255, 106, 27, 0.3);
+}
+
+.workflow-step-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(255, 106, 27, 0.12) 0%, rgba(255, 106, 27, 0.04) 100%);
+    border: 1px solid rgba(255, 106, 27, 0.25);
+    color: #ff6a1b;
+    font-family: var(--font-primary, 'Kanit', sans-serif);
+    font-size: 1.1rem;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.workflow-title {
+    font-family: var(--font-primary, 'Kanit', sans-serif);
+    font-size: 1.22rem;
+    font-weight: 800;
+    color: #11263c;
+    margin: 0 0 10px 0;
+}
+
+.workflow-desc {
+    font-family: var(--font-primary, 'Kanit', sans-serif);
+    font-size: 0.92rem;
+    line-height: 1.58;
+    color: #4b5563;
+    margin: 0;
+}
+

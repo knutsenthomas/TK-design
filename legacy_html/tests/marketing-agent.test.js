@@ -53,9 +53,18 @@ test('storage unavailable means no outbound publishing call',async()=>{
  let calls=0;const s=setup({facebook:async()=>{calls++;}},{storage:false});assert.equal((await s.invoke('POST')).code,503);assert.equal(calls,0);
 });
 
-const source=fs.readFileSync(require.resolve('../server.js'),'utf8');
-function extractFunction(name){const start=source.indexOf('async function '+name+'(');assert.ok(start>=0);const end=source.indexOf('\n}',start)+2;return source.slice(start,end);}
-function providerContext(responses){let calls=0;const context={process:{env:{FB_PAGE_ID:'page',FB_PAGE_ACCESS_TOKEN:'test-token',INSTAGRAM_ACCOUNT_ID:'ig',LINKEDIN_ORGANIZATION_ID:'org',LINKEDIN_ACCESS_TOKEN:'test-token'}},URLSearchParams,getFetch:async()=>async()=>{const r=responses[calls++];return {ok:r.ok,json:async()=>r.data,text:async()=>'',headers:{get:name=>name==='x-restli-id'?r.id:null}};}};vm.createContext(context);for(const name of ['publishToFacebookPageApi','publishToInstagramApi','publishToLinkedInCompanyApi'])vm.runInContext(extractFunction(name),context);return {context,count:()=>calls};}
+const createSocialPublishing = require('../server/social-publishing');
+const source = fs.readFileSync(require.resolve('../server.js'), 'utf8') + fs.readFileSync(require.resolve('../server/social-publishing'), 'utf8');
+function extractFunction(name) { return createSocialPublishing({})[name].toString(); }
+function providerContext(responses) {
+ let calls = 0;
+ Object.assign(process.env, { FB_PAGE_ID: 'page', FB_PAGE_ACCESS_TOKEN: 'test-token', INSTAGRAM_ACCOUNT_ID: 'ig', LINKEDIN_ORGANIZATION_ID: 'org', LINKEDIN_ACCESS_TOKEN: 'test-token' });
+ const context = createSocialPublishing({ getFetch: async () => async () => {
+  const r = responses[calls++];
+  return { ok: r.ok, json: async () => r.data, text: async () => '', headers: { get: name => name === 'x-restli-id' ? r.id : null } };
+ } });
+ return { context, count: () => calls };
+}
 test('Facebook rejects failed HTTP and missing provider IDs; environment credentials remain supported',async()=>{
  for(const response of [{ok:false,data:{}},{ok:true,data:{}}]){const p=providerContext([response]);assert.equal((await p.context.publishToFacebookPageApi({message:'test'})).ok,false);}
  const p=providerContext([{ok:true,data:{id:'post'}}]);assert.equal((await p.context.publishToFacebookPageApi({message:'test'})).id,'post');

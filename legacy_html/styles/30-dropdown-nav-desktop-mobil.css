@@ -1,0 +1,110 @@
+/* =====================================================================
+   DROPDOWN NAV – Desktop & Mobil
+   ===================================================================== */
+
+/* Desktop: parent li posisjonering */
+.nav-desktop ul li.has-dropdown {
+    position: relative;
+}
+
+/* Desktop: submeny */
+.nav-desktop ul li.has-dropdown .submenu {
+    display: block;
+    position: absolute;
+    top: calc(100% + 20px); /* Økt avstand ytterligere for å gå klar av understreken */
+    left: 50%;
+    transform: translateX(-50%) translateY(10px); /* Starter litt lavere for animasjon */
+    min-width: 200px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+    padding: 8px 0; /* Symmetrisk padding uten tomt hvitt felt øverst */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 9999;
+    list-style: none;
+    margin: 0;
+    border: 1px solid rgba(17, 38, 60, 0.05); /* Tynn kant for bedre definisjon */
+}
+
+/* Pil-hale på submenyen */
+.nav-desktop ul li.has-dropdown .submenu::before {
+    content: '';
+    position: absolute;
+    top: -5px; /* Justert for å sitte perfekt på den nye avstanden */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px; /* Litt mindre og nettere */
+    height: 10px;
+    background: #ffffff;
+    rotate: 45deg;
+    border-radius: 2px;
+    box-shadow: -2px -2px 6px rgba(0,0,0,0.06);
+}
+
+/* Desktop: submeny lenker */
+.nav-desktop ul li.has-dropdown .submenu li {
+    position: relative;
+}
+.nav-desktop ul li.has-dropdown .submenu li a {
+    display: block;
+    padding: 10px 22px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #1e293b !important;
+    white-space: nowrap;
+    border-radius: 0;
+    transition: background 0.15s, color 0.15s;
+    text-decoration: none;
+}
+.nav-desktop ul li.has-dropdown .submenu li a:hover {
+    background: #f1f5f9;
+    color: #1B4965 !important;
+}
+
+/* Desktop: hover åpner dropdown */
+.nav-desktop ul li.has-dropdown:hover .submenu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Usynlig hover-bro som forhindrer at menyen forsvinner når musen beveger seg ned */
+.nav-desktop ul li.has-dropdown::after {
+    content: '';
+    position: absolute;
+    bottom: -25px; /* Utvidet for å dekke det større gapet */
+    left: -20px;
+    right: -20px;
+    height: 35px;
+    background: transparent;
+}
+
+/* Chevron-ikon rotasjon ved hover */
+.nav-desktop ul li.has-dropdown:hover .nav-chevron {
+    transform: rotate(180deg);
+}
+.nav-chevron {
+    display: inline-block;
+    font-size: 9px !important;
+    margin-left: 4px;
+    transition: transform 0.22s ease;
+    vertical-align: middle;
+    opacity: 0.75;
+}
+
+/* homepage-refresh variant */
+body.homepage-refresh .nav-desktop ul li.has-dropdown .submenu {
+    background: rgba(255, 255, 255, 0.98);
+}
+body.homepage-refresh .nav-desktop ul li.has-dropdown .submenu li a {
+    color: #1e293b !important;
+}
+body.homepage-refresh .nav-desktop ul li.has-dropdown .submenu li a:hover {
+    color: #1B4965 !important;
+    background: #f0f6ff;
+}
+
+/* --- End of Mobile Fixes Cleanup --- */
+
