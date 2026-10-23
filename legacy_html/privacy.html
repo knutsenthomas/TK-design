@@ -13,7 +13,8 @@
     <!-- Google Analytics GA4 -->
 
 
-<script src="/js/privacy-consent.js?v=20261023-brand" data-key="tk-privacy-v1" data-ga="G-5RZVDEBBYM" data-privacy="/privacy"></script>
+<script src="/js/privacy-consent.js?v=20261023-audit" data-key="tk-privacy-v1" data-ga="G-5RZVDEBBYM" data-privacy="/privacy" data-essential="Funksjoner du ber om: språkvalg og fremdrift i KI-sjekklisten. Skjemaopplysninger sendes når du selv sender inn skjemaet." data-essential-en="Requested features: language choice and AI checklist progress. Form details are sent when you submit the form." data-essential-es="Funciones solicitadas: idioma y progreso en la lista de IA. Los datos del formulario se envían al enviarlo." data-offline="true"></script>
+<script type="module" src="/js/offline-consent.js?v=20261023-audit"></script>
 </head>
 
 <body class="homepage-refresh legal-page-refresh privacy-page-refresh">
@@ -110,11 +111,11 @@
                     <div class="subpage-stat-pills">
                         <div class="subpage-stat-pill">
                             <i class="fas fa-shield-alt"></i>
-                            <span>100% GDPR-kompatibel</span>
+                            <span>Valg for personvern</span>
                         </div>
                         <div class="subpage-stat-pill">
                             <i class="fas fa-lock"></i>
-                            <span>Ingen deling til tredjeparter</span>
+                            <span>Åpenhet om leverandører</span>
                         </div>
                         <div class="subpage-stat-pill">
                             <i class="fas fa-calendar-check"></i>
@@ -147,6 +148,7 @@
                     </div>
 
                     <div class="legal-content-grid">
+<article class="legal-copy-card" id="browser-storage-inventory"><h2>Nettleserlagring og personvernvalg</h2><p>Teknisk oversikt oppdatert 23. oktober 2026. Dette omfatter også localStorage, sessionStorage og Cache Storage.</p><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;text-align:left"><tbody><tr><th scope="row">tk-privacy-v1</th><td>Samtykkevalg, versjon og tidspunkt huskes i 180 dager. Du kan avslå eller trekke tilbake via lenken for informasjonskapsler.</td></tr><tr><th scope="row">Google Analytics</th><td>Valgfri besøksanalyse starter først etter godkjenning. Google kan bruke _ga og _ga_* (satt til opptil 180 dager). Tilbaketrekking stopper videre måling og fjerner tilgjengelige analysekapsler på vårt domene.</td></tr><tr><th scope="row">Språk: site_lang</th><td>Språket du velger, huskes i localStorage og i en cookie med inntil ett års varighet for korrekt språk også fra serveren.</td></tr><tr><th scope="row">KI-sjekkliste</th><td>Avkryssede punkter lagres lokalt etter at du bruker sjekklisten. Ingen besøks-ID opprettes for dette.</td></tr><tr><th scope="row">Nettside-sjekker</th><td>Oppgitt rapportadresse huskes bare i den aktuelle fanens sessionStorage etter at du ber om rapport på e-post. Innsendt adresse og rapport sendes til tjenesten for levering.</td></tr><tr><th scope="row">Frakoblet bruk</th><td>Appbuffer i Cache Storage og eventuelle offentlige innholdskopier i localStorage aktiveres bare når du velger frakoblet bruk. Avslag avregistrerer nettstedets offline-worker og fjerner dens buffer. Dette sletter ikke kontoen, handlekurven eller egne notater.</td></tr><tr><th scope="row">Skjema og drift</th><td>Kontaktskjema og rapportbestillinger behandler opplysningene du sender inn. Drift/CDN og eventuelle eksterne skrifter mottar tekniske opplysninger ved ressursforespørsler.</td></tr></tbody></table></div><p>localStorage har normalt ikke automatisk utløp hvis annet ikke er angitt. sessionStorage varer normalt til fanens økt avsluttes; gjenoppretting av økten kan gjenopprette data. Sletting av nettleserdata kan fjerne lokale notater og utkast. Cookievalg sletter ikke kontoer, meldinger eller andre opplysninger som allerede er sendt til en tjeneste.</p><details lang="en"><summary>English version: browser storage and privacy choices</summary><table><tbody><tr><th scope="row">tk-privacy-v1</th><td>Consent categories, version and time are remembered for 180 days. Reject or withdraw using the cookie settings link.</td></tr><tr><th scope="row">Google Analytics</th><td>Optional visitor analytics starts only after approval. Google may use _ga and _ga_* (configured for up to 180 days). Withdrawal stops future measurement and removes accessible analytics cookies on our domain.</td></tr><tr><th scope="row">Språk: site_lang</th><td>Your chosen language is remembered in localStorage and a cookie lasting up to one year so the server can return the correct language.</td></tr><tr><th scope="row">KI-sjekkliste</th><td>Reviewed checklist items are saved locally after you use the checklist. This does not create a visitor ID.</td></tr><tr><th scope="row">Nettside-sjekker</th><td>A report email address is remembered only in this tab’s sessionStorage after you request an emailed report. The submitted address and report are sent to the service for delivery.</td></tr><tr><th scope="row">Frakoblet bruk</th><td>App caching in Cache Storage and any public content snapshots in localStorage start only when you enable offline use. Rejection unregisters this site’s offline worker and removes its caches. This does not delete your account, cart or notes.</td></tr><tr><th scope="row">Skjema og drift</th><td>Contact and report forms process the information you submit. Hosting/CDN services and any external font providers receive technical details when resources are requested.</td></tr></tbody></table><p>localStorage normally has no automatic expiry unless stated. sessionStorage normally lasts until the tab session ends; session restoration may restore it. Clearing browser data can remove local notes and drafts. Cookie choices do not delete accounts, messages or data already sent to a service.</p></details></article>
                         <article class="legal-copy-card">
                             <h2 data-i18n="privacy_policy.title">Personvernerklæring</h2>
                             <p data-i18n="privacy_policy.intro">

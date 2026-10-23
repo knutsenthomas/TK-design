@@ -680,7 +680,7 @@ const translations = {
             section2_title: "2. Use of Information",
             section2_content: "We only retain collected information for as long as necessary to provide you with your requested service.",
             section3_title: "3. Cookies",
-            section3_content: "We use cookies to understand how you use our site and to improve your experience.",
+            section3_content: "Optional Google Analytics measurement starts only after approval. Offline app storage is a separate choice. Language and checklist preferences support features you request.",
             note_title: "Questions about privacy?",
             note_content: "If you have questions about how information is handled, you can contact TK-design directly."
         },
@@ -1451,7 +1451,7 @@ const translations = {
             section2_title: "2. Bruk av informasjon",
             section2_content: "Vi oppbevarer kun innsamlet informasjon så lenge det er nødvendig for å gi deg den forespurte tjenesten.",
             section3_title: "3. Informasjonskapsler",
-            section3_content: "Vi bruker informasjonskapsler for å forstå hvordan du bruker siden vår og for å forbedre opplevelsen din.",
+            section3_content: "Valgfri måling fra Google Analytics starter først etter godkjenning. Frakoblet appbuffer er et separat valg. Språk og sjekklistevalg støtter funksjoner du ber om.",
             note_title: "Spørsmål om personvern?",
             note_content: "Hvis du har spørsmål om hvordan informasjon håndteres, kan du kontakte TK-design direkte."
         },

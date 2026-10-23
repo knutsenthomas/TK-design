@@ -1642,7 +1642,7 @@ export default function App() {
     (currentStrategy === 'desktop' ? pageCopy.hero.desktopLabel : pageCopy.hero.mobileLabel);
 
   useEffect(() => {
-    setReportEmail(window.localStorage.getItem('speed_test_report_email') || '');
+    setReportEmail(window.sessionStorage.getItem('speed_test_report_email') || '');
   }, []);
 
   useEffect(() => {
@@ -1840,7 +1840,7 @@ export default function App() {
         type: 'success',
         message: `Rapporten ble sendt til ${normalizedEmail}.`,
       });
-      window.localStorage.setItem('speed_test_report_email', normalizedEmail);
+      window.sessionStorage.setItem('speed_test_report_email', normalizedEmail);
     } catch (requestError) {
       console.error(requestError);
       setReportEmailFeedback({

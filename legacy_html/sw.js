@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tkdesign-consent-v2';
+const CACHE_NAME = 'tkdesign-consent-v3-offline';
 const STATIC_ASSETS = [
     '/',
     '/style.css',
@@ -19,7 +19,7 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
     event.waitUntil(
         caches.keys().then(keys =>
-            Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+            Promise.all(keys.filter(k => k.startsWith('tkdesign-') && k !== CACHE_NAME).map(k => caches.delete(k)))
         )
     );
     self.clients.claim();
@@ -30,6 +30,7 @@ self.addEventListener('fetch', event => {
     if (event.request.method !== 'GET') return;
     const url = new URL(event.request.url);
     // Don't intercept API calls or admin
+    if (url.origin !== self.location.origin || /privacy-consent/.test(url.pathname)) return;
     if (url.pathname.startsWith('/api') || url.pathname.startsWith('/admin')) return;
 
     event.respondWith(
