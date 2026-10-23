@@ -1,0 +1,4 @@
+## 2023-10-23 - [IP Spoofing Vulnerability]
+**Vulnerability:** Express was not configured to securely handle reverse proxy headers, and several APIs manually parsed `x-forwarded-for` and `x-forwarded-proto` headers, allowing attackers to easily spoof their IP address and protocol.
+**Learning:** In Express, manually parsing reverse proxy headers like `x-forwarded-for` and `x-forwarded-proto` without configuring `trust proxy` is a security risk. If a reverse proxy is not configured (or configured to append to client headers), attackers can provide their own `x-forwarded-*` headers to spoof their IP address.
+**Prevention:** Always configure `app.set('trust proxy', 1)` when running behind a reverse proxy, and consistently use `req.ip` and `req.protocol` rather than manually extracting reverse proxy headers.
