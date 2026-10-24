@@ -289,6 +289,7 @@ try {
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const app = express();
+app.set("trust proxy", 1);
 const PORT = process.env.PORT || 3000;
 const firebaseAccessTokenCache = new Map();
 const firebaseWebConfigCache = {
@@ -513,8 +514,7 @@ function createRateLimiter(options = {}) {
     options.message || "For mange forespørsler. Vennligst prøv igjen senere.";
 
   return (req, res, next) => {
-    const rawIp =
-      req.headers["x-forwarded-for"] || req.socket?.remoteAddress || "";
+    const rawIp = req.ip || "";
     const ip = String(rawIp).split(",")[0].trim() || "unknown";
     const key = `${req.path}_${ip}`;
     const now = Date.now();
@@ -599,17 +599,16 @@ async function verifyAdminToken(req, res, next) {
 }
 
 // One shared boundary protects every method, including future sibling routes.
-app.use(
-  [
-    "/api/debug-env",
-    "/api/analytics",
-    "/api/messages",
-    "/api/unsplash/search",
-    "/api/social-planner",
-    "/api/social/autopost",
-  ],
-  verifyAdminToken,
-);
+// Guard all administrative endpoints behind the admin authorization boundary
+app.use([
+  "/api/debug-env",
+  "/api/analytics",
+  "/api/messages",
+  "/api/unsplash/search",
+  "/api/social-planner",
+  "/api/social-planner/*",
+  "/api/social/autopost"
+], verifyAdminToken);
 app.use((req, res, next) => {
   if (adminSecurity.privatePlannerFile(req.path))
     return res.status(403).send("Denne filen er ikke offentlig.");
@@ -4803,15 +4802,7 @@ app.post("/api/contact", contactFormLimiter, async (req, res) => {
       consent: true,
       source_page: cleanSourcePage,
       status: "new",
-      ip_address:
-        (
-          req.headers["x-forwarded-for"] ||
-          (req.socket && req.socket.remoteAddress) ||
-          ""
-        )
-          .toString()
-          .split(",")[0]
-          .trim() || null,
+      ip_address: req.ip || null,
       user_agent: req.get("user-agent") || null,
     };
 
