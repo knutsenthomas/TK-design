@@ -1248,10 +1248,7 @@ module.exports = function createFeature(context) {
           return "";
         }
 
-        const forwardedProto = String(req.get("x-forwarded-proto") || "")
-          .split(",")[0]
-          .trim();
-        const protocol = forwardedProto || req.protocol || "https";
+        const protocol = req.protocol || "https";
         return `${protocol}://${host}`;
       }.apply(this, args);
     },
