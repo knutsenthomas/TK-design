@@ -289,6 +289,7 @@ try {
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 const firebaseAccessTokenCache = new Map();
 const firebaseWebConfigCache = {
@@ -513,8 +514,7 @@ function createRateLimiter(options = {}) {
     options.message || "For mange forespørsler. Vennligst prøv igjen senere.";
 
   return (req, res, next) => {
-    const rawIp =
-      req.headers["x-forwarded-for"] || req.socket?.remoteAddress || "";
+    const rawIp = req.ip || req.socket?.remoteAddress || "";
     const ip = String(rawIp).split(",")[0].trim() || "unknown";
     const key = `${req.path}_${ip}`;
     const now = Date.now();
@@ -4805,7 +4805,7 @@ app.post("/api/contact", contactFormLimiter, async (req, res) => {
       status: "new",
       ip_address:
         (
-          req.headers["x-forwarded-for"] ||
+          req.ip ||
           (req.socket && req.socket.remoteAddress) ||
           ""
         )
