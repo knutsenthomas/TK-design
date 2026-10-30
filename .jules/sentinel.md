@@ -1,0 +1,4 @@
+## 2024-11-20 - Ensure Path Traversal Protection when Constructing Firestore URLs
+**Vulnerability:** Path traversal possible by passing arbitrary paths (e.g. `../`) as Firestore document ID in requests like `PATCH /api/messages/:id` or `DELETE /api/messages/:id` which are directly interpolated into the request URL, circumventing document scoping if no path separation/encoding is handled. Note: they already had one learning regarding encodeURIComponent but were not applying it to ALL ids.
+**Learning:** We need to use `encodeURIComponent` for all request parameters inserted into external URLs (like Firestore API endpoints) to prevent the user from breaking out of the document/collection bounds via path traversal characters.
+**Prevention:** Always use `encodeURIComponent` when inserting user inputs (like IDs from request parameters) into external or backend service API URL paths.
