@@ -14,22 +14,32 @@ service firebase.storage {
         && request.resource.contentType != null
         && request.resource.contentType.matches('image/.*');
     }
+    function isDocumentUpload() {
+      return request.resource != null
+        && request.resource.size <= 20 * 1024 * 1024
+        && request.resource.contentType != null
+        && (request.resource.contentType.matches('image/.*')
+          || request.resource.contentType == 'application/pdf');
+    }
     match /uploads/{allPaths=**} {
       allow read: if true;
-      allow write: if isAdministrator();
+      allow create, update: if isAdministrator() && isDocumentUpload();
+      allow delete: if isAdministrator();
     }
     match /avatars/{allPaths=**} {
       allow read: if true;
-      allow write: if isAdministrator() && isImageUpload();
+      allow create, update: if isAdministrator() && isImageUpload();
+      allow delete: if isAdministrator();
     }
     match /images/{allPaths=**} {
       allow read: if true;
-      allow write: if isAdministrator() && isImageUpload();
+      allow create, update: if isAdministrator() && isImageUpload();
+      allow delete: if isAdministrator();
     }
-    // Existing portfolio/media downloads remain public; writes require an admin.
+    // Preserve existing portfolio downloads, but never bypass explicit upload checks.
     match /{allPaths=**} {
       allow read: if true;
-      allow write: if isAdministrator();
+      allow write: if false;
     }
   }
 }

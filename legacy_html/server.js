@@ -607,7 +607,8 @@ app.use(
     "/api/messages",
     "/api/unsplash/search",
     "/api/social-planner",
-    "/api/social/autopost",
+    "/api/social",
+    "/api/admin",
   ],
   verifyAdminToken,
 );
@@ -5010,8 +5011,13 @@ app.get(
 // Visittkort static assets
 app.use("/visittkort", express.static(path.join(__dirname, "visittkort")));
 
-// Static Files (as fallback)
-app.use(express.static(path.join(__dirname)));
+// Explicit page/data routes above remain public; source and private files do not.
+const { isPublicStaticPath } = require("./server/static-assets");
+const publicAssets = express.static(__dirname);
+app.use((req, res, next) => {
+  if (!isPublicStaticPath(req.path)) return res.sendStatus(404);
+  return publicAssets(req, res, next);
+});
 
 if (require.main === module) {
   app.listen(PORT, () => {

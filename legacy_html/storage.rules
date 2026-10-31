@@ -1,0 +1,45 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isAdministrator() {
+      return request.auth != null
+        && request.auth.token.get(['firebase', 'sign_in_provider'], '') != 'anonymous'
+        && (request.auth.token.get('admin', false) == true
+          || (request.auth.token.get('email_verified', false) == true
+            && request.auth.token.get('email', '').lower() in ['thomas@tk-design.no', 'knutsenthomas@gmail.com']));
+    }
+    function isImageUpload() {
+      return request.resource != null
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType != null
+        && request.resource.contentType.matches('image/.*');
+    }
+    function isDocumentUpload() {
+      return request.resource != null
+        && request.resource.size <= 20 * 1024 * 1024
+        && request.resource.contentType != null
+        && (request.resource.contentType.matches('image/.*')
+          || request.resource.contentType == 'application/pdf');
+    }
+    match /uploads/{allPaths=**} {
+      allow read: if true;
+      allow create, update: if isAdministrator() && isDocumentUpload();
+      allow delete: if isAdministrator();
+    }
+    match /avatars/{allPaths=**} {
+      allow read: if true;
+      allow create, update: if isAdministrator() && isImageUpload();
+      allow delete: if isAdministrator();
+    }
+    match /images/{allPaths=**} {
+      allow read: if true;
+      allow create, update: if isAdministrator() && isImageUpload();
+      allow delete: if isAdministrator();
+    }
+    // Preserve existing portfolio downloads, but never bypass explicit upload checks.
+    match /{allPaths=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}
