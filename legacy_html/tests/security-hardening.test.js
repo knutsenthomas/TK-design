@@ -71,4 +71,3 @@ test('Firebase deployment uses the same reviewed rules as repository root', () =
     assert.equal(config.firestore.rules, 'firestore.rules');
     assert.equal(config.storage.rules, 'storage.rules');
 });
-
