@@ -1623,7 +1623,7 @@ app.patch("/api/messages/:id", async (req, res) => {
       .join("&");
 
     const response = await fetch(
-      `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${encodeURIComponent(databaseId)}/documents/${collection}/${id}?${updateMask}`,
+      `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${encodeURIComponent(databaseId)}/documents/${encodeURIComponent(collection)}/${encodeURIComponent(id)}?${updateMask}`,
       {
         method: "PATCH",
         headers: {
@@ -1663,7 +1663,7 @@ app.delete("/api/messages/:id", async (req, res) => {
     const fetch = await getFetch();
 
     const response = await fetch(
-      `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${encodeURIComponent(databaseId)}/documents/${collection}/${id}`,
+      `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${encodeURIComponent(databaseId)}/documents/${encodeURIComponent(collection)}/${encodeURIComponent(id)}`,
       {
         method: "DELETE",
         headers: {
