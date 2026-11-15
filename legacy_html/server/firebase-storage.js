@@ -206,7 +206,7 @@ module.exports = function createFeature(context) {
           created_at: new Date().toISOString(),
         };
         const response = await fetch(
-          `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${encodeURIComponent(databaseId)}/documents/${collection}?documentId=${documentId}`,
+          `https://firestore.googleapis.com/v1/projects/${encodeURIComponent(projectId)}/databases/${encodeURIComponent(databaseId)}/documents/${encodeURIComponent(collection)}?documentId=${encodeURIComponent(documentId)}`,
           {
             method: "POST",
             headers: {
@@ -255,7 +255,7 @@ module.exports = function createFeature(context) {
       const { getFirebaseConfig } = context;
       return function getFirestoreDocumentUrl(collection, documentId) {
         const { projectId, databaseId } = getFirebaseConfig();
-        return `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${encodeURIComponent(databaseId)}/documents/${encodeURIComponent(collection)}/${encodeURIComponent(documentId)}`;
+        return `https://firestore.googleapis.com/v1/projects/${encodeURIComponent(projectId)}/databases/${encodeURIComponent(databaseId)}/documents/${encodeURIComponent(collection)}/${encodeURIComponent(documentId)}`;
       }.apply(this, args);
     },
 
