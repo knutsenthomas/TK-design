@@ -204,7 +204,7 @@ const translations = {
             p3_f3: "Tailored brand design",
             p3_f4: "SEO strategy and structured data",
             p3_f5: "Performance and security",
-            p3_f6: "Dedicated operation & maintenance plan",
+            p3_f6: "Ready for an optional support & maintenance plan",
             p4_badge: "Social Media",
             p4_name: "SoMe & Content",
             p4_desc: "Graphic design and posts that engage your audience.",
@@ -285,8 +285,8 @@ const translations = {
                 based_title: "About TK-design",
                 based_desc: "We build websites, content and strategies that make businesses more visible, credible, and distinct online.",
                 tag2: "Close Collaboration",
-                exp_title: "A small, dedicated team",
-                exp_desc: "We combine web design, content, and strategic advice in one seamless, personal delivery.",
+                exp_title: "Personal and dedicated",
+                exp_desc: "You have one fixed contact from the first meeting to the finished website, with web design, content and strategic advice in one delivery.",
                 tag3: "Measurable Growth",
                 client_title: "Lasting results",
                 client_desc: "Focus on creativity, lightning-fast performance, and high quality in every solution we deliver."
@@ -412,7 +412,7 @@ const translations = {
             email_label: "Email",
             email_val: "thomas@tk-design.no",
             location_label: "Phone",
-            location_val: "93094615",
+            location_val: "<a href=\"tel:+4793094615\">930 94 615</a>",
             cta: "Go to contact page"
         },
         contact_page: {
@@ -975,7 +975,7 @@ const translations = {
             p3_f3: "Skreddersydd merkevare-design",
             p3_f4: "SEO-strategi og strukturerte data",
             p3_f5: "Ytelse og sikkerhet",
-            p3_f6: "Dedikert drift & vedlikeholdsavtale",
+            p3_f6: "Klar for valgfri drifts- og supportavtale",
             p4_badge: "Sosiale medier",
             p4_name: "SoMe & Innhold",
             p4_desc: "Grafisk design og innlegg som engasjerer følgerne dine.",
@@ -1056,8 +1056,8 @@ const translations = {
                 based_title: "Om TK-design",
                 based_desc: "Vi bygger nettsider, innhold og strategier som gjør bedrifter mer synlige, troverdige og tydelige på nett.",
                 tag2: "Tett Samarbeid",
-                exp_title: "Et lite, dedikert team",
-                exp_desc: "Vi kombinerer webdesign, innhold og strategisk rådgivning i én sømløs og personlig leveranse.",
+                exp_title: "Personlig og dedikert",
+                exp_desc: "Du har én fast kontaktperson fra første møte til ferdig nettside, med webdesign, innhold og strategisk rådgivning i én leveranse.",
                 tag3: "Målbar Vekst",
                 client_title: "Varige resultater",
                 client_desc: "Fokus på kreativitet, lynrask ytelse og høy kvalitet i hver eneste løsning vi leverer."
@@ -1183,7 +1183,7 @@ const translations = {
             email_label: "E-post",
             email_val: "thomas@tk-design.no",
             location_label: "Telefon",
-            location_val: "93094615",
+            location_val: "<a href=\"tel:+4793094615\">930 94 615</a>",
             cta: "Gå til kontaktsiden"
         },
         contact_page: {

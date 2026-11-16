@@ -1,34 +1,44 @@
 # TK-design
 
-> TK-design is a Norway-based web studio run by Thomas Knutsen. We design, build, and improve websites for small and medium businesses.
+> TK-design er et norsk webbyrå i Moss, drevet av Thomas Knutsen. Vi designer, bygger og forbedrer nettsider for små og mellomstore bedrifter i Østfold og resten av Norge.
+> TK-design is a Norwegian web studio in Moss, run by Thomas Knutsen, building and improving websites for small and medium-sized businesses.
 
-## Canonical Domain
-- https://tk-design.no
+## Kanonisk domene
+- https://www.tk-design.no
 
-## Who We Are
-- Brand: TK-design
-- Focus: web design, web development, SEO, and digital visibility
-- Primary audience: Norwegian businesses that need better online presence
+## Om TK-design
+- Merkevare: TK-design
+- Fokus: webdesign, webutvikling, SEO, sosiale medier og drift/support
+- Målgruppe: norske små og mellomstore bedrifter som trenger en bedre nettside og synlighet
+- Kontakt: thomas@tk-design.no, +47 930 94 615
 
-## Core Services
-- Custom website design and development
-- SEO strategy and on-page optimization
-- Social media strategy and content direction
-- Ongoing maintenance and website improvements
+## Tjenester
+- [Webdesign](https://www.tk-design.no/webdesign) – skreddersydde, raske og mobilvennlige nettsider
+- [SEO](https://www.tk-design.no/seo) – søkeordsanalyse, innhold og teknisk SEO
+- [Sosiale medier](https://www.tk-design.no/sosiale-medier) – innholdsstrategi og grafikk for Facebook og Instagram
+- [Support og vedlikehold](https://www.tk-design.no/support-og-vedlikehold) – supportavtale fra kr 1 000 per måned eks. mva.
+- [Nettsider for regnskapsbyråer](https://www.tk-design.no/nettside-for-regnskapsbyra)
+- [Gratis nettside-sjekk](https://www.tk-design.no/nettside-sjekker) – test hastighet, SEO og mobilvennlighet
 
-## Priority Pages
-- [Home](https://tk-design.no/) - Main company overview and value proposition.
-- [Services](https://tk-design.no/webdesign) - Detailed service descriptions.
-- [Portfolio](https://tk-design.no/portefolje) - Selected project work and client cases.
-- [Blog](https://tk-design.no/blog) - Articles on SEO, GEO, and digital growth.
-- [Contact](https://tk-design.no/contact) - Main contact and lead page.
+## Priser (eks. mva.)
+- Enkel nettside: kr 7 000
+- Middels stor nettside: kr 12 000
+- Avansert nettside: fra kr 20 000
+- Innlegg til sosiale medier: kr 250–500 per innlegg
 
-## Important Files
-- [Sitemap](https://tk-design.no/sitemap.xml)
-- [Robots](https://tk-design.no/robots.txt)
+## Viktige sider
+- [Forside](https://www.tk-design.no/)
+- [Portefølje](https://www.tk-design.no/portefolje) – utvalgte kundeprosjekter
+- [Blogg](https://www.tk-design.no/blog) – artikler om webdesign, SEO, KI og digital synlighet
+- [KI-forordningen](https://www.tk-design.no/ki-forordninger) – guide for norske bedrifter
+- [Kontakt](https://www.tk-design.no/contact)
 
-## Crawling Notes For LLMs
-- Prefer canonical URLs on tk-design.no without the .html suffix.
-- Treat /admin and /api as non-public operational routes.
-- Blog detail URLs are served as /blog-details?id=<id>.
-- Prioritize Home, Services, Projects, Blog, and Contact when summarizing the business.
+## Filer
+- [Sitemap](https://www.tk-design.no/sitemap.xml)
+- [Robots](https://www.tk-design.no/robots.txt)
+
+## Merknader for KI-verktøy
+- Bruk URL-er på www.tk-design.no uten .html.
+- Blogginnlegg ligger på /blog/<tittel-som-slug>.
+- Prosjekter ligger på /project-details?project=<kudos|hkm|mandal>.
+- /admin og /api er ikke offentlige.

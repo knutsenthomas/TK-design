@@ -1,4 +1,56 @@
 // seo and pages. Dependencies are resolved when an operation runs.
+const PROJECT_SEO = {
+  kudos: {
+    name: "Kudos Regnskap AS",
+    liveUrl: "https://www.kudosregnskap.no",
+    title: "Kudos Regnskap – nettside for regnskapskontor",
+    description:
+      "Se hvordan TK-design laget en trygg og tydelig nettside for Kudos Regnskap AS, med fokus på tillit, tjenesteoversikt og enkel kundekontakt.",
+    summary:
+      "En trygg og tydelig nettside for et autorisert regnskapskontor, med fokus på nærhet, kvalitet og enkel kundekontakt.",
+  },
+  hkm: {
+    name: "His Kingdom Ministry",
+    liveUrl: "https://www.hiskingdomministry.no/",
+    title: "His Kingdom Ministry – nettside for frivillig organisasjon",
+    description:
+      "Et visuelt løft for His Kingdom Ministry: en varm og inviterende nettside der fellesskap, innhold og gaver er enkle å finne.",
+    summary:
+      "Et visuelt løft for en organisasjon der fellesskap, givertjeneste og innhold må oppleves enkelt og inviterende.",
+  },
+  mandal: {
+    name: "Mandal Regnskapskontor",
+    liveUrl: "https://mandalregnskapskontor.no/",
+    title: "Mandal Regnskapskontor – nettside for regnskapsbyrå",
+    description:
+      "Ryddig og troverdig nettside for Mandal Regnskapskontor, med tydelig tjenesteoversikt og lav terskel for å ta kontakt.",
+    summary:
+      "Et ryddig regnskapsuttrykk med fokus på tjenesteoversikt, troverdighet og enkel kontakt for lokale bedrifter.",
+  },
+};
+
+// Indexable intro for the React-based nettside-sjekker; React's createRoot replaces it on load.
+const SPEED_TEST_SSR_HTML = `<div id="root"><main style="max-width:760px;margin:0 auto;padding:64px 20px;font-family:system-ui,sans-serif;color:#102033;line-height:1.6">
+<h1>Gratis nettside-sjekk: test hastighet, SEO og mobilvennlighet</h1>
+<p>Skriv inn adressen til nettsiden din, så måler verktøyet ytelse, Core Web Vitals, SEO-status og mobilvennlighet med data fra Google Lighthouse. Du får en poengsum og en konkret liste over hva som bør forbedres.</p>
+<p>Verktøyet er laget av TK-design i Moss. Vil du ha hjelp med funnene? <a href="/contact">Ta kontakt</a> eller les om <a href="/support-og-vedlikehold">supportavtalen</a>.</p>
+</main></div>`;
+
+function cleanAutoDescription(text = "") {
+  let t = String(text || "")
+    .replace(
+      /^\s*(Foto|Bilde|Illustrasjon|Photo|Image)\s*:\s*[^.!?]{0,120}?(Unsplash|Pexels|Pixabay|Shutterstock|Canva|Freepik)\s*/i,
+      "",
+    )
+    .trim();
+  if (t.length > 158) {
+    t = t.slice(0, 158);
+    const lastSpace = t.lastIndexOf(" ");
+    if (lastSpace > 100) t = t.slice(0, lastSpace);
+    t = t.replace(/[\s,.;:–-]+$/, "") + "…";
+  }
+  return t;
+}
 module.exports = function createFeature(context) {
   return {
     escapeHtml(...args) {
@@ -274,6 +326,7 @@ module.exports = function createFeature(context) {
         let ogUrl = "";
         let ogImage = "";
         let ogType = "website";
+        let ssrPost = null;
 
         const siteBaseUrl = getSiteBaseUrl(req);
         try {
@@ -312,11 +365,20 @@ module.exports = function createFeature(context) {
                 : post.seoKeywords;
 
               title = postSeoTitle || postTitle;
+              const contentForDescription = String(postContent || "").replace(
+                /<figcaption[\s\S]*?<\/figcaption>/gi,
+                " ",
+              );
               description =
                 postSeoDesc ||
-                (postContent
-                  ? stripHtmlToText(postContent).substring(0, 160)
-                  : "");
+                cleanAutoDescription(stripHtmlToText(contentForDescription));
+              ssrPost = {
+                title: postTitle || "",
+                summary: isEn
+                  ? post.summaryEn || post.summary || post.lead || ""
+                  : post.summary || post.lead || "",
+                content: postContent || "",
+              };
               keywords = postSeoKeywords || globalSeo.defaultKeywords || "";
               ogType = "article";
 
@@ -346,6 +408,14 @@ module.exports = function createFeature(context) {
             seoData.pages[req.path] || seoData.pages[reqFile] || {};
           title = pageSeo.title || "";
           description = pageSeo.description || "";
+          const projectKey =
+            reqFile === "project-details.html"
+              ? String(req.query.project || "").toLowerCase()
+              : "";
+          if (projectKey && PROJECT_SEO[projectKey]) {
+            title = PROJECT_SEO[projectKey].title;
+            description = PROJECT_SEO[projectKey].description;
+          }
           keywords = pageSeo.keywords || globalSeo.defaultKeywords || "";
         }
 
@@ -357,9 +427,9 @@ module.exports = function createFeature(context) {
           ? `${title} ${globalSeo.separator || "|"} ${siteTitle}`
           : siteTitle;
         if (!ogImage) {
-          const configuredLogo = String(globalSeo.logoImage || "").trim();
+          const configuredOgImage = String(globalSeo.ogImage || "").trim();
           ogImage = resolveAbsoluteAssetUrl(
-            configuredLogo || "img/logo/d.png",
+            configuredOgImage || "img/og/tk-design-deling.png",
             req,
           );
         }
@@ -404,6 +474,54 @@ module.exports = function createFeature(context) {
               req.path,
               lang,
             );
+
+          // SSR: blog post title, lead and body so crawlers and AI tools see the article without JavaScript
+          if (reqFile === "blog-details.html" && ssrPost) {
+            translatedHtml = translatedHtml
+              .replace(
+                /(<h1\b[^>]*id="blogDetailTitle"[^>]*>)[\s\S]*?(<\/h1>)/,
+                (_, open, close) => open + escapeHtml(ssrPost.title) + close,
+              )
+              .replace(
+                /(<div class="blog-rich-content" id="blog-content-container">)[\s\S]*?(<\/div>)/,
+                (_, open, close) => open + ssrPost.content + close,
+              );
+            const ssrLead = ssrPost.summary || description;
+            if (ssrLead) {
+              translatedHtml = translatedHtml.replace(
+                /(<p\b[^>]*id="blogDetailSummary"[^>]*>)[\s\S]*?(<\/p>)/,
+                (_, open, close) => open + escapeHtml(ssrLead) + close,
+              );
+            }
+          }
+
+          // SSR: correct project name/summary per ?project= so each case page has its own H1
+          if (reqFile === "project-details.html" && lang === "no") {
+            const project =
+              PROJECT_SEO[String(req.query.project || "").toLowerCase()];
+            if (project) {
+              translatedHtml = translatedHtml
+                .replace(
+                  /(<span id="projectTitle">)[\s\S]*?(<\/span>)/,
+                  (_, open, close) => open + escapeHtml(project.name) + close,
+                )
+                .replace(
+                  /(<p\b[^>]*id="projectSummary"[^>]*>)[\s\S]*?(<\/p>)/,
+                  (_, open, close) => open + escapeHtml(project.summary) + close,
+                )
+                .replace(
+                  /(<a href=")[^"]*(" class="hero-btn-primary" id="projectActionLink")/,
+                  (_, a, b) => a + project.liveUrl + b,
+                );
+            }
+          }
+
+          if (reqFile === "speed-test/index.html") {
+            translatedHtml = translatedHtml.replace(
+              '<div id="root"></div>',
+              SPEED_TEST_SSR_HTML,
+            );
+          }
 
           // SSR Pre-rendering for blog.html listing so search engines see all blog posts on initial HTML load
           if (reqFile === "blog.html") {
@@ -577,7 +695,7 @@ module.exports = function createFeature(context) {
 
           // Auto-inject / Upsert Canonical URL to prevent duplicate content indexing
           const canonicalTarget =
-            ogUrl || `https://tk-design.no${req.path === "/" ? "/" : req.path}`;
+            ogUrl || `https://www.tk-design.no${req.path === "/" ? "/" : req.path}`;
           if (/<link\s+[^>]*rel=["']canonical["'][^>]*>/i.test(injectedHtml)) {
             injectedHtml = injectedHtml.replace(
               /<link\s+[^>]*rel=["']canonical["'][^>]*>/i,

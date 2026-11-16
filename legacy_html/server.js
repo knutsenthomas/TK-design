@@ -444,7 +444,7 @@ const SEO_PAGE_DEFAULTS = {
       "tilgjengelighet, universell utforming, tilgjengelighetserklæring",
   },
   "speed-test/index.html": {
-    title: "Nettside-sjekker",
+    title: "Gratis nettside-sjekk – test hastighet og SEO",
     description:
       "Test hvor rask nettsiden din er med Lighthouse-data og få en konkret handlingsplan fra TK-design.",
     keywords:
@@ -1932,6 +1932,10 @@ app.get("/sitemap.xml", async (req, res) => {
       { path: "/portefolje", priority: "0.9", changefreq: "weekly" },
       { path: "/blog", priority: "0.9", changefreq: "weekly" },
       { path: "/ki-forordninger", priority: "0.7", changefreq: "monthly" },
+      { path: "/nettside-sjekker", priority: "0.7", changefreq: "monthly" },
+      { path: "/project-details?project=kudos", priority: "0.6", changefreq: "yearly" },
+      { path: "/project-details?project=hkm", priority: "0.6", changefreq: "yearly" },
+      { path: "/project-details?project=mandal", priority: "0.6", changefreq: "yearly" },
       { path: "/contact", priority: "0.8", changefreq: "monthly" },
       { path: "/privacy", priority: "0.3", changefreq: "yearly" },
       { path: "/accessibility", priority: "0.3", changefreq: "yearly" },
