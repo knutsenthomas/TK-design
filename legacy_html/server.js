@@ -4331,25 +4331,6 @@ app.delete("/api/social-planner/entries/:entryId", async (req, res) => {
 require("./js/marketing-agent").installMarketingAgentRoutes(app, {
   getAdminInstance,
   hasFirebaseServerCredentials,
-  publishers: {
-    facebook: (input) =>
-      publishToFacebookPageApi({
-        message:
-          input.imageUrl && input.link && !input.text.includes(input.link)
-            ? input.text + "\n\n" + input.link
-            : input.text,
-        link: input.link,
-        imageUrl: input.imageUrl,
-      }),
-    instagram: (input) =>
-      publishToInstagramApi({ caption: input.text, imageUrl: input.imageUrl }),
-    linkedin: (input) =>
-      publishToLinkedInCompanyApi({
-        text: input.text,
-        title: input.title,
-        url: input.link,
-      }),
-  },
 });
 
 app.post("/api/social/publish-direct", verifyAdminToken, async (req, res) => {

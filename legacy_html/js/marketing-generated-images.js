@@ -17,12 +17,4 @@ function createGeneratedImageStore({getAdminInstance}) {
   async read(id){if(!validId(id))return null;const doc=await collection().doc(id).get();return doc.exists?Buffer.from(doc.data().base64,'base64'):null;}
  };
 }
-function installGeneratedImageRoutes(app,{authenticate,getAdminInstance}){
- const store=createGeneratedImageStore({getAdminInstance});
- app.get('/api/marketing-agent/generated-images',authenticate,async(req,res)=>{try{res.json(await store.check());}catch{res.status(503).json({success:false,error:'Bildelagring er utilgjengelig.'});}});
- app.post('/api/marketing-agent/generated-images',authenticate,async(req,res)=>{try{res.json(await store.save(req.body));}catch(e){res.status(503).json({success:false,error:e.message});}});
- // Only opaque image IDs are public, so social platforms can fetch selected images.
- // No listing, prompts, customer data or credentials are exposed by this route.
- app.get('/api/marketing-agent/generated-images/:id',async(req,res)=>{try{const bytes=await store.read(req.params.id);if(!bytes)return res.status(404).end();res.setHeader('Content-Type','image/jpeg');res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Cache-Control','public, max-age=31536000, immutable');res.send(bytes);}catch{res.status(503).end();}});
-}
-module.exports={createGeneratedImageStore,installGeneratedImageRoutes};
+module.exports={createGeneratedImageStore};
