@@ -1619,11 +1619,11 @@ app.patch("/api/messages/:id", async (req, res) => {
 
     // Firestore PATCH requires updateMask
     const updateMask = Object.keys(updateData)
-      .map((k) => `updateMask.fieldPaths=${k}`)
+      .map((k) => `updateMask.fieldPaths=${encodeURIComponent(k)}`)
       .join("&");
 
     const response = await fetch(
-      `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${encodeURIComponent(databaseId)}/documents/${collection}/${id}?${updateMask}`,
+      `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${encodeURIComponent(databaseId)}/documents/${collection}/${encodeURIComponent(id)}?${updateMask}`,
       {
         method: "PATCH",
         headers: {
@@ -1663,7 +1663,7 @@ app.delete("/api/messages/:id", async (req, res) => {
     const fetch = await getFetch();
 
     const response = await fetch(
-      `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${encodeURIComponent(databaseId)}/documents/${collection}/${id}`,
+      `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${encodeURIComponent(databaseId)}/documents/${collection}/${encodeURIComponent(id)}`,
       {
         method: "DELETE",
         headers: {
