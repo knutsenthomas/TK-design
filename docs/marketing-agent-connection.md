@@ -1,65 +1,25 @@
-# TK-design → privat Markedsagent
+# Markedsagenten (avviklet)
 
-Den eksisterende private Sites-appen brukes på `https://markedsagent.tk-design.no/`.
-Ingen ny side, nytt domene eller Metricool-forbindelse kreves.
+Den private Markedsagenten i ChatGPT Sites (`https://markedsagent.tk-design.no/`, prosjekt `appgprj_6acbea5a72a08191a6970fd62ff67bfd`) ble slettet 17. november 2026. Markedsarbeidet ligger nå i TK-design Hub:
 
-## Aktivering
+- Kundeemner, bloggutkast og SoMe-utkast: `https://hub.tk-design.no/marketing` og `https://hub.tk-design.no/social-content`.
+- Claude lagrer dit via Hub-koblingen (`/api/insights/mcp`, scope `marketing`). Ingenting publiseres eller sendes uten at Thomas godkjenner i hubben.
 
-1. Generer en ny tilfeldig hemmelighet med minst 32 tegn. Den skal kun ligge i runtime-konfigurasjonen.
-2. Sett samme `MARKETING_AGENT_SECRET` som hemmelig miljøvariabel i TK-designs Vercel-produksjon og i Sites-prosjektet `appgprj_6acbea5a72a08191a6970fd62ff67bfd`. Ikke legg den i kode, logger eller nettleseren.
-3. Bekreft TK-designs serverinnstillinger for de kontoene som skal brukes:
-   - Facebook: `FB_PAGE_ID`, en ny `FB_PAGE_ACCESS_TOKEN`.
-   - Instagram: `INSTAGRAM_ACCOUNT_ID`, `FB_PAGE_ACCESS_TOKEN` med Instagram-publiseringstilgang.
-   - LinkedIn: `LINKEDIN_ORGANIZATION_ID`, `LINKEDIN_ACCESS_TOKEN` med tillatelse til å publisere på bedriftssiden.
-   - Firebase-servertilgang må fungere. Publisering stopper dersom Firestore-loggen ikke kan sikres.
-4. Tilbakekall den tidligere Facebook-nøkkelen som var innebygd i offentlig kildekode. Den er fjernet fra gjeldende kode, men kan fortsatt finnes i Git-historikken.
-5. Deploy runtime-innstillingene på begge sider, og bruk «Hent tilkoblingsstatus» under Innhold.
+## Hva som står igjen på tk-design.no
 
-Konfigurasjon er ikke det samme som testet kontotilgang. Ingen levende publisering ble gjort under utvikling.
-Meta bruker Graph API v25.0, med overstyring `META_GRAPH_API_VERSION`.
-LinkedIn bruker Posts API, versjon 202609 med overstyring `LINKEDIN_API_VERSION`.
-LinkedIn støtter tekst/lenke i denne versjonen; bildepublisering gjelder Facebook og Instagram.
+Alle ruter som krevde `MARKETING_AGENT_SECRET` er fjernet (publisering til Facebook/Instagram/LinkedIn via agenten, bloggpublisering og -planlegging, bildesøk og bildelagring, Google-rapporter og den direkte Hub-overføringen). Hemmeligheten brukes ikke lenger og kan slettes fra Vercel.
 
-## Godkjenning og logging
+To ting er beholdt fordi allerede publisert eller godkjent innhold kan være avhengig av dem:
 
-- Lagre innleggets publiserbare tekst separat fra interne notater.
-- Sett status til Godkjent. Dette sender ingenting.
-- Se forhåndsvisningen, velg kanalene og trykk Publiser nå.
-- Serveren bruker kun TK-designs forhåndskonfigurerte kontoer; brukeren kan ikke sende et vilkårlig kontomål.
-- En atomisk Sites-post låser utkastet til ett publiseringsforsøk. Firestore oppretter en unik kjørings-ID atomisk på backend.
-- Samme kjørings-ID sendes aldri på nytt automatisk. Ved timeout/crash beholdes ukjent eller pågående status.
-- Kun HTTP-suksess med en bekreftet ekstern innleggs-ID blir Publisert. Suksess og usikkerhet logges per kanal.
-- Oppdater publiseringsstatus leser tilbake uten å sende nye innlegg.
-- Ingen periodisk publisering er aktivert av denne endringen.
+- `GET /api/marketing-agent/generated-images/:id` – offentlige bilder (Firestore `marketingAgentImages`) som publiserte innlegg og blogginnlegg kan peke til. Kun lesing, kun ugjennomsiktige ID-er.
+- `GET /api/cron/marketing-blog` – publiserer bloggartikler som allerede er godkjent og planlagt (Firestore `marketingBlogSchedules`). Krever `CRON_SECRET`. Kan fjernes sammen med cron-oppføringen i `vercel.json` når det ikke ligger flere planlagte artikler.
+
+Sosiale medier publiseres fortsatt via Social Planner i adminpanelet (`server/social-publishing.js`), som ikke er berørt.
+
+## Gjenstående sikkerhetspunkt
+
+Den tidligere Facebook-nøkkelen som en gang lå i offentlig kildekode, bør være tilbakekalt i Meta. Den finnes fortsatt i Git-historikken.
 
 ## Verifisering
 
-`node --check legacy_html/server.js`
-
-`node --check legacy_html/js/marketing-agent.js`
-
-`node --test legacy_html/tests/marketing-agent.test.js`
-
-Testene dekker autentisering, input, atomiske duplikatkrav, per-kanal-resultat, manglende lagring, provider-ID-kontroller og at simulering ikke blir publiseringssuksess. Ingen ekte kontonøkler brukes i testene.
-
-Vercel-forbindelsen avviste tilgangen til TK-designs team under utviklingen. Runtime-innstillinger, gammel nøkkels tilbakekalling og levende kontotilgang må derfor bekreftes før publisering aktiveres.
-
-## Google-rapporter i Markedsagent
-
-Den private agenten leser `GET /api/marketing-agent/google` med den samme serverhemmeligheten. Endepunktet gjenbruker `GOOGLE_SERVICE_ACCOUNT_JSON` og `GA_PROPERTY_ID` fra TK-designs Vercel-oppsett. Det oppretter kortvarige Google-token i minnet med kun `analytics.readonly` og `webmasters.readonly`, uten Gmail eller brukerimpersonering. Ingen ekstra npm-avhengigheter.
-
-Gi den eksisterende tjenestekontoen rollen Leser i riktig GA4-egenskap og begrenset lesetilgang i Search Console. Aktiver Google Analytics Data API og Google Search Console API i Google Cloud-prosjektet. Agenten finner bare eksisterende Search Console-egenskaper for `tk-design.no`; ingen nye egenskaper opprettes. Ved flere egenskaper velges domeneegenskapen først. Valgfri `GSC_SITE_URL` kan velge `sc-domain:tk-design.no`, `https://www.tk-design.no/` eller `https://tk-design.no/`. Ingen andre domener godtas.
-
-Analytics filtreres til bare `tk-design.no` og `www.tk-design.no`. Begge kildene bruker 28 dager; Analytics til og med i går, Search Console til og med tre dager tilbake og kun ferdigbehandlede data. Kildene kan feile uavhengig. Søkeord og sider viser høyst åtte rader, og søkeordlisten er ikke et komplett uttrekk. Bare bekreftet Google-svar gir status Aktiv.
-
-Verifisering: `node --test legacy_html/tests/marketing-agent.test.js legacy_html/tests/marketing-google.test.js`. Tester bruker genererte engangsnøkler og fiktive svar, ikke produksjonsdata.
-
-## E-postgrense
-
-Markedsagenten kan forberede utkast og åpne dem via `mailto:` i brukerens e-postprogram. Mottakeren velges fra kunder med lagret e-postadresse; Ikke kontakt, Avsluttet og eksisterende Kudos/Mandal-kunder utelates. Dette sender ingen e-post og gir ingen innbokstilgang. TK-designs eksisterende Gmail-kobling i ChatGPT er separat. Direkte Sites/Gmail-integrasjon ble ikke aktivert fordi Sites-plugin-eligibility ikke var tilgjengelig i verktøyene; ingen ukjente connector-ID-er ble deklarert.
-
-## Kundeemner ligger i TK-design Hub
-
-Den gamle overføringen `GET/POST /api/marketing-agent/hub`, som skrev kandidater direkte inn som Lead i hubbens `clients`, er fjernet (november 2026). Kundeemner, bloggutkast og SoMe-utkast håndteres nå i hubben selv (`https://hub.tk-design.no/marketing`) og lagres via Hub-koblingen (`/api/insights/mcp`, scope `marketing`). Et kundeemne blir salgsmulighet først når Thomas trykker «Gjør til salgsmulighet» i hubben.
-
-Markedsagentens kall til dette endepunktet får nå 404. Øvrige `/api/marketing-agent/*`-ruter (publisering, blogg, bilder, Google-rapporter) er uendret og bruker fortsatt `MARKETING_AGENT_SECRET`.
+`node --test legacy_html/tests/*.test.js`
