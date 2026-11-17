@@ -58,18 +58,8 @@ Verifisering: `node --test legacy_html/tests/marketing-agent.test.js legacy_html
 
 Markedsagenten kan forberede utkast og åpne dem via `mailto:` i brukerens e-postprogram. Mottakeren velges fra kunder med lagret e-postadresse; Ikke kontakt, Avsluttet og eksisterende Kudos/Mandal-kunder utelates. Dette sender ingen e-post og gir ingen innbokstilgang. TK-designs eksisterende Gmail-kobling i ChatGPT er separat. Direkte Sites/Gmail-integrasjon ble ikke aktivert fordi Sites-plugin-eligibility ikke var tilgjengelig i verktøyene; ingen ukjente connector-ID-er ble deklarert.
 
-## Automatisk overføring til TK-design-hub
+## Kundeemner ligger i TK-design Hub
 
-Hubben er `https://hub.tk-design.no/admin`, repository `knutsenthomas/HUB-TK-design`, Firebase-prosjekt `hub-tk-design`. Koblingen bruker det eksisterende arbeidsområdet `workspaces/tk-design`, med separate `clients`- og `marketingAgentReceipts`-samlinger. Det eldre kontoarkivet `users/thomas@tk-design.no/data/hub_state` brukes ikke. Koblingen gjenbruker TK-designs eksisterende servercredential med eksplisitt målprosjekt. Nettleseren mottar ingen servernøkkel. Google/Gmail-innloggingen i hubben flyttes ikke.
+Den gamle overføringen `GET/POST /api/marketing-agent/hub`, som skrev kandidater direkte inn som Lead i hubbens `clients`, er fjernet (november 2026). Kundeemner, bloggutkast og SoMe-utkast håndteres nå i hubben selv (`https://hub.tk-design.no/marketing`) og lagres via Hub-koblingen (`/api/insights/mcp`, scope `marketing`). Et kundeemne blir salgsmulighet først når Thomas trykker «Gjør til salgsmulighet» i hubben.
 
-`GET /api/marketing-agent/hub` kontrollerer tilgang og returnerer en begrenset kundeliste og arbeidsområdets revisjon. `POST` med `leads` overfører opp til 100 kandidater. Begge krever samme `MARKETING_AGENT_SECRET`. Målprosjekt og arbeidsområde er faste på serveren. Arbeidsområdet og revisjonen må allerede eksistere; koblingen oppretter ikke en alternativ kundedatabase.
-
-Kandidater legges automatisk inn som Lead med kilde/notater, tomt ubekreftet kontaktpersonfelt og ingen kjøpsinteressepåstand. Ikke kontakt, Avsluttet, Vunnet, Kudos Regnskap og Mandal Regnskapskontor utelates. Navn, e-post, nettadresse og stabile kilde-ID-er kontrolleres mot eksisterende kunder. Eksisterende kunder oppdateres ikke av en ny kandidat.
-
-Firestore-transaksjonen leser arbeidsområdets revisjon, kundene og kvitteringene før den skriver. Den skriver bare nye kundedokumenter og nye kvitteringer. Ved nye kunder økes arbeidsområdets revisjon atomisk, slik at en gammel nettleservisning ikke kan overskrive importen. Eksisterende kundedokumenter, prosjekter, notater og innstillinger skrives ikke. Kundene og kvitteringene leses tilbake før overføring meldes som bekreftet. Varige kvitteringer gjør gjentatt synkronisering idempotent. Kundegrensen på 400 i hubbens lagringsmodell respekteres.
-
-Markedsagenten synkroniserer etter lagret kundejakt og lagring av kunder. Feil hindrer ikke lokal lagring; siste kundesnapshot og ventende status beholdes. Neste lagring/kundejakt prøver på nytt. Status og manuell ny kontroll finnes i Agent-fanen. Hub-kunder inngår også i kundejaktens eksklusjonsliste. Ingen e-post eller innlegg sendes av overføringen.
-
-Hub-frontenden bruker den gjenopprettede, revisjonskontrollerte lagringen fra `codex/portal-foundation-sales`. Begge sidene har menylenker til hverandre; hubbens innboks åpnes i sin egen innloggede visning.
-
-Verifisering: `node --test legacy_html/tests/marketing-hub.test.js legacy_html/tests/marketing-agent.test.js legacy_html/tests/marketing-google.test.js`. IAM-tilgang og produksjonsoverføring må bekreftes separat med den publiserte koblingen.
+Markedsagentens kall til dette endepunktet får nå 404. Øvrige `/api/marketing-agent/*`-ruter (publisering, blogg, bilder, Google-rapporter) er uendret og bruker fortsatt `MARKETING_AGENT_SECRET`.

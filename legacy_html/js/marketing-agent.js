@@ -69,9 +69,6 @@ function installMarketingAgentRoutes(app, dependencies) {
         try { res.json(await images.select(req.body?.id)); }
         catch(e) { res.status(503).json({ success:false, error:e.message }); }
     });
-    const hub = require('./marketing-hub').createHubConnection({ getAdminInstance });
-    app.get('/api/marketing-agent/hub', authenticate, async (req, res) => res.json(await hub.read()));
-    app.post('/api/marketing-agent/hub', authenticate, async (req, res) => res.json(await hub.sync(req.body?.leads)));
     app.get('/api/marketing-agent/google', authenticate, async (req, res) => {
         try { return res.json({ success: true, ...await require('./marketing-google').readGoogleSources() }); }
         catch { return res.status(503).json({ success: false, error: 'Google-data er utilgjengelige. Prøv igjen.' }); }
